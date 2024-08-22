@@ -24,28 +24,28 @@ class User(models.Model):
         db_table = 'tbl_user'
 
 class DocumentType(models.Model):
-    document_no = models.IntegerField(max_length=15)
+    document_no = models.BigAutoField(primary_key=True)
     document_type = models.CharField(max_length=45)
     category = models.CharField(max_length=7)
     class Meta:
         db_table = 'tbl_document_type'
 
 class DocumentRoute(models.Model):
-    routing_no = models.IntegerField(max_length=15, primary_key = True)
+    routing_no = models.BigAutoField(primary_key=True)
     document_type = models.ForeignKey(DocumentType, on_delete=models.CASCADE, null=True, blank=True)
     route = models.ForeignKey(Office, on_delete=models.CASCADE, null=True, blank=True)
     class Meta:
         db_table = 'tbl_document_route'
 
 class PriorityLevel(models.Model):
-    no = models.IntegerField(max_length = 15, primary_key = True)
+    no = models.BigAutoField(primary_key=True)
     priority_level = models.CharField(max_length=16)
-    deadline = models.IntegerField(max_length=15)
+    deadline = models.IntegerField()
     class Meta:
         db_table = 'tbl_priority_level'
 
 class Document(models.Model):
-    document_no = models.IntegerField(max_length=15, primary_key=True)
+    document_no = models.BigAutoField(primary_key=True)
     tracking_no = models.CharField(max_length=30)
     qr_code = models.CharField(max_length=15)
     document_type = models.ForeignKey(DocumentType, on_delete=models.CASCADE, null=True, blank=True)
@@ -58,7 +58,7 @@ class Document(models.Model):
         db_table = 'tbl_document'
 
 class ActivityLogs(models.Model):
-    no = models.IntegerField(max_length = 15, primary_key = True)
+    no = models.BigAutoField(primary_key=True)
     time_stamp = models.DateTimeField(blank=True)
     activity = models.CharField(max_length=20)
     document_id = models.ForeignKey(Document, on_delete=models.CASCADE)
