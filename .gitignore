@@ -130,8 +130,7 @@ venv.bak/
 myenv/
 
 #migrations
-**/migrations/*.py[cod]
-!**/migrations/__init__.py
+TrackIt_app/migrations/
 
 # Spyder project settings
 .spyderproject
