@@ -130,7 +130,8 @@ venv.bak/
 myenv/
 
 #migrations
-**/migrations/
+**/migrations/*.py[cod]
+!**/migrations/__init__.py
 
 # Spyder project settings
 .spyderproject
