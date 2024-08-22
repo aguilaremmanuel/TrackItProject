@@ -20,6 +20,7 @@ class User(models.Model):
     registered_date = models.DateTimeField(blank=True)
     verified_date = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=20)
+    employee_id = models.CharField(max_length=8, blank = True)
     class Meta:
         db_table = 'tbl_user'
 
