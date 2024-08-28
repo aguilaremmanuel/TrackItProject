@@ -16,6 +16,7 @@ def generate_user_id(role_prefix):
         new_number = 1000
     return f"{role_prefix}-{new_number:04d}"
 
+#Hello world
 def user_signup(request):
     if request.method == 'POST':
         form = UserSignupForm(request.POST)
