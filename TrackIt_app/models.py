@@ -19,7 +19,7 @@ class User(models.Model):
     office_id = models.ForeignKey(Office, on_delete=models.CASCADE, null=True, blank=True)
     registered_date = models.DateTimeField(null=True, blank=True)
     verified_date = models.DateTimeField(null=True, blank=True)
-    status = models.CharField(null=True, max_length=20)
+    status = models.CharField(null=True, max_length=20, default="for verification")
     employee_id = models.CharField(max_length=12, blank = True)
     class Meta:
         db_table = 'tbl_user'

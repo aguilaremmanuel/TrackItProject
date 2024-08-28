@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .forms import *
 
 # Create your views here.
@@ -6,15 +6,18 @@ def user_login(request):
     return render(request, "user-login.html")
 
 def user_signup(request):
+
     if request.method == 'POST':
+  
         form = UserSignupForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
-
-            # Generate employee_id based on role
+   
             role_prefix = form.cleaned_data['role']
             print(role_prefix)
-            """max_user_id = User.objects.filter(user_idstartswith=f"{role_prefix}-").aggregate(Max('user_id'))['user_idmax']
+
+            
+
+            max_user_id = User.objects.filter(user_idstartswith=f"{role_prefix}-").aggregate(Max('user_id'))['user_idmax']
 
             if max_user_id:
             # Extract the numeric part from the max_user_id and increment it
@@ -22,13 +25,14 @@ def user_signup(request):
                 new_number = max_number + 1
             else:
             # If no user exists, start with 1000
-                new_number = 1000"""
+                new_number = 1000
 
             #user.set_password(form.cleaned_data['password'])
             #user.date_registered = timezone.now()
-            #user.save()
-            #ShopRate.objects.create(shop_id=shop)
+            form.save()
             return redirect('user_login')  
+        else:
+            print(form.errors)
     else:
         form = UserSignupForm()
     return render(request, "user-signup.html", {'form': form})
