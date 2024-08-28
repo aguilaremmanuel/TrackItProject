@@ -4,7 +4,6 @@ from django.core.exceptions import ValidationError
 
 class UserSignupForm(forms.ModelForm):
 
-
     DEPARTMENT_CHOICES = [
         ('', 'Select Department'),
         ('ADM', 'Administrative'),
@@ -19,7 +18,6 @@ class UserSignupForm(forms.ModelForm):
         widget=forms.Select(attrs={
             'class': 'form-select',
             'id': 'selectDept',
-            'required': 'required',
         })
     )
 
@@ -35,10 +33,8 @@ class UserSignupForm(forms.ModelForm):
         widget=forms.Select(attrs={
             'class': 'form-select',
             'id': 'selectRole',
-            'required': 'required',
         })
     )
-
 
     confirm_password = forms.CharField(
         widget=forms.PasswordInput(attrs={
@@ -47,11 +43,10 @@ class UserSignupForm(forms.ModelForm):
             'placeholder': 'Confirm Password',
         })
     )
-
    
     class Meta:
         model = User
-        fields = ['firstname','middlename','lastname','employee_id' ,'email', 'contact_no','role','password', 'registered_date']
+        fields = ['firstname','middlename','lastname','employee_id' ,'email', 'contact_no', 'office_id','role','password', 'registered_date', 'status']
 
         widgets = {
             'firstname': forms.TextInput(attrs={
@@ -101,6 +96,7 @@ class UserSignupForm(forms.ModelForm):
             self.add_error('confirm_password', "Passwords do not match")
 
         return cleaned_data
+    
 
     def save(self, commit=True):
 
@@ -116,7 +112,4 @@ class UserSignupForm(forms.ModelForm):
         if commit:
             user.save()
         return user
-
-    
-
 
