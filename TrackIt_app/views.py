@@ -1,9 +1,19 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .forms import *
+from django.db.models import Max
 
 # Create your views here.
 def user_login(request):
     return render(request, "user-login.html")
+
+def generate_user_id(role_prefix):
+    max_user_id = User.objects.filter(user_id__startswith=f"{role_prefix}-").aggregate(max_id=Max('user_id'))['max_id']
+    if max_user_id:
+        max_number = int(max_user_id.split('-')[1])
+        new_number = max_number + 1
+    else:
+        new_number = 1000
+    return f"{role_prefix}-{new_number:04d}"
 
 def user_signup(request):
     if request.method == 'POST':
@@ -13,21 +23,10 @@ def user_signup(request):
 
             # Generate employee_id based on role
             role_prefix = form.cleaned_data['role']
-            print(role_prefix)
-            """max_user_id = User.objects.filter(user_idstartswith=f"{role_prefix}-").aggregate(Max('user_id'))['user_idmax']
+            user.user_id = generate_user_id(role_prefix)
 
-            if max_user_id:
-            # Extract the numeric part from the max_user_id and increment it
-                max_number = int(max_user_id.split('-')[1])
-                new_number = max_number + 1
-            else:
-            # If no user exists, start with 1000
-                new_number = 1000"""
+            form.save()
 
-            #user.set_password(form.cleaned_data['password'])
-            #user.date_registered = timezone.now()
-            #user.save()
-            #ShopRate.objects.create(shop_id=shop)
             return redirect('user_login')  
     else:
         form = UserSignupForm()
