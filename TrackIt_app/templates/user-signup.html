@@ -64,23 +64,11 @@
 						<div class="row mb-3 g-3">
 							<div class="col">
 								<label for="department" class="form-label">Office</label>
-								<select class="form-select" id="selectDept" required>
-									<option value="" hidden>Select Department</option>
-									<option value="dept1">Administrative</option>
-									<option value="dept2">Accounting</option>
-									<option value="dept3">Budgeting</option>
-									<option value="dept4">Cashier</option>
-									<option value="dept5">Payroll</option>
-								</select>
+								{{ form.office_id }}
 							</div>
 							<div class="col">
 								<label for="department" class="form-label">Officer Role</label>
-								<select class="form-select" id="selectRole" required>
-									<option value="" hidden>Select Officer Role</option>
-									<option value="role1">Admin Officer</option>
-									<option value="role2">Action Officer</option>
-									<option value="role3">Sub-Receiving Officer</option>
-								</select>					
+								{{ form.role }}		
 							</div>
 						</div>
 						<div class="row mb-4 g-3">

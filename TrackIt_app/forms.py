@@ -4,6 +4,42 @@ from django.core.exceptions import ValidationError
 
 class UserSignupForm(forms.ModelForm):
 
+
+    DEPARTMENT_CHOICES = [
+        ('', 'Select Department'),
+        ('ADM', 'Administrative'),
+        ('ACC', 'Accounting'),
+        ('BMD', 'Budgeting'),
+        ('CSR', 'Cashier'),
+        ('PRL', 'Payroll'),
+    ]
+
+    office_id = forms.ChoiceField(
+        choices=DEPARTMENT_CHOICES,
+        widget=forms.Select(attrs={
+            'class': 'form-select',
+            'id': 'selectDept',
+            'required': 'required',
+        })
+    )
+
+    ROLE_CHOICES = [
+        ('', 'Select Officer Role'),
+        ('ADO', 'Admin Officer'),
+        ('ACT', 'Action Officer'),
+        ('SRO', 'Sub-Receiving Officer'),
+    ]
+
+    role = forms.ChoiceField(
+        choices=ROLE_CHOICES,
+        widget=forms.Select(attrs={
+            'class': 'form-select',
+            'id': 'selectRole',
+            'required': 'required',
+        })
+    )
+
+
     confirm_password = forms.CharField(
         widget=forms.PasswordInput(attrs={
             'class': 'form-control', 
@@ -12,19 +48,10 @@ class UserSignupForm(forms.ModelForm):
         })
     )
 
-    def clean(self):
-        cleaned_data = super().clean()
-        password = cleaned_data.get("password")
-        confirm_password = cleaned_data.get("confirm_password")
-
-        if password and confirm_password and password != confirm_password:
-            self.add_error('confirm_password', "Passwords do not match")
-
-        return cleaned_data
-
+   
     class Meta:
         model = User
-        fields = ['firstname','middlename','lastname','employee_id' ,'email', 'contact_no', 'password']
+        fields = ['firstname','middlename','lastname','employee_id' ,'email', 'contact_no', 'office_id','role','password', 'registered_date', 'status']
 
         widgets = {
             'firstname': forms.TextInput(attrs={
