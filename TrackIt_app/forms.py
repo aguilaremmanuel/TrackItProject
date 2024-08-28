@@ -46,7 +46,7 @@ class UserSignupForm(forms.ModelForm):
    
     class Meta:
         model = User
-        fields = ['firstname','middlename','lastname','employee_id' ,'email', 'contact_no', 'office_id','role','password', 'registered_date', 'status']
+        fields = ['firstname','middlename','lastname','employee_id' ,'email', 'contact_no','role','password', 'registered_date']
 
         widgets = {
             'firstname': forms.TextInput(attrs={
