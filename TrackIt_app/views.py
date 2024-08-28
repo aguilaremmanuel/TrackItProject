@@ -10,3 +10,11 @@ def user_signup(request):
 def system_admin_login(request):
     return render(request, "system_admin/system-admin-login.html")
 
+def director_login(request):
+    return render(request, "director-login.html")
+
+def forgot_password(request):
+    return render(request, "forgot-password.html")
+
+def new_password(request):
+    return render(request, "new-password.html")

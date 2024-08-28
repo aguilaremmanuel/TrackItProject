@@ -1,0 +1,32 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    font-size: 15px;
+    overflow: hidden;
+}
+
+.form-side {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.form-container {
+    width: 100%;
+    padding: 3rem;
+}
+
+.toggle-pass {
+    float: right;
+    margin-left: -27.5px;
+    margin-top: -27px;
+    right: 12px;
+    position: relative;
+    z-index: 2;
+    cursor: pointer;
+    width: 1.25em;
+    text-align: center;
+    line-height: 1;
+}

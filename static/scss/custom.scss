@@ -1,0 +1,131 @@
+// TYPEFACE
+$font-family-sans-serif: 'Inter', sans-serif;
+
+// COLORS
+$primary: #2E72EA;
+$body-bg: #F5F7F8;
+$body-color: #000000;
+$headings-color: #000000;
+
+@import "../../node_modules/bootstrap/scss/bootstrap";
+
+// HEADINGS
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+}
+
+// LINKS
+a {
+    color: $primary;
+    text-decoration: none;
+    font-weight: 700;
+
+    &:hover {
+        color: darken($primary, 10%);
+        text-decoration: none;
+    }
+}
+
+.black-link {
+    color: #000000; 
+    text-decoration: none;
+    font-weight: 600;
+    
+    &:hover {
+        color: $primary;
+        text-decoration: none;
+    }
+}
+
+// BUTTONS
+.btn-primary {
+    background-color: $primary;
+    color: #FFFFFF;
+    font-weight: 500;
+    padding: 0.5rem 1.25rem;
+
+    &:hover {
+        background-color: darken($primary, 10%);
+        color: #FFFFFF;
+    }
+
+    &:active {
+        background-color: darken($primary, 15%) !important;
+        color: #FFFFFF !important;
+        box-shadow: none !important; 
+    }
+}
+
+.btn-secondary {
+    background-color: #FFFFFF;
+    color: $primary;
+    border: 1px solid $primary;
+    font-weight: 500;
+    padding: 0.5rem 1.25rem;
+
+    &:hover {
+        background-color: #d9e3f5;  
+        color: $primary;    
+        border: 1px solid $primary;     
+    }
+
+    &:active {
+        background-color: #c4d4f0 !important;
+        color: $primary !important;
+        box-shadow: none !important;
+        border: 1px solid #c4d4f0 !important;   
+    }
+}
+
+
+// FORM CONTROL
+.form-label {
+    font-weight: 600;
+    margin-bottom: 0.27rem;
+}
+
+.form-control, .form-select {
+    padding: 0.5rem 0.8rem;
+    color: #000000;
+    border-color: #B1C1CF;
+    
+    &::placeholder {
+        color: #B1C1CF;
+    }
+
+    &:focus {
+        border-color: $primary;
+        box-shadow: 0 0 0 0.15rem rgba(46, 114, 234, 0.15);
+    }
+}
+
+form select:invalid {
+    color: #B1C1CF;
+}
+
+form select option:first-child {
+    color: #B1C1CF; 
+}
+
+form select:invalid option:not(:first-child) {
+    color: #000000;
+}
+
+input[type=date]:invalid {
+    color: #B1C1CF;
+  }
+  
+input:focus::-webkit-datetime-edit {
+    color: initial;
+}
+
+.form-check-input {
+    border-color: #B1C1CF;
+    padding: 0;
+    margin-top: 2.7px;
+
+    &:focus {
+        border-color: $primary;
+        box-shadow: 0 0 0 0.15rem rgba(46, 114, 234, 0.15);
+    }     
+}

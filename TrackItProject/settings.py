@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'TrackIt_app',
+    'fontawesomefree'
 ]
 
 MIDDLEWARE = [
@@ -80,9 +81,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'db_trackIt',
         'USER': 'root',
-        'PASSWORD': 'KyKy_1109',
+        'PASSWORD': 'azel1122',
         'HOST': 'localhost',
-        'PORT': '3306',
+        'PORT': '3307',
     }
 }
 
