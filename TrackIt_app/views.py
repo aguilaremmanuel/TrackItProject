@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from .forms import *
 from django.db.models import Max
-from .models import User, Office
+from .models import *
+from django.utils import timezone
 
 # Create your views here.
 def user_login(request):
@@ -23,6 +24,7 @@ def user_signup(request):
             user = form.save(commit=False)
             role_prefix = form.cleaned_data['role']
             user.user_id = generate_user_id(role_prefix)
+            user.verified_date = timezone.now()
             form.save()
             return redirect('user_login')  
     else:
