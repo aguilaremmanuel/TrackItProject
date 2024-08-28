@@ -31,38 +31,39 @@
 						<h2 class="mb-2">Register an Account</h2>
 						<p>Please create an account and await verification.</p>
 					</div>
-					<form>
+					<form method="post" action="{% url 'user_signup' %}">
+						{% csrf_token %}
 						<div class="row mb-3 g-3">
 							<div class="col">
 								<label for="firstName" class="form-label">First Name</label>
-								<input type="text" class="form-control" placeholder="e.g. Juan">
+								{{ form.firstname }}
 							</div>
 							<div class="col">
 								<label for="middleName" class="form-label">Middle Name</label>
-								<input type="text" class="form-control" placeholder="e.g. Santos">
+								{{ form.middlename }}
 							</div>
 							<div class="col">
 								<label for="lastName" class="form-label">Last Name</label>
-								<input type="text" class="form-control" placeholder="e.g. Dela Cruz">
+								{{ form.lastname }}
 							</div>
 						</div>
 						<div class="row mb-3 g-3">
 							<div class="col">
 								<label for="employeeID" class="form-label">Employee ID</label>
-								<input type="text" class="form-control" placeholder="e.g. 123456-ADM">
+								{{ form.employee_id }}
 							</div>
 							<div class="col">
 								<label for="emailAddress" class="form-label">Email Address</label>
-								<input type="email" class="form-control" placeholder="e.g. juandelacruz@email.com">
+								{{ form.email }}
 							</div>
 							<div class="col">
 								<label for="contactNumber" class="form-label">Contact Number</label>
-								<input type="tel" class="form-control" pattern="09[0-9]{2} [0-9]{3} [0-9]{4}" placeholder="e.g. 09123456789">
+								{{ form.contact_no }}
 							</div>
 						</div>
 						<div class="row mb-3 g-3">
 							<div class="col">
-								<label for="department" class="form-label">Department</label>
+								<label for="department" class="form-label">Office</label>
 								<select class="form-select" id="selectDept" required>
 									<option value="" hidden>Select Department</option>
 									<option value="dept1">Administrative</option>
@@ -85,19 +86,21 @@
 						<div class="row mb-4 g-3">
 							<div class="col">
 								<label for="password" class="form-label">Password</label>
-								<input type="password" class="form-control" id="password" placeholder="Enter Password">
+								{{ form.password }}
 								<i class="fa-regular fa-eye toggle-pass" id="togglePassword"></i>
 							</div>
 							<div class="col">
 								<label for="password" class="form-label">Confirm Password</label>
-								<input type="password" class="form-control" id="password2" placeholder="Confirm Password">
+								{{ form.confirm_password }}
 								<i class="fa-regular fa-eye toggle-pass" id="togglePassword2"></i>
 							</div>
 						</div>
-						<button type="button" class="btn btn-primary w-100">Sign Up</button>
+
+						<input type="submit" class="btn btn-primary w-100" value = "Sign Up">
 						<div class="mt-5 mb-2 text-center">
 							<p>Already have an account? <a href="{% url 'user_login' %}">Login</a></p>
 						</div>
+
 					</form>
 				</div>
 			</div>
