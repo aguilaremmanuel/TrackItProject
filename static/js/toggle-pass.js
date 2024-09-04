@@ -1,11 +1,11 @@
 document.addEventListener('DOMContentLoaded', function () {
+    
+    /* PASSWORD EYE TOGGLE */
+    
     const togglePassword = document.querySelector('#togglePassword');
     const password = document.querySelector('#password');
     const togglePassword2 = document.querySelector('#togglePassword2');
     const password2 = document.querySelector('#password2');
-
-    const departmentSelect = document.querySelector('#selectDept');
-    const roleSelect = document.querySelector('#selectRole');
 
     togglePassword.addEventListener('click', function () {
         const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
@@ -21,30 +21,37 @@ document.addEventListener('DOMContentLoaded', function () {
         this.classList.toggle('fa-eye-slash');
     });
 
-    departmentSelect.addEventListener('change', function () {
-        const selectedDepartment = departmentSelect.value;
 
-        if (selectedDepartment === 'ADM') {
-            roleSelect.value = 'ADO';
-            roleSelect.setAttribute('disabled', 'disabled');
+    /* ROLE OPTION DISABLE ACCORDING TO USER OFFICE */
+
+    const officeDropdown = document.getElementById('selectOffice');
+    const roleDropdown = document.getElementById('selectRole');
+    const adminOfficerOption = roleDropdown.querySelector('option[value="ADO"]');
+
+    
+    updateRoleDropdown();
+
+    officeDropdown.addEventListener('change', updateRoleDropdown);
+
+    function updateRoleDropdown() {
+        
+        
+        if (officeDropdown.value === 'ADM') {
+            roleDropdown.value = 'ADO';
+            roleDropdown.disabled = true;
+
+            adminOfficerOption.disabled = false;
+            adminOfficerOption.classList.remove('disabled-option');
+            adminOfficerOption.style.opacity = '1';
         } else {
-            roleSelect.removeAttribute('disabled');
-            const restrictedRoles = ['ADO'];  // Restricted roles for certain departments
-            if (['ACC', 'BMD', 'CSR', 'PRL'].includes(selectedDepartment)) {
-                restrictedRoles.forEach(role => {
-                    const option = roleSelect.querySelector(`option[value="${role}"]`);
-                    if (option) {
-                        option.setAttribute('disabled', 'disabled');
-                    }
-                });
-            } else {
-                restrictedRoles.forEach(role => {
-                    const option = roleSelect.querySelector(`option[value="${role}"]`);
-                    if (option) {
-                        option.removeAttribute('disabled');
-                    }
-                });
-            }
+        
+            roleDropdown.disabled = false;
+            roleDropdown.value = '';
+
+            adminOfficerOption.disabled = true;
+            adminOfficerOption.classList.add('disabled-option');
+            adminOfficerOption.style.opacity = '0.5';
         }
-    });
+    }
+
 });

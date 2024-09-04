@@ -1,11 +1,28 @@
 from django import forms
 from .models import *
 from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
+import re
+
+def is_valid_password(password):
+    # Check if password has at least 8 characters
+    if len(password) < 8:
+        return False
+
+    # Check for at least one uppercase letter
+    if not re.search(r'[A-Z]', password):
+        return False
+
+    # Check for at least one special character
+    if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+        return False
+
+    return True
 
 class UserSignupForm(forms.ModelForm):
 
-    DEPARTMENT_CHOICES = [
-        ('', 'Select Department'),
+    OFFICE_CHOICES = [
+        ('', 'Select Office'),
         ('ADM', 'Administrative'),
         ('ACC', 'Accounting'),
         ('BMD', 'Budgeting'),
@@ -14,15 +31,15 @@ class UserSignupForm(forms.ModelForm):
     ]
 
     office_id = forms.ChoiceField(
-        choices=DEPARTMENT_CHOICES,
+        choices=OFFICE_CHOICES,
         widget=forms.Select(attrs={
             'class': 'form-select',
-            'id': 'selectDept',
+            'id': 'selectOffice',
         })
     )
 
     ROLE_CHOICES = [
-        ('', 'Select Department'),
+        ('', 'Select Role'),
         ('ADO', 'Admin Officer'),
         ('ACT', 'Action Officer'),
         ('SRO', 'Sub-Receiving Officer'),
@@ -51,60 +68,69 @@ class UserSignupForm(forms.ModelForm):
         widgets = {
             'firstname': forms.TextInput(attrs={
                 'class': 'form-control',
-                'id': '',
                 'placeholder': 'e.g. Juan'
             }),
             'middlename': forms.TextInput(attrs={
                 'class': 'form-control',
-                'id': '',
                 'placeholder': 'e.g. Santos'
             }),
             'lastname': forms.TextInput(attrs={
                 'class': 'form-control',
-                'id': '',
                 'placeholder': 'e.g. Dela Cruz'
             }),
             'employee_id': forms.TextInput(attrs={
                 'class': 'form-control',
-                'id': '',
                 'placeholder': 'e.g. 123456-ADM'
             }),
             'email': forms.TextInput(attrs={
                 'class': 'form-control',
-                'id': '',
                 'placeholder': 'e.g. juandelacruz@email.com'
             }),
             'contact_no': forms.TextInput(attrs={
                 'class': 'form-control',
-                'id': '',
                 #'pattern': '09[0-9]{2} [0-9]{3} [0-9]{4}',
                 'placeholder': 'e.g. 09123456789'
             }),
-            'password': forms.TextInput(attrs={
+            'password': forms.PasswordInput(attrs={
                 'class': 'form-control',
-                'id': '',
+                'id': 'password',
                 'placeholder': 'Enter Password'
             }),
         }
+
     
     def clean(self):
+
         cleaned_data = super().clean()
+
+        # CONFIRM PASSWORD VALIDATION        
         password = cleaned_data.get("password")
         confirm_password = cleaned_data.get("confirm_password")
 
         if password and confirm_password and password != confirm_password:
-            self.add_error('confirm_password', "Passwords do not match")
+            self.add_error('confirm_password', "Passwords do not match.")
 
+        # EMAIL VALIDATION 
+        email = self.cleaned_data.get('email')
+
+        try:
+            validate_email(email)
+        except ValidationError:
+            pass
+        
+        # PASSWORD VALIDATION 
+        if password and not is_valid_password(password):
+            self.add_error('password', "Password must be at least 8 characters with a special character and an uppercase letter.")
+        
         return cleaned_data
     
-
+    
     def save(self, commit=True):
 
         user = super(UserSignupForm, self).save(commit=False)
 
         office_id = self.cleaned_data['office_id']
 
-        # Fetch the corresponding Office instance
         office_instance = Office.objects.get(office_id=office_id)
 
         user.office_id = office_instance
