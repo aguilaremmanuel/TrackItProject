@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     /* ROLE OPTION DISABLE ACCORDING TO USER OFFICE */
+    /* comments */
 
     const officeDropdown = document.getElementById('selectOffice');
     const roleDropdown = document.getElementById('selectRole');
