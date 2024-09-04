@@ -3,6 +3,10 @@ from .forms import *
 from django.db.models import Max
 from .models import *
 from django.utils import timezone
+import random
+import string
+from django.contrib.auth import authenticate, login as auth_login
+from django.contrib import messages
 
 # USER LOGIN
 def user_login(request):
@@ -33,20 +37,58 @@ def generate_user_id(role_prefix):
         new_number = 1000
     return f"{role_prefix}-{new_number:04d}"
 
-# SYSTEM ADMIN LOGIN
 def system_admin_login(request):
-
+    if request.method == 'POST':
+        form = SystemAdminLoginForm(request.POST)
+        if form.is_valid():
+            user_id = form.cleaned_data['user_id']
+            password = form.cleaned_data['password']
+            
+            # Default credentials
+            default_user_id = 'SYS-0001'
+            default_password = 'SysAdmin@2024'
+            
+            # Check if the provided credentials match the default credentials
+            if user_id == default_user_id and password == default_password:
+                # You might want to create a dummy user or just proceed
+                # For demonstration, we assume the user can log in successfully
+                return redirect('dashboard_system_admin')
+            else:
+                messages.error(request, "Invalid credentials.")
+    else:
+        form = SystemAdminLoginForm()
     
+    return render(request, "system_admin/system-admin-login.html", {'form': form})
 
-    return render(request, "system_admin/system-admin-login.html")
-
+# SYSTEM ADMIN DASHBOARD
 def dashboard_system_admin(request):
     return render(request, 'dashboard/system-admin-dashboard.html')
 
-
 # DIRECTOR LOGIN
 def director_login(request):
-    return render(request, "director-login.html")
+    if request.method == 'POST':
+        form = DirectorLoginForm(request.POST)
+        if form.is_valid():
+            user_id = form.cleaned_data['user_id']
+            password = form.cleaned_data['password']
+    
+            # Default credentials
+            default_user_id = 'DIR-0001'
+            default_password = 'Director@2024'
+            
+            # Check if the provided credentials match the default credentials
+            if user_id == default_user_id and password == default_password:
+                return redirect('dashboard_director')
+            else:
+                messages.error(request, "Invalid credentials.")
+    else:
+        form = DirectorLoginForm()
+    
+    return render(request, "director-login.html", {'form': form})
+
+
+def dashboard_director(request):
+    return render(request, 'dashboard/director-dashboard.html')
 
 def forgot_password(request):
     return render(request, "forgot-password.html")

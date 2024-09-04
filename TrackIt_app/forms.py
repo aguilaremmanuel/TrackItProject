@@ -139,3 +139,19 @@ class UserSignupForm(forms.ModelForm):
             user.save()
         return user
 
+class SystemAdminLoginForm(forms.Form):
+    user_id = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter User ID', 'id': 'user_id'})
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Enter Password', 'id': 'password'})
+    )
+
+
+class DirectorLoginForm(forms.Form):
+    user_id = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter User ID', 'id': 'user_id'})
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Enter Password', 'id': 'password'})
+    )

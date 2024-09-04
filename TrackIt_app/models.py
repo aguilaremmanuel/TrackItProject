@@ -7,6 +7,13 @@ class Office(models.Model):
     class Meta:
         db_table = 'tbl_office'
 
+class SystemAdmin(models.Model):
+    sa_user_id = models.CharField(max_length=8, primary_key=True)
+    sa_user_lastname = models.CharField(max_length=45)
+    sa_user_firstname = models.CharField(max_length=45)
+    sa_user_middlename = models.CharField(max_length=45, null = True)
+    password = models.CharField(max_length=45)
+
 class User(models.Model):
     user_id = models.CharField(max_length=8, primary_key=True)
     lastname = models.CharField(max_length=45)
