@@ -30,3 +30,9 @@ body, html {
     text-align: center;
     line-height: 1;
 }
+
+.disabled-option {
+    color: #aaa;
+    opacity: 0.5;
+    pointer-events: none;
+}

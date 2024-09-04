@@ -17,10 +17,10 @@ class User(models.Model):
     password = models.CharField(max_length=45)
     role = models.CharField(max_length=45)
     office_id = models.ForeignKey(Office, on_delete=models.CASCADE, null=True, blank=True)
-    registered_date = models.DateTimeField(blank=True)
+    registered_date = models.DateTimeField(null=True, blank=True)
     verified_date = models.DateTimeField(null=True, blank=True)
-    status = models.CharField(max_length=20)
-    employee_id = models.CharField(max_length=8, blank = True)
+    status = models.CharField(null=True, max_length=20, default = 'for verification')
+    employee_id = models.CharField(max_length=12, blank = True)
     class Meta:
         db_table = 'tbl_user'
 
