@@ -18,3 +18,6 @@ def forgot_password(request):
 
 def new_password(request):
     return render(request, "new-password.html")
+
+def sidebar_header(request):
+    return render(request, "sidebar-header.html")

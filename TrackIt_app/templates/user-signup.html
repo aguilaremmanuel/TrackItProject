@@ -64,7 +64,7 @@
 							<div class="col">
 								<label for="department" class="form-label">Department</label>
 								<select class="form-select" id="selectDept" required>
-									<option value="" hidden>Select Department</option>
+									<option value="">Select Department</option>
 									<option value="dept1">Administrative</option>
 									<option value="dept2">Accounting</option>
 									<option value="dept3">Budgeting</option>
@@ -94,7 +94,7 @@
 								<i class="fa-regular fa-eye toggle-pass" id="togglePassword2"></i>
 							</div>
 						</div>
-						<button type="button" class="btn btn-primary w-100">Sign Up</button>
+						<input type="submit" class="btn btn-primary w-100" value="Sign Up">
 						<div class="mt-5 mb-2 text-center">
 							<p>Already have an account? <a href="{% url 'user_login' %}">Login</a></p>
 						</div>
