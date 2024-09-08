@@ -53,3 +53,5 @@ def forgot_password(request):
 
 def new_password(request):
     return render(request, "new-password.html")
+
+# TEST COMMIT

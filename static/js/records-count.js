@@ -4,3 +4,5 @@ tableBodies.forEach((tbody) => {
     const rowCount = tbody.querySelectorAll('tr').length;
     recordCountElement.textContent = `Showing total of ${rowCount} record(s)`;
 });
+
+/* TEST COMMIT */
