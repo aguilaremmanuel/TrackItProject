@@ -24,20 +24,10 @@
     "to-regex-range": "^5.0.1"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build-css": "sass static/scss/custom.scss static/css/custom.css"
   },
   "keywords": [],
   "author": "",
-<<<<<<< Updated upstream
-  "license": "ISC",
-  "dependencies": {
-    "bootstrap": "^5.3.3"
-  },
-  "devDependencies": {
-    "sass": "^1.77.8"
-  },
-  "description": ""
-=======
   "license": "ISC"
->>>>>>> Stashed changes
 }

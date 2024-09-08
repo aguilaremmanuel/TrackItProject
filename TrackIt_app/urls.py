@@ -9,5 +9,6 @@ urlpatterns = [
     path('director-login/',views.director_login, name='director_login'),
     path('forgot-password/',views.forgot_password, name='forgot_password'),
     path('new-password/',views.new_password, name='new_password'),
-    path('sidebar-header/',views.sidebar_header, name='sidebar_header'),
+    path('system-admin-dashboard/',views.system_admin_dashboard, name='system_admin_dashboard'),
+    path('system-admin-user-management/',views.system_admin_user_management, name='system_admin_user_management')
 ]

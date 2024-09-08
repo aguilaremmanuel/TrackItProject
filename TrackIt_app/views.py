@@ -35,24 +35,21 @@ def generate_user_id(role_prefix):
 
 # SYSTEM ADMIN LOGIN
 def system_admin_login(request):
-
-    
-
     return render(request, "system_admin/system-admin-login.html")
 
-def dashboard_system_admin(request):
-    return render(request, 'dashboard/system-admin-dashboard.html')
+def system_admin_dashboard(request):
+    return render(request, 'system_admin/system-admin-dashboard.html')
 
+def system_admin_user_management(request):
+    return render(request, 'system_admin/system-admin-user-management.html')
 
 # DIRECTOR LOGIN
 def director_login(request):
     return render(request, "director-login.html")
 
+# PASSWORD
 def forgot_password(request):
     return render(request, "forgot-password.html")
 
 def new_password(request):
     return render(request, "new-password.html")
-
-def sidebar_header(request):
-    return render(request, "sidebar-header.html")

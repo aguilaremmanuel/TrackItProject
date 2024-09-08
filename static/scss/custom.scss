@@ -77,6 +77,102 @@ a {
     }
 }
 
+.btn-blue {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #2E72EA;
+    color: #FFFFFF;
+    width: 25px;
+    height: 25px;
+    font-size: 14px;
+    padding: 0;
+    margin: 0;
+
+    &:hover {
+        background-color: darken(#2E72EA, 10%); 
+        color: #FFFFFF;
+    }
+
+    &:active {
+        background-color: darken(#2E72EA, 15%) !important;
+        color: #FFFFFF !important;
+        box-shadow: none !important;
+    }
+}
+
+.btn-green {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #28A745;
+    color: #FFFFFF;
+    width: 25px;
+    height: 25px;
+    font-size: 14px;
+    padding: 0;
+    margin: 0;
+
+    &:hover {
+        background-color: darken(#28A745, 10%); 
+        color: #FFFFFF;
+    }
+
+    &:active {
+        background-color: darken(#28A745, 15%) !important;
+        color: #FFFFFF !important;
+        box-shadow: none !important;
+    }
+}
+
+.btn-red {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #EA2E2E;
+    color: #FFFFFF;
+    width: 25px;
+    height: 25px;
+    font-size: 14px;
+    padding: 0;
+    margin: 0;
+
+    &:hover {
+        background-color: darken(#EA2E2E, 10%); 
+        color: #FFFFFF;
+    }
+
+    &:active {
+        background-color: darken(#EA2E2E, 15%) !important;
+        color: #FFFFFF !important;
+        box-shadow: none !important;
+    }
+}
+
+// BADGES
+.badge {
+    padding: 0.3rem 0.6rem;
+}
+
+.badge-yellow {
+    background-color: #FFC107;
+    color: #FFFFFF;
+}
+
+.badge-orange {
+    background-color: #FF7E07;
+    color: #FFFFFF;
+}
+
+.badge-red {
+    background-color: #DC3545;
+    color: #FFFFFF;
+}
+
+.badge-green {
+    background-color: #22a03f;
+    color: #FFFFFF;
+}
 
 // FORM CONTROL
 .form-label {
@@ -86,6 +182,7 @@ a {
 
 .form-control, .form-select {
     padding: 0.5rem 0.8rem;
+    background-color: #FFFFFF;
     color: #000000;
     border-color: #B1C1CF;
     
@@ -121,6 +218,7 @@ input:focus::-webkit-datetime-edit {
 
 .form-check-input {
     border-color: #B1C1CF;
+    background-color: #FFFFFF;
     padding: 0;
     margin-top: 2.7px;
 
@@ -129,3 +227,59 @@ input:focus::-webkit-datetime-edit {
         box-shadow: 0 0 0 0.15rem rgba(46, 114, 234, 0.15);
     }     
 }
+
+// TABS
+
+.custom-tabs {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-bottom: 2px solid rgba(177, 193, 207, 0.4);
+}
+
+.tab-item {
+    display: inline-block;
+    margin-right: 0rem;
+}
+
+.tab-link {
+    display: block;
+    padding: 0.8rem 1.1rem;
+    text-decoration: none;
+    color: #000000;
+    font-weight: 600;
+    position: relative;
+    transition: color 0.3s, border-color 0.3s;
+}
+
+.tab-link::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: transparent;
+    transition: background-color 0.3s;
+}
+
+.tab-link.active::after {
+    background-color: #2E72EA;
+}
+
+.tab-link.active {
+    color: #2E72EA;
+}
+
+.tab-link:hover {
+    color: #2E72EA;
+}
+
+.tab-pane {
+    display: none;
+}
+
+.tab-pane.active {
+    display: block;
+}
+
