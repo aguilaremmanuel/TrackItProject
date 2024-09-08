@@ -1,7 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-    
-    /* PASSWORD EYE TOGGLE */
-    
+    // PASSWORD EYE TOGGLE
     const togglePassword = document.querySelector('#togglePassword');
     const password = document.querySelector('#password');
     const togglePassword2 = document.querySelector('#togglePassword2');
@@ -23,36 +21,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     /* ROLE OPTION DISABLE ACCORDING TO USER OFFICE */
-    /* comments */
 
     const officeDropdown = document.getElementById('selectOffice');
     const roleDropdown = document.getElementById('selectRole');
     const adminOfficerOption = roleDropdown.querySelector('option[value="ADO"]');
 
-    
-    updateRoleDropdown();
-
-    officeDropdown.addEventListener('change', updateRoleDropdown);
-
     function updateRoleDropdown() {
-        
-        
-        if (officeDropdown.value === 'ADM') {
+        const selectedOffice = officeDropdown.value;
+
+        if (selectedOffice === 'ADM') {
             roleDropdown.value = 'ADO';
             roleDropdown.disabled = true;
-
-            adminOfficerOption.disabled = false;
-            adminOfficerOption.classList.remove('disabled-option');
-            adminOfficerOption.style.opacity = '1';
+            adminOfficerOption.style.display = 'block';
         } else {
-        
             roleDropdown.disabled = false;
             roleDropdown.value = '';
-
-            adminOfficerOption.disabled = true;
-            adminOfficerOption.classList.add('disabled-option');
-            adminOfficerOption.style.opacity = '0.5';
+            if (['ACC', 'BMD', 'CSR', 'PRL'].includes(selectedOffice)) {
+                adminOfficerOption.style.display = 'none';
+            } else {
+                adminOfficerOption.style.display = 'block';
+            }
         }
     }
 
+    updateRoleDropdown();
+    officeDropdown.addEventListener('change', updateRoleDropdown);
 });
