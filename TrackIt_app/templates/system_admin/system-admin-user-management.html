@@ -25,52 +25,62 @@
         <div class="my-3 p-3 pt-2 bg-white rounded shadow-sm">
             <ul class="custom-tabs">
                 <li class="tab-item">
-                    <a class="tab-link active" href="#tab-all">All Departments</a>
+                    <a class="tab-link {% if office == 'all-office' %}active{% endif %}" href="{% url 'system_admin_user_management' 'all-office' %}">All Offices</a>
                 </li>
                 <li class="tab-item">
-                    <a class="tab-link" href="#tab-administrative">Administrative</a>
+                    <a class="tab-link {% if office == 'administrative' %}active{% endif %}" href="{% url 'system_admin_user_management' 'administrative' %}">Administrative</a>
                 </li>
                 <li class="tab-item">
-                    <a class="tab-link" href="#tab-accounting">Accounting</a>
+                    <a class="tab-link {% if office == 'accounting' %}active{% endif %}" href="{% url 'system_admin_user_management' 'accounting' %}">Accounting</a>
                 </li>
                 <li class="tab-item">
-                    <a class="tab-link" href="#tab-budgeting">Budgeting</a>
+                    <a class="tab-link {% if office == 'budgeting' %}active{% endif %}" href="{% url 'system_admin_user_management' 'budgeting' %}">Budgeting</a>
                 </li>
                 <li class="tab-item">
-                    <a class="tab-link" href="#tab-cashier">Cashier</a>
+                    <a class="tab-link {% if office == 'cashier' %}active{% endif %}" href="{% url 'system_admin_user_management' 'cashier' %}">Cashier</a>
                 </li>
                 <li class="tab-item">
-                    <a class="tab-link" href="#tab-payroll">Payroll</a>
+                    <a class="tab-link {% if office == 'payroll' %}active{% endif %}" href="{% url 'system_admin_user_management' 'payroll' %}">Payroll</a>
                 </li>
             </ul>
-    
-            <div class="tab-content">
-                <div id="tab-all" class="tab-pane active">
-                    <div class="table-wrapper d-flex pt-2">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>User ID &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Employee ID &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Name &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Contact No. &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Email &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Department &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Role &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Status &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>SRO-1001</td>
-                                    <td>1293901-ADM</td>
-                                    <td>Juan S. Dela Cruz</td>
-                                    <td>09123456789</td>
-                                    <td>juansdelacruz@gmail.com</td>
-                                    <td>Payroll</td>
-                                    <td>Sub-Receiving Officer</td>
+
+            <div class="table-wrapper d-flex pt-2">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Employee ID</th>
+                            <th>Name</th>
+                            <th>Contact No.</th>
+                            <th>Email</th>
+                            <th>Department</th>
+                            <th>Role &nbsp;<i class='bx bxs-sort-alt'></i></th>
+                            <th>Status &nbsp;<i class='bx bxs-sort-alt'></i></th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        
+                    {% if users %}
+
+                        {% for user in users %}
+                            <tr>
+                                <td>{{ user.employee_id }}</td>
+                                <td>
+                                    {{ user.firstname|capfirst }} 
+                                    {% if user.middlename %}
+                                        {{ user.middlename|slice:":1"|capfirst }}. 
+                                    {% endif %}
+                                    {{ user.lastname|capfirst }}
+                                </td>
+                                <td>{{ user.contact_no }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>{{ user.office_id.office_name }}</td>
+                                <td>{{ user.role }}</td>
+                            
+                                {% if user.status == "for verification" %}
                                     <td><span class="badge badge-orange rounded-pill fw-semibold">FOR VERIFICATION</span></td>
+                                    
                                     <td>
                                         <div class="table-action">
                                             <button id="" class="btn btn-sm btn-blue" style="font-size: 12px;" data-bs-toggle="modal" data-bs-target="#verifyUserModal">
@@ -81,15 +91,7 @@
                                             </button>
                                         </div>
                                     </td>
-                                </tr>
-                                <tr>
-                                    <td>ADM-1001</td>
-                                    <td>1293902-ADM</td>
-                                    <td>Maria C. Santos</td>
-                                    <td>09234567890</td>
-                                    <td>mariacsantos@gmail.com</td>
-                                    <td>Administrative</td>
-                                    <td>Admin Officer</td>
+                                {% elif user.status == "active" %}
                                     <td><span class="badge badge-green rounded-pill fw-semibold">ACTIVE</span></td>
                                     <td>
                                         <div class="table-action">
@@ -98,15 +100,7 @@
                                             </button>
                                         </div>
                                     </td>
-                                </tr>
-                                <tr>
-                                    <td>ACT-1001</td>
-                                    <td>1293903-ADM</td>
-                                    <td>Pedro A. Ramos</td>
-                                    <td>09345678901</td>
-                                    <td>pedroaramos@gmail.com</td>
-                                    <td>Payroll</td>
-                                    <td>Action Officer</td>
+                                {% elif user.status == "inactive" %}
                                     <td><span class="badge badge-red rounded-pill fw-semibold">DEACTIVATED</span></td>
                                     <td>
                                         <div class="table-action">
@@ -118,155 +112,25 @@
                                             </button>
                                         </div>
                                     </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <p class="d-block text-start my-0 ps-2 mb-1 fw-semibold" id="record-count" style="color: #000000;">
-                        Showing total of 0 record(s)
-                    </p>
-                </div>
-    
-                <div id="tab-administrative" class="tab-pane">
-                    <div class="d-flex pt-2">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>User ID &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Employee ID &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Name &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Contact No. &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Email &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Department &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Role &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Status &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td colspan="9" class="text-center">No data to display in table.</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <p class="d-block text-start my-0 ps-2 mb-1 fw-semibold" id="record-count" style="color: #000000;">
-                        Showing total of 0 record(s)
-                    </p>
-                </div>
-    
-                <div id="tab-accounting" class="tab-pane">
-                    <div class="d-flex pt-2">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>User ID &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Employee ID &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Name &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Contact No. &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Email &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Department &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Role &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Status &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td colspan="9" class="text-center">No data to display in table.</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <p class="d-block text-start my-0 ps-2 mb-1 fw-semibold" id="record-count" style="color: #000000;">
-                        Showing total of 0 record(s)
-                    </p>
-                </div>
-    
-                <div id="tab-budgeting" class="tab-pane">
-                    <div class="d-flex pt-2">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>User ID &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Employee ID &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Name &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Contact No. &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Email &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Department &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Role &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Status &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td colspan="9" class="text-center">No data to display in table.</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <p class="d-block text-start my-0 ps-2 mb-1 fw-semibold" id="record-count" style="color: #000000;">
-                        Showing total of 0 record(s)
-                    </p>
-                </div>
-    
-                <div id="tab-cashier" class="tab-pane">
-                    <div class="d-flex pt-2">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>User ID &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Employee ID &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Name &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Contact No. &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Email &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Department &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Role &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Status &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td colspan="9" class="text-center">No data to display in table.</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <p class="d-block text-start my-0 ps-2 mb-1 fw-semibold" id="record-count" style="color: #000000;">
-                        Showing total of 0 record(s)
-                    </p>
-                </div>
-    
-                <div id="tab-payroll" class="tab-pane">
-                    <div class="d-flex pt-2">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>User ID &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Employee ID &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Name &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Contact No. &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Email &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Department &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Role &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Status &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td colspan="9" class="text-center">No data to display in table.</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <p class="d-block text-start my-0 ps-2 mb-1 fw-semibold" id="record-count" style="color: #000000;">
-                        Showing total of 0 record(s)
-                    </p>
-                </div>
+                                {% endif %}
+                                                        
+                            </tr>
+                        {% endfor %}
+                    
+                    {% else %}
+                        <tr>
+                            <td colspan="9" class="text-center">No data to display in table.</td>
+                        </tr>
+                    {% endif %}
+                            
+                    </tbody>
+                </table>
             </div>
+
+            <p class="d-block text-start my-0 ps-2 mb-1 fw-semibold" id="record-count" style="color: #000000; opacity: 0.6;">
+                Showing total of {{ users|length }} record(s)
+            </p>            
+
         </div>
     </div>
 
