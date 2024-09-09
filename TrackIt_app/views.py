@@ -10,7 +10,39 @@ from django.contrib import messages
 
 # USER LOGIN
 def user_login(request):
+    if request.method == 'POST':
+        user_id = request.POST['user_id']
+        password = request.POST['password']
+        
+        # Fetch user by user_id
+        try:
+            user = User.objects.get(user_id=user_id)
+        except User.DoesNotExist:
+            messages.error(request, "User not found.")
+            return redirect('user_login')
+
+        # Check user status
+        if user.status == 'for verification':
+            messages.error(request, "You are not verified yet.")
+            return redirect('user_login')
+        elif user.status == 'inactive':
+            messages.error(request, "Your account is inactive. Please contact the administrator.")
+            return redirect('user_login')
+        elif user.status == 'archived':
+            messages.error(request, "Your account has been archived and cannot be accessed.")
+            return redirect('user_login')
+        
+        # Authenticate the user
+        user = authenticate(request, username=user_id, password=password)
+        if user is not None:
+            auth_login(request, user)
+            return redirect('dashboard')
+        else:
+            messages.error(request, "Invalid credentials.")
+            return redirect('user_login')
     return render(request, "user-login.html")
+
+
 
 # USER SIGNUP
 def user_signup(request):
@@ -22,7 +54,7 @@ def user_signup(request):
             user.user_id = generate_user_id(role_prefix)
             user.verified_date = timezone.now()
             form.save()
-            return redirect('user_login')  
+            return redirect('user_login')   
     else:
         form = UserSignupForm()
     return render(request, "user-signup.html", {'form': form})
@@ -67,28 +99,29 @@ def system_admin_dashboard(request):
 
 # SYSTEM ADMIN USER MANAGEMENT MODULE
 def system_admin_user_management(request, office):
-
     if office == 'all-office':
-        users = User.objects.all()
+        users = User.objects.exclude(status='archived')
     elif office == 'administrative':
         office_instance  = Office.objects.get(office_id='ADM')
-        users = User.objects.filter(email=office_instance)
+        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
     elif office == 'accounting':
         office_instance  = Office.objects.get(office_id='ACC')
-        users = User.objects.filter(office_id=office_instance)
+        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
     elif office == 'budgeting':
         office_instance  = Office.objects.get(office_id='BMD')
-        users = User.objects.filter(office_id=office_instance)
+        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
     elif office == 'cashier':
         office_instance  = Office.objects.get(office_id='CSR')
-        users = User.objects.filter(office_id=office_instance)
+        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
     elif office == 'payroll':
         office_instance  = Office.objects.get(office_id='PRL')
-        users = User.objects.filter(office_id=office_instance)
+        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
     else:
         users = User.objects.none()
 
     return render(request, 'system_admin/system-admin-user-management.html', {'users': users, 'office': office})
+
+
 
 # DIRECTOR LOGIN
 def director_login(request):
@@ -111,6 +144,42 @@ def director_login(request):
         form = DirectorLoginForm()
     
     return render(request, "director-login.html", {'form': form})
+
+
+# UPDATE USER STATUS
+def update_user_status(request, user_id, action):
+    try:
+        user = User.objects.get(user_id=user_id)
+        
+        # Verify User
+        if action == 'verify':
+            user.status = 'active'
+        
+        # Reject User
+        elif action == 'reject':
+            user.status = 'inactive'
+        
+        # Deactivate User
+        elif action == 'deactivate':
+            user.status = 'inactive'
+        
+        # Archive User
+        elif action == 'archive':
+            user.status = 'archived'
+        
+        # Reactivate User
+        elif action == 'reactivate':
+            user.status = 'active'
+
+        user.save()
+        messages.success(request, f"User {action}d successfully!")
+        
+    except User.DoesNotExist:
+        messages.error(request, "User not found.")
+    
+    return redirect('system_admin_user_management', office='all-office')
+
+
 
 
 # DIRECTOR DASHBOARD

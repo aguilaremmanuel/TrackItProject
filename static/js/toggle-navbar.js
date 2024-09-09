@@ -12,14 +12,14 @@ document.addEventListener("DOMContentLoaded", function(event) {
     // Retrieve the sidebar state from local storage
     const sidebarState = localStorage.getItem('sidebarState');
     if (sidebarState === 'expanded') {
-        nav.classList.add('show');
+        nav.classList.add('show-sidebar');
         toggle.classList.add('bx-x');
         bodypd.classList.add('body-pd');
         headerpd.classList.add('body-pd');
         hideNavText(false); // Show text when expanded
         adjustNavLinkGap(false); // No gap when expanded
     } else {
-        nav.classList.remove('show');
+        nav.classList.remove('show-sidebar');
         toggle.classList.remove('bx-x');
         bodypd.classList.remove('body-pd');
         headerpd.classList.remove('body-pd');
@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     // Toggle the sidebar state and save it to local storage
     if (toggle) {
         toggle.addEventListener('click', () => {
-            const isExpanded = nav.classList.toggle('show');
+            const isExpanded = nav.classList.toggle('show-sidebar');
             toggle.classList.toggle('bx-x');
             bodypd.classList.toggle('body-pd');
             headerpd.classList.toggle('body-pd');

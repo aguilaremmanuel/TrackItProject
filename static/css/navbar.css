@@ -60,7 +60,7 @@ a {
     border-right: 1px solid rgba(177, 193, 207, 0.4);
 }
 
-.show {
+.show-sidebar {
     left: 0;
     width: calc(75px + 160px);
     transition: 0.3s;

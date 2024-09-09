@@ -19,28 +19,39 @@ document.addEventListener('DOMContentLoaded', function () {
         this.classList.toggle('fa-eye-slash');
     });
 
-
     /* ROLE OPTION DISABLE ACCORDING TO USER OFFICE */
 
     const officeDropdown = document.getElementById('selectOffice');
     const roleDropdown = document.getElementById('selectRole');
-    const adminOfficerOption = roleDropdown.querySelector('option[value="ADO"]');
+    const options = roleDropdown.querySelectorAll('option');
 
     function updateRoleDropdown() {
         const selectedOffice = officeDropdown.value;
 
+        // Show or hide role options based on selected office
+        options.forEach(option => {
+            if (selectedOffice === 'ADM') {
+                if (option.value === 'ADO') {
+                    option.style.display = 'block';
+                } else {
+                    option.style.display = 'none';
+                }
+            } else if (['ACC', 'BMD', 'CSR', 'PRL'].includes(selectedOffice)) {
+                if (['ADO', 'SRO'].includes(option.value)) {
+                    option.style.display = 'block';
+                } else {
+                    option.style.display = 'none';
+                }
+            } else {
+                option.style.display = 'block';
+            }
+        });
+
+        // Automatically set role and disable role dropdown if 'ADM' is selected
         if (selectedOffice === 'ADM') {
             roleDropdown.value = 'ADO';
-            roleDropdown.disabled = true;
-            adminOfficerOption.style.display = 'block';
         } else {
-            roleDropdown.disabled = false;
             roleDropdown.value = '';
-            if (['ACC', 'BMD', 'CSR', 'PRL'].includes(selectedOffice)) {
-                adminOfficerOption.style.display = 'none';
-            } else {
-                adminOfficerOption.style.display = 'block';
-            }
         }
     }
 
