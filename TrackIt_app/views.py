@@ -128,6 +128,16 @@ def system_admin_user_management(request, office):
     else:
         users = User.objects.none()
 
+
+    sort_by = request.GET.get('sort_by')
+    order = request.GET.get('order', 'asc')
+
+    if sort_by in ['role', 'status', 'lastname', 'email']:  # Only allow sorting by valid fields
+        if order == 'asc':
+            users = users.order_by(sort_by)
+        else:
+            users = users.order_by(f'-{sort_by}')
+
     return render(request, 'system_admin/system-admin-user-management.html', {'users': users, 'office': office})
 
 
@@ -156,7 +166,7 @@ def director_login(request):
 
 
 # UPDATE USER STATUS
-def update_user_status(request, user_id, action):
+def update_user_status(request, user_id, action, office):
     try:
         user = User.objects.get(user_id=user_id)
         
@@ -185,7 +195,7 @@ def update_user_status(request, user_id, action):
     except User.DoesNotExist:
         messages.error(request, "User not found.")
     
-    return redirect('system_admin_user_management', office='all-office')
+    return redirect('system_admin_user_management', office=office)
 
 
 # DIRECTOR DASHBOARD

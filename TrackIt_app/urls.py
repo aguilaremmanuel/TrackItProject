@@ -10,7 +10,7 @@ urlpatterns = [
     path('admin-dashboard/',views.system_admin_dashboard, name='system_admin_dashboard'),
 
     path('system-admin-user-management/<str:office>/', views.system_admin_user_management, name='system_admin_user_management'),
-    path('update-user-status/<str:user_id>/<str:action>/', views.update_user_status, name='update_user_status'),
+    path('update-user-status/<str:user_id>/<str:action>/<str:office>', views.update_user_status, name='update_user_status'),
 
     path('director-login/',views.director_login, name='director_login'),
 
