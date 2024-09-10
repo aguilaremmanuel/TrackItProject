@@ -17,6 +17,7 @@
 </head>
 
 <body id="bodyPd">
+    
     {% include "assets/system-admin-navbar.html" %}
 
     <!--Container Main start-->
@@ -95,9 +96,6 @@
                                             <div class="table-action">
                                                 <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#deactivateUserModal" data-user-id="{{ user.user_id }}" data-action="deactivate" data-url="{% url 'update_user_status' 'USER_ID' 'deactivate' %}">
                                                     <i class="fa-solid fa-user-lock"></i>
-                                                </button>
-                                                <button type="button" class="btn btn-sm btn-red" data-bs-toggle="modal" data-bs-target="#archiveUserModal" data-user-id="{{ user.user_id }}" data-action="archive" data-url="{% url 'update_user_status' 'USER_ID' 'archive' %}">
-                                                    <i class="fa-solid fa-user-minus"></i>
                                                 </button>
                                             </div>
                                         </td>

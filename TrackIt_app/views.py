@@ -181,7 +181,6 @@ def update_user_status(request, user_id, action):
             user.status = 'active'
 
         user.save()
-        messages.success(request, f"User {action}d successfully!")
         
     except User.DoesNotExist:
         messages.error(request, "User not found.")
