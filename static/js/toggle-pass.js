@@ -31,19 +31,26 @@ document.addEventListener('DOMContentLoaded', function () {
         // Show or hide role options based on selected office
         options.forEach(option => {
             if (selectedOffice === 'ADM') {
+                // Show only 'ADO' for 'Administrative' office
                 if (option.value === 'ADO') {
                     option.style.display = 'block';
                 } else {
                     option.style.display = 'none';
                 }
             } else if (['ACC', 'BMD', 'CSR', 'PRL'].includes(selectedOffice)) {
-                if (['ADO', 'SRO'].includes(option.value)) {
+                // Show only 'ACT' and 'SRO' for 'Accounting', 'Budgeting', 'Cashier', and 'Payroll' offices
+                if (['ACT', 'SRO'].includes(option.value)) {
                     option.style.display = 'block';
                 } else {
-                    option.style.display = 'none';
+                    option.style.display = 'none';  // Ensure 'ADO' and other roles are hidden
                 }
             } else {
-                option.style.display = 'block';
+                // For other offices, show all options except 'ADO'
+                if (option.value === 'ADO') {
+                    option.style.display = 'none';
+                } else {
+                    option.style.display = 'block';
+                }
             }
         });
 

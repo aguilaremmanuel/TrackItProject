@@ -5,41 +5,50 @@ from .models import *
 from django.utils import timezone
 import random
 import string
-from django.contrib.auth import authenticate, login as auth_login
+#from django.contrib.auth import authenticate, login as auth_login
 from django.contrib import messages
+from .models import User
+
 
 # USER LOGIN
 def user_login(request):
     if request.method == 'POST':
         user_id = request.POST['user_id']
         password = request.POST['password']
-        
-        # Fetch user by user_id
+
+        # Fetch user by user_id and password (plain-text password comparison)
         try:
-            user = User.objects.get(user_id=user_id)
+            user = User.objects.get(user_id=user_id, password=password)  # Directly comparing passwords
         except User.DoesNotExist:
-            messages.error(request, "User not found.")
+            messages.error(request, "Invalid credentials.")
             return redirect('user_login')
 
         # Check user status
         if user.status == 'for verification':
-            messages.error(request, "You are not verified yet.")
+            messages.error(request, "Your account is pending for verification. Please wait for approval.")
             return redirect('user_login')
         elif user.status == 'inactive':
-            messages.error(request, "Your account is inactive. Please contact the administrator.")
+            messages.error(request, "Your account is inactive. Please contact the administrator to reactivate.")
             return redirect('user_login')
         elif user.status == 'archived':
-            messages.error(request, "Your account has been archived and cannot be accessed.")
+            messages.error(request, "Your account has been deleted and cannot be accessed.")
             return redirect('user_login')
-        
-        # Authenticate the user
-        user = authenticate(request, username=user_id, password=password)
-        if user is not None:
-            auth_login(request, user)
-            return redirect('dashboard')
+
+        # Manually log the user in by setting the session
+        request.session['user_id'] = user.user_id
+
+        # Redirect based on user role
+        if user.role == 'ADO':  # Admin Officer
+            return redirect('dashboard_admin_officer')
+        elif user.role == 'SRO':  # Sub-Receiving Officer
+            return redirect('dashboard_sro')
+        elif user.role == 'ACT':  # Action Officer
+            return redirect('dashboard_action_officer')
         else:
-            messages.error(request, "Invalid credentials.")
+            # In case the role is not recognized
+            messages.error(request, "Invalid role. Please contact the administrator.")
             return redirect('user_login')
+
     return render(request, "user-login.html")
 
 
@@ -180,11 +189,21 @@ def update_user_status(request, user_id, action):
     return redirect('system_admin_user_management', office='all-office')
 
 
-
-
 # DIRECTOR DASHBOARD
 def dashboard_director(request):
-    return render(request, 'dashboard/director-dashboard.html')
+    return render(request, 'director/director-dashboard.html')
+
+# SRO DASHBOARD
+def dashboard_sro(request):
+    return render(request, 'sro/sro-dashboard.html')
+
+# ADMIN OFFICER DASHBOARD
+def dashboard_admin_officer(request):
+    return render(request, 'admin_officer/admin-officer-dashboard.html')
+
+# ACTION OFFICER DASHBOARD
+def dashboard_action_officer(request):
+    return render(request, 'action_officer/action-officer-dashboard.html')
 
 # PASSWORD
 def forgot_password(request):

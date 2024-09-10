@@ -3,6 +3,7 @@ from .models import *
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 import re
+from django.contrib.auth.hashers import make_password
 
 def is_valid_password(password):
     # Check if password has at least 8 characters
@@ -20,7 +21,6 @@ def is_valid_password(password):
     return True
 
 class UserSignupForm(forms.ModelForm):
-
     OFFICE_CHOICES = [
         ('', 'Select Office'),
         ('ADM', 'Administrative'),
@@ -126,14 +126,15 @@ class UserSignupForm(forms.ModelForm):
     
     
     def save(self, commit=True):
-
         user = super(UserSignupForm, self).save(commit=False)
 
+        # Hash the password using Django's make_password function
+        # user.password = make_password(self.cleaned_data['password'])
+
         office_id = self.cleaned_data['office_id']
-
         office_instance = Office.objects.get(office_id=office_id)
-
         user.office_id = office_instance
+
 
         if commit:
             user.save()
