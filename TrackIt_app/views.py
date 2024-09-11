@@ -196,6 +196,16 @@ def system_admin_user_management(request, office):
     else:
         users = User.objects.none()
 
+
+    sort_by = request.GET.get('sort_by')
+    order = request.GET.get('order', 'asc')
+
+    if sort_by in ['role', 'status', 'lastname', 'email']:  # Only allow sorting by valid fields
+        if order == 'asc':
+            users = users.order_by(sort_by)
+        else:
+            users = users.order_by(f'-{sort_by}')
+
     return render(request, 'system_admin/system-admin-user-management.html', {'users': users, 'office': office})
 
 

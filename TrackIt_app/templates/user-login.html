@@ -34,11 +34,20 @@
 
                     <!-- Display error messages -->
                     {% if messages %}
-                        <div class="alert alert-danger">
                             {% for message in messages %}
-                                <p>{{ message }}</p>
+								{% if message.message == "Your account is pending for verification. Please wait for approval." %}
+									<div class="alert alert-primary text-center alert-dismissible fade show">
+										<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+										{{ message }}
+									</div>
+									
+								{% else %}
+									<div class="alert alert-danger text-center alert-dismissible fade show">
+										<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+										{{ message }}	
+									</div>
+								{% endif %}
                             {% endfor %}
-                        </div>
                     {% endif %}
 
                     <!-- Add form method and action -->
@@ -84,5 +93,6 @@
 		</div>
 	</section>
 	<script src="{% static 'js/toggle-pass.js' %}"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
