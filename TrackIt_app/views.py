@@ -128,6 +128,16 @@ def system_admin_user_management(request, office):
     else:
         users = User.objects.none()
 
+
+    sort_by = request.GET.get('sort_by')
+    order = request.GET.get('order', 'asc')
+
+    if sort_by in ['role', 'status', 'lastname', 'email']:  # Only allow sorting by valid fields
+        if order == 'asc':
+            users = users.order_by(sort_by)
+        else:
+            users = users.order_by(f'-{sort_by}')
+
     return render(request, 'system_admin/system-admin-user-management.html', {'users': users, 'office': office})
 
 # SYSTEM ADMIN DOC MANAGEMENT
@@ -158,7 +168,7 @@ def director_login(request):
 
 
 # UPDATE USER STATUS
-def update_user_status(request, user_id, action):
+def update_user_status(request, user_id, action, office):
     try:
         user = User.objects.get(user_id=user_id)
         
@@ -183,12 +193,11 @@ def update_user_status(request, user_id, action):
             user.status = 'active'
 
         user.save()
-        messages.success(request, f"User {action}d successfully!")
         
     except User.DoesNotExist:
         messages.error(request, "User not found.")
     
-    return redirect('system_admin_user_management', office='all-office')
+    return redirect('system_admin_user_management', office=office)
 
 
 # DIRECTOR DASHBOARD
@@ -202,6 +211,10 @@ def dashboard_sro(request):
 # ADMIN OFFICER DASHBOARD
 def dashboard_admin_officer(request):
     return render(request, 'admin_officer/admin-officer-dashboard.html')
+
+# ADMIN OFFICER NEW RECORD
+def new_record_admin_officer(request):
+    return render(request, 'admin_officer/admin-officer-new-record.html')
 
 # ACTION OFFICER DASHBOARD
 def dashboard_action_officer(request):

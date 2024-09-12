@@ -17,6 +17,7 @@
 </head>
 
 <body id="bodyPd">
+    
     {% include "assets/system-admin-navbar.html" %}
 
     <!--Container Main start-->
@@ -50,12 +51,24 @@
                     <thead>
                         <tr>
                             <th>Employee ID</th>
-                            <th>Name</th>
+                            <th>
+                                Name
+                                <a href="?sort_by=lastname&order=asc"><i class='bx bxs-sort-alt'></i></a>
+                            </th>
                             <th>Contact No.</th>
-                            <th>Email</th>
+                            <th>
+                                Email
+                                <a href="?sort_by=email&order=asc"><i class='bx bxs-sort-alt'></i></a>
+                            </th>
                             <th>Department</th>
-                            <th>Role &nbsp;<i class='bx bxs-sort-alt'></i></th>
-                            <th>Status &nbsp;<i class='bx bxs-sort-alt'></i></th>
+                            <th>
+                                Role 
+                                <a href="?sort_by=role&order=asc"><i class='bx bxs-sort-alt'></i></a>
+                            </th>
+                            <th>
+                                Status 
+                                <a href="?sort_by=status&order=asc"><i class='bx bxs-sort-alt'></i></a>
+                            </th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -81,10 +94,10 @@
                                         <td><span class="badge badge-orange rounded-pill fw-semibold">FOR VERIFICATION</span></td>
                                         <td>
                                             <div class="table-action">
-                                                <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#verifyUserModal" data-user-id="{{ user.user_id }}" data-action="verify" data-url="{% url 'update_user_status' 'USER_ID' 'verify' %}">
+                                                <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#verifyUserModal" data-user-id="{{ user.user_id }}" data-action="verify" data-url="{% url 'update_user_status' 'USER_ID' 'verify' office %}">
                                                     <i class="fa-solid fa-user-check"></i>
                                                 </button>
-                                                <button type="button" class="btn btn-sm btn-red" data-bs-toggle="modal" data-bs-target="#rejectUserModal" data-user-id="{{ user.user_id }}" data-action="reject" data-url="{% url 'update_user_status' 'USER_ID' 'reject' %}">
+                                                <button type="button" class="btn btn-sm btn-red" data-bs-toggle="modal" data-bs-target="#rejectUserModal" data-user-id="{{ user.user_id }}" data-action="reject" data-url="{% url 'update_user_status' 'USER_ID' 'reject' office %}">
                                                     <i class="fa-solid fa-user-xmark"></i>
                                                 </button>
                                             </div>
@@ -93,11 +106,8 @@
                                         <td><span class="badge badge-green rounded-pill fw-semibold">ACTIVE</span></td>
                                         <td>
                                             <div class="table-action">
-                                                <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#deactivateUserModal" data-user-id="{{ user.user_id }}" data-action="deactivate" data-url="{% url 'update_user_status' 'USER_ID' 'deactivate' %}">
+                                                <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#deactivateUserModal" data-user-id="{{ user.user_id }}" data-action="deactivate" data-url="{% url 'update_user_status' 'USER_ID' 'deactivate' office %}">
                                                     <i class="fa-solid fa-user-lock"></i>
-                                                </button>
-                                                <button type="button" class="btn btn-sm btn-red" data-bs-toggle="modal" data-bs-target="#archiveUserModal" data-user-id="{{ user.user_id }}" data-action="archive" data-url="{% url 'update_user_status' 'USER_ID' 'archive' %}">
-                                                    <i class="fa-solid fa-user-minus"></i>
                                                 </button>
                                             </div>
                                         </td>
@@ -105,10 +115,10 @@
                                         <td><span class="badge badge-red rounded-pill fw-semibold">DEACTIVATED</span></td>
                                         <td>
                                             <div class="table-action">
-                                                <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#reactivateUserModal" data-user-id="{{ user.user_id }}" data-action="reactivate" data-url="{% url 'update_user_status' 'USER_ID' 'reactivate' %}">
+                                                <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#reactivateUserModal" data-user-id="{{ user.user_id }}" data-action="reactivate" data-url="{% url 'update_user_status' 'USER_ID' 'reactivate' office %}">
                                                     <i class="fa-solid fa-user-check"></i>
                                                 </button>
-                                                <button type="button" class="btn btn-sm btn-red" data-bs-toggle="modal" data-bs-target="#archiveUserModal" data-user-id="{{ user.user_id }}" data-action="archive" data-url="{% url 'update_user_status' 'USER_ID' 'archive' %}">
+                                                <button type="button" class="btn btn-sm btn-red" data-bs-toggle="modal" data-bs-target="#archiveUserModal" data-user-id="{{ user.user_id }}" data-action="archive" data-url="{% url 'update_user_status' 'USER_ID' 'archive' office %}">
                                                     <i class="fa-solid fa-user-minus"></i>
                                                 </button>
                                             </div>
