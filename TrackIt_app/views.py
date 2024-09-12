@@ -210,6 +210,10 @@ def dashboard_sro(request):
 def dashboard_admin_officer(request):
     return render(request, 'admin_officer/admin-officer-dashboard.html')
 
+# ADMIN OFFICER NEW RECORD
+def new_record_admin_officer(request):
+    return render(request, 'admin_officer/admin-officer-new-record.html')
+
 # ACTION OFFICER DASHBOARD
 def dashboard_action_officer(request):
     return render(request, 'action_officer/action-officer-dashboard.html')
