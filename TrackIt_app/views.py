@@ -140,7 +140,9 @@ def system_admin_user_management(request, office):
 
     return render(request, 'system_admin/system-admin-user-management.html', {'users': users, 'office': office})
 
-
+# SYSTEM ADMIN DOC MANAGEMENT
+def system_admin_doc_management(request):
+    return render(request, 'system_admin/system-admin-doc-management.html')
 
 # DIRECTOR LOGIN
 def director_login(request):

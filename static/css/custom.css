@@ -5453,6 +5453,7 @@ textarea.form-control-lg {
 
 .modal-content {
   position: relative;
+  display: flex;
   flex-direction: column;
   width: 100%;
   color: var(--bs-modal-color);
@@ -11858,6 +11859,7 @@ a:hover {
 }
 
 .black-link {
+  font-size: 15px;
   color: #000000;
   text-decoration: none;
   font-weight: 600;
@@ -11867,11 +11869,23 @@ a:hover {
   text-decoration: none;
 }
 
+.route-link {
+  font-size: 14px !important;
+  color: #2E72EA;
+  text-decoration: none;
+  font-weight: 600;
+}
+.route-link:hover {
+  color: #1559d0;
+  text-decoration: none;
+}
+
 .btn-primary {
   background-color: #2E72EA;
+  font-size: 15px;
   color: #FFFFFF;
   font-weight: 500;
-  padding: 0.5rem 1.25rem;
+  padding: 0.5rem 1rem;
 }
 .btn-primary:hover {
   background-color: #1559d0;
@@ -11885,10 +11899,11 @@ a:hover {
 
 .btn-secondary {
   background-color: #FFFFFF;
+  font-size: 15px;
   color: #2E72EA;
   border: 1px solid #2E72EA;
   font-weight: 500;
-  padding: 0.5rem 1.25rem;
+  padding: 0.5rem 1rem;
 }
 .btn-secondary:hover {
   background-color: #d9e3f5;
@@ -11993,11 +12008,13 @@ a:hover {
 }
 
 .form-label {
+  font-size: 15px !important;
   font-weight: 600;
   margin-bottom: 0.27rem;
 }
 
 .form-control, .form-select {
+  font-size: 15px !important;
   padding: 0.5rem 0.8rem;
   background-color: #FFFFFF;
   color: #000000;
@@ -12040,6 +12057,53 @@ input:focus::-webkit-datetime-edit {
 .form-check-input:focus {
   border-color: #2E72EA;
   box-shadow: 0 0 0 0.15rem rgba(46, 114, 234, 0.15);
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 11px !important;
+}
+.input-group .input-group-text {
+  background-color: rgba(177, 193, 207, 0.1);
+  font-size: 15px !important;
+  color: #000000;
+  border-color: #B1C1CF;
+  font-weight: 500;
+  padding: 0.5rem 0.8rem;
+}
+.input-group .input-group-text:focus {
+  border-color: #2E72EA;
+  box-shadow: 0 0 0 0.15rem rgba(46, 114, 234, 0.15);
+}
+.input-group .form-select {
+  padding: 0.5rem 0.8rem;
+  background-color: #FFFFFF;
+  color: #000000;
+  border-color: #B1C1CF;
+}
+.input-group .form-select:focus {
+  border-color: #2E72EA;
+  box-shadow: 0 0 0 0.15rem rgba(46, 114, 234, 0.15);
+}
+.input-group .btn-x-red {
+  background-color: #EA2E2E;
+  font-size: 15px !important;
+  color: #FFFFFF;
+  font-weight: 600;
+  padding: 0.5rem 0.8rem;
+  border-color: #EA2E2E;
+}
+.input-group .btn-x-red:hover {
+  background-color: #d01515;
+}
+
+.input-group select:invalid {
+  color: #B1C1CF;
+}
+
+.input-group select option:first-child {
+  color: #B1C1CF;
 }
 
 .custom-tabs {
@@ -12093,6 +12157,45 @@ input:focus::-webkit-datetime-edit {
 
 .tab-pane.active {
   display: block;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.table th {
+  border-bottom: 2px solid rgba(177, 193, 207, 0.4);
+}
+
+.table td {
+  border-bottom: 1px solid rgba(177, 193, 207, 0.4);
+}
+
+table th, table td {
+  padding: 12px 10px !important;
+  background-color: #ffffff !important;
+  vertical-align: middle;
+}
+
+table th:last-child {
+  text-align: center;
+}
+
+.table-action {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.bxs-sort-alt {
+  font-size: 12px;
+}
+
+.fa-chevron-right {
+  font-size: 12px;
+  color: #2E72EA;
 }
 
 /*# sourceMappingURL=custom.css.map */
