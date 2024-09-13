@@ -19,13 +19,13 @@
         </div>
         <ul class="nav-list flex-column mb-auto">
             <li>
-                <a href="{% url 'dashboard_admin_officer'%}" class="nav-link mb-1"> 
+                <a href="{% url 'dashboard_admin_officer' %}?status=active" class="nav-link mb-1" id="dashboard"> 
                     <i class='bx bx-grid-alt nav-icon'></i>
                     <span class="nav-name">Dashboard</span>
                 </a> 
-            </li>
+            </li>            
             <li>
-                <a href="{% url 'new_record_admin_officer'%}" class="nav-link mb-1"> 
+                <a href="{% url 'new_record_admin_officer'%}?status=active" class="nav-link mb-1" id="new"> 
                     <i class='bx bx-folder-plus nav-icon'></i>
                     <span class="nav-name">New Record</span>
                 </a>
