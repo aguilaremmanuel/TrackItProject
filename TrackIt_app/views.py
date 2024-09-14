@@ -251,13 +251,25 @@ def dashboard_admin_officer(request):
 def new_record_admin_officer(request):
     return render(request, 'admin_officer/admin-officer-new-record.html')
 
-# ADMIN OFFICER ALL RECORD
+# ADMIN OFFICER ALL RECORDS
 def all_records_admin_officer(request):
     return render(request, 'admin_officer/admin-officer-all-records.html')
 
-# ADMIN OFFICER NEED ACTION
+# ADMIN OFFICER NEEDS ACTION
 def needs_action_admin_officer(request):
     return render(request, 'admin_officer/admin-officer-needs-action.html')
+
+# ADMIN OFFICER OVERDUE
+def overdue_admin_officer(request):
+    return render(request, 'admin_officer/admin-officer-overdue.html')
+
+# ADMIN OFFICER ARCHIVE
+def archive_admin_officer(request):
+    return render(request, 'admin_officer/admin-officer-archive.html')
+
+# ADMIN OFFICER ACTIVITY LOGS
+def activity_logs_admin_officer(request):
+    return render(request, 'admin_officer/admin-officer-activity-logs.html')
 
 # ACTION OFFICER DASHBOARD
 def dashboard_action_officer(request):
