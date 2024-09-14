@@ -299,6 +299,14 @@ def dashboard_admin_officer(request):
 def new_record_admin_officer(request):
     return render(request, 'admin_officer/admin-officer-new-record.html')
 
+# ADMIN OFFICER ALL RECORD
+def all_records_admin_officer(request):
+    return render(request, 'admin_officer/admin-officer-all-records.html')
+
+# ADMIN OFFICER NEED ACTION
+def needs_action_admin_officer(request):
+    return render(request, 'admin_officer/admin-officer-needs-action.html')
+
 # ACTION OFFICER DASHBOARD
 def dashboard_action_officer(request):
     return render(request, 'action_officer/action-officer-dashboard.html')

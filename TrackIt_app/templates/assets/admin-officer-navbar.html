@@ -1,0 +1,68 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+{% load static %}
+
+<header class="header" id="header">
+    <div class="header-toggle">
+        <i class='bx bx-menu' id="headerToggle"></i>
+    </div>
+    <div class="header-img">
+    </div>
+    <a href="#" class="nav-link"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
+</header>
+
+<div class="l-navbar" id="navBar">
+    <nav class="nav d-flex flex-column flex-shrink-0 p-2 pt-0">
+        <div class="nav-logo mb-2">
+            <img src="{% static 'images/logo-icon.png' %}" alt="Logo Icon" class="nav-logo-icon">
+            <img src="{% static 'images/logo-name.png' %}" alt="Logo Name" class="nav-logo-name">
+        </div>
+        <ul class="nav-list flex-column mb-auto">
+            <li>
+                <a href="{% url 'dashboard_admin_officer' %}?status=active" class="nav-link mb-1" id="dashboard"> 
+                    <i class='bx bx-grid-alt nav-icon'></i>
+                    <span class="nav-name">Dashboard</span>
+                </a> 
+            </li>            
+            <li>
+                <a href="{% url 'new_record_admin_officer'%}?status=active" class="nav-link mb-1" id="new"> 
+                    <i class='bx bx-folder-plus nav-icon'></i>
+                    <span class="nav-name">New Record</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'all_records_admin_officer'%}" class="nav-link mb-1">
+                    <i class='bx bx-folder nav-icon'></i>
+                    <span class="nav-name">All Records</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'needs_action_admin_officer'%}" class="nav-link mb-1">
+                    <i class='bx bx-alarm-exclamation nav-icon'></i>
+                    <span class="nav-name">Needs Action</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link mb-1">
+                    <i class='bx bx-calendar-x nav-icon'></i>   
+                    <span class="nav-name">Overdue</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link mb-1">
+                    <i class='bx bx-box nav-icon'></i>
+                    <span class="nav-name">Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link mb-1">
+                    <i class='bx bx-history nav-icon'></i>
+                    <span class="nav-name">Activity Logs</span>
+                </a>
+            </li>   
+        </ul>
+    </nav>
+</div>
+<!--TEST COMMIT-->
+
+<script src="{% static 'js/toggle-navbar.js' %}"></script>

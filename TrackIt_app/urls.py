@@ -22,6 +22,8 @@ urlpatterns = [
     path('director-dashboard/',views.dashboard_director, name='dashboard_director'),
     path('admin-officer-dashboard/',views.dashboard_admin_officer, name='dashboard_admin_officer'),
     path('admin-officer-new-record/',views.new_record_admin_officer, name='new_record_admin_officer'),
+    path('admin-officer-all-records/',views.all_records_admin_officer, name='all_records_admin_officer'),
+    path('admin-officer-needs-action/',views.needs_action_admin_officer, name='needs_action_admin_officer'),
     path('sro-dashboard/',views.dashboard_sro, name='dashboard_sro'),
     path('action-officer-dashboard/',views.dashboard_action_officer, name='dashboard_action_officer'),
 
