@@ -5,7 +5,9 @@ from .models import *
 from django.utils import timezone
 from django.contrib import messages
 from .models import User
-
+from django.core.mail import send_mail
+from django.conf import settings
+from django.http import HttpResponse
 
 # USER LOGIN
 def user_login(request):
@@ -48,6 +50,56 @@ def user_login(request):
 
     return render(request, "user-login.html")
 
+
+#USER UPDATE STATUS AND EMAILING FUNCTION
+def update_user_status(request, user_id, action, office):
+    user = User.objects.get(pk=user_id)  # Fetch the user object
+
+    if action == 'verify':
+        user.status = 'active'
+        subject = 'Your Account Has Been Verified'
+        # Include user_id and password in the message
+        message = (
+            f"Hello {user.firstname},\n\n"
+            f"Your account has been verified and is now active.\n\n"
+            f"Your User ID: {user.user_id}\n"
+            f"Your Password: {user.password}  \n\n"
+            "Please keep this information secure.\n\n"
+            "Regards,\n"
+            "TrackIt Team"
+        )
+    elif action == 'reject':
+        user.status = 'rejected'
+        subject = 'Your Account Has Been Rejected'
+        message = 'Your account has been rejected. Please contact support for more information.'
+    elif action == 'deactivate':
+        user.status = 'inactive'
+        subject = 'Your Account Has Been Deactivated'
+        message = 'Your account has been deactivated. Please contact support to reactivate it.'
+    elif action == 'archive':
+        user.status = 'archived'
+        subject = 'Your Account Has Been Archived'
+        message = 'Your account has been archived. You will not be able to log in.'
+    elif action == 'reactivate':
+        user.status = 'active'
+        subject = 'Your Account Has Been Reactivated'
+        message = 'Your account has been reactivated and is now active.'
+    else:
+        return HttpResponse("Invalid action", status=400)
+
+    user.save()  # Save the updated status
+
+    if action != 'archive':
+        # Send email
+        send_mail(
+            subject,
+            message,
+            settings.DEFAULT_FROM_EMAIL,
+            [user.email],
+            fail_silently=False,
+        )
+
+    return redirect('system_admin_user_management', office=office)
 
 
 # USER SIGNUP
@@ -269,7 +321,7 @@ def director_login(request):
     
     return render(request, "director-login.html", {'form': form})
 
-
+<<<<<<< HEAD
 # UPDATE USER STATUS
 def update_user_status(request, user_id, action, office):
     try:
@@ -301,7 +353,8 @@ def update_user_status(request, user_id, action, office):
         messages.error(request, "User not found.")
     
     return redirect('system_admin_user_management', office=office)
-
+=======
+>>>>>>> f35dad50bc0c125a699ba20e92a329c415bae2d5
 
 # DIRECTOR DASHBOARD
 def dashboard_director(request):
