@@ -208,7 +208,9 @@ def system_admin_user_management(request, office):
 
     return render(request, 'system_admin/system-admin-user-management.html', {'users': users, 'office': office})
 
-
+# SYSTEM ADMIN DOC MANAGEMENT
+def system_admin_doc_management(request):
+    return render(request, 'system_admin/system-admin-doc-management.html')
 
 # DIRECTOR LOGIN
 def director_login(request):
@@ -244,6 +246,18 @@ def dashboard_sro(request):
 # ADMIN OFFICER DASHBOARD
 def dashboard_admin_officer(request):
     return render(request, 'admin_officer/admin-officer-dashboard.html')
+
+# ADMIN OFFICER NEW RECORD
+def new_record_admin_officer(request):
+    return render(request, 'admin_officer/admin-officer-new-record.html')
+
+# ADMIN OFFICER ALL RECORD
+def all_records_admin_officer(request):
+    return render(request, 'admin_officer/admin-officer-all-records.html')
+
+# ADMIN OFFICER NEED ACTION
+def needs_action_admin_officer(request):
+    return render(request, 'admin_officer/admin-officer-needs-action.html')
 
 # ACTION OFFICER DASHBOARD
 def dashboard_action_officer(request):
