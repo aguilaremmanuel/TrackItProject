@@ -11,10 +11,11 @@ urlpatterns = [
 
     path('system-admin-user-management/<str:office>/', views.system_admin_user_management, name='system_admin_user_management'),
     path('update-user-status/<str:user_id>/<str:action>/', views.update_user_status, name='update_user_status'),
-    
-    path('system-admin-doc-management/',views.system_admin_doc_management, name='system_admin_doc_management'),
-
     path('update-user-status/<str:user_id>/<str:action>/<str:office>', views.update_user_status, name='update_user_status'),
+
+    path('system-admin-doc-management/',views.system_admin_doc_management, name='system_admin_doc_management'),
+    path('edit-document-type/', views.edit_document_type, name='edit_document_type'),
+    path('delete-document-type/<int:document_no>/', views.delete_document_type, name='delete_document_type'),
 
     path('director-login/',views.director_login, name='director_login'),
 
