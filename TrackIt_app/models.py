@@ -31,10 +31,18 @@ class User(models.Model):
     class Meta:
         db_table = 'tbl_user'
 
+class PriorityLevel(models.Model):
+    no = models.BigAutoField(primary_key=True)
+    priority_level = models.CharField(max_length=16)
+    deadline = models.IntegerField()
+    class Meta:
+        db_table = 'tbl_priority_level'
+
 class DocumentType(models.Model):
     document_no = models.BigAutoField(primary_key=True)
     document_type = models.CharField(max_length=45)
     category = models.CharField(max_length=7)
+    priority_level = models.ForeignKey(PriorityLevel, on_delete=models.CASCADE, null=True, blank=True)
     class Meta:
         db_table = 'tbl_document_type'
 
@@ -44,13 +52,6 @@ class DocumentRoute(models.Model):
     route = models.ForeignKey(Office, on_delete=models.CASCADE, null=True, blank=True)
     class Meta:
         db_table = 'tbl_document_route'
-
-class PriorityLevel(models.Model):
-    no = models.BigAutoField(primary_key=True)
-    priority_level = models.CharField(max_length=16)
-    deadline = models.IntegerField()
-    class Meta:
-        db_table = 'tbl_priority_level'
 
 class Document(models.Model):
     document_no = models.BigAutoField(primary_key=True)

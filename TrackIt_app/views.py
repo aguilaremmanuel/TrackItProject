@@ -3,12 +3,8 @@ from .forms import *
 from django.db.models import Max
 from .models import *
 from django.utils import timezone
-import random
-import string
-#from django.contrib.auth import authenticate, login as auth_login
 from django.contrib import messages
 from .models import User
-
 
 # USER LOGIN
 def user_login(request):
@@ -50,8 +46,6 @@ def user_login(request):
             return redirect('user_login')
 
     return render(request, "user-login.html")
-
-
 
 # USER SIGNUP
 def user_signup(request):
@@ -128,7 +122,6 @@ def system_admin_user_management(request, office):
     else:
         users = User.objects.none()
 
-
     sort_by = request.GET.get('sort_by')
     order = request.GET.get('order', 'asc')
 
@@ -142,7 +135,99 @@ def system_admin_user_management(request, office):
 
 # SYSTEM ADMIN DOC MANAGEMENT
 def system_admin_doc_management(request):
-    return render(request, 'system_admin/system-admin-doc-management.html')
+
+    if request.method == 'POST':
+        
+        document_type = request.POST.get('document_type')
+        category = request.POST.get('category')
+        priority_level_str = request.POST.get('priority_level')
+        route_list = request.POST.getlist('route[]')
+        
+        priority_level = PriorityLevel.objects.get(priority_level=priority_level_str)
+
+        new_document_type = DocumentType.objects.create(
+            document_type=document_type,
+            category=category,
+            priority_level=priority_level
+        )
+
+        for route in route_list:
+            office = Office.objects.get(office_name=route)  # Fetch the Office instance
+            DocumentRoute.objects.create(
+                document_type=new_document_type,
+                route=office
+            )
+    
+    records = []
+
+    document_type_records = DocumentType.objects.all()
+
+    sort_by = request.GET.get('sort_by')
+    order = request.GET.get('order', 'asc')
+
+    if sort_by in ['document_type', 'category', 'priority_level_id', 'email']:  # Only allow sorting by valid fields
+        if order == 'asc':
+            document_type_records = document_type_records.order_by(sort_by)
+        else:
+            document_type_records = document_type_records.order_by(f'-{sort_by}')
+
+    routes = DocumentRoute.objects.all()
+
+    for document_type_record in document_type_records:
+        record = {}
+        record['document_no'] = document_type_record.document_no
+        record['document_type'] = document_type_record.document_type
+        record['category'] = document_type_record.category
+        record['priority_level'] = document_type_record.priority_level.priority_level
+
+        temp_route = []
+        for route in routes:
+            if route.document_type_id == document_type_record.document_no:
+                temp_route.append(route.route.office_name)
+        record['routes'] = temp_route
+        records.append(record)
+
+    return render(request, 'system_admin/system-admin-doc-management.html', {'records': records})
+
+# SYSTEM ADMIN FUNCTION: EDIT DOCUMENT TYPE
+def edit_document_type(request):
+
+    if request.method == 'POST':
+
+        document_no = request.POST.get('edit_document_no')
+        document_type = request.POST.get('edit_document_type')
+        category = request.POST.get('edit_category')
+        priority_level_str = request.POST.get('edit_priority_level')
+        route_list = request.POST.getlist('editRoutes[]')
+
+        routes = DocumentRoute.objects.filter(document_type_id=document_no)
+        routes.delete()
+        
+        if priority_level_str == 'For Preferential Action':
+            priority_level_str = 'for pref. action'
+
+        priority_level = PriorityLevel.objects.get(priority_level=priority_level_str)
+
+        new_document_type = DocumentType.objects.get(document_no=document_no)
+        new_document_type.document_type = document_type
+        new_document_type.category = category
+        new_document_type.priority_level = priority_level
+        new_document_type.save()
+
+        for route in route_list:
+            office = Office.objects.get(office_name=route)
+            DocumentRoute.objects.create(document_type_id=new_document_type.document_no, route=office)
+
+    return redirect('system_admin_doc_management')
+
+# SYSTEM ADMIN FUNCTION: DELETE DOCUMENT TYPE
+def delete_document_type(request, document_no):
+    routes = DocumentRoute.objects.filter(document_type_id = document_no)
+    routes.delete()
+    document_type = DocumentType.objects.get(document_no=document_no)
+    document_type.delete()
+
+    return redirect('system_admin_doc_management')
 
 # DIRECTOR LOGIN
 def director_login(request):
@@ -165,7 +250,6 @@ def director_login(request):
         form = DirectorLoginForm()
     
     return render(request, "director-login.html", {'form': form})
-
 
 # UPDATE USER STATUS
 def update_user_status(request, user_id, action, office):
@@ -199,7 +283,6 @@ def update_user_status(request, user_id, action, office):
     
     return redirect('system_admin_user_management', office=office)
 
-
 # DIRECTOR DASHBOARD
 def dashboard_director(request):
     return render(request, 'director/director-dashboard.html')
@@ -226,5 +309,3 @@ def forgot_password(request):
 
 def new_password(request):
     return render(request, "new-password.html")
-
-# TEST COMMIT
