@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.contrib import messages
 from .models import User
 
+
 # USER LOGIN
 def user_login(request):
     if request.method == 'POST':
@@ -47,6 +48,8 @@ def user_login(request):
 
     return render(request, "user-login.html")
 
+
+
 # USER SIGNUP
 def user_signup(request):
     if request.method == 'POST':
@@ -57,10 +60,25 @@ def user_signup(request):
             user.user_id = generate_user_id(role_prefix)
             user.verified_date = timezone.now()
             form.save()
-            return redirect('user_login')   
+
+            # Get user email
+            user_email = form.cleaned_data['email']
+
+            # Send an email notifying the user of their status
+            send_mail(
+                subject='TrackIt: Account Status',
+                message=f"Hello {user.firstname},\n\nThank you for signing up! Your account is currently '{user.status}'. We will notify you when it is verified.\n\nRegards,\nTrackIt Team",
+                from_email=settings.DEFAULT_FROM_EMAIL,  # Ensure this is set in your settings
+                recipient_list=[user_email],
+                fail_silently=False,
+            )
+
+            return redirect('user_login')
     else:
         form = UserSignupForm()
+    
     return render(request, "user-signup.html", {'form': form})
+
 
 # GENERATE USER ID
 def generate_user_id(role_prefix):
@@ -251,6 +269,7 @@ def director_login(request):
     
     return render(request, "director-login.html", {'form': form})
 
+
 # UPDATE USER STATUS
 def update_user_status(request, user_id, action, office):
     try:
@@ -282,6 +301,7 @@ def update_user_status(request, user_id, action, office):
         messages.error(request, "User not found.")
     
     return redirect('system_admin_user_management', office=office)
+
 
 # DIRECTOR DASHBOARD
 def dashboard_director(request):
