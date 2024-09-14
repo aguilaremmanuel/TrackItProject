@@ -56,7 +56,7 @@ def user_login(request):
 
 
 #USER UPDATE STATUS AND EMAILING FUNCTION
-def update_user_status(request, user_id, action):
+def update_user_status(request, user_id, action, office):
     user = User.objects.get(pk=user_id)  # Fetch the user object
 
     if action == 'verify':
@@ -103,7 +103,7 @@ def update_user_status(request, user_id, action):
             fail_silently=False,
         )
 
-    return redirect('system_admin_user_management', office='all-office')
+    return redirect('system_admin_user_management', office=office)
 
 
 # USER SIGNUP
