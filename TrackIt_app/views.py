@@ -311,6 +311,18 @@ def dashboard_director(request):
 def dashboard_sro(request):
     return render(request, 'sro/sro-dashboard.html')
 
+# SRO ALL RECORDS
+def all_records_sro(request):
+    return render(request, 'sro/sro-all-records.html')
+
+# SRO UNACTED DOCUMENTS
+def unacted_documents_sro(request):
+    return render(request, 'sro/sro-unacted-documents.html')
+
+# SRO ACTIVITY LOGS
+def activity_logs_sro(request):
+    return render(request, 'sro/sro-activity-logs.html')
+
 # ADMIN OFFICER DASHBOARD
 def dashboard_admin_officer(request):
     return render(request, 'admin_officer/admin-officer-dashboard.html')
@@ -342,6 +354,18 @@ def activity_logs_admin_officer(request):
 # ACTION OFFICER DASHBOARD
 def dashboard_action_officer(request):
     return render(request, 'action_officer/action-officer-dashboard.html')
+
+# ACTION OFFICER ALL RECORDS
+def all_records_action_officer(request):
+    return render(request, 'action_officer/action-officer-all-records.html')
+
+# ACTION OFFICER UNACTED DOCUMENTS
+def unacted_documents_action_officer(request):
+    return render(request, 'action_officer/action-officer-unacted-documents.html')
+
+# ACTION OFFICER ACTIVITY LOGS
+def activity_logs_action_officer(request):
+    return render(request, 'action_officer/action-officer-activity-logs.html')
 
 # PASSWORD
 def forgot_password(request):

@@ -27,8 +27,16 @@ urlpatterns = [
     path('admin-officer-overdue/',views.overdue_admin_officer, name='overdue_admin_officer'),
     path('admin-officer-archive/',views.archive_admin_officer, name='archive_admin_officer'),
     path('admin-officer-activity-logs/',views.activity_logs_admin_officer, name='activity_logs_admin_officer'),
+
     path('sro-dashboard/',views.dashboard_sro, name='dashboard_sro'),
+    path('sro-all-records/',views.all_records_sro, name='all_records_sro'),
+    path('sro-unacted-documents/',views.unacted_documents_sro, name='unacted_documents_sro'),
+    path('sro-activity-logs/',views.activity_logs_sro, name='activity_logs_sro'),
+    
     path('action-officer-dashboard/',views.dashboard_action_officer, name='dashboard_action_officer'),
+    path('action-officer-all-records/',views.all_records_action_officer, name='all_records_action_officer'),
+    path('action-officer-unacted-documents/',views.unacted_documents_action_officer, name='unacted_documents_action_officer'),
+    path('action-officer-activity-logs/',views.activity_logs_action_officer, name='activity_logs_action_officer'),
 
     path('forgot-password/',views.forgot_password, name='forgot_password'),
     path('new-password/',views.new_password, name='new_password'),
