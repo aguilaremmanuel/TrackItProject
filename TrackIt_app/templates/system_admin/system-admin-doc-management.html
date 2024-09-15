@@ -34,103 +34,81 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Document Type</th>
-                            <th>Category &nbsp;<i class='bx bxs-sort-alt'></i></th>
+                            <th>
+                                Document Type 
+                                <a href="?sort_by=document_type&order=asc"><i class='bx bxs-sort-alt'></i></a>
+                            </th>
+                            <th>
+                                Category
+                                <a href="?sort_by=category&order=asc"><i class='bx bxs-sort-alt'></i></a>
+                            </th>
                             <th>Route</th>
-                            <th>Priority Level &nbsp;<i class='bx bxs-sort-alt'></i></th>
+                            <th>
+                                Priority priorityLevel
+                                <a href="?sort_by=priority_level_id&order=asc"><i class='bx bxs-sort-alt'></i></a>
+                            </th>
                             <th>Action</th>
                         </tr>
                     </thead>
 
                     <tbody id="docTableBody">
-                        <tr>
-                            <td>Reimbursement</td>
-                            <td>Regular</td>
-                            <td>
-                                Cashier <i class="fa-solid fa-chevron-right px-1"></i>
-                                Budgeting <i class="fa-solid fa-chevron-right px-1"></i>
-                                Payroll <i class="fa-solid fa-chevron-right px-1"></i>
-                                Accounting
-                            </td>
-                            <td><span class="badge badge-green rounded-pill fw-semibold">NORMAL</span></td>
-                            <td>
-                                <div class="table-action">
-                                    <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#editDocumentTypeModal">
-                                        <i class="fa-solid fa-pen"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-sm btn-red" data-bs-toggle="modal" data-bs-target="#deleteDocumentTypeModal">
-                                        <i class="fa-solid fa-trash-can"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
+                        
+                        {% if records %}
 
-                        <tr>
-                            <td>Procurement</td>
-                            <td>Regular</td>
-                            <td>
-                                Payroll <i class="fa-solid fa-chevron-right px-1"></i>
-                                Accounting
-                            </td>                            
-                            <td><span class="badge badge-orange rounded-pill fw-semibold">URGENT</span></td>
-                            <td>
-                                <div class="table-action">
-                                    <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#editDocumentTypeModal">
-                                        <i class="fa-solid fa-pen"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-sm btn-red" data-bs-toggle="modal" data-bs-target="#deleteDocumentTypeModal">
-                                        <i class="fa-solid fa-trash-can"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
+                            {% for record in records %}
 
-                        <tr>
-                            <td>Compensation</td>
-                            <td>Regular</td>
-                            <td>
-                                Payroll <i class="fa-solid fa-chevron-right px-1"></i>
-                                Cashier
-                            </td>                           
-                            <td><span class="badge badge-red rounded-pill fw-semibold">VERY URGENT</span></td>
-                            <td>
-                                <div class="table-action">
-                                    <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#editDocumentTypeModal">
-                                        <i class="fa-solid fa-pen"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-sm btn-red" data-bs-toggle="modal" data-bs-target="#deleteDocumentTypeModal">
-                                        <i class="fa-solid fa-trash-can"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
+                                <tr>
+                                    <td>{{ record.document_type }}</td>
+                                    <td>{{ record.category|capfirst }}</td>
+                                    <td>
+                                        {% for route in record.routes %}
+                                            <span>{{ route }}</span>
+                                            {% if not forloop.last %}
+                                                <i class="fa-solid fa-chevron-right px-1"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        {% if record.priority_level == 'for pref. action' %}
+                                            <span class="badge badge-yellow rounded-pill fw-semibold">FOR PREF. ACTION</span>
+                                        {% elif record.priority_level == 'normal' %}
+                                            <span class="badge badge-green rounded-pill fw-semibold">NORMAL</span>
+                                        {% elif record.priority_level == 'urgent' %}
+                                            <span class="badge badge-orange rounded-pill fw-semibold">URGENT</span>
+                                        {% else %}
+                                            <span class="badge badge-red rounded-pill fw-semibold">VERY URGENT</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="table-action">
+                                            <button type="button" class="btn btn-sm btn-blue"
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#editDocumentTypeModal" 
+                                                data-document-no="{{ record.document_no }}" 
+                                                data-document-type="{{ record.document_type }}"
+                                                data-category="{{ record.category|capfirst }}"
+                                                data-priority-level="{{ record.priority_level|capfirst }}"
+                                                data-routes="{{ record.routes|join:',' }}">
+                                                <i class="fa-solid fa-pen"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-red" data-bs-toggle="modal" data-bs-target="#deleteDocumentTypeModal" data-document-no="{{ record.document_no }}" data-url="{% url 'delete_document_type' 0 %}">
+                                                <i class="fa-solid fa-trash-can"></i>
+                                            </button>
+                                        </div>
+                                    </td>
 
-                        <tr>
-                            <td>Assistance</td>
-                            <td>SCPF</td>
-                            <td>
-                                Accounting <i class="fa-solid fa-chevron-right px-1"></i>
-                                Cashier <i class="fa-solid fa-chevron-right px-1"></i>
-                                Payroll
-                            </td>                            
-                            <td><span class="badge badge-yellow rounded-pill fw-semibold">FOR PREF. ACTION</span></td>
-                            <td>
-                                <div class="table-action">
-                                    <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#editDocumentTypeModal">
-                                        <i class="fa-solid fa-pen"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-sm btn-red" data-bs-toggle="modal" data-bs-target="#deleteDocumentTypeModal">
-                                        <i class="fa-solid fa-trash-can"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
+                                </tr>
+
+                            {% endfor %}
+
+                        {% else %}
+                            <tr>
+                                <td colspan="8" class="text-center">No data to display in table.</td>
+                            </tr>
+                        {% endif %}
+
                     </tbody>                    
                 </table>
-                
-                <p class="d-block text-start my-0 ps-2 mb-1 fw-semibold" id="record-count" style="color: #000000; opacity: 0.6;">
-                    Showing total of <span id="recordCount">{{ users|length|default:"0" }}</span> record(s)
-                </p>
             </div>            
         </div>
     </div>
@@ -147,19 +125,20 @@
                 <div class="modal-body p-4 pt-0">    
                     <div id="alert-container"></div>
 
-                    <form id="addDocumentTypeForm">
+                    <form id="addDocumentTypeForm" method="post" action="{% url 'system_admin_doc_management' %}">
+                        {% csrf_token %}
                         <!-- Document Type Input -->
                         <div class="mb-3">
                             <label for="documentType" class="form-label">Document Type</label>
-                            <input type="text" class="form-control" id="documentType" placeholder="Enter Document Type" required>
+                            <input type="text" class="form-control" id="documentType" placeholder="Enter Document Type" name="document_type" required>
                         </div>
             
                         <!-- Category Select -->
                         <div class="mb-3">
                             <label for="category" class="form-label">Category</label>
-                            <select class="form-select" id="category" required>
+                            <select class="form-select" id="category" name="category" required>
                                 <option value="">Select Category</option>
-                                <option value="Regular">Regular</option>
+                                <option value="regular">Regular</option>
                                 <option value="SCPF">SCPF</option>
                             </select>
                         </div>
@@ -180,7 +159,7 @@
                                 <div class="input-group m-0 route-step">
                                     <span class="input-group-text">Route 1</span>
                                     <select class="form-select route-select" name="route[]" required>
-                                        <option value="" selected>Select Department</option>
+                                        <option value="" selected>Select Office</option>
                                         <option value="Accounting">Accounting</option>
                                         <option value="Budgeting">Budgeting</option>
                                         <option value="Cashier">Cashier</option>
@@ -194,17 +173,17 @@
                         <!-- Priority Level Select -->
                         <div class="mb-3">
                             <label for="priorityLevel"  class="form-label">Priority Level</label>
-                            <select class="form-select" id="priorityLevel" required>
+                            <select class="form-select" id="priorityLevel" name="priority_level" required>
                                 <option value="">Select Priority Level</option>
-                                <option value="Normal">Normal</option>
-                                <option value="Urgent">Urgent</option>
-                                <option value="Very Urgent">Very Urgent</option>
-                                <option value="For Preferential Action">For Preferential Action</option>
+                                <option value="normal">Normal</option>
+                                <option value="urgent">Urgent</option>
+                                <option value="very urgent">Very Urgent</option>
+                                <option value="for pref. action">For Preferential Action</option>
                             </select>
                         </div>
             
                         <!-- Submit Button -->
-                        <button class="w-100 mb-2 mt-1 btn btn-primary" type="submit">Create Document Type</button>
+                        <input class="w-100 mb-2 mt-1 btn btn-primary" type="submit" value="Create Document Type">
                     </form>
                 </div>
             </div>
@@ -223,17 +202,20 @@
                 <div class="modal-body p-4 pt-0">
                     <div id="alert-container-edit"></div>
 
-                    <form id="editDocumentTypeForm">
+                    <form id="editDocumentTypeForm" method="post" action="{% url 'edit_document_type' %}">
+                        {% csrf_token %}
                         <!-- Document Type Input -->
                         <div class="mb-3">
                             <label for="editDocumentType" class="form-label">Document Type</label>
-                            <input type="text" class="form-control" id="editDocumentType" placeholder="Enter Document Type" required>
+                            <input type="text" name="edit_document_type"  class="form-control" id="editDocumentType" placeholder="Enter Document Type" required>
                         </div>
+
+                        <input type="hidden" value="" name="edit_document_no" id="editDocumentNo">
 
                         <!-- Category Select -->
                         <div class="mb-3">
                             <label for="editCategory" class="form-label">Category</label>
-                            <select class="form-select" id="editCategory" required>
+                            <select class="form-select" name="edit_category" id="editCategory" required>
                                 <option value="">Select Category</option>
                                 <option value="Regular">Regular</option>
                                 <option value="SCPF">SCPF</option>
@@ -253,16 +235,16 @@
 
                             <div id="edit-route-steps-container">
                                 <!-- Initial Route Step -->
-                                <div class="input-group m-0 route-step">
+                                <div class="input-group m-0 editroute-step">
                                     <span class="input-group-text">Route 1</span>
-                                    <select class="form-select route-select" name="route[]" required>
+                                    <select class="form-select edit-route-select" name="editRoutes[]" required>
                                         <option value="" selected>Select Department</option>
                                         <option value="Accounting">Accounting</option>
                                         <option value="Budgeting">Budgeting</option>
                                         <option value="Cashier">Cashier</option>
                                         <option value="Payroll">Payroll</option>
                                     </select>
-                                    <a href="#" class="btn btn-danger btn-x-red remove-route-step"><i class="fa-solid fa-trash-can"></i></a>
+                                    <a href="#" class="btn btn-danger btn-x-red edit-remove-route-step"><i class="fa-solid fa-trash-can"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -270,7 +252,7 @@
                         <!-- Priority Level Select -->
                         <div class="mb-3">
                             <label for="editPriorityLevel" class="form-label">Priority Level</label>
-                            <select class="form-select" id="editPriorityLevel" required>
+                            <select class="form-select" name="edit_priority_level" id="editPriorityLevel" required>
                                 <option value="">Select Priority Level</option>
                                 <option value="Normal">Normal</option>
                                 <option value="Urgent">Urgent</option>
@@ -309,19 +291,25 @@
     <!-- Include JavaScript files -->
     <script src="{% static 'js/tabs-nav.js' %}"></script>  
     <script src="{% static 'js/records-count.js' %}"></script>
-    <script src="{% static 'js/update_user_status.js' %}"></script>
+    <script src="{% static 'js/doc-management.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        
+
         // Counter for the number of steps
         let routeStepCount = 1;
+        
 
         // Add a new route step only if the current step has a selected value
         document.getElementById('add-route-step').addEventListener('click', function(event) {
+
+
             event.preventDefault(); // Prevent the link from navigating
             
             // Get the last select element
             const lastRouteStep = document.querySelector('#route-steps-container .route-step:last-child select');
-            
+            console.log(lastRouteStep);
+            console.log("last route dine: " + lastRouteStep.value);
             // Check if the last select has a value selected
             if (lastRouteStep && lastRouteStep.value !== "") {
                 routeStepCount++;
@@ -335,7 +323,7 @@
                 newRouteStep.innerHTML = `
                     <span class="input-group-text">Route ${routeStepCount}</span>
                     <select class="form-select route-select" name="route[]" required>
-                        <option value="" disabled selected>Select Department</option>
+                        <option value="" disabled selected>Select Office</option>
                         <option value="Accounting">Accounting</option>
                         <option value="Budgeting">Budgeting</option>
                         <option value="Cashier">Cashier</option>
@@ -356,7 +344,7 @@
                 alert.classList.add('alert', 'alert-warning', 'alert-dismissible', 'fade', 'show');
                 alert.role = 'alert';
                 alert.innerHTML = `
-                    Please select a department before adding a new step.
+                    Please select an office before adding a new step.
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 `;
                 alertContainer.appendChild(alert);
@@ -400,8 +388,9 @@
 
         // Function to update the available options for each route select element
         function updateRouteOptions() {
+            let previousSelected = "";
             const routeSteps = document.querySelectorAll('.route-step select');
-            let previousSelected = ""; // Store the previously selected department
+             // Store the previously selected department
 
             routeSteps.forEach((select, index) => {
                 const currentSelected = select.value;
@@ -409,7 +398,7 @@
 
                 // Clear all options and re-add them
                 const options = ['Accounting', 'Budgeting', 'Cashier', 'Payroll'];
-                select.innerHTML = '<option value="" disabled selected>Select Department</option>';
+                select.innerHTML = '<option value="" disabled selected>Select Office</option>';
 
                 options.forEach(option => {
                     if (index === 0 || option !== previousSelected) {
@@ -439,12 +428,134 @@
             });
         }
 
-        // Trigger update when a select changes
-        document.addEventListener('change', function(e) {
-            if (e.target && e.target.classList.contains('route-select')) {
-                updateRouteOptions();
+        let editRouteStepCount = 1;
+        
+
+        // Add a new route step only if the current step has a selected value
+        document.getElementById('edit-add-route-step').addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent the link from navigating
+            
+            // Get the last select element
+            const editLastRouteStep = document.querySelector('#edit-route-steps-container .edit-route-step');
+            console.log("last route ng kineme: " + editLastRouteStep);
+            // Check if the last select has a value selected
+            if (editLastRouteStep && editLastRouteStep.value !== "") {
+                editRouteStepCount++;
+                const routeStepsContainer = document.getElementById('edit-route-steps-container');
+
+                // Create a new div for the route step
+                const newRouteStep = document.createElement('div');
+                newRouteStep.classList.add('input-group', 'm-0', 'edit-route-step');
+
+                // Set the inner HTML for the new route step
+                newRouteStep.innerHTML = `
+                    <span class="input-group-text">Route ${editRouteStepCount}</span>
+                    <select class="form-select edit-route-select" name="editRoutes[]" required>
+                        <option value="" disabled selected>Select Office</option>
+                        <option value="Accounting">Accounting</option>
+                        <option value="Budgeting">Budgeting</option>
+                        <option value="Cashier">Cashier</option>
+                        <option value="Payroll">Payroll</option>
+                    </select>
+                    <a href="#" class="btn btn-danger btn-x-red edit-remove-route-step"><i class="fa-solid fa-trash-can"></i></a>
+                `;
+
+                // Append the new route step to the container
+                routeStepsContainer.appendChild(newRouteStep);
+
+                // Update the available options for the new select element
+                editUpdateRouteOptions();
+            } else {
+                // Create a Bootstrap alert
+                const alertContainer = document.getElementById('alert-container-edit');
+                const alert = document.createElement('div');
+                alert.classList.add('alert', 'alert-warning', 'alert-dismissible', 'fade', 'show');
+                alert.role = 'alert';
+                alert.innerHTML = `
+                    Please select an office before adding a new step.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                `;
+                alertContainer.appendChild(alert);
+
+                // Optional: Automatically remove the alert after a few seconds
+                setTimeout(() => {
+                    alert.classList.remove('show');
+                    alert.addEventListener('transitionend', () => alert.remove());
+                }, 3000); // Alert will auto-close after 3 seconds
             }
         });
+
+        // Remove a route step and update the numbering and available options
+        document.addEventListener('click', function(e) {
+            if (e.target && e.target.closest('.edit-remove-route-step')) {
+                e.preventDefault(); // Prevent link navigation
+                const routeStep = e.target.closest('.edit-route-step');
+                
+                if (routeStep.querySelector('.input-group-text').textContent === 'Route 1') {
+                    const selectElement = routeStep.querySelector('.form-select');
+                    if (selectElement.value) {
+                        selectElement.value = ""; // Reset the value to placeholder if an option is selected
+                    }
+                } else {
+                    routeStep.remove();
+                    editUpdateRouteStepNumbers();
+                    editUpdateRouteOptions();
+                }
+            }
+        });
+
+        // Function to update step numbers after removal
+        function editUpdateRouteStepNumbers() {
+            const routeSteps = document.querySelectorAll('.edit-route-step');
+            editRouteStepCount = routeSteps.length;
+            routeSteps.forEach((step, index) => {
+                const stepLabel = step.querySelector('.input-group-text');
+                stepLabel.textContent = `Route ${index + 1}`;
+            });
+        }
+
+        // Function to update the available options for each route select element
+        function editUpdateRouteOptions() {
+            let editPreviousSelected = "";
+            const routeSteps = document.querySelectorAll('.edit-route-step select');
+             // Store the previously selected department
+
+            routeSteps.forEach((select, index) => {
+                const editCurrentSelected = select.value;
+                let isValidSelection = false; // Flag to check if the current selection is valid
+
+                // Clear all options and re-add them
+                const options = ['Accounting', 'Budgeting', 'Cashier', 'Payroll'];
+                select.innerHTML = '<option value="" disabled selected>Select Office</option>';
+
+                options.forEach(option => {
+                    if (index === 0 || option !== editPreviousSelected) {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = option;
+                        optionElement.textContent = option;
+
+                        // Add option element to the select
+                        select.appendChild(optionElement);
+
+                        // Check if the current selected value is still a valid option
+                        if (option === editCurrentSelected) {
+                            isValidSelection = true;
+                        }
+                    }
+                });
+
+                // Set the previously selected department for the next step
+                editPreviousSelected = editCurrentSelected;
+
+                // Re-select the current value if it is still valid, otherwise reset to placeholder
+                if (isValidSelection) {
+                    select.value = editCurrentSelected;
+                } else {
+                    select.value = ""; // Reset to the placeholder
+                }
+            });
+        }
+        
     </script>
 </body>
 </html>
