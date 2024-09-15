@@ -20,11 +20,78 @@
 <body id="bodyPd">
     {% include "assets/admin-officer-navbar.html" %}
 
-    <!--Container Main start-->
-    <div class="h-100">
-        <h3 class="fw-semibold">Admin Officer New Record</h3>
+    <div class="container">
+        <h3 class="fw-semibold pb-2">Create New Record</h3>
+        <div class="create-record container p-3 rounded" style="background-color: white;">
+            <h5 class="fw-semibold pb-2"><i class='bx bxs-info-circle py-0' style="color: #2E72EA;"></i>    Document Information</h5 >
+            <form>
+                <div class="row mb-3 g-2">
+                    <div class="col">
+                        <label for="TrackingNumber" class="form-label">Tracking Number</label>
+                        <input type="text" class="form-control" id="TrackingNumber" aria-describedby="TrackingNumber" placeholder="e.g. 112922032-DEPT-001" required>
+                    </div>
+
+                    <div class="col">
+                        <label for="SenderName" class="form-label">Sender Name</label>
+                        <input type="text" class="form-control" id="SenderName" aria-describedby="SenderName" placeholder="e.g. Juan S. Dela Cruz" required>
+                    </div>
+
+                    <div class="col">
+                        <label for="SenderDepartment" class="form-label">Sender Department</label>
+                        <select class="form-select" id="SenderDepartment" aria-label="SenderDepartment" required>
+                            <option value="" disabled selected hidden>Sender Department</option>
+                            <option value="1">Admin</option>
+                            <option value="2">Finance</option>
+                            <option value="3">Budget</option>
+                            <option value="4">Cashier</option>
+                        </select>
+                    </div>
+
+                    <div class="col">
+                        <label for="DocumentType" class="form-label">Select Document Type</label>
+                        <select class="form-select" id="DocumentType" aria-label="DocumentType" required>
+                            <option value="" disabled selected hidden>Document Type</option>
+                            <option value="1">Regular</option>
+                            <option value="2">SCPF</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="Subject" class="form-label">Subject / Particulars</label>
+                    <textarea class="form-control" id="Subject" placeholder="e.g. Request for Amendment of Expense List for Cash Advance Under Special Order No. 34" required></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="Remarks" class="form-label">Remarks</label>
+                    <input type="text" class="form-control" id="Remarks" placeholder="e.g. For Immediate Approval of Cash Disbursement" required>
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmRecordCreation">Confirm</button>
+                </div>
+            </form>
+        </div>
     </div>
-    <!--Container Main end--> 
+
+    <!-- Modal to Confirm Record Creation -->
+    <div class="modal fade" id="confirmRecordCreation" tabindex="-1" aria-labelledby="confirmRecordCreationLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 shadow">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="confirmRecordCreationLabel">Confirm Record Creation</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to confirm this document creation?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="confirmCreate">Confirm</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
     <script>
@@ -36,6 +103,26 @@
                 // Assuming you want to add the class to the element with ID 'targetElement'
                 document.querySelector('#new').classList.add(status);
             }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Modal handling
+            document.querySelectorAll('[data-bs-toggle="modal"]').forEach(button => {
+                button.addEventListener('click', function() {
+                    const userId = this.getAttribute('data-user-id');
+                    const action = this.getAttribute('data-action');
+                    const url = this.getAttribute('data-url').replace('USER_ID', userId);
+                    
+                    // Update modal action URLs
+                    const confirmButton = document.getElementById(`confirm${action.charAt(0).toUpperCase() + action.slice(1)}`);
+                    if (confirmButton) {
+                        confirmButton.onclick = function() {
+                            window.location.href = url;
+                        };
+                    }
+                });
+            });
         });
     </script>
 </body>
