@@ -321,41 +321,6 @@ def director_login(request):
     
     return render(request, "director-login.html", {'form': form})
 
-<<<<<<< HEAD
-# UPDATE USER STATUS
-def update_user_status(request, user_id, action, office):
-    try:
-        user = User.objects.get(user_id=user_id)
-        
-        # Verify User
-        if action == 'verify':
-            user.status = 'active'
-        
-        # Reject User
-        elif action == 'reject':
-            user.status = 'inactive'
-        
-        # Deactivate User
-        elif action == 'deactivate':
-            user.status = 'inactive'
-        
-        # Archive User
-        elif action == 'archive':
-            user.status = 'archived'
-        
-        # Reactivate User
-        elif action == 'reactivate':
-            user.status = 'active'
-
-        user.save()
-        
-    except User.DoesNotExist:
-        messages.error(request, "User not found.")
-    
-    return redirect('system_admin_user_management', office=office)
-=======
->>>>>>> f35dad50bc0c125a699ba20e92a329c415bae2d5
-
 # DIRECTOR DASHBOARD
 def dashboard_director(request):
     return render(request, 'director/director-dashboard.html')
