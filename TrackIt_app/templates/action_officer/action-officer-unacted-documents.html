@@ -14,18 +14,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 	<link href="{% static 'fontawesomefree/css/all.min.css' %}" rel="stylesheet" type="text/css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <title>Admin Officer All Records</title>
+    <title>Action Officer Unacted Documents</title>
 </head>
 
 <body id="bodyPd">
-    {% include "assets/admin-officer-navbar.html" %}
+    {% include "assets/action-officer-navbar.html" %}
 
     <!--Container Main start-->
     <div class="h-100">
-        <h3 class="fw-semibold">Admin Officer All Records</h3>
+        <h3 class="fw-semibold">Action Officer Unacted Documents</h3>
     </div>
     <!--Container Main end-->
-
 
     <script>
         // On page load, read the URL parameter and update the class
@@ -34,7 +33,7 @@
             const status = params.get('status');
             if (status) {
                 // Assuming you want to add the class to the element with ID 'targetElement'
-                document.querySelector('#all-records').classList.add(status);
+                document.querySelector('#overdue').classList.add(status);
             }
         });
     </script>

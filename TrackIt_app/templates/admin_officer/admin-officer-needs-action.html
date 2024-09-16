@@ -25,6 +25,18 @@
         <h3 class="fw-semibold">Admin Officer Needs Action</h3>
     </div>
     <!--Container Main end-->
+
+    <script>
+        // On page load, read the URL parameter and update the class
+        document.addEventListener('DOMContentLoaded', function () {
+            const params = new URLSearchParams(window.location.search);
+            const status = params.get('status');
+            if (status) {
+                // Assuming you want to add the class to the element with ID 'targetElement'
+                document.querySelector('#needs-action').classList.add(status);
+            }
+        });
+    </script>
 </body>
 </html>
 
