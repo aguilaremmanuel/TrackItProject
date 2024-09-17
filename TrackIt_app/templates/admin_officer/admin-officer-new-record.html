@@ -24,26 +24,27 @@
         <h3 class="fw-semibold pb-2">Create New Record</h3>
         <div class="create-record container p-3 rounded" style="background-color: white;">
             <h5 class="fw-semibold pb-2"><i class='bx bxs-info-circle py-0' style="color: #2E72EA;"></i>    Document Information</h5 >
-            <form>
+            <form method="post" action="{% url 'new_record_admin_officer' %}" id="recordForm">
+                {% csrf_token %}
                 <div class="row mb-3 g-2">
                     <div class="col-12 col-md-4">
                         <label for="TrackingNumber" class="form-label">Tracking Number</label>
-                        <input type="text" class="form-control" id="TrackingNumber" aria-describedby="TrackingNumber" placeholder="e.g. 112922032-DEPT-001" required>
+                        <input type="text" class="form-control" name="tracking_no" id="TrackingNumber" aria-describedby="TrackingNumber" placeholder="e.g. 112922032-DEPT-001" required>
                     </div>
 
                     <div class="col-12 col-md-4">
                         <label for="SenderName" class="form-label">Sender Name</label>
-                        <input type="text" class="form-control" id="SenderName" aria-describedby="SenderName" placeholder="e.g. Juan S. Dela Cruz" required>
+                        <input type="text" class="form-control" name="sender_name" id="SenderName" aria-describedby="SenderName" placeholder="e.g. Juan S. Dela Cruz" required>
                     </div>
 
                     <div class="col-12 col-md-4">
                         <label for="SenderDepartment" class="form-label">Sender Department</label>
-                        <select class="form-select" id="SenderDepartment" aria-label="SenderDepartment" required>
-                            <option value="" disabled selected hidden>Sender Department</option>
-                            <option value="1">Admin</option>
-                            <option value="2">Finance</option>
-                            <option value="3">Budget</option>
-                            <option value="4">Cashier</option>
+                        <select class="form-select" name="sender_dept" id="SenderDepartment" aria-label="SenderDepartment" required>
+                            <option value="">Select Sender Department</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Finance">Finance</option>
+                            <option value="Budget">Budget</option>
+                            <option value="Cashier">Cashier</option>
                         </select>
                     </div>
                 </div>
@@ -51,35 +52,33 @@
                 <div class="row mb-3 g-2">
                     <div class="col-12 col-md-6">
                         <label for="DocumentCategory" class="form-label">Select Document Category</label>
-                        <select class="form-select" id="DocumentCategory" aria-label="DocumentCategory" required>
-                            <option value="" disabled selected hidden>Document Category</option>
-                            <option value="1">Regular</option>
-                            <option value="2">SCPF</option>
+                        <select class="form-select" name="doc_category" id="DocumentCategory" aria-label="DocumentCategory" required>
+                            <option value="">Select Document Category</option>
+                            <option value="regular">Regular</option>
+                            <option value="SCPF">SCPF</option>
                         </select>
                     </div>
 
                     <div class="col-12 col-md-6">
                         <label for="DocumentType" class="form-label">Select Document Type</label>
-                        <select class="form-select" id="DocumentType" aria-label="DocumentType" disabled>
-                            <option value="" disabled selected hidden>Document Type</option>
-                            <option value="1">Reimbursement</option>
-                            <option value="2">Procurement</option>
+                        <select class="form-select" name="doc_type" id="DocumentType" aria-label="DocumentType" disabled required>
+                            <option value="">Select Document Type</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="mb-3">
                     <label for="Subject" class="form-label">Subject / Particulars</label>
-                    <textarea class="form-control" id="Subject" placeholder="e.g. Request for Amendment of Expense List for Cash Advance Under Special Order No. 34" required></textarea>
+                    <input class="form-control" name="subject" id="Subject" placeholder="e.g. Request for Amendment of Expense List for Cash Advance Under Special Order No. 34" required>
                 </div>
 
                 <div class="mb-3">
                     <label for="Remarks" class="form-label">Remarks</label>
-                    <input type="text" class="form-control" id="Remarks" placeholder="e.g. For Immediate Approval of Cash Disbursement" required>
+                    <textarea type="text" class="form-control" name="remarks"  id="Remarks" placeholder="e.g. For Immediate Approval of Cash Disbursement"></textarea>
                 </div>
 
                 <div class="d-flex justify-content-end">
-                    <button type="submit" class="btn btn-primary" id="submitBtn">Confirm</button>
+                    <button type="button" class="btn btn-primary" id="submitBtn">Confirm</button>
                 </div>
             </form>
         </div>
@@ -128,7 +127,6 @@
 
     <script src="{% static 'js/tabs-nav.js' %}"></script>  
     <script src="{% static 'js/records-count.js' %}"></script>
-    <script src="{% static 'js/update_user_status.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // On page load, read the URL parameter and update the class
@@ -163,7 +161,35 @@
             });
         });
     </script>
-    
+    <script>
+        document.getElementById('DocumentCategory').addEventListener('change', function() {
+            var category = this.value;
+            var docTypeSelect = document.getElementById('DocumentType');
+
+            if (category) {
+                fetch(`/load-document-types/?category=${category}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Clear previous options
+                    docTypeSelect.innerHTML = '<option value="">Select Document Type</option>';
+                    // Enable the dropdown
+                    docTypeSelect.disabled = false;
+                    // Populate new options
+                    data.forEach(function(item) {
+                        var option = new Option(item.document_type, item.document_no);
+                        docTypeSelect.add(option);
+                    });
+                });
+            } else {
+                docTypeSelect.innerHTML = '<option value="">Select Document Type</option>';
+                docTypeSelect.disabled = true;
+            }
+        });
+
+        document.getElementById('confirmCreate').addEventListener('click', function() {
+            document.getElementById('recordForm').submit();
+        });
+    </script>
 </body>
 </html>
 

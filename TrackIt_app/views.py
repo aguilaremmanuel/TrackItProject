@@ -5,11 +5,15 @@ from .models import *
 from django.utils import timezone
 from django.contrib import messages
 from .models import User
+from django.http import HttpResponse, JsonResponse
+from django.core.mail import send_mail
+from django.conf import settings
 
 
 # USER LOGIN
 def user_login(request):
     if request.method == 'POST':
+
         user_id = request.POST['user_id']
         password = request.POST['password']
 
@@ -31,15 +35,17 @@ def user_login(request):
             messages.error(request, "Your account has been deleted and cannot be accessed.")
             return redirect('user_login')
 
-        # Manually log the user in by setting the session
-        request.session['user_id'] = user.user_id
+        request.session['role'] = user.role
 
         # Redirect based on user role
         if user.role == 'ADO':  # Admin Officer
+            request.session['ado_user_id'] = user.user_id
             return redirect('dashboard_admin_officer')
         elif user.role == 'SRO':  # Sub-Receiving Officer
+            request.session['sro_user_id'] = user.user_id
             return redirect('dashboard_sro')
         elif user.role == 'ACT':  # Action Officer
+            request.session['act_user_id'] = user.user_id
             return redirect('dashboard_action_officer')
         else:
             # In case the role is not recognized
@@ -48,6 +54,21 @@ def user_login(request):
 
     return render(request, "user-login.html")
 
+
+def user_logout(request):
+
+    role = request.session.get('role')
+
+    if role == 'ADO':
+        del request.session['ado_user_id']
+    elif role == 'SRO':
+        del request.session['sro_user_id']
+    elif role == 'ACT':
+        del request.session['act_user_id']
+
+    del request.session['role']
+    
+    return redirect(user_login)
 
 #USER UPDATE STATUS AND EMAILING FUNCTION
 def update_user_status(request, user_id, action, office):
@@ -345,7 +366,54 @@ def dashboard_admin_officer(request):
 
 # ADMIN OFFICER NEW RECORD
 def new_record_admin_officer(request):
+
+    ado_user_id = request.session.get('ado_user_id')
+
+    if ado_user_id:
+        pass
+    else:
+        return redirect('user_login')
+
+    if request.method == 'POST':
+
+        tracking_no = request.POST.get('tracking_no')
+        sender_name = request.POST.get('sender_name')
+        sender_dept = request.POST.get('sender_dept')
+        doc_type = request.POST.get('doc_type')
+        subject = request.POST.get('subject')
+        remarks = request.POST.get('remarks')
+
+        document_type_instance = DocumentType.objects.get(document_no=doc_type)
+
+        document = Document.objects.create(
+            tracking_no=tracking_no,
+            sender_name=sender_name,
+            sender_department=sender_dept,
+            document_type=document_type_instance,
+            subject=subject,
+            remarks=remarks,
+            status='For DIR Approval'  # You can modify this as needed
+        )
+
+        ActivityLogs.objects.create(
+            time_stamp = timezone.now(),
+            activity = 'created',
+            document_id = document,
+            user_id_id = ado_user_id
+        )
+
+
+
     return render(request, 'admin_officer/admin-officer-new-record.html')
+
+def load_document_types(request):
+    category = request.GET.get('category')
+
+    if category in ['SCPF', 'regular']:
+        document_types = DocumentType.objects.filter(category=category).values('document_no', 'document_type')
+        return JsonResponse(list(document_types), safe=False)
+    else:
+        return JsonResponse({'error': 'Invalid category'}, status=400)
 
 # ADMIN OFFICER ALL RECORDS
 def all_records_admin_officer(request):

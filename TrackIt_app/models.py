@@ -57,10 +57,11 @@ class Document(models.Model):
     document_no = models.BigAutoField(primary_key=True)
     tracking_no = models.CharField(max_length=30)
     qr_code = models.CharField(max_length=15)
+    sender_name = models.CharField(max_length=45, null=True, blank=True)
+    sender_department = models.CharField(max_length=45, null=True, blank=True)
     document_type = models.ForeignKey(DocumentType, on_delete=models.CASCADE, null=True, blank=True)
     next_route = models.CharField(max_length=45, null=True)
     subject = models.CharField(max_length=120)
-    priority_level = models.ForeignKey(PriorityLevel, on_delete=models.CASCADE)
     remarks = models.CharField(max_length=200, null=True)
     status = models.CharField(max_length=25)
     class Meta:
@@ -70,7 +71,7 @@ class ActivityLogs(models.Model):
     no = models.BigAutoField(primary_key=True)
     time_stamp = models.DateTimeField(blank=True)
     activity = models.CharField(max_length=20)
-    document_id = models.ForeignKey(Document, on_delete=models.CASCADE)
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    document_id = models.ForeignKey(Document, on_delete=models.SET_NULL, null=True, blank=True)
+    user_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     class Meta:
         db_table = 'tbl_activity_logs'
