@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.urls import path
 from . import views
 
+
 urlpatterns = [
     path('login/',views.user_login, name='user_login'),
     path('logout/', views.user_logout, name='user_logout'),
@@ -12,17 +13,19 @@ urlpatterns = [
 
     path('system-admin-user-management/<str:office>/', views.system_admin_user_management, name='system_admin_user_management'),
     path('update-user-status/<str:user_id>/<str:action>/', views.update_user_status, name='update_user_status'),
-    path('update-user-status/<str:user_id>/<str:action>/<str:office>', views.update_user_status, name='update_user_status'),
-
+    path('update-user-status/<str:user_id>/<str:action>/<str:office>/<str:user_type>', views.update_user_status, name='update_user_status'),
     path('system-admin-doc-management/',views.system_admin_doc_management, name='system_admin_doc_management'),
     path('edit-document-type/', views.edit_document_type, name='edit_document_type'),
     path('delete-document-type/<int:document_no>/', views.delete_document_type, name='delete_document_type'),
-
+    path('system-admin-new-record/',views.new_record_system_admin, name='new_record_system_admin'),
+    
     path('director-login/',views.director_login, name='director_login'),
-
+    path('director-user-management/<str:office>/', views.director_user_management, name='director_user_management'),
+    path('director-doc-management/',views.director_doc_management, name='director_doc_management'),
+    path('director-new-record/',views.new_record_director, name='new_record_director'),
     path('director-dashboard/',views.dashboard_director, name='dashboard_director'),
-    path('admin-officer-dashboard/',views.dashboard_admin_officer, name='dashboard_admin_officer'),
 
+    path('admin-officer-dashboard/',views.dashboard_admin_officer, name='dashboard_admin_officer'),
     path('admin-officer-new-record/',views.new_record_admin_officer, name='new_record_admin_officer'),
     path('load-document-types/', views.load_document_types, name='load_document_types'),
 

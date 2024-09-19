@@ -14,11 +14,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="{% static 'fontawesomefree/css/all.min.css' %}" rel="stylesheet" type="text/css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <title>System Admin Document Management</title>
+    <title>Director Document Management</title>
 </head>
 
 <body id="bodyPd">
-    {% include "assets/system-admin-navbar.html" %}
+    {% include "assets/director-navbar.html" %}
 
     <!--Container Main start-->
     <div class="h-100">
@@ -125,9 +125,9 @@
                 <div class="modal-body p-4 pt-0">    
                     <div id="alert-container"></div>
 
-                    <form id="addDocumentTypeForm" method="post" action="{% url 'system_admin_doc_management' %}">
+                    <form id="addDocumentTypeForm" method="post" action="{% url 'director_doc_management' %}">
                         {% csrf_token %}
-                        <input type="hidden" name="form_source" value="system_admin">
+                        <input type="hidden" name="form_source" value="director">
                         <!-- Document Type Input -->
                         <div class="mb-3">
                             <label for="documentType" class="form-label">Document Type</label>
@@ -205,7 +205,7 @@
 
                     <form id="editDocumentTypeForm" method="post" action="{% url 'edit_document_type' %}">
                         {% csrf_token %}
-                        <input type="hidden" name="form_source" value="system_admin">
+                        <input type="hidden" name="form_source" value="director">
                         <!-- Document Type Input -->
                         <div class="mb-3">
                             <label for="editDocumentType" class="form-label">Document Type</label>

@@ -14,12 +14,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="{% static 'fontawesomefree/css/all.min.css' %}" rel="stylesheet" type="text/css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <title>System Admin User Management</title>
+    <title>Director User Management</title>
 </head>
 
 <body id="bodyPd">
     
-    {% include "assets/system-admin-navbar.html" %}
+    {% include "assets/director-navbar.html" %}
 
     <!--Container Main start-->
     <div class="h-100">
@@ -28,22 +28,22 @@
         <div class="my-3 p-3 pt-2 bg-white rounded shadow-sm">
             <ul class="custom-tabs">
                 <li class="tab-item">
-                    <a class="tab-link {% if office == 'all-office' %}active{% endif %}" href="{% url 'system_admin_user_management' 'all-office' %}">All Offices</a>
+                    <a class="tab-link {% if office == 'all-office' %}active{% endif %}" href="{% url 'director_user_management' 'all-office' %}">All Offices</a>
                 </li>
                 <li class="tab-item">
-                    <a class="tab-link {% if office == 'administrative' %}active{% endif %}" href="{% url 'system_admin_user_management' 'administrative' %}">Administrative</a>
+                    <a class="tab-link {% if office == 'administrative' %}active{% endif %}" href="{% url 'director_user_management' 'administrative' %}">Administrative</a>
                 </li>
                 <li class="tab-item">
-                    <a class="tab-link {% if office == 'accounting' %}active{% endif %}" href="{% url 'system_admin_user_management' 'accounting' %}">Accounting</a>
+                    <a class="tab-link {% if office == 'accounting' %}active{% endif %}" href="{% url 'director_user_management' 'accounting' %}">Accounting</a>
                 </li>
                 <li class="tab-item">
-                    <a class="tab-link {% if office == 'budgeting' %}active{% endif %}" href="{% url 'system_admin_user_management' 'budgeting' %}">Budgeting</a>
+                    <a class="tab-link {% if office == 'budgeting' %}active{% endif %}" href="{% url 'director_user_management' 'budgeting' %}">Budgeting</a>
                 </li>
                 <li class="tab-item">
-                    <a class="tab-link {% if office == 'cashier' %}active{% endif %}" href="{% url 'system_admin_user_management' 'cashier' %}">Cashier</a>
+                    <a class="tab-link {% if office == 'cashier' %}active{% endif %}" href="{% url 'director_user_management' 'cashier' %}">Cashier</a>
                 </li>
                 <li class="tab-item">
-                    <a class="tab-link {% if office == 'payroll' %}active{% endif %}" href="{% url 'system_admin_user_management' 'payroll' %}">Payroll</a>
+                    <a class="tab-link {% if office == 'payroll' %}active{% endif %}" href="{% url 'director_user_management' 'payroll' %}">Payroll</a>
                 </li>
             </ul>
 
@@ -95,10 +95,10 @@
                                         <td><span class="badge badge-orange rounded-pill fw-semibold">FOR VERIFICATION</span></td>
                                         <td>
                                             <div class="table-action">
-                                                <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#verifyUserModal" data-user-id="{{ user.user_id }}" data-action="verify" data-url="{% url 'update_user_status' 'USER_ID' 'verify' office 'system_admin' %}">
+                                                <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#verifyUserModal" data-user-id="{{ user.user_id }}" data-action="verify" data-url="{% url 'update_user_status' 'USER_ID' 'verify' office 'director' %}">
                                                     <i class="fa-solid fa-user-check"></i>
                                                 </button>
-                                                <button type="button" class="btn btn-sm btn-red" data-bs-toggle="modal" data-bs-target="#rejectUserModal" data-user-id="{{ user.user_id }}" data-action="reject" data-url="{% url 'update_user_status' 'USER_ID' 'reject' office 'system_admin' %}">
+                                                <button type="button" class="btn btn-sm btn-red" data-bs-toggle="modal" data-bs-target="#rejectUserModal" data-user-id="{{ user.user_id }}" data-action="reject" data-url="{% url 'update_user_status' 'USER_ID' 'reject' office 'director' %}">
                                                     <i class="fa-solid fa-user-xmark"></i>
                                                 </button>
                                             </div>
@@ -107,7 +107,7 @@
                                         <td><span class="badge badge-green rounded-pill fw-semibold">ACTIVE</span></td>
                                         <td>
                                             <div class="table-action">
-                                                <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#deactivateUserModal" data-user-id="{{ user.user_id }}" data-action="deactivate" data-url="{% url 'update_user_status' 'USER_ID' 'deactivate' office 'system_admin' %}">
+                                                <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#deactivateUserModal" data-user-id="{{ user.user_id }}" data-action="deactivate" data-url="{% url 'update_user_status' 'USER_ID' 'deactivate' office 'director' %}">
                                                     <i class="fa-solid fa-user-lock"></i>
                                                 </button>
                                             </div>
@@ -116,10 +116,10 @@
                                         <td><span class="badge badge-red rounded-pill fw-semibold">DEACTIVATED</span></td>
                                         <td>
                                             <div class="table-action">
-                                                <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#reactivateUserModal" data-user-id="{{ user.user_id }}" data-action="reactivate" data-url="{% url 'update_user_status' 'USER_ID' 'reactivate' office 'system_admin' %}">
+                                                <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#reactivateUserModal" data-user-id="{{ user.user_id }}" data-action="reactivate" data-url="{% url 'update_user_status' 'USER_ID' 'reactivate' office 'director' %}">
                                                     <i class="fa-solid fa-user-check"></i>
                                                 </button>
-                                                <button type="button" class="btn btn-sm btn-red" data-bs-toggle="modal" data-bs-target="#archiveUserModal" data-user-id="{{ user.user_id }}" data-action="archive" data-url="{% url 'update_user_status' 'USER_ID' 'archive' office 'system_admin' %}">
+                                                <button type="button" class="btn btn-sm btn-red" data-bs-toggle="modal" data-bs-target="#archiveUserModal" data-user-id="{{ user.user_id }}" data-action="archive" data-url="{% url 'update_user_status' 'USER_ID' 'archive' office 'director' %}">
                                                     <i class="fa-solid fa-user-minus"></i>
                                                 </button>
                                             </div>

@@ -8,7 +8,30 @@ from .models import User
 from django.http import HttpResponse, JsonResponse
 from django.core.mail import send_mail
 from django.conf import settings
+from django.http import HttpResponseBadRequest
 
+
+# USER LOGOUT
+def user_logout(request):
+
+    role = request.session.get('role')
+
+    if role == 'ADO':
+        del request.session['ado_user_id']
+    elif role == 'SRO':
+        del request.session['sro_user_id']
+    elif role == 'ACT':
+        del request.session['act_user_id']
+    elif role == 'SYSTEM_ADMIN':
+        del request.session['system_admin_user_id']
+        return redirect(system_admin_login)
+    elif role == 'DIRECTOR':
+        del request.session['director_user_id']
+        return redirect(director_login)
+        
+
+    del request.session['role']
+    return redirect(user_login)
 
 # USER LOGIN
 def user_login(request):
@@ -54,73 +77,6 @@ def user_login(request):
 
     return render(request, "user-login.html")
 
-
-def user_logout(request):
-
-    role = request.session.get('role')
-
-    if role == 'ADO':
-        del request.session['ado_user_id']
-    elif role == 'SRO':
-        del request.session['sro_user_id']
-    elif role == 'ACT':
-        del request.session['act_user_id']
-
-    del request.session['role']
-    
-    return redirect(user_login)
-
-#USER UPDATE STATUS AND EMAILING FUNCTION
-def update_user_status(request, user_id, action, office):
-    user = User.objects.get(pk=user_id)  # Fetch the user object
-
-    if action == 'verify':
-        user.status = 'active'
-        subject = 'Your Account Has Been Verified'
-        # Include user_id and password in the message
-        message = (
-            f"Hello {user.firstname},\n\n"
-            f"Your account has been verified and is now active.\n\n"
-            f"Your User ID: {user.user_id}\n"
-            f"Your Password: {user.password}  \n\n"
-            "Please keep this information secure.\n\n"
-            "Regards,\n"
-            "TrackIt Team"
-        )
-    elif action == 'reject':
-        user.status = 'rejected'
-        subject = 'Your Account Has Been Rejected'
-        message = 'Your account has been rejected. Please contact support for more information.'
-    elif action == 'deactivate':
-        user.status = 'inactive'
-        subject = 'Your Account Has Been Deactivated'
-        message = 'Your account has been deactivated. Please contact support to reactivate it.'
-    elif action == 'archive':
-        user.status = 'archived'
-        subject = 'Your Account Has Been Archived'
-        message = 'Your account has been archived. You will not be able to log in.'
-    elif action == 'reactivate':
-        user.status = 'active'
-        subject = 'Your Account Has Been Reactivated'
-        message = 'Your account has been reactivated and is now active.'
-    else:
-        return HttpResponse("Invalid action", status=400)
-
-    user.save()  # Save the updated status
-
-    if action != 'archive':
-        # Send email
-        send_mail(
-            subject,
-            message,
-            settings.DEFAULT_FROM_EMAIL,
-            [user.email],
-            fail_silently=False,
-        )
-
-    return redirect('system_admin_user_management', office=office)
-
-
 # USER SIGNUP
 def user_signup(request):
     if request.method == 'POST':
@@ -150,7 +106,6 @@ def user_signup(request):
     
     return render(request, "user-signup.html", {'form': form})
 
-
 # GENERATE USER ID
 def generate_user_id(role_prefix):
     max_user_id = User.objects.filter(user_id__startswith=f"{role_prefix}-").aggregate(max_id=Max('user_id'))['max_id']
@@ -163,34 +118,106 @@ def generate_user_id(role_prefix):
 
 # SYSTEM ADMIN LOGIN
 def system_admin_login(request):
+    # Default credentials
+    default_user_id = 'SYS-0001'
+    default_password = 'SysAdmin@2024'
+
     if request.method == 'POST':
         form = SystemAdminLoginForm(request.POST)
         if form.is_valid():
             user_id = form.cleaned_data['user_id']
             password = form.cleaned_data['password']
             
-            # Default credentials
-            default_user_id = 'SYS-0001'
-            default_password = 'SysAdmin@2024'
-            
             # Check if the provided credentials match the default credentials
             if user_id == default_user_id and password == default_password:
-                # You might want to create a dummy user or just proceed
-                # For demonstration, we assume the user can log in successfully
+                # Ensure the default user exists and is active
+                user_instance, created = User.objects.get_or_create(
+                    user_id=default_user_id,
+                    defaults={'password': default_password, 'role': 'System Admin', 'status': 'active'}
+                )
+
+                if created:
+                    print(f"Default user {default_user_id} was created and set to active.")
+                else:
+                    # Update status if user already exists but not active
+                    if user_instance.status != 'active':
+                        user_instance.status = 'active'
+                        user_instance.save()
+                        print(f"Default user {default_user_id} status was updated to active.")
+
+                # Store the credentials in session to keep the user logged in
+                request.session['system_admin_user_id'] = default_user_id
+                request.session['role'] = 'SYSTEM_ADMIN'
+
+                # Redirect to the system admin dashboard
                 return redirect('system_admin_dashboard')
             else:
                 messages.error(request, "Invalid credentials.")
     else:
         form = SystemAdminLoginForm()
-    
+
     return render(request, "system_admin/system-admin-login.html", {'form': form})
+
+# SYSTEM ADMIN OFFICER NEW RECORD
+def new_record_system_admin(request):
+    system_admin_user_id = request.session.get('system_admin_user_id')
+
+    if  system_admin_user_id:
+        pass
+    else:
+        return redirect('system_admin_login')
+
+        # Credentials are correct, proceed to handle new record creation
+    if request.method == 'POST':
+        tracking_no = request.POST.get('tracking_no')
+        sender_name = request.POST.get('sender_name')
+        sender_dept = request.POST.get('sender_dept')
+        doc_type = request.POST.get('doc_type')
+        subject = request.POST.get('subject')
+        remarks = request.POST.get('remarks')
+
+        document_type_instance = DocumentType.objects.get(document_no=doc_type)
+
+        document = Document.objects.create(
+            tracking_no=tracking_no,
+            sender_name=sender_name,
+            sender_department=sender_dept,
+            document_type=document_type_instance,
+            subject=subject,
+            remarks=remarks,
+            status='For DIR Approval'  # Modify this as needed
+        )
+
+        # Create ActivityLogs entry with default user_id from the session
+        ActivityLogs.objects.create(
+            time_stamp=timezone.now(),
+            activity='created',
+            document_id=document,
+            user_id_id=request.session.get('user_id')  # Use session-stored user ID
+        )
+
+    return render(request, 'system_admin/system-admin-new-record.html')
 
 # SYSTEM ADMIN DASHBOARD
 def system_admin_dashboard(request):
+    system_admin_user_id = request.session.get('system_admin_user_id')
+
+    if  system_admin_user_id:
+        pass
+    else:
+
+        return redirect('system_admin_login')
     return render(request, 'system_admin/system-admin-dashboard.html')
 
 # SYSTEM ADMIN USER MANAGEMENT MODULE
 def system_admin_user_management(request, office):
+    system_admin_user_id = request.session.get('system_admin_user_id')
+
+    if  system_admin_user_id:
+        pass
+    else:
+        return redirect('system_admin_login')
+
     if office == 'all-office':
         users = User.objects.exclude(status='archived')
     elif office == 'administrative':
@@ -211,6 +238,10 @@ def system_admin_user_management(request, office):
     else:
         users = User.objects.none()
 
+     # Exclude the user with user_id 'SYS-0001'
+    users = users.exclude(user_id='SYS-0001')
+    users = users.exclude(user_id='DIR-0001')
+
     sort_by = request.GET.get('sort_by')
     order = request.GET.get('order', 'asc')
 
@@ -224,6 +255,12 @@ def system_admin_user_management(request, office):
 
 # SYSTEM ADMIN DOC MANAGEMENT
 def system_admin_doc_management(request):
+    system_admin_user_id = request.session.get('system_admin_user_id')
+
+    if  system_admin_user_id:
+        pass
+    else:
+        return redirect('system_admin_login')
 
     if request.method == 'POST':
         
@@ -280,34 +317,46 @@ def system_admin_doc_management(request):
 
 # SYSTEM ADMIN FUNCTION: EDIT DOCUMENT TYPE
 def edit_document_type(request):
-
     if request.method == 'POST':
-
         document_no = request.POST.get('edit_document_no')
         document_type = request.POST.get('edit_document_type')
         category = request.POST.get('edit_category')
         priority_level_str = request.POST.get('edit_priority_level')
         route_list = request.POST.getlist('editRoutes[]')
+        form_source = request.POST.get('form_source')  # Get the form source
 
+        # Deleting existing document routes
         routes = DocumentRoute.objects.filter(document_type_id=document_no)
         routes.delete()
-        
+
+        # Adjusting the priority level if necessary
         if priority_level_str == 'For Preferential Action':
             priority_level_str = 'for pref. action'
 
         priority_level = PriorityLevel.objects.get(priority_level=priority_level_str)
 
+        # Updating document type
         new_document_type = DocumentType.objects.get(document_no=document_no)
         new_document_type.document_type = document_type
         new_document_type.category = category
         new_document_type.priority_level = priority_level
         new_document_type.save()
 
+        # Adding new document routes
         for route in route_list:
             office = Office.objects.get(office_name=route)
             DocumentRoute.objects.create(document_type_id=new_document_type.document_no, route=office)
 
-    return redirect('system_admin_doc_management')
+        # Redirect based on the form source
+        if form_source == 'system_admin':
+            return redirect('system_admin_doc_management')
+        elif form_source == 'director':
+            return redirect('director_doc_management')
+        else:
+            raise ValueError("Invalid form source provided")  # Raise an error if the form source is unrecognized
+
+    # If it's not a POST request, raise an error or handle appropriately
+    raise ValueError("This view only handles POST requests.")
 
 # SYSTEM ADMIN FUNCTION: DELETE DOCUMENT TYPE
 def delete_document_type(request, document_no):
@@ -320,28 +369,247 @@ def delete_document_type(request, document_no):
 
 # DIRECTOR LOGIN
 def director_login(request):
+    # Default credentials
+    default_user_id = 'DIR-0001'
+    default_password = 'Director@2024'
+
     if request.method == 'POST':
         form = DirectorLoginForm(request.POST)
         if form.is_valid():
             user_id = form.cleaned_data['user_id']
             password = form.cleaned_data['password']
-    
-            # Default credentials
-            default_user_id = 'DIR-0001'
-            default_password = 'Director@2024'
             
             # Check if the provided credentials match the default credentials
             if user_id == default_user_id and password == default_password:
+                # Ensure the default user exists and is active
+                user_instance, created = User.objects.get_or_create(
+                    user_id=default_user_id,
+                    defaults={'password': default_password, 'role': 'Director', 'status': 'active'}
+                )
+
+                if created:
+                    print(f"Default user {default_user_id} was created and set to active.")
+                else:
+                    # Update status if user already exists but is not active
+                    if user_instance.status != 'active':
+                        user_instance.status = 'active'
+                        user_instance.save()
+                        print(f"Default user {default_user_id} status was updated to active.")
+
+                # Store the credentials in session to keep the user logged in
+                request.session['director_user_id'] = default_user_id
+                request.session['role'] = 'DIRECTOR'
+
+                # Redirect to the director's dashboard
                 return redirect('dashboard_director')
             else:
                 messages.error(request, "Invalid credentials.")
     else:
         form = DirectorLoginForm()
-    
+
     return render(request, "director-login.html", {'form': form})
+
+# DIRECTOR NEW RECORD
+def new_record_director(request):
+    director_user_id = request.session.get('director_user_id')
+
+    if  director_user_id:
+        pass
+    else:
+        return redirect('director_login')
+    
+    # Credentials are correct, proceed to handle new record creation
+    if request.method == 'POST':
+        tracking_no = request.POST.get('tracking_no')
+        sender_name = request.POST.get('sender_name')
+        sender_dept = request.POST.get('sender_dept')
+        doc_type = request.POST.get('doc_type')
+        subject = request.POST.get('subject')
+        remarks = request.POST.get('remarks')
+
+        document_type_instance = DocumentType.objects.get(document_no=doc_type)
+
+        document = Document.objects.create(
+            tracking_no=tracking_no,
+            sender_name=sender_name,
+            sender_department=sender_dept,
+            document_type=document_type_instance,
+            subject=subject,
+            remarks=remarks,
+            status='For Approval'  # Director's role-specific status
+        )
+
+        # Create an ActivityLogs entry with the director's user ID from the session
+        ActivityLogs.objects.create(
+            time_stamp=timezone.now(),
+            activity='created',
+            document_id=document,
+            user_id_id=request.session.get('user_id')  # Use session-stored user ID
+        )
+
+    return render(request, 'director/director-new-record.html')
+
+# SYSTEM ADMIN DOC MANAGEMENT
+def director_doc_management(request):
+    director_user_id = request.session.get('director_user_id')
+
+    if  director_user_id:
+        pass
+    else:
+        return redirect('director_login')
+
+    if request.method == 'POST':
+        
+        document_type = request.POST.get('document_type')
+        category = request.POST.get('category')
+        priority_level_str = request.POST.get('priority_level')
+        route_list = request.POST.getlist('route[]')
+        
+        priority_level = PriorityLevel.objects.get(priority_level=priority_level_str)
+
+        new_document_type = DocumentType.objects.create(
+            document_type=document_type,
+            category=category,
+            priority_level=priority_level
+        )
+
+        for route in route_list:
+            office = Office.objects.get(office_name=route)  # Fetch the Office instance
+            DocumentRoute.objects.create(
+                document_type=new_document_type,
+                route=office
+            )
+    
+    records = []
+
+    document_type_records = DocumentType.objects.all()
+
+    sort_by = request.GET.get('sort_by')
+    order = request.GET.get('order', 'asc')
+
+    if sort_by in ['document_type', 'category', 'priority_level_id', 'email']:  # Only allow sorting by valid fields
+        if order == 'asc':
+            document_type_records = document_type_records.order_by(sort_by)
+        else:
+            document_type_records = document_type_records.order_by(f'-{sort_by}')
+
+    routes = DocumentRoute.objects.all()
+
+    for document_type_record in document_type_records:
+        record = {}
+        record['document_no'] = document_type_record.document_no
+        record['document_type'] = document_type_record.document_type
+        record['category'] = document_type_record.category
+        record['priority_level'] = document_type_record.priority_level.priority_level
+
+        temp_route = []
+        for route in routes:
+            if route.document_type_id == document_type_record.document_no:
+                temp_route.append(route.route.office_name)
+        record['routes'] = temp_route
+        records.append(record)
+
+    return render(request, 'director/director-doc-management.html', {'records': records})
+
+# DIRECTOR USER MANAGEMENT MODULE
+def director_user_management(request, office):
+    director_user_id = request.session.get('director_user_id')
+
+    if  director_user_id:
+        pass
+    else:
+        return redirect('director_login')
+
+    if office == 'all-office':
+        users = User.objects.exclude(status='archived')
+    elif office == 'administrative':
+        office_instance  = Office.objects.get(office_id='ADM')
+        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
+    elif office == 'accounting':
+        office_instance  = Office.objects.get(office_id='ACC')
+        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
+    elif office == 'budgeting':
+        office_instance  = Office.objects.get(office_id='BMD')
+        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
+    elif office == 'cashier':
+        office_instance  = Office.objects.get(office_id='CSR')
+        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
+    elif office == 'payroll':
+        office_instance  = Office.objects.get(office_id='PRL')
+        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
+    else:
+        users = User.objects.none()
+
+     # Exclude the user with user_id 'SYS-0001'
+    users = users.exclude(user_id='SYS-0001')
+    users = users.exclude(user_id='DIR-0001')
+
+    sort_by = request.GET.get('sort_by')
+    order = request.GET.get('order', 'asc')
+
+    if sort_by in ['role', 'status', 'lastname', 'email']:  # Only allow sorting by valid fields
+        if order == 'asc':
+            users = users.order_by(sort_by)
+        else:
+            users = users.order_by(f'-{sort_by}')
+
+    return render(request, 'director/director-user-management.html', {'users': users, 'office': office})
+
+#USER UPDATE STATUS AND EMAILING FUNCTION
+def update_user_status(request, user_id, action, office, user_type):
+    user = User.objects.get(pk=user_id)
+
+    # Perform action
+    if action == 'verify':
+        user.status = 'active'
+        subject = 'Your Account Has Been Verified'
+        message = f"Hello {user.firstname},\n\nYour account has been verified and is now active.\n\nYour User ID: {user.user_id}\nYour Password: {user.password}\n\nPlease keep this information secure.\n\nRegards,\nTrackIt Team"
+    elif action == 'reject':
+        user.status = 'rejected'
+        subject = 'Your Account Has Been Rejected'
+        message = 'Your account has been rejected. Please contact support for more information.'
+    elif action == 'deactivate':
+        user.status = 'inactive'
+        subject = 'Your Account Has Been Deactivated'
+        message = 'Your account has been deactivated. Please contact support to reactivate it.'
+    elif action == 'archive':
+        user.status = 'archived'
+        subject = 'Your Account Has Been Archived'
+        message = 'Your account has been archived. You will not be able to log in.'
+    elif action == 'reactivate':
+        user.status = 'active'
+        subject = 'Your Account Has Been Reactivated'
+        message = 'Your account has been reactivated and is now active.'
+    else:
+        return HttpResponse("Invalid action", status=400)
+
+    user.save()
+
+    if action != 'archive':
+        send_mail(
+            subject,
+            message,
+            settings.DEFAULT_FROM_EMAIL,
+            [user.email],
+            fail_silently=False,
+        )
+
+    # Redirect based on the form source
+
+    if user_type == 'director':
+        return redirect('director_user_management', office=office)
+    else:
+        return redirect('system_admin_user_management', office=office)
 
 # DIRECTOR DASHBOARD
 def dashboard_director(request):
+    director_user_id = request.session.get('director_user_id')
+
+    if  director_user_id:
+        pass
+    else:
+        return redirect('director_login')
+
     return render(request, 'director/director-dashboard.html')
 
 # SRO DASHBOARD
@@ -392,7 +660,7 @@ def new_record_admin_officer(request):
             document_type=document_type_instance,
             subject=subject,
             remarks=remarks,
-            status='For DIR Approval'  # You can modify this as needed
+            status='For DIR Approval'  
         )
 
         ActivityLogs.objects.create(
@@ -402,14 +670,13 @@ def new_record_admin_officer(request):
             user_id_id = ado_user_id
         )
 
-
-
     return render(request, 'admin_officer/admin-officer-new-record.html')
 
+# LOADING OF DOC TYPES
 def load_document_types(request):
     category = request.GET.get('category')
 
-    if category in ['SCPF', 'regular']:
+    if category in ['SCPF', 'Regular']:
         document_types = DocumentType.objects.filter(category=category).values('document_no', 'document_type')
         return JsonResponse(list(document_types), safe=False)
     else:

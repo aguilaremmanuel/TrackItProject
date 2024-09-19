@@ -14,17 +14,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 	<link href="{% static 'fontawesomefree/css/all.min.css' %}" rel="stylesheet" type="text/css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <title>Admin Officer New Record</title>
+    <title>Director New Record</title>
 </head>
 
 <body id="bodyPd">
-    {% include "assets/admin-officer-navbar.html" %}
+    {% include "assets/director-navbar.html" %}
 
     <div class="container">
         <h3 class="fw-semibold pb-2">Create New Record</h3>
         <div class="create-record container p-3 rounded" style="background-color: white;">
             <h5 class="fw-semibold pb-2"><i class='bx bxs-info-circle py-0' style="color: #2E72EA;"></i>    Document Information</h5 >
-            <form method="post" action="{% url 'new_record_admin_officer' %}" id="recordForm">
+            <form method="post" action="{% url 'new_record_director' %}" id="recordForm">
                 {% csrf_token %}
                 <div class="row mb-3 g-2">
                     <div class="col-12 col-md-4">
