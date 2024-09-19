@@ -104,26 +104,29 @@
     </div>
 
     <!-- Modal to Generate QR Code -->
-    <div class="modal fade" id="generateQRCode" tabindex="-1" aria-labelledby="generateQRCodeLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content rounded-4 shadow">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5 mx-auto" id="confirmRecordCreationLabel">Document QR Code</h1>
-                    <button type="button" class="btn-close ps-0 ms-0" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>                
-                <div class="modal-body text-center">
-                    <p class="fs-6">Scan the code to quickly access the document details or perform a specified action.</p>
-                    <p class="fs-6 fw-bold my-0">PRL</p>
-                    <img src="{% static 'images/sample-qr.png' %}" alt="Sample QR">
-                    <p class="fs-6 fw-bold my-0">112922032-DEPT-001</p>
+
+    {% if showQRModal %}
+        <div class="modal fade" id="generateQRCode" tabindex="-1" aria-labelledby="generateQRCodeLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content rounded-4 shadow">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5 mx-auto" id="confirmRecordCreationLabel">Document QR Code</h1>
+                        <button type="button" class="btn-close ps-0 ms-0" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>                
+                    <div class="modal-body text-center">
+                        <p class="fs-6">Scan the code to quickly access the document details or perform a specified action.</p>
+                        <p class="fs-6 fw-bold my-0">{{ str_routes }}</p>
+                        <img id='qrCodeImage' src="{{ qr_code_url }}" alt="Document QR Code" style="height: 218px; width: auto;">
+                        <p class="fs-6 fw-bold my-0">{{ str_tracking_no }}</p>
+                    </div>
+                    <div class="modal-footer d-flex flex-column align-items-center">
+                        <button type="button" class="btn btn-primary mb-2 w-50" id="printQR">Print QR Code</button>
+                        <button type="button" class="btn btn-secondary w-50" id="saveQR">Save a Copy</button>
+                    </div>                
                 </div>
-                <div class="modal-footer d-flex flex-column align-items-center">
-                    <button type="button" class="btn btn-primary mb-2 w-50" id="printQR">Print QR Code</button>
-                    <button type="button" class="btn btn-secondary w-50" id="saveQR">Save a Copy</button>
-                </div>                
             </div>
         </div>
-    </div>
+    {% endif %}
 
     <script src="{% static 'js/tabs-nav.js' %}"></script>  
     <script src="{% static 'js/records-count.js' %}"></script>
@@ -136,6 +139,16 @@
             if (status) {
                 // Assuming you want to add the class to the element with ID 'targetElement'
                 document.querySelector('#new').classList.add(status);
+            }
+
+            try {
+                const generateQRCodeModal = new bootstrap.Modal(document.getElementById('generateQRCode'));
+                // Automatically show the generateQRCode modal when the page loads
+                if (generateQRCodeModal) {
+                    generateQRCodeModal.show();
+                }
+            } catch (error) {
+                console.error("QR Code modal could not be shown:", error);
             }
         });
     </script>
@@ -188,6 +201,76 @@
 
         document.getElementById('confirmCreate').addEventListener('click', function() {
             document.getElementById('recordForm').submit();
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const printQRButton = document.getElementById('printQR');
+            const saveQRButton = document.getElementById('saveQR');
+            const qrCodeImage = document.getElementById('qrCodeImage');
+
+            if (printQRButton) {
+                printQRButton.addEventListener('click', function () {
+                    const printWindow = window.open('', '', 'height=600,width=800');
+                    printWindow.document.write('<html><head><title>Print QR Code</title>');
+                    printWindow.document.write('<style>');
+                    printWindow.document.write('body { font-family: Inter, sans-serif; text-align: center; width: 55mm; margin: 0 auto; }');
+                    printWindow.document.write('img { max-width: 45mm; height: auto; display: block; margin: 0 auto; }'); // Limit QR code width to 45mm
+                    printWindow.document.write('p { font-size: 14px; font-weight: bold; margin: 5px 0; padding: 0; }'); // Adjust font size
+                    printWindow.document.write('</style>');
+                    printWindow.document.write('</head><body>');
+                    printWindow.document.write('<p>{{ str_routes }}</p>');
+                    printWindow.document.write('<img src="' + qrCodeImage.src + '" />');
+                    printWindow.document.write('<p>{{ str_tracking_no }}</p>');
+                    printWindow.document.write('</body></html>');
+                    printWindow.document.close();
+                    printWindow.focus();
+                    printWindow.print();
+                });
+            }
+
+            if (saveQRButton) {
+                saveQRButton.addEventListener('click', function () {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const strRoutes = "{{ str_routes|escapejs }}";
+                    const strTrackingNo = "{{ str_tracking_no|escapejs }}";
+                    const documentNo = "{{ document_no }}"
+                    const qrCodeImg = new Image();
+                    qrCodeImg.src = qrCodeImage.src;
+
+                    qrCodeImg.onload = function () {
+                        canvas.width = qrCodeImg.width;
+                        canvas.height = qrCodeImg.height + 60; // Extra space for text
+
+                        // Fill the canvas with a white background
+                        ctx.fillStyle = 'white';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                        // Draw the QR code image
+                        ctx.drawImage(qrCodeImg, 0, 30); // Adjust y position for QR code
+
+                        // Set font for the text
+                        ctx.font = 'bold 31px Inter, sans-serif';
+                        ctx.textAlign = 'center';
+                        ctx.fillStyle = 'black'; // Set text color to black
+
+                        // Add text above and below the QR code
+                        ctx.fillText(strRoutes, canvas.width / 2, 43);
+                        ctx.font = 'bold 20px Inter, sans-serif';
+                        ctx.fillText(strTrackingNo, canvas.width / 2, canvas.height - 24);
+
+                        // Trigger download
+                        const link = document.createElement('a');
+                        link.href = canvas.toDataURL('image/png');
+                        link.download = 'doc_' + documentNo + '_qr_code.png';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    };
+                });
+
+            }
         });
     </script>
 </body>

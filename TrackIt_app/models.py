@@ -56,7 +56,7 @@ class DocumentRoute(models.Model):
 class Document(models.Model):
     document_no = models.BigAutoField(primary_key=True)
     tracking_no = models.CharField(max_length=30)
-    qr_code = models.CharField(max_length=15)
+    #qr_code = models.CharField(max_length=15)
     sender_name = models.CharField(max_length=45, null=True, blank=True)
     sender_department = models.CharField(max_length=45, null=True, blank=True)
     document_type = models.ForeignKey(DocumentType, on_delete=models.CASCADE, null=True, blank=True)

@@ -8,6 +8,8 @@ from .models import User
 from django.http import HttpResponse, JsonResponse
 from django.core.mail import send_mail
 from django.conf import settings
+import qrcode
+from io import BytesIO
 
 
 # USER LOGIN
@@ -53,7 +55,6 @@ def user_login(request):
             return redirect('user_login')
 
     return render(request, "user-login.html")
-
 
 def user_logout(request):
 
@@ -120,7 +121,6 @@ def update_user_status(request, user_id, action, office):
 
     return redirect('system_admin_user_management', office=office)
 
-
 # USER SIGNUP
 def user_signup(request):
     if request.method == 'POST':
@@ -150,7 +150,6 @@ def user_signup(request):
     
     return render(request, "user-signup.html", {'form': form})
 
-
 # GENERATE USER ID
 def generate_user_id(role_prefix):
     max_user_id = User.objects.filter(user_id__startswith=f"{role_prefix}-").aggregate(max_id=Max('user_id'))['max_id']
@@ -173,10 +172,8 @@ def system_admin_login(request):
             default_user_id = 'SYS-0001'
             default_password = 'SysAdmin@2024'
             
-            # Check if the provided credentials match the default credentials
             if user_id == default_user_id and password == default_password:
-                # You might want to create a dummy user or just proceed
-                # For demonstration, we assume the user can log in successfully
+
                 return redirect('system_admin_dashboard')
             else:
                 messages.error(request, "Invalid credentials.")
@@ -191,6 +188,7 @@ def system_admin_dashboard(request):
 
 # SYSTEM ADMIN USER MANAGEMENT MODULE
 def system_admin_user_management(request, office):
+
     if office == 'all-office':
         users = User.objects.exclude(status='archived')
     elif office == 'administrative':
@@ -320,6 +318,7 @@ def delete_document_type(request, document_no):
 
 # DIRECTOR LOGIN
 def director_login(request):
+    
     if request.method == 'POST':
         form = DirectorLoginForm(request.POST)
         if form.is_valid():
@@ -332,6 +331,10 @@ def director_login(request):
             
             # Check if the provided credentials match the default credentials
             if user_id == default_user_id and password == default_password:
+
+                request.session['role'] = "DIR"
+                request.session['director_isLoggedIn'] = True
+
                 return redirect('dashboard_director')
             else:
                 messages.error(request, "Invalid credentials.")
@@ -342,6 +345,7 @@ def director_login(request):
 
 # DIRECTOR DASHBOARD
 def dashboard_director(request):
+
     return render(request, 'director/director-dashboard.html')
 
 # SRO DASHBOARD
@@ -374,6 +378,12 @@ def new_record_admin_officer(request):
     else:
         return redirect('user_login')
 
+    showQRModal = False
+    qr_code_url = None
+    str_routes = ''
+    str_tracking_no = ''
+    document_no = 0
+
     if request.method == 'POST':
 
         tracking_no = request.POST.get('tracking_no')
@@ -402,9 +412,47 @@ def new_record_admin_officer(request):
             user_id_id = ado_user_id
         )
 
+        routes = DocumentRoute.objects.filter(document_type=document_type_instance)
+        
+        for index, route in enumerate(routes):
+            str_routes += route.route_id
+            if index < len(routes) - 1:
+                str_routes += '-'
 
+        showQRModal = True
+        qr_code_url = request.build_absolute_uri(f'/generate-qrcode/{document.document_no}/')
+        str_tracking_no = tracking_no
+        document_no = document.document_no
 
-    return render(request, 'admin_officer/admin-officer-new-record.html')
+    return render(request, 'admin_officer/admin-officer-new-record.html', {
+        'showQRModal': showQRModal, 
+        'qr_code_url': qr_code_url, 
+        'str_routes': str_routes,
+        'str_tracking_no': str_tracking_no,
+        'document_no': document_no})
+
+def generate_qr_code(request, document_no):
+    # Define the URL to be encoded in the QR code
+    url = request.build_absolute_uri(f'/scanned-qr-code/{document_no}/')
+
+    # Generate the QR code
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(url)
+    qr.make(fit=True)
+    img = qr.make_image(fill='black', back_color='white')
+
+    # Save to a BytesIO buffer
+    buffer = BytesIO()
+    img.save(buffer)
+    buffer.seek(0)
+
+    # Return the image as a response
+    return HttpResponse(buffer, content_type='image/png')
 
 def load_document_types(request):
     category = request.GET.get('category')
