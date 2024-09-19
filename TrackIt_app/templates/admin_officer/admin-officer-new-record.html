@@ -104,32 +104,96 @@
     </div>
 
     <!-- Modal to Generate QR Code -->
-    <div class="modal fade" id="generateQRCode" tabindex="-1" aria-labelledby="generateQRCodeLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content rounded-4 shadow">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5 mx-auto" id="confirmRecordCreationLabel">Document QR Code</h1>
-                    <button type="button" class="btn-close ps-0 ms-0" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>                
-                <div class="modal-body text-center">
-                    <p class="fs-6">Scan the code to quickly access the document details or perform a specified action.</p>
-                    <p class="fs-6 fw-bold my-0">PRL</p>
-                    <img src="{% static 'images/sample-qr.png' %}" alt="Sample QR">
-                    <p class="fs-6 fw-bold my-0">112922032-DEPT-001</p>
+
+    {% if showQRModal %}
+        <div class="modal fade" id="generateQRCode" tabindex="-1" aria-labelledby="generateQRCodeLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content rounded-4 shadow">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5 mx-auto" id="confirmRecordCreationLabel">Document QR Code</h1>
+                        <button type="button" class="btn-close ps-0 ms-0" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>                
+                    <div class="modal-body text-center">
+                        <p class="fs-6">Scan the code to quickly access the document details or perform a specified action.</p>
+                        <p class="fs-6 fw-bold my-0">{{ str_routes }}</p>
+                        <img id='qrCodeImage' src="{{ qr_code_url }}" alt="Document QR Code" style="height: 218px; width: auto;">
+                        <p class="fs-6 fw-bold my-0">{{ str_tracking_no }}</p>
+                    </div>
+                    <div class="modal-footer d-flex flex-column align-items-center">
+                        <button type="button" class="btn btn-primary mb-2 w-50" id="printQR">Print QR Code</button>
+                        <button type="button" class="btn btn-secondary w-50" id="saveQR">Save a Copy</button>
+                    </div>                
                 </div>
-                <div class="modal-footer d-flex flex-column align-items-center">
-                    <button type="button" class="btn btn-primary mb-2 w-50" id="printQR">Print QR Code</button>
-                    <button type="button" class="btn btn-secondary w-50" id="saveQR">Save a Copy</button>
-                </div>                
             </div>
         </div>
-    </div>
+    {% endif %}
 
     <script src="{% static 'js/tabs-nav.js' %}"></script>  
     <script src="{% static 'js/records-count.js' %}"></script>
     <script src="{% static 'js/new-record.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // On page load, read the URL parameter and update the class
+        document.addEventListener('DOMContentLoaded', function () {
+            const params = new URLSearchParams(window.location.search);
+            const status = params.get('status');
+            if (status) {
+                // Assuming you want to add the class to the element with ID 'targetElement'
+                document.querySelector('#new').classList.add(status);
+            }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.querySelector('form');
+            const submitBtn = document.getElementById('submitBtn');
+            const modal = new bootstrap.Modal(document.getElementById('confirmRecordCreation'));
+    
+            // Add an event listener to the submit button
+            submitBtn.addEventListener('click', function (event) {
+                // Prevent default form submission
+                event.preventDefault();
+    
+                // Check if the form is valid
+                if (form.checkValidity()) {
+                    // If the form is valid, show the confirmation modal
+                    modal.show();
+                } else {
+                    // If the form is invalid, trigger validation messages
+                    form.reportValidity();
+                }
+            });
+        });
+    </script>
+    <script>
+        document.getElementById('DocumentCategory').addEventListener('change', function() {
+            var category = this.value;
+            var docTypeSelect = document.getElementById('DocumentType');
 
+            if (category) {
+                fetch(`/load-document-types/?category=${category}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Clear previous options
+                    docTypeSelect.innerHTML = '<option value="">Select Document Type</option>';
+                    // Enable the dropdown
+                    docTypeSelect.disabled = false;
+                    // Populate new options
+                    data.forEach(function(item) {
+                        var option = new Option(item.document_type, item.document_no);
+                        docTypeSelect.add(option);
+                    });
+                });
+            } else {
+                docTypeSelect.innerHTML = '<option value="">Select Document Type</option>';
+                docTypeSelect.disabled = true;
+            }
+        });
+
+        document.getElementById('confirmCreate').addEventListener('click', function() {
+            document.getElementById('recordForm').submit();
+        });
+    </script>
 </body>
 </html>
 

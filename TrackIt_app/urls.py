@@ -2,7 +2,6 @@ from django.contrib import admin
 from django.urls import path
 from . import views
 
-
 urlpatterns = [
     path('login/',views.user_login, name='user_login'),
     path('logout/', views.user_logout, name='user_logout'),
@@ -28,6 +27,7 @@ urlpatterns = [
     path('admin-officer-dashboard/',views.dashboard_admin_officer, name='dashboard_admin_officer'),
     path('admin-officer-new-record/',views.new_record_admin_officer, name='new_record_admin_officer'),
     path('load-document-types/', views.load_document_types, name='load_document_types'),
+    path('generate-qrcode/<int:document_no>/', views.generate_qr_code, name='generate_qr_code'),
 
     path('admin-officer-all-records/',views.all_records_admin_officer, name='all_records_admin_officer'),
     path('admin-officer-needs-action/',views.needs_action_admin_officer, name='needs_action_admin_officer'),

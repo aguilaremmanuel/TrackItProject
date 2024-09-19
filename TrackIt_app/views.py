@@ -8,6 +8,9 @@ from .models import User
 from django.http import HttpResponse, JsonResponse
 from django.core.mail import send_mail
 from django.conf import settings
+import qrcode
+import sys
+from io import BytesIO
 from django.http import HttpResponseBadRequest
 
 
@@ -29,7 +32,6 @@ def user_logout(request):
         del request.session['director_user_id']
         return redirect(director_login)
         
-
     del request.session['role']
     return redirect(user_login)
 
@@ -76,6 +78,56 @@ def user_login(request):
             return redirect('user_login')
 
     return render(request, "user-login.html")
+
+#USER UPDATE STATUS AND EMAILING FUNCTION
+def update_user_status(request, user_id, action, office):
+    user = User.objects.get(pk=user_id)  # Fetch the user object
+
+    if action == 'verify':
+        user.status = 'active'
+        subject = 'Your Account Has Been Verified'
+        # Include user_id and password in the message
+        message = (
+            f"Hello {user.firstname},\n\n"
+            f"Your account has been verified and is now active.\n\n"
+            f"Your User ID: {user.user_id}\n"
+            f"Your Password: {user.password}  \n\n"
+            "Please keep this information secure.\n\n"
+            "Regards,\n"
+            "TrackIt Team"
+        )
+    elif action == 'reject':
+        user.status = 'rejected'
+        subject = 'Your Account Has Been Rejected'
+        message = 'Your account has been rejected. Please contact support for more information.'
+    elif action == 'deactivate':
+        user.status = 'inactive'
+        subject = 'Your Account Has Been Deactivated'
+        message = 'Your account has been deactivated. Please contact support to reactivate it.'
+    elif action == 'archive':
+        user.status = 'archived'
+        subject = 'Your Account Has Been Archived'
+        message = 'Your account has been archived. You will not be able to log in.'
+    elif action == 'reactivate':
+        user.status = 'active'
+        subject = 'Your Account Has Been Reactivated'
+        message = 'Your account has been reactivated and is now active.'
+    else:
+        return HttpResponse("Invalid action", status=400)
+
+    user.save()  # Save the updated status
+
+    if action != 'archive':
+        # Send email
+        send_mail(
+            subject,
+            message,
+            settings.DEFAULT_FROM_EMAIL,
+            [user.email],
+            fail_silently=False,
+        )
+
+    return redirect('system_admin_user_management', office=office)
 
 # USER SIGNUP
 def user_signup(request):
@@ -127,6 +179,10 @@ def system_admin_login(request):
         if form.is_valid():
             user_id = form.cleaned_data['user_id']
             password = form.cleaned_data['password']
+            
+            # Default credentials
+            default_user_id = 'SYS-0001'
+            default_password = 'SysAdmin@2024'
             
             # Check if the provided credentials match the default credentials
             if user_id == default_user_id and password == default_password:
@@ -642,6 +698,12 @@ def new_record_admin_officer(request):
     else:
         return redirect('user_login')
 
+    showQRModal = False
+    qr_code_url = None
+    str_routes = ''
+    str_tracking_no = ''
+    document_no = 0
+
     if request.method == 'POST':
 
         tracking_no = request.POST.get('tracking_no')
@@ -670,7 +732,47 @@ def new_record_admin_officer(request):
             user_id_id = ado_user_id
         )
 
-    return render(request, 'admin_officer/admin-officer-new-record.html')
+        routes = DocumentRoute.objects.filter(document_type=document_type_instance)
+        
+        for index, route in enumerate(routes):
+            str_routes += route.route_id
+            if index < len(routes) - 1:
+                str_routes += '-'
+
+        showQRModal = True
+        qr_code_url = request.build_absolute_uri(f'/generate-qrcode/{document.document_no}/')
+        str_tracking_no = tracking_no
+        document_no = document.document_no
+
+    return render(request, 'admin_officer/admin-officer-new-record.html', {
+        'showQRModal': showQRModal, 
+        'qr_code_url': qr_code_url, 
+        'str_routes': str_routes,
+        'str_tracking_no': str_tracking_no,
+        'document_no': document_no})
+
+def generate_qr_code(request, document_no):
+    # Define the URL to be encoded in the QR code
+    url = request.build_absolute_uri(f'/scanned-qr-code/{document_no}/')
+
+    # Generate the QR code
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(url)
+    qr.make(fit=True)
+    img = qr.make_image(fill='black', back_color='white')
+
+    # Save to a BytesIO buffer
+    buffer = BytesIO()
+    img.save(buffer)
+    buffer.seek(0)
+
+    # Return the image as a response
+    return HttpResponse(buffer, content_type='image/png')
 
 # LOADING OF DOC TYPES
 def load_document_types(request):
@@ -722,5 +824,6 @@ def activity_logs_action_officer(request):
 def forgot_password(request):
     return render(request, "forgot-password.html")
 
+# NEW PASSWORD
 def new_password(request):
     return render(request, "new-password.html")
