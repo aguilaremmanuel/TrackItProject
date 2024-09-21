@@ -9,7 +9,6 @@ from django.http import HttpResponse, JsonResponse
 from django.core.mail import send_mail
 from django.conf import settings
 import qrcode
-import sys
 from io import BytesIO
 from django.http import HttpResponseBadRequest
 
@@ -223,7 +222,13 @@ def new_record_system_admin(request):
     else:
         return redirect('system_admin_login')
 
-        # Credentials are correct, proceed to handle new record creation
+    showQRModal = False
+    qr_code_url = None
+    str_routes = ''
+    str_tracking_no = ''
+    document_no = 0
+
+    # Credentials are correct, proceed to handle new record creation
     if request.method == 'POST':
         tracking_no = request.POST.get('tracking_no')
         sender_name = request.POST.get('sender_name')
@@ -252,7 +257,25 @@ def new_record_system_admin(request):
             user_id_id=request.session.get('user_id')  # Use session-stored user ID
         )
 
-    return render(request, 'system_admin/system-admin-new-record.html')
+        routes = DocumentRoute.objects.filter(document_type=document_type_instance)
+        
+        for index, route in enumerate(routes):
+            str_routes += route.route_id
+            if index < len(routes) - 1:
+                str_routes += '-'
+
+        showQRModal = True
+        qr_code_url = request.build_absolute_uri(f'/generate-qrcode/{document.document_no}/')
+        str_tracking_no = tracking_no
+        document_no = document.document_no
+
+
+    return render(request, 'system_admin/system-admin-new-record.html', {
+        'showQRModal': showQRModal, 
+        'qr_code_url': qr_code_url, 
+        'str_routes': str_routes,
+        'str_tracking_no': str_tracking_no,
+        'document_no': document_no})
 
 # SYSTEM ADMIN DASHBOARD
 def system_admin_dashboard(request):
@@ -473,6 +496,12 @@ def new_record_director(request):
         pass
     else:
         return redirect('director_login')
+
+    showQRModal = False
+    qr_code_url = None
+    str_routes = ''
+    str_tracking_no = ''
+    document_no = 0
     
     # Credentials are correct, proceed to handle new record creation
     if request.method == 'POST':
@@ -503,7 +532,24 @@ def new_record_director(request):
             user_id_id=request.session.get('user_id')  # Use session-stored user ID
         )
 
-    return render(request, 'director/director-new-record.html')
+        routes = DocumentRoute.objects.filter(document_type=document_type_instance)
+        
+        for index, route in enumerate(routes):
+            str_routes += route.route_id
+            if index < len(routes) - 1:
+                str_routes += '-'
+
+        showQRModal = True
+        qr_code_url = request.build_absolute_uri(f'/generate-qrcode/{document.document_no}/')
+        str_tracking_no = tracking_no
+        document_no = document.document_no
+
+    return render(request, 'director/director-new-record.html', {
+        'showQRModal': showQRModal, 
+        'qr_code_url': qr_code_url, 
+        'str_routes': str_routes,
+        'str_tracking_no': str_tracking_no,
+        'document_no': document_no})
 
 # SYSTEM ADMIN DOC MANAGEMENT
 def director_doc_management(request):
@@ -755,6 +801,7 @@ def new_record_admin_officer(request):
         'str_tracking_no': str_tracking_no,
         'document_no': document_no})
 
+# QR CODE
 def generate_qr_code(request, document_no):
     # Define the URL to be encoded in the QR code
     url = request.build_absolute_uri(f'/scanned-qr-code/{document_no}/')

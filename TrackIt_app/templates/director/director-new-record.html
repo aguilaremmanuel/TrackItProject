@@ -104,26 +104,28 @@
     </div>
 
     <!-- Modal to Generate QR Code -->
-    <div class="modal fade" id="generateQRCode" tabindex="-1" aria-labelledby="generateQRCodeLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content rounded-4 shadow">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5 mx-auto" id="confirmRecordCreationLabel">Document QR Code</h1>
-                    <button type="button" class="btn-close ps-0 ms-0" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>                
-                <div class="modal-body text-center">
-                    <p class="fs-6">Scan the code to quickly access the document details or perform a specified action.</p>
-                    <p class="fs-6 fw-bold my-0">PRL</p>
-                    <img src="{% static 'images/sample-qr.png' %}" alt="Sample QR">
-                    <p class="fs-6 fw-bold my-0">112922032-DEPT-001</p>
+    {% if showQRModal %}
+        <div class="modal fade" id="generateQRCode" tabindex="-1" aria-labelledby="generateQRCodeLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content rounded-4 shadow">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5 mx-auto" id="confirmRecordCreationLabel">Document QR Code</h1>
+                        <button type="button" class="btn-close ps-0 ms-0" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>                
+                    <div class="modal-body text-center">
+                        <p class="fs-6">Scan the code to quickly access the document details or perform a specified action.</p>
+                        <p class="fs-6 fw-bold my-0">{{ str_routes }}</p>
+                        <img id='qrCodeImage' src="{{ qr_code_url }}" alt="Document QR Code" style="height: 218px; width: auto;">
+                        <p class="fs-6 fw-bold my-0">{{ str_tracking_no }}</p>
+                    </div>
+                    <div class="modal-footer d-flex flex-column align-items-center">
+                        <button type="button" class="btn btn-primary mb-2 w-50" id="printQR">Print QR Code</button>
+                        <button type="button" class="btn btn-secondary w-50" id="saveQR">Save a Copy</button>
+                    </div>                
                 </div>
-                <div class="modal-footer d-flex flex-column align-items-center">
-                    <button type="button" class="btn btn-primary mb-2 w-50" id="printQR">Print QR Code</button>
-                    <button type="button" class="btn btn-secondary w-50" id="saveQR">Save a Copy</button>
-                </div>                
             </div>
         </div>
-    </div>
+    {% endif %}
 
     <script src="{% static 'js/tabs-nav.js' %}"></script>  
     <script src="{% static 'js/records-count.js' %}"></script>
