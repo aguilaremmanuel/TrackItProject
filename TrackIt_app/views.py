@@ -701,6 +701,7 @@ def new_record_admin_officer(request):
     showQRModal = False
     qr_code_url = None
     str_routes = ''
+    str_routes_titles = ''
     str_tracking_no = ''
     document_no = 0
 
@@ -736,8 +737,10 @@ def new_record_admin_officer(request):
         
         for index, route in enumerate(routes):
             str_routes += route.route_id
+            str_routes_titles += route.route.office_name
             if index < len(routes) - 1:
                 str_routes += '-'
+                str_routes_titles += ' - '
 
         showQRModal = True
         qr_code_url = request.build_absolute_uri(f'/generate-qrcode/{document.document_no}/')
@@ -748,6 +751,7 @@ def new_record_admin_officer(request):
         'showQRModal': showQRModal, 
         'qr_code_url': qr_code_url, 
         'str_routes': str_routes,
+        'str_routes_titles': str_routes_titles,
         'str_tracking_no': str_tracking_no,
         'document_no': document_no})
 

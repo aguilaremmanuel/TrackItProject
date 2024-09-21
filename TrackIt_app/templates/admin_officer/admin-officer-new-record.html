@@ -212,22 +212,27 @@
             const qrCodeImage = document.getElementById('qrCodeImage');
             if (printQRButton) {
                 printQRButton.addEventListener('click', function () {
-                    const printWindow = window.open('', '', 'height=600,width=800');
+                    const printWindow = window.open('', '', 'height=600,width=700');
                     printWindow.document.write('<html><head><title>Print QR Code</title>');
                     printWindow.document.write('<style>');
-                    printWindow.document.write('body { font-family: Inter, sans-serif; text-align: center; width: 55mm; margin: 0 auto; }');
-                    printWindow.document.write('img { max-width: 45mm; height: auto; display: block; margin: 0 auto; }'); // Limit QR code width to 45mm
-                    printWindow.document.write('p { font-size: 14px; font-weight: bold; margin: 5px 0; padding: 0; }'); // Adjust font size
+                    printWindow.document.write('body, html { font-family: Inter, sans-serif; text-align: center; margin: 0; padding: 0; }');
+                    printWindow.document.write('img { max-width: 45mm;}'); // Limit QR code width to 45mm
+                    printWindow.document.write('p { font-size: 18px; font-weight: bold; margin: 0; padding: 0; }'); // Adjust font size
+                    printWindow.document.write('@media print { body, html { margin: 0; padding: 0; } }'); // Additional print-specific styles
                     printWindow.document.write('</style>');
-                    printWindow.document.write('</head><body>');
+                    printWindow.document.write('</head><body>');;    
+                    printWindow.document.write('<div style="width: 155px; display: flex; flex-direction: column; align-items: center;">'); // Centering div
                     printWindow.document.write('<p>{{ str_routes }}</p>');
+                    printWindow.document.write('<p style="font-size: 9px; font-weight: 400">({{ str_routes_titles }})</p>');
                     printWindow.document.write('<img src="' + qrCodeImage.src + '" />');
-                    printWindow.document.write('<p>{{ str_tracking_no }}</p>');
+                    printWindow.document.write('<p style="font-size: 13px;">{{ str_tracking_no }}</p>');
+                    printWindow.document.write('<p style="font-size: 8px; font-weight: 400">(Document Tracking Number)</p>');
+                    printWindow.document.write('</div>');
                     printWindow.document.write('</body></html>');
                     printWindow.document.close();
                     printWindow.focus();
                     printWindow.print();
-                });
+            });
             }
             if (saveQRButton) {
                 saveQRButton.addEventListener('click', function () {
