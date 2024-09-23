@@ -131,7 +131,72 @@
     <script src="{% static 'js/records-count.js' %}"></script>
     <script src="{% static 'js/new-record.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const printQRButton = document.getElementById('printQR');
+            const saveQRButton = document.getElementById('saveQR');
+            const qrCodeImage = document.getElementById('qrCodeImage');
+            if (printQRButton) {
+                printQRButton.addEventListener('click', function () {
+                    const printWindow = window.open('', '', 'height=600,width=700');
+                    printWindow.document.write('<html><head><title>Print QR Code</title>');
+                    printWindow.document.write('<style>');
+                    printWindow.document.write('body, html { font-family: Inter, sans-serif; text-align: center; margin: 0; padding: 0; }');
+                    printWindow.document.write('img { max-width: 45mm;}'); // Limit QR code width to 45mm
+                    printWindow.document.write('p { font-size: 18px; font-weight: bold; margin: 0; padding: 0; }'); // Adjust font size
+                    printWindow.document.write('@media print { body, html { margin: 0; padding: 0; } }'); // Additional print-specific styles
+                    printWindow.document.write('</style>');
+                    printWindow.document.write('</head><body>');;    
+                    printWindow.document.write('<div style="width: 155px; display: flex; flex-direction: column; align-items: center;">'); // Centering div
+                    printWindow.document.write('<p>{{ str_routes }}</p>');
+                    printWindow.document.write('<p style="font-size: 9px; font-weight: 400">({{ str_routes_titles }})</p>');
+                    printWindow.document.write('<img src="' + qrCodeImage.src + '" />');
+                    printWindow.document.write('<p style="font-size: 13px;">{{ str_tracking_no }}</p>');
+                    printWindow.document.write('<p style="font-size: 8px; font-weight: 400">(Document Tracking Number)</p>');
+                    printWindow.document.write('</div>');
+                    printWindow.document.write('</body></html>');
+                    printWindow.document.close();
+                    printWindow.focus();
+                    printWindow.print();
+            });
+            }
+            if (saveQRButton) {
+                saveQRButton.addEventListener('click', function () {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const strRoutes = "{{ str_routes|escapejs }}";
+                    const strTrackingNo = "{{ str_tracking_no|escapejs }}";
+                    const documentNo = "{{ document_no }}"
+                    const qrCodeImg = new Image();
+                    qrCodeImg.src = qrCodeImage.src;
+                    qrCodeImg.onload = function () {
+                        canvas.width = qrCodeImg.width;
+                        canvas.height = qrCodeImg.height + 60; // Extra space for text
+                        // Fill the canvas with a white background
+                        ctx.fillStyle = 'white';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        // Draw the QR code image
+                        ctx.drawImage(qrCodeImg, 0, 30); // Adjust y position for QR code
+                        // Set font for the text
+                        ctx.font = 'bold 31px Inter, sans-serif';
+                        ctx.textAlign = 'center';
+                        ctx.fillStyle = 'black'; // Set text color to black
+                        // Add text above and below the QR code
+                        ctx.fillText(strRoutes, canvas.width / 2, 43);
+                        ctx.font = 'bold 20px Inter, sans-serif';
+                        ctx.fillText(strTrackingNo, canvas.width / 2, canvas.height - 24);
+                        // Trigger download
+                        const link = document.createElement('a');
+                        link.href = canvas.toDataURL('image/png');
+                        link.download = 'doc_' + documentNo + '_qr_code.png';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    };
+                });
+            }
+        });
+    </script>
 </body>
 </html>
 

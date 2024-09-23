@@ -22,7 +22,6 @@ urlpatterns = [
     path('director-login/',views.director_login, name='director_login'),
     path('director-user-management/<str:office>/', views.director_user_management, name='director_user_management'),
     path('director-doc-management/',views.director_doc_management, name='director_doc_management'),
-    path('director-new-record/',views.new_record_director, name='new_record_director'),
     path('director-dashboard/',views.dashboard_director, name='dashboard_director'),
 
     path('admin-officer-dashboard/',views.dashboard_admin_officer, name='dashboard_admin_officer'),
