@@ -63,4 +63,4 @@ document.getElementById('DocumentCategory').addEventListener('change', function 
 // Handle record form submission on confirm
 document.getElementById('confirmCreate').addEventListener('click', function () {
     document.getElementById('recordForm').submit();
-});
+}); 

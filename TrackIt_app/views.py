@@ -10,6 +10,17 @@ from django.core.mail import send_mail
 from django.conf import settings
 import qrcode
 from io import BytesIO
+from django.urls import reverse
+from django.utils.encoding import force_str
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.hashers import make_password
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.http import urlsafe_base64_decode
+
+
+
 
 # ----------- LOGIN AND SIGNUP -----------------
 
@@ -53,10 +64,6 @@ def system_admin_login(request):
         if form.is_valid():
             user_id = form.cleaned_data['user_id']
             password = form.cleaned_data['password']
-            
-            # Default credentials
-            default_user_id = 'SYS-0001'
-            default_password = 'SysAdmin@2024'
             
             # Check if the provided credentials match the default credentials
             if user_id == default_user_id and password == default_password:
@@ -106,7 +113,7 @@ def director_login(request):
                 user_instance, created = User.objects.get_or_create(
                     user_id=default_user_id,
                     defaults={'password': default_password, 'role': 'Director', 'status': 'active'}
-                )
+                )   
 
                 if created:
                     print(f"Default user {default_user_id} was created and set to active.")
@@ -155,6 +162,8 @@ def user_login(request):
             messages.error(request, "Your account has been deleted and cannot be accessed.")
             return redirect('user_login')
 
+        user.last_login = timezone.now()
+        user.save()
         request.session['role'] = user.role
 
         # Redirect based on user role
@@ -587,13 +596,104 @@ def unacted_documents_action_officer(request):
 def activity_logs_action_officer(request):
     return render(request, 'action_officer/action-officer-activity-logs.html')
 
-# PASSWORD
+
+# ------------- PASSWORD UPDATE -------------------
+# Custom token generator
+class CustomTokenGenerator(PasswordResetTokenGenerator):
+    def _make_hash_value(self, user, timestamp):
+        return str(user.pk) + str(timestamp)
+
+account_activation_token = CustomTokenGenerator()
+
+
+# FORGOT PASSWORD
 def forgot_password(request):
-    return render(request, "forgot-password.html")
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        user_id = request.POST.get('user_id')
+
+        # Verify if the user exists with the provided user_id
+        try:
+            # Attempt to fetch the user based on the user_id
+            user = User.objects.get(user_id=user_id)
+
+            # Check if the retrieved user's email matches the provided email
+            if user.email != email:
+                messages.error(request, "Email does not match the User ID provided.")
+                return render(request, 'forgot-password.html', {'displayForgotPassword': '', 'displayEmailConfirmation': 'd-none', 'displayPasswordSuccess': 'd-none'})
+
+        except User.DoesNotExist:
+            # If the user is not found, provide a relevant error message
+            messages.error(request, "User ID does not match any account.")
+            return render(request, 'forgot-password.html', {'displayForgotPassword': '', 'displayEmailConfirmation': 'd-none', 'displayPasswordSuccess': 'd-none'})
+
+        # Check user status
+        if user.status not in ['active']:
+            messages.error(request, "Your account cannot be used for password reset.")
+            return render(request, 'forgot-password.html', {'displayForgotPassword': '', 'displayEmailConfirmation': 'd-none', 'displayPasswordSuccess': 'd-none'})
+
+        # Generate reset link
+        uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+        token = account_activation_token.make_token(user)
+
+        #print(f"Generated Token: {token}")
+
+        reset_link = request.build_absolute_uri(
+            reverse('new_password', kwargs={'uidb64': uidb64, 'token': token})
+        )
+
+        # Send email
+        try:
+            subject = 'Reset your password'
+            message = (
+                f'Hello {user.firstname},\n\n'
+                f'Click the link to reset your password: {reset_link}\n\n'
+                'If you did not request a password reset, please ignore this email.\n\n'
+                'Regards,\nTrackIt Team'
+            )
+            send_mail(
+                subject,
+                message,
+                'trackit.dts@gmail.com',
+                [user.email],
+                fail_silently=False,
+            )
+        except Exception as e:
+            messages.error(request, f"Failed to send email: {str(e)}")
+        return render(request, 'forgot-password.html', {'displayForgotPassword': 'd-none', 'displayEmailConfirmation': '', 'displayPasswordSuccess': 'd-none'})    
+
+    return render(request, 'forgot-password.html', {'displayForgotPassword': '', 'displayEmailConfirmation': 'd-none', 'displayPasswordSuccess': 'd-none'})
 
 # NEW PASSWORD
-def new_password(request):
-    return render(request, "new-password.html")
+def new_password(request, uidb64, token):
+    if request.method == 'POST':
+        new_password = request.POST['new_password']
+        confirm_password = request.POST['confirm_password']
+        
+        if new_password == confirm_password:
+            try:
+                # Decode the uid
+                uid = force_str(urlsafe_base64_decode(uidb64))
+                print(f"Decoded UID: {uid}")
+                user = User.objects.get(pk=uid)
+                
+                # Check the token validity
+                is_token_valid = account_activation_token.check_token(user, token)
+                print(f"User: {user.firstname}, Token: {token}, Is token valid? {is_token_valid}")
+                
+                if is_token_valid:
+                    # Clear the password (optional)
+                    user.password = ""  # This line can be removed if not needed
+                    user.password = new_password  # Set new password
+                    user.save()
+                    return render(request, 'forgot-password.html', {'displayForgotPassword': 'd-none', 'displayEmailConfirmation': 'd-none', 'displayPasswordSuccess': ''}) 
+                else:
+                    messages.error(request, "The reset link is invalid or expired.")
+            except User.DoesNotExist:
+                messages.error(request, "Invalid user.")
+        else:
+            messages.error(request, "Passwords do not match.")
+    return render(request, 'new-password.html', {'uidb64': uidb64, 'token': token})
 
 
 # ---------- REUSABLE FUNCTIONS --------------
@@ -705,56 +805,6 @@ def update_user_status(request, user_id, action, office, user_type):
         return redirect('director_user_management', office=office)
     else:
         return redirect('system_admin_user_management', office=office)
-
-"""#USER UPDATE STATUS AND EMAILING FUNCTION
-def update_user_status(user_id, action, office):
-    user = User.objects.get(pk=user_id)  # Fetch the user object
-
-    if action == 'verify':
-        user.status = 'active'
-        subject = 'Your Account Has Been Verified'
-        # Include user_id and password in the message
-        message = (
-            f"Hello {user.firstname},\n\n"
-            f"Your account has been verified and is now active.\n\n"
-            f"Your User ID: {user.user_id}\n"
-            f"Your Password: {user.password}  \n\n"
-            "Please keep this information secure.\n\n"
-            "Regards,\n"
-            "TrackIt Team"
-        )
-    elif action == 'reject':
-        user.status = 'rejected'
-        subject = 'Your Account Has Been Rejected'
-        message = 'Your account has been rejected. Please contact support for more information.'
-    elif action == 'deactivate':
-        user.status = 'inactive'
-        subject = 'Your Account Has Been Deactivated'
-        message = 'Your account has been deactivated. Please contact support to reactivate it.'
-    elif action == 'archive':
-        user.status = 'archived'
-        subject = 'Your Account Has Been Archived'
-        message = 'Your account has been archived. You will not be able to log in.'
-    elif action == 'reactivate':
-        user.status = 'active'
-        subject = 'Your Account Has Been Reactivated'
-        message = 'Your account has been reactivated and is now active.'
-    else:
-        return HttpResponse("Invalid action", status=400)
-
-    user.save()  # Save the updated status
-
-    if action != 'archive':
-        # Send email
-        send_mail(
-            subject,
-            message,
-            settings.DEFAULT_FROM_EMAIL,
-            [user.email],
-            fail_silently=False,
-        )
-
-    return redirect('system_admin_user_management', office=office)"""
 
 # GENERATE USER ID (USER SIGN UP)
 def generate_user_id(role_prefix):
