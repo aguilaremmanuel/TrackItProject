@@ -12,7 +12,7 @@ class SystemAdmin(models.Model):
     sa_user_lastname = models.CharField(max_length=45)
     sa_user_firstname = models.CharField(max_length=45)
     sa_user_middlename = models.CharField(max_length=45, null = True)
-    password = models.CharField(max_length=45)
+    password = models.CharField(max_length=45)  
 
 class User(models.Model):
     user_id = models.CharField(max_length=8, primary_key=True)
@@ -20,6 +20,8 @@ class User(models.Model):
     firstname = models.CharField(max_length=45)
     middlename = models.CharField(max_length=45, null = True)
     email = models.EmailField(max_length=45)
+    def get_email_field_name(self):
+        return 'email' 
     contact_no = models.CharField(max_length=11)
     password = models.CharField(max_length=45)
     role = models.CharField(max_length=45)
@@ -28,6 +30,7 @@ class User(models.Model):
     verified_date = models.DateTimeField(null=True, blank=True)
     status = models.CharField(null=True, max_length=20, default = 'for verification')
     employee_id = models.CharField(max_length=12, blank = True)
+    last_login = models.DateTimeField(null=True, blank=True)
     class Meta:
         db_table = 'tbl_user'
 
