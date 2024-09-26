@@ -11880,6 +11880,21 @@ a:hover {
   text-decoration: none;
 }
 
+.btn-light:hover {
+  background-color: #e2e6ea;
+  color: #000;
+  opacity: 0.8;
+}
+.btn-light:active {
+  background-color: #d0d4d7;
+  color: #000;
+  opacity: 1;
+}
+.btn-light:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5);
+}
+
 .btn-primary {
   background-color: #2E72EA;
   font-size: 15px;
@@ -11890,6 +11905,7 @@ a:hover {
 .btn-primary:hover {
   background-color: #1559d0;
   color: #FFFFFF;
+  border-color: #1559d0;
 }
 .btn-primary:active {
   background-color: #134fb9 !important;
@@ -12007,6 +12023,15 @@ a:hover {
   color: #FFFFFF;
 }
 
+.form-search {
+  height: 37.53px;
+  font-size: 13.5px !important;
+  border: none;
+}
+.form-search:focus {
+  background-color: #FFFFFF;
+}
+
 .form-label {
   font-size: 15px !important;
   font-weight: 600;
@@ -12025,6 +12050,7 @@ a:hover {
 }
 .form-control:focus, .form-select:focus {
   border-color: #2E72EA;
+  background-color: #FFFFFF;
   box-shadow: 0 0 0 0.15rem rgba(46, 114, 234, 0.15);
 }
 
@@ -12164,18 +12190,40 @@ table {
   width: 100%;
 }
 
+thead {
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.table-wrapper {
+  max-height: calc(100vh - 227px) !important;
+  overflow-y: auto;
+}
+
+.table-tab-wrapper {
+  max-height: calc(100vh - 282px) !important;
+  overflow-y: auto;
+}
+
 .table th {
-  border-bottom: 2px solid rgba(177, 193, 207, 0.4);
+  background-color: #ffffff !important;
+  box-shadow: inset 0 -1.7px 0 rgba(177, 193, 207, 0.4);
+  border-bottom: 0;
+  padding: 12px 10px !important;
+  vertical-align: middle;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
 
 .table td {
-  border-bottom: 1px solid rgba(177, 193, 207, 0.4);
-}
-
-table th, table td {
-  padding: 12px 10px !important;
   background-color: #ffffff !important;
+  border-bottom: 1px solid rgba(177, 193, 207, 0.4);
+  padding: 12px 10px !important;
   vertical-align: middle;
+  line-height: 1.2;
 }
 
 table th:last-child {
@@ -12196,6 +12244,15 @@ table th:last-child {
 .fa-chevron-right {
   font-size: 12px;
   color: #2E72EA;
+}
+
+.modal-body p {
+  font-size: 15px;
+  margin: 0;
+}
+
+.modal-footer {
+  gap: 9px;
 }
 
 /*# sourceMappingURL=custom.css.map */

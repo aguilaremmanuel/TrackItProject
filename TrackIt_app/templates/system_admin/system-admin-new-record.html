@@ -87,17 +87,17 @@
     <!-- Modal to Confirm Record Creation -->
     <div class="modal fade" id="confirmRecordCreation" tabindex="-1" aria-labelledby="confirmRecordCreationLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <div class="modal-content rounded-4 shadow">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="confirmRecordCreationLabel">Confirm Record Creation</h1>
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0">
+                    <h5 class="modal-title" id="confirmRecordCreationLabel">Create New Record</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p class="fs-6">Are you sure you want to confirm this document creation?</p>
+                    <p>Are you sure you want to create this new record? Please review the information before proceeding.</p>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="confirmCreate" data-bs-toggle="modal" data-bs-target="#generateQRCode">Confirm</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <div class="modal-footer p-3 pt-0 border-top-0">
+                    <button type="button" class="m-0 mb-2 btn btn-primary" id="confirmCreate" data-bs-toggle="modal" data-bs-target="#generateQRCode">Confirm</button>
+                    <button type="button" class="m-0 mb-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </div>
         </div>
@@ -106,21 +106,22 @@
     <!-- Modal to Generate QR Code -->
     {% if showQRModal %}
         <div class="modal fade" id="generateQRCode" tabindex="-1" aria-labelledby="generateQRCodeLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content rounded-4 shadow">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5 mx-auto" id="confirmRecordCreationLabel">Document QR Code</h1>
-                        <button type="button" class="btn-close ps-0 ms-0" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>                
-                    <div class="modal-body text-center">
-                        <p class="fs-6">Scan the code to quickly access the document details or perform a specified action.</p>
-                        <p class="fs-6 fw-bold my-0">{{ str_routes }}</p>
-                        <img id='qrCodeImage' src="{{ qr_code_url }}" alt="Document QR Code" style="height: 218px; width: auto;">
-                        <p class="fs-6 fw-bold my-0">{{ str_tracking_no }}</p>
+            <div class="modal-dialog" style="max-width: 400px;">
+                <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                    <div class="modal-header pb-0 border-bottom-0 d-flex justify-content-between align-items-center" style="font-size: 13.5px;">
+                        <button type="button" class="btn-close" style="visibility: hidden;"></button>
+                        <h5 class="fw-bold mb-0 text-center flex-grow-1" id="confirmRecordCreationLabel">Document QR Code</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-footer d-flex flex-column align-items-center">
-                        <button type="button" class="btn btn-primary mb-2 w-50" id="printQR">Print QR Code</button>
-                        <button type="button" class="btn btn-secondary w-50" id="saveQR">Save a Copy</button>
+                    <div class="modal-body text-center">
+                        <p class="mb-2">Scan the code to quickly access the document details or perform a specified action.</p>
+                        <p class="fw-bold my-0">{{ str_routes }}</p>
+                        <img id='qrCodeImage' src="{{ qr_code_url }}" alt="Document QR Code" style="height: 218px; width: auto;">
+                        <p class="fw-bold my-0">{{ str_tracking_no }}</p>
+                    </div>
+                    <div class="modal-footer p-3 pt-0 border-top-0 d-flex flex-column align-items-center">
+                        <button type="button" class="m-0 mb-1 btn btn-primary w-100" id="printQR">Print QR Code</button>
+                        <button type="button" class="m-0 mb-2 btn btn-secondary w-100" id="saveQR">Save a Copy</button>
                     </div>                
                 </div>
             </div>
