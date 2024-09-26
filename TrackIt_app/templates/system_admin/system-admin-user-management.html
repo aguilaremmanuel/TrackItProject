@@ -75,63 +75,7 @@
                     </thead>
 
                     <tbody id="userTableBody">
-                        {% if users %}
-                            {% for user in users %}
-                                <tr>
-                                    <td>{{ user.employee_id }}</td>
-                                    <td>
-                                        {{ user.firstname|capfirst }} 
-                                        {% if user.middlename %}
-                                            {{ user.middlename|slice:":1"|capfirst }}. 
-                                        {% endif %}
-                                        {{ user.lastname|capfirst }}
-                                    </td>
-                                    <td>{{ user.contact_no }}</td>
-                                    <td>{{ user.email }}</td>
-                                    <td>{{ user.office_id.office_name }}</td>
-                                    <td>{{ user.role }}</td>
-                                
-                                    {% if user.status == "for verification" %}
-                                        <td><span class="badge badge-orange rounded-pill fw-semibold">FOR VERIFICATION</span></td>
-                                        <td>
-                                            <div class="table-action">
-                                                <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#verifyUserModal" data-user-id="{{ user.user_id }}" data-action="verify" data-url="{% url 'update_user_status' 'USER_ID' 'verify' office 'system_admin' %}">
-                                                    <i class="fa-solid fa-user-check"></i>
-                                                </button>
-                                                <button type="button" class="btn btn-sm btn-red" data-bs-toggle="modal" data-bs-target="#rejectUserModal" data-user-id="{{ user.user_id }}" data-action="reject" data-url="{% url 'update_user_status' 'USER_ID' 'reject' office 'system_admin' %}">
-                                                    <i class="fa-solid fa-user-xmark"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    {% elif user.status == "active" %}
-                                        <td><span class="badge badge-green rounded-pill fw-semibold">ACTIVE</span></td>
-                                        <td>
-                                            <div class="table-action">
-                                                <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#deactivateUserModal" data-user-id="{{ user.user_id }}" data-action="deactivate" data-url="{% url 'update_user_status' 'USER_ID' 'deactivate' office 'system_admin' %}">
-                                                    <i class="fa-solid fa-user-lock"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    {% elif user.status == "inactive" %}
-                                        <td><span class="badge badge-red rounded-pill fw-semibold">DEACTIVATED</span></td>
-                                        <td>
-                                            <div class="table-action">
-                                                <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#reactivateUserModal" data-user-id="{{ user.user_id }}" data-action="reactivate" data-url="{% url 'update_user_status' 'USER_ID' 'reactivate' office 'system_admin' %}">
-                                                    <i class="fa-solid fa-user-check"></i>
-                                                </button>
-                                                <button type="button" class="btn btn-sm btn-red" data-bs-toggle="modal" data-bs-target="#archiveUserModal" data-user-id="{{ user.user_id }}" data-action="archive" data-url="{% url 'update_user_status' 'USER_ID' 'archive' office 'system_admin' %}">
-                                                    <i class="fa-solid fa-user-minus"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    {% endif %}
-                                </tr>
-                            {% endfor %}
-                        {% else %}
-                            <tr>
-                                <td colspan="8" class="text-center">No data to display in table.</td>
-                            </tr>
-                        {% endif %}
+                        {% include 'partials/system-admin-users.html' %}
                     </tbody>
                 </table>
             </div>
@@ -263,6 +207,24 @@
                 });
             });
         });
+    </script>
+    <script>
+        function fetchUsers() {
+
+            fetch("{% url 'update_user_display' office %}")
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('userTableBody').innerHTML = data.html;
+            });
+
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchUsers();
+            setInterval(fetchUsers, 3000);
+        });
+
+
     </script>
 </body>
 </html>

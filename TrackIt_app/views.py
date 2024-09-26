@@ -4,22 +4,16 @@ from django.db.models import Max
 from .models import *
 from django.utils import timezone
 from django.contrib import messages
-from .models import User
 from django.http import HttpResponse, JsonResponse
 from django.core.mail import send_mail
 from django.conf import settings
 import qrcode
 from io import BytesIO
 from django.urls import reverse
-from django.utils.encoding import force_str
-from django.contrib.auth.tokens import default_token_generator
-from django.contrib.auth.hashers import make_password
+from django.utils.encoding import force_str, force_bytes
+from django.contrib.auth.tokens import default_token_generator, PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_encode
-from django.utils.encoding import force_bytes
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.utils.http import urlsafe_base64_decode
-
-
+from django.template.loader import render_to_string
 
 
 # ----------- LOGIN AND SIGNUP -----------------
@@ -251,40 +245,7 @@ def system_admin_user_management(request, office):
     else:
         return redirect('system_admin_login')
 
-    if office == 'all-office':
-        users = User.objects.exclude(status='archived')
-    elif office == 'administrative':
-        office_instance  = Office.objects.get(office_id='ADM')
-        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
-    elif office == 'accounting':
-        office_instance  = Office.objects.get(office_id='ACC')
-        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
-    elif office == 'budgeting':
-        office_instance  = Office.objects.get(office_id='BMD')
-        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
-    elif office == 'cashier':
-        office_instance  = Office.objects.get(office_id='CSR')
-        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
-    elif office == 'payroll':
-        office_instance  = Office.objects.get(office_id='PRL')
-        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
-    else:
-        users = User.objects.none()
-
-     # Exclude the user with user_id 'SYS-0001'
-    users = users.exclude(user_id='SYS-0001')
-    users = users.exclude(user_id='DIR-0001')
-
-    sort_by = request.GET.get('sort_by')
-    order = request.GET.get('order', 'asc')
-
-    if sort_by in ['role', 'status', 'lastname', 'email']:  # Only allow sorting by valid fields
-        if order == 'asc':
-            users = users.order_by(sort_by)
-        else:
-            users = users.order_by(f'-{sort_by}')
-
-    return render(request, 'system_admin/system-admin-user-management.html', {'users': users, 'office': office})
+    return render(request, 'system_admin/system-admin-user-management.html', {'office': office})
 
 # DIRECTOR USER MANAGEMENT MODULE
 def director_user_management(request, office):
@@ -527,6 +488,10 @@ def new_record_admin_officer(request):
         subject = request.POST.get('subject')
         remarks = request.POST.get('remarks')
 
+
+        if Document.objects.filter(tracking_no=tracking_no).exists():
+            return redirect('new_record_admin_officer')
+
         document = create_document(tracking_no, sender_name, sender_dept, doc_type, subject, remarks, ado_user_id)
 
         routes = DocumentRoute.objects.filter(document_type=document.document_type)
@@ -759,6 +724,49 @@ def load_document_types(request):
         return JsonResponse(list(document_types), safe=False)
     else:
         return JsonResponse({'error': 'Invalid category'}, status=400)
+
+def update_user_display(request, office):
+
+    if office == 'all-office':
+        users = User.objects.exclude(status='archived')
+    elif office == 'administrative':
+        office_instance  = Office.objects.get(office_id='ADM')
+        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
+    elif office == 'accounting':
+        office_instance  = Office.objects.get(office_id='ACC')
+        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
+    elif office == 'budgeting':
+        office_instance  = Office.objects.get(office_id='BMD')
+        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
+    elif office == 'cashier':
+        office_instance  = Office.objects.get(office_id='CSR')
+        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
+    elif office == 'payroll':
+        office_instance  = Office.objects.get(office_id='PRL')
+        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
+    else:
+        users = User.objects.none()
+
+     # Exclude the user with user_id 'SYS-0001'
+    users = users.exclude(user_id='SYS-0001')
+    users = users.exclude(user_id='DIR-0001')
+
+    sort_by = request.GET.get('sort_by')
+    order = request.GET.get('order', 'asc')
+
+    if sort_by in ['role', 'status', 'lastname', 'email']:  # Only allow sorting by valid fields
+        if order == 'asc':
+            users = users.order_by(sort_by)
+        else:
+            users = users.order_by(f'-{sort_by}')
+    context = {
+        'users': users,
+        'office': office,
+    }    
+
+    html = render_to_string('partials/system-admin-users.html', context)
+    return JsonResponse({'html': html})
+
 
 #USER UPDATE STATUS AND EMAILING FUNCTION
 def update_user_status(request, user_id, action, office, user_type):
