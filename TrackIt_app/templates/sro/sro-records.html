@@ -14,15 +14,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 	<link href="{% static 'fontawesomefree/css/all.min.css' %}" rel="stylesheet" type="text/css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <title>Admin Officer Needs Action</title>
+    <title>Sub-Receiving Officer Records</title>
 </head>
 
 <body id="bodyPd">
-    {% include "assets/admin-officer-navbar.html" %}
+    {% include "assets/sro-navbar.html" %}
 
+    <!--Container Main start-->
     <div class="h-100">
         <div class="d-flex justify-content-between align-items-center">
-            <h3 class="fw-semibold m-0">Needs Action</h3>
+            <h3 class="fw-semibold m-0">Records</h3>
             <div class="d-flex justify-content-between align-items-center" style="gap: 12px;">
                 <div class="search-container">
                     <input type="search" class="form-search form-control shadow-sm" style="font-size: 14px !important;" placeholder="Search a document">
@@ -33,7 +34,7 @@
                     <i class="fa-solid fa-qrcode" style="font-size: 16px !important;"></i>&nbsp; Scan QR Code
                 </button>
             </div>
-        </div>        
+        </div> 
 
         <div class="my-3 px-3 py-2 bg-white rounded shadow-sm">
             <ul class="custom-tabs">
@@ -41,13 +42,13 @@
                     <a class="tab-link" href="">All Documents</a>
                 </li>
                 <li class="tab-item">
-                    <a class="tab-link" href="">For DIR Approval</a>
+                    <a class="tab-link" href="">For ACT Forwarding</a>
                 </li>
                 <li class="tab-item">
                     <a class="tab-link" href="">For Routing</a>
                 </li>
                 <li class="tab-item">
-                    <a class="tab-link" href="">For Archiving</a>
+                    <a class="tab-link" href="">For Resolving</a>
                 </li>
             </ul>
 
@@ -71,7 +72,7 @@
                     <tbody id="userTableBody">
                         <tr>
                             <td style="white-space: nowrap;">112922032-DEPT-001</td>
-                            <td>For DIR Approval</td>
+                            <td>For ACT Forwarding</td>
                             <td>Antonio R. Mendoza</td>
                             <td>Request for Amendment of Expense List for Cash Advance Under Special Order No. 34</td>
                             <td>Regular</td>
@@ -83,6 +84,9 @@
                                 <div class="table-action">
                                     <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#viewDocumentModal">
                                         <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-green" data-bs-toggle="modal" data-bs-target="#forwardDocumentModal">
+                                        <i class="fa-solid fa-share"></i>
                                     </button>
                                 </div>
                             </td>
@@ -110,7 +114,7 @@
                         </tr>
                         <tr>
                             <td>112922032-DEPT-001</td>
-                            <td>For Archiving</td>
+                            <td>For Resolving</td>
                             <td>Antonio R. Mendoza</td>
                             <td>Request for Amendment of Expense List for Cash Advance Under Special Order No. 34</td>
                             <td>Regular</td>
@@ -123,8 +127,8 @@
                                     <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#viewDocumentModal">
                                         <i class="fa-solid fa-eye"></i>
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-red" data-bs-toggle="modal" data-bs-target="#archiveDocumentModal">
-                                        <i class="fa-solid fa-box-archive"></i>
+                                    <button type="button" class="btn btn-sm btn-green" data-bs-toggle="modal" data-bs-target="#resolveDocumentModal">
+                                        <i class="fa-solid fa-flag"></i>
                                     </button>
                                 </div>
                             </td>
@@ -138,6 +142,7 @@
             </p>
         </div>
     </div>
+    <!--Container Main end-->
 
     <!-- View Document Modal -->
     <div class="modal fade" id="viewDocumentModal" tabindex="-1" aria-labelledby="viewDocumentModalLabel" aria-hidden="true">
@@ -221,6 +226,25 @@
         </div>
     </div>
 
+    <!-- Forward Document Modal -->
+    <div class="modal fade" id="forwardDocumentModal" tabindex="-1" aria-labelledby="forwardDocumentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0">
+                    <h5 class="modal-title" id="forwardDocumentModalLabel">Forward Document</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to forward this document? Once forwarded, the document will be sent to the next person or stage in the process.</p>
+                </div>
+                <div class="modal-footer p-3 pt-0 border-top-0">
+                    <button type="button" class="m-0 mb-2 btn btn-primary" id="confirmForward">Confirm</button>
+                    <button type="button" class="m-0 mb-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Route Document Modal -->
     <div class="modal fade" id="routeDocumentModal" tabindex="-1" aria-labelledby="routeDocumentModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -240,19 +264,19 @@
         </div>
     </div>
 
-    <!-- Archive Document Modal -->
-    <div class="modal fade" id="archiveDocumentModal" tabindex="-1" aria-labelledby="archiveDocumentModalLabel" aria-hidden="true">
+    <!-- Resolve Document Modal -->
+    <div class="modal fade" id="resolveDocumentModal" tabindex="-1" aria-labelledby="resolveDocumentModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
                 <div class="modal-header pb-0 border-bottom-0">
-                    <h5 class="modal-title" id="archiveDocumentModalLabel">Archive Document</h5>
+                    <h5 class="modal-title" id="resolveDocumentModalLabel">Resolve Document</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Are you sure you want to archive this document? Once archived, it will be moved to storage and will no longer appear in active workflows.</p>
+                    <p>Are you sure you want to resolve this document? Once resolved, the document will be endorsed for archiving or final processing.</p>
                 </div>
                 <div class="modal-footer p-3 pt-0 border-top-0">
-                    <button type="button" class="m-0 mb-2 btn btn-primary" id="confirmArchive">Confirm</button>
+                    <button type="button" class="m-0 mb-2 btn btn-primary" id="confirmResolve">Confirm</button>
                     <button type="button" class="m-0 mb-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </div>
@@ -311,7 +335,7 @@
             const status = params.get('status');
             if (status) {
                 // Assuming you want to add the class to the element with ID 'targetElement'
-                document.querySelector('#needs-action').classList.add(status);
+                document.querySelector('#all-records').classList.add(status);
             }
         });
     </script>
@@ -335,26 +359,34 @@
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            const forwardModal = new bootstrap.Modal(document.getElementById('forwardDocumentModal'));
             const routeModal = new bootstrap.Modal(document.getElementById('routeDocumentModal'));
-            const archiveModal = new bootstrap.Modal(document.getElementById('archiveDocumentModal'));
+            const resolveModal = new bootstrap.Modal(document.getElementById('resolveDocumentModal'));
             const remarksModal = new bootstrap.Modal(document.getElementById('addRemarksModal'));
-        
+    
             const actionMessage = document.getElementById('actionMessage');
-            
+    
+            // Handle Confirm Forward Action
+            document.getElementById('confirmForward').addEventListener('click', function () {
+                forwardModal.hide();
+                actionMessage.textContent = "The document has been successfully forwarded. Add any additional remarks related to this action below, or leave as blank if not applicable.";
+                remarksModal.show();
+            });
+    
             // Handle Confirm Route Action
             document.getElementById('confirmRoute').addEventListener('click', function () {
                 routeModal.hide();
                 actionMessage.textContent = "The document has been successfully routed. Add any additional remarks related to this action below, or leave as blank if not applicable.";
                 remarksModal.show();
             });
-        
-            // Handle Confirm Archive Action
-            document.getElementById('confirmArchive').addEventListener('click', function () {
-                archiveModal.hide();
-                actionMessage.textContent = "The document has been successfully archived. Add any additional remarks related to this action below, or leave as blank if not applicable.";
+    
+            // Handle Confirm Resolve Action
+            document.getElementById('confirmResolve').addEventListener('click', function () {
+                resolveModal.hide();
+                actionMessage.textContent = "The document has been successfully resolved. Add any additional remarks related to this action below, or leave as blank if not applicable.";
                 remarksModal.show();
             });
-        
+    
             // Handle saving remarks (you can send an AJAX request or form submission here)
             document.getElementById('saveRemarks').addEventListener('click', function () {
                 const remarks = document.getElementById('remarks').value;

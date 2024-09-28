@@ -14,15 +14,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 	<link href="{% static 'fontawesomefree/css/all.min.css' %}" rel="stylesheet" type="text/css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <title>Admin Officer Needs Action</title>
+    <title>Director All Records</title>
 </head>
 
 <body id="bodyPd">
-    {% include "assets/admin-officer-navbar.html" %}
+    {% include "assets/director-navbar.html" %}
 
+    <!--Container Main start-->
     <div class="h-100">
         <div class="d-flex justify-content-between align-items-center">
-            <h3 class="fw-semibold m-0">Needs Action</h3>
+            <h3 class="fw-semibold m-0">All Records</h3>
             <div class="d-flex justify-content-between align-items-center" style="gap: 12px;">
                 <div class="search-container">
                     <input type="search" class="form-search form-control shadow-sm" style="font-size: 14px !important;" placeholder="Search a document">
@@ -34,24 +35,8 @@
                 </button>
             </div>
         </div>        
-
         <div class="my-3 px-3 py-2 bg-white rounded shadow-sm">
-            <ul class="custom-tabs">
-                <li class="tab-item">
-                    <a class="tab-link" href="">All Documents</a>
-                </li>
-                <li class="tab-item">
-                    <a class="tab-link" href="">For DIR Approval</a>
-                </li>
-                <li class="tab-item">
-                    <a class="tab-link" href="">For Routing</a>
-                </li>
-                <li class="tab-item">
-                    <a class="tab-link" href="">For Archiving</a>
-                </li>
-            </ul>
-
-            <div class="table-tab-wrapper table-responsive d-flex mt-2">
+            <div class="table-responsive table-wrapper d-flex">
                 <table class="table mb-1">
                     <thead>
                         <tr>
@@ -67,8 +52,29 @@
                             <th>Action</th>
                         </tr>
                     </thead>
-
-                    <tbody id="userTableBody">
+                    
+                    <tbody id="docTableBody">
+                        <tr>
+                            <td style="white-space: nowrap;">112922032-DEPT-001</td>
+                            <td>For DIR Approval</td>
+                            <td>Antonio R. Mendoza</td>
+                            <td>Request for Amendment of Expense List for Cash Advance Under Special Order No. 34</td>
+                            <td>Regular</td>
+                            <td>This is a sample remarks</td>
+                            <td style="white-space: nowrap;">2024-08-05<br>10:15 AM</td>
+                            <td>10 Days</td>
+                            <td><span class="badge badge-yellow rounded-pill fw-semibold">FOR PREF. ACTION</span></td>
+                            <td>
+                                <div class="table-action">
+                                    <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#viewDocumentModal">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-green" data-bs-toggle="modal" data-bs-target="#approveDocumentModal">
+                                        <i class="fa-solid fa-check"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
                         <tr>
                             <td style="white-space: nowrap;">112922032-DEPT-001</td>
                             <td>For DIR Approval</td>
@@ -79,6 +85,45 @@
                             <td style="white-space: nowrap;">2024-08-05<br>10:15 AM</td>
                             <td>5 Days</td>
                             <td><span class="badge badge-green rounded-pill fw-semibold">NORMAL</span></td>
+                            <td>
+                                <div class="table-action">
+                                    <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#viewDocumentModal">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-green" data-bs-toggle="modal" data-bs-target="#approveDocumentModal">
+                                        <i class="fa-solid fa-check"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>112922032-DEPT-001</td>
+                            <td>For Routing</td>
+                            <td>Antonio R. Mendoza</td>
+                            <td>Request for Amendment of Expense List for Cash Advance Under Special Order No. 34</td>
+                            <td>Regular</td>
+                            <td>This is a sample remarks</td>
+                            <td>2024-08-05<br>10:15 AM</td>
+                            <td>3 Days</td>
+                            <td><span class="badge badge-orange rounded-pill fw-semibold">URGENT</span></td>
+                            <td>
+                                <div class="table-action">
+                                    <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#viewDocumentModal">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>112922032-DEPT-001</td>
+                            <td>For Archiving</td>
+                            <td>Antonio R. Mendoza</td>
+                            <td>Request for Amendment of Expense List for Cash Advance Under Special Order No. 34</td>
+                            <td>Regular</td>
+                            <td>This is a sample remarks</td>
+                            <td>2024-08-05<br>10:15 AM</td>
+                            <td>1 Day</td>
+                            <td><span class="badge badge-red rounded-pill fw-semibold">VERY URGENT</span></td>
                             <td>
                                 <div class="table-action">
                                     <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#viewDocumentModal">
@@ -102,35 +147,11 @@
                                     <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#viewDocumentModal">
                                         <i class="fa-solid fa-eye"></i>
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-green" data-bs-toggle="modal" data-bs-target="#routeDocumentModal">
-                                        <i class="fa-solid fa-route"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>112922032-DEPT-001</td>
-                            <td>For Archiving</td>
-                            <td>Antonio R. Mendoza</td>
-                            <td>Request for Amendment of Expense List for Cash Advance Under Special Order No. 34</td>
-                            <td>Regular</td>
-                            <td>This is a sample remarks</td>
-                            <td>2024-08-05<br>10:15 AM</td>
-                            <td>1 Day</td>
-                            <td><span class="badge badge-red rounded-pill fw-semibold">VERY URGENT</span></td>
-                            <td>
-                                <div class="table-action">
-                                    <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#viewDocumentModal">
-                                        <i class="fa-solid fa-eye"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-sm btn-red" data-bs-toggle="modal" data-bs-target="#archiveDocumentModal">
-                                        <i class="fa-solid fa-box-archive"></i>
-                                    </button>
                                 </div>
                             </td>
                         </tr>
                     </tbody>
-                </table>
+                </table>           
             </div>
 
             <p class="d-block text-start my-0 p-2 fw-semibold" id="record-count" style="color: #000000; opacity: 0.6;">
@@ -138,6 +159,7 @@
             </p>
         </div>
     </div>
+    <!--Container Main end-->
 
     <!-- View Document Modal -->
     <div class="modal fade" id="viewDocumentModal" tabindex="-1" aria-labelledby="viewDocumentModalLabel" aria-hidden="true">
@@ -221,38 +243,19 @@
         </div>
     </div>
 
-    <!-- Route Document Modal -->
-    <div class="modal fade" id="routeDocumentModal" tabindex="-1" aria-labelledby="routeDocumentModalLabel" aria-hidden="true">
+    <!-- Approve Document Modal -->
+    <div class="modal fade" id="approveDocumentModal" tabindex="-1" aria-labelledby="approveDocumentModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
                 <div class="modal-header pb-0 border-bottom-0">
-                    <h5 class="modal-title" id="routeDocumentModalLabel">Route Document</h5>
+                    <h5 class="modal-title" id="approveDocumentModalLabel">Approve Document</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Are you sure you want to route this document? Once routed, the document will be forwarded to the assigned recipient for further processing.</p>
+                    <p>Are you sure you want to approve this document? Once approved, the document will be ready for routing and further action.</p>
                 </div>
                 <div class="modal-footer p-3 pt-0 border-top-0">
-                    <button type="button" class="m-0 mb-2 btn btn-primary" id="confirmRoute">Confirm</button>
-                    <button type="button" class="m-0 mb-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Archive Document Modal -->
-    <div class="modal fade" id="archiveDocumentModal" tabindex="-1" aria-labelledby="archiveDocumentModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
-                <div class="modal-header pb-0 border-bottom-0">
-                    <h5 class="modal-title" id="archiveDocumentModalLabel">Archive Document</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Are you sure you want to archive this document? Once archived, it will be moved to storage and will no longer appear in active workflows.</p>
-                </div>
-                <div class="modal-footer p-3 pt-0 border-top-0">
-                    <button type="button" class="m-0 mb-2 btn btn-primary" id="confirmArchive">Confirm</button>
+                    <button type="button" class="m-0 mb-2 btn btn-primary" id="confirmApprove">Confirm</button>
                     <button type="button" class="m-0 mb-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </div>
@@ -302,7 +305,7 @@
     <script src="{% static 'js/tabs-nav.js' %}"></script>  
     <script src="{% static 'js/records-count.js' %}"></script>
     <script src="{% static 'js/update_user_status.js' %}"></script>
-    <script src="{% static 'js/clear-search.js' %}"></script> 
+    <script src="{% static 'js/clear-search.js' %}"></script>  
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // On page load, read the URL parameter and update the class
@@ -311,7 +314,7 @@
             const status = params.get('status');
             if (status) {
                 // Assuming you want to add the class to the element with ID 'targetElement'
-                document.querySelector('#needs-action').classList.add(status);
+                document.querySelector('#all-records').classList.add(status);
             }
         });
     </script>
@@ -335,26 +338,18 @@
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const routeModal = new bootstrap.Modal(document.getElementById('routeDocumentModal'));
-            const archiveModal = new bootstrap.Modal(document.getElementById('archiveDocumentModal'));
+            const approveModal = new bootstrap.Modal(document.getElementById('approveDocumentModal'));
             const remarksModal = new bootstrap.Modal(document.getElementById('addRemarksModal'));
-        
+    
             const actionMessage = document.getElementById('actionMessage');
-            
-            // Handle Confirm Route Action
-            document.getElementById('confirmRoute').addEventListener('click', function () {
-                routeModal.hide();
-                actionMessage.textContent = "The document has been successfully routed. Add any additional remarks related to this action below, or leave as blank if not applicable.";
+    
+            // Handle Confirm Approve Action
+            document.getElementById('confirmApprove').addEventListener('click', function () {
+                approveModal.hide();
+                actionMessage.textContent = "The document has been successfully approved. Add any additional remarks related to this action below, or leave as blank if not applicable.";
                 remarksModal.show();
             });
-        
-            // Handle Confirm Archive Action
-            document.getElementById('confirmArchive').addEventListener('click', function () {
-                archiveModal.hide();
-                actionMessage.textContent = "The document has been successfully archived. Add any additional remarks related to this action below, or leave as blank if not applicable.";
-                remarksModal.show();
-            });
-        
+    
             // Handle saving remarks (you can send an AJAX request or form submission here)
             document.getElementById('saveRemarks').addEventListener('click', function () {
                 const remarks = document.getElementById('remarks').value;
@@ -363,6 +358,6 @@
                 remarksModal.hide();
             });
         });
-    </script>
+    </script>  
 </body>
 </html>

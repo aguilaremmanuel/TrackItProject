@@ -24,10 +24,85 @@
     <div class="h-100">
         <div class="d-flex justify-content-between align-items-center">
             <h3 class="fw-semibold m-0">All Records</h3>
-            <div class="input-group" style="max-width: 300px; margin-bottom: 0 !important;">
-                <input type="search" class="form-search form-control shadow-sm" placeholder="Search a document">
-                <button type="button" class="btn btn-primary m-0 shadow-sm" style="font-size: 13.5px !important; padding: 8px 12.8px;">
-                    <i class="fa-solid fa-search"></i>
+            <div class="d-flex justify-content-between align-items-center" style="gap: 12px;">
+                <div class="search-container">
+                    <input type="search" class="form-search form-control shadow-sm" style="font-size: 14px !important;" placeholder="Search a document">
+                    <i class="fa-solid fa-search search-icon"></i>  
+                    <i class="fa-solid fa-xmark clear-icon" style="display: none;"></i>
+                </div>
+                <!-- Filter Button with Dropdown -->
+                <div class="dropdown">
+                    <button 
+                        type="button" 
+                        class="btn btn-primary m-0 shadow-sm" 
+                        id="filterButton" 
+                        data-bs-toggle="dropdown" 
+                        aria-expanded="false"
+                        style="font-size: 14px; max-height: 37.85px; padding: 7.63px 11.2px;">
+                        <i class="fa-solid fa-filter" style="font-size: 14px !important;"></i>&nbsp; Filter
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="filterButton">
+                        <li>
+                            <h6 class="dropdown-header">Status</h6>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="dirApproval">
+                                <label class="form-check-label" for="dirApproval">For DIR Approval</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="forRouting">
+                                <label class="form-check-label" for="forRouting">For Routing</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="forSROReceiving">
+                                <label class="form-check-label" for="forSROReceiving">For SRO Receiving</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="forACTReceiving">
+                                <label class="form-check-label" for="forACTReceiving">For ACT Receiving</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="forResolving">
+                                <label class="form-check-label" for="forResolving">For Resolving</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="forArchiving">
+                                <label class="form-check-label" for="forArchiving">For Archiving</label>
+                            </div>
+                        </li>
+                        <li>
+                            <h6 class="dropdown-header">Type</h6>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="regularType">
+                                <label class="form-check-label" for="regularType">Regular</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="scpType">
+                                <label class="form-check-label" for="scpType">SCPF</label>
+                            </div>
+                        </li>
+                        <li>
+                            <h6 class="dropdown-header">Priority</h6>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="prefAction">
+                                <label class="form-check-label" for="prefAction">For Pref. Action</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="normalPriority">
+                                <label class="form-check-label" for="normalPriority">Normal</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="urgentPriority">
+                                <label class="form-check-label" for="urgentPriority">Urgent</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="veryUrgentPriority">
+                                <label class="form-check-label" for="veryUrgentPriority">Very Urgent</label>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <button type="button" class="btn btn-primary m-0 shadow-sm" style="font-size: 14px; max-height: 37.85; padding: 7.63px 11.2px;" data-bs-toggle="modal" data-bs-target="#scanQRCodeModal">
+                    <i class="fa-solid fa-qrcode" style="font-size: 16px !important;"></i>&nbsp; Scan QR Code
                 </button>
             </div>
         </div>        
@@ -379,6 +454,29 @@
         </div>
     </div>
 
+    <!-- Scan QR Code Modal -->
+    <div class="modal fade" id="scanQRCodeModal" tabindex="-1" aria-labelledby="addRemarksModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="max-width: 400px;">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0 d-flex justify-content-between align-items-center" style="font-size: 13.5px;">
+                    <button type="button" class="btn-close" style="visibility: hidden;"></button>
+                    <h5 class="fw-bold mb-0 text-center flex-grow-1" id="confirmRecordCreationLabel">Scan QR Code</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p class="mb-2">You may now scan the QR code. For optimal scanning, keep the code in focus and avoid any obstructions.</p>
+                </div>
+                <div class="modal-footer p-3 pt-0 border-top-0 d-flex flex-column align-items-center">
+                    
+                </div>                
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/tabs-nav.js' %}"></script>  
+    <script src="{% static 'js/records-count.js' %}"></script>
+    <script src="{% static 'js/update_user_status.js' %}"></script>
+    <script src="{% static 'js/clear-search.js' %}"></script>  
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // On page load, read the URL parameter and update the class
@@ -437,6 +535,19 @@
                 console.log('Remarks:', remarks);
                 // Logic to save remarks goes here
                 remarksModal.hide();
+            });
+        });
+    </script>
+    <script>
+        // Example JavaScript to handle checkbox changes
+        const checkboxes = document.querySelectorAll('.form-check-input');
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', (event) => {
+                if (event.target.checked) {
+                    console.log(`${event.target.labels[0].innerText} is checked`);
+                } else {
+                    console.log(`${event.target.labels[0].innerText} is unchecked`);
+                }
             });
         });
     </script>
