@@ -12248,8 +12248,7 @@ thead {
 
 .table th {
   background-color: #ffffff !important;
-  box-shadow: inset 0 -1.7px 0 rgba(177, 193, 207, 0.4);
-  border-bottom: 0;
+  box-shadow: inset 0 -1px 0 rgba(177, 193, 207, 0.4);
   padding: 12px 10px !important;
   vertical-align: middle;
   white-space: nowrap !important;
@@ -12293,5 +12292,13 @@ table th:last-child {
 .modal-footer {
   gap: 9px;
 }
+
+.highlight-search {
+  background-color: rgb(46, 114, 234); /* Change to desired color */
+  color: white; /* Text color */
+  padding: 0 3px; /* Optional: add some padding */
+  border-radius: 3px; /* Optional: rounded corners */
+}
+
 
 /*# sourceMappingURL=custom.css.map */

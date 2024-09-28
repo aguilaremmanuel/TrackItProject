@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'TrackIt_app',
-    'fontawesomefree'
+    'fontawesomefree',
 ]
 
 MIDDLEWARE = [
@@ -71,7 +72,14 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'TrackItProject.wsgi.application'
+ASGI_APPLICATION = 'TrackItProject.asgi.application'
 
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',  # For development, switch to Redis in production
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
