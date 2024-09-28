@@ -14,6 +14,10 @@ from django.utils.encoding import force_str, force_bytes
 from django.contrib.auth.tokens import default_token_generator, PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_encode
 from django.template.loader import render_to_string
+from django.db.models import Q
+from datetime import datetime
+import pytz
+import json
 
 
 # ----------- LOGIN AND SIGNUP -----------------
@@ -133,6 +137,22 @@ def director_login(request):
 
 # USER LOGIN
 def user_login(request):
+
+    role = request.session.get('role')
+
+    if role == 'ADO':
+        return redirect(dashboard_admin_officer)
+    elif role == 'SRO':
+        return redirect(dashboard_sro)
+    elif role == 'ACT':
+        return redirect(dashboard_action_officer)
+    elif role == 'SYSTEM_ADMIN':
+        return redirect(system_admin_dashboard)
+    elif role == 'DIRECTOR':
+        return redirect(dashboard_director)
+    else:
+        pass
+
     if request.method == 'POST':
 
         user_id = request.POST['user_id']
@@ -256,40 +276,7 @@ def director_user_management(request, office):
     else:
         return redirect('director_login')
 
-    if office == 'all-office':
-        users = User.objects.exclude(status='archived')
-    elif office == 'administrative':
-        office_instance  = Office.objects.get(office_id='ADM')
-        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
-    elif office == 'accounting':
-        office_instance  = Office.objects.get(office_id='ACC')
-        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
-    elif office == 'budgeting':
-        office_instance  = Office.objects.get(office_id='BMD')
-        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
-    elif office == 'cashier':
-        office_instance  = Office.objects.get(office_id='CSR')
-        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
-    elif office == 'payroll':
-        office_instance  = Office.objects.get(office_id='PRL')
-        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
-    else:
-        users = User.objects.none()
-
-     # Exclude the user with user_id 'SYS-0001'
-    users = users.exclude(user_id='SYS-0001')
-    users = users.exclude(user_id='DIR-0001')
-
-    sort_by = request.GET.get('sort_by')
-    order = request.GET.get('order', 'asc')
-
-    if sort_by in ['role', 'status', 'lastname', 'email']:  # Only allow sorting by valid fields
-        if order == 'asc':
-            users = users.order_by(sort_by)
-        else:
-            users = users.order_by(f'-{sort_by}')
-
-    return render(request, 'director/director-user-management.html', {'users': users, 'office': office})
+    return render(request, 'director/director-user-management.html', {'office': office})
 
 # -------------- DOC MANAGEMENT -------------------
 
@@ -466,7 +453,7 @@ def new_record_system_admin(request):
 def new_record_admin_officer(request):
 
     ado_user_id = request.session.get('ado_user_id')
-
+    
     if ado_user_id:
         pass
     else:
@@ -514,6 +501,14 @@ def new_record_admin_officer(request):
 
 # ADMIN OFFICER ALL RECORDS
 def all_records_admin_officer(request):
+
+    ado_user_id = request.session.get('ado_user_id')
+
+    if ado_user_id:
+        pass
+    else:
+        return redirect('user_login')
+
     return render(request, 'admin_officer/admin-officer-all-records.html')
 
 # -------------- RECORDS -------------------
@@ -524,13 +519,26 @@ def all_records_sro(request):
 
 # ACTION OFFICER ALL RECORDS
 def all_records_action_officer(request):
+
+    document_no = request.GET.get('document_no')
+
     return render(request, 'action_officer/action-officer-all-records.html')
 
 # -------------- NEEDS ACTION -------------------
 
 # ADMIN OFFICER NEEDS ACTION
-def needs_action_admin_officer(request):
-    return render(request, 'admin_officer/admin-officer-needs-action.html')
+def admin_officer_needs_action(request, panel):
+
+    ado_user_id = request.session.get('ado_user_id')
+
+    if ado_user_id:
+        pass
+    else:
+        return redirect('user_login')
+    
+
+
+    return render(request, 'admin_officer/admin-officer-needs-action.html', {'panel': panel})
 
 
 # SRO UNACTED DOCUMENTS
@@ -725,49 +733,6 @@ def load_document_types(request):
     else:
         return JsonResponse({'error': 'Invalid category'}, status=400)
 
-def update_user_display(request, office):
-
-    if office == 'all-office':
-        users = User.objects.exclude(status='archived')
-    elif office == 'administrative':
-        office_instance  = Office.objects.get(office_id='ADM')
-        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
-    elif office == 'accounting':
-        office_instance  = Office.objects.get(office_id='ACC')
-        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
-    elif office == 'budgeting':
-        office_instance  = Office.objects.get(office_id='BMD')
-        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
-    elif office == 'cashier':
-        office_instance  = Office.objects.get(office_id='CSR')
-        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
-    elif office == 'payroll':
-        office_instance  = Office.objects.get(office_id='PRL')
-        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
-    else:
-        users = User.objects.none()
-
-     # Exclude the user with user_id 'SYS-0001'
-    users = users.exclude(user_id='SYS-0001')
-    users = users.exclude(user_id='DIR-0001')
-
-    sort_by = request.GET.get('sort_by')
-    order = request.GET.get('order', 'asc')
-
-    if sort_by in ['role', 'status', 'lastname', 'email']:  # Only allow sorting by valid fields
-        if order == 'asc':
-            users = users.order_by(sort_by)
-        else:
-            users = users.order_by(f'-{sort_by}')
-    context = {
-        'users': users,
-        'office': office,
-    }    
-
-    html = render_to_string('partials/system-admin-users.html', context)
-    return JsonResponse({'html': html})
-
-
 #USER UPDATE STATUS AND EMAILING FUNCTION
 def update_user_status(request, user_id, action, office, user_type):
     user = User.objects.get(pk=user_id)
@@ -836,15 +801,21 @@ def create_document(tracking_no, sender_name, sender_dept, doc_type, subject, re
         document_type=document_type_instance,
         subject=subject,
         remarks=remarks,
-        status='For DIR Approval'  # Modify this as needed
+        status='For DIR Approval',
+        recent_update = timezone.now()
+    )
+
+    new_remarks = Remarks.objects.create(
+        remarks=remarks
     )
 
     # Create ActivityLogs entry with default user_id from the session
     ActivityLogs.objects.create(
         time_stamp=timezone.now(),
-        activity='created',
+        activity='Document Created',
         document_id=document,
-        user_id_id=user_id  
+        user_id_id=user_id,
+        remarks = new_remarks
     )
 
     return document
@@ -887,3 +858,403 @@ def generate_qr_code(request, document_no):
 
     # Return the image as a response
     return HttpResponse(buffer, content_type='image/png')
+
+def get_routes(request, document_no):
+
+    try:
+        document = Document.objects.get(document_no=document_no)
+
+        routes = DocumentRoute.objects.filter(document_type_id = document.document_type_id)
+        str_routes, str_routes_titles = generate_route_strings(routes)
+
+        data = {
+            'str_routes': str_routes,
+            'str_routes_titles': str_routes_titles
+        }
+
+        return JsonResponse(data)
+
+    except Document.DoesNotExist:
+        return JsonResponse({'error': 'Document not found'}, status=404)
+
+# FUNCTION FOR ALL ACTIONS (APPROVE, ROUTE, ARCHIVED...)
+def document_update_status(request, action, document_no):
+    
+    role = request.session.get('role')
+
+    if role == 'ADO':
+        user_id = request.session.get('ado_user_id')
+    elif role == 'SRO':
+        user_id = request.session.get('sro_user_id')
+    elif role == 'ACT':
+        user_id = request.session.get('act_user_id')
+    elif role == 'SYSTEM_ADMIN':
+        user_id = request.session.get('system_admin_user_id')
+    elif role == 'DIRECTOR':
+        user_id = request.session.get('director_user_id')
+    else:
+        return redirect('user_login')
+
+    document = Document.objects.get(document_no=document_no)
+
+    if action == 'approve':
+        status = 'For Routing'
+        activity = 'Document Approved'
+
+    elif action == 'route':
+        status = 'For SRO Receiving'
+        activity = 'Document Routed'
+
+    elif action == 'forward-to-act':
+        status = 'For ACT Receiving'
+        activity = 'Document Received-SRO and Forwarded-ACT'
+
+    elif action == 'endorse-resolve':
+        status = 'For Resolving'
+        activity = 'Document Endorsed-ACT'
+
+    elif action == 'resolve':
+        status = 'For Archiving'
+        activity = 'Document Resolved'
+
+    elif action == 'archive':
+        status = 'Archived'
+        activity = 'Document Archived'
+
+    document = Document.objects.get(document_no=document_no)
+    document.status = status
+    document.recent_update = timezone.now()
+    document.save()
+
+    new_remarks = Remarks.objects.create(
+        remarks=""
+    )
+
+    log = ActivityLogs.objects.create(
+        time_stamp=timezone.now(),
+        activity=activity,
+        document_id=document,
+        user_id_id=user_id,
+        remarks = new_remarks
+    )
+
+    data = {'remarks_no': log.remarks_id}
+    return JsonResponse(data)
+
+    #approve = For Routing
+    #route = For SRO Receiving
+    #forward-to-act = For ACT Receiving
+    #endorse-for-resolve = For Resolving
+    #resolve = For Archiving
+    #archive = Archived
+
+def add_remarks(request, document_no, remarks_no):
+
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        remarks = data.get('remarksInput')
+        print("remarks is: ", remarks)
+        editRemarks = Remarks.objects.get(no=remarks_no)
+        editRemarks.remarks = remarks
+        editRemarks.save()
+        
+        document = Document.objects.get(document_no=document_no)
+        document.remarks = remarks
+        document.save()
+
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+def delete_empty_remarks(request):
+    Remarks.objects.filter(Q(remarks="") | Q(remarks__isnull=True)).delete()
+    data = {}
+    return JsonResponse(data)
+
+# ---------- FETCHING --------------
+def fetch_document_details(request, document_no):
+    try:
+        document = Document.objects.get(document_no=document_no)
+
+        data = {
+            'tracking_no': document.tracking_no,
+            'sender_name': document.sender_name.title(),
+            'status': document.status,
+            'document_type': document.document_type.category,  # Assuming foreign key
+            'priority': document.document_type.priority_level.priority_level.title(),
+            'due_in': document.document_type.priority_level.deadline,  # Calculate if needed
+            'subject': document.subject,
+        }
+
+        log_entries = []
+
+        activity_logs = ActivityLogs.objects.filter(document_id=document).order_by('-time_stamp')
+        
+        for activity in activity_logs:
+            manila_tz = pytz.timezone('Asia/Manila')
+            local_time = activity.time_stamp.astimezone(manila_tz)
+
+            firstname = activity.user_id.firstname.title()
+            middlename = (activity.user_id.middlename[0].capitalize() + '.' if activity.user_id.middlename else '')
+            lastname = activity.user_id.lastname.capitalize()
+            role = activity.user_id.role
+
+            if role == 'ADO':
+                role = 'Admin Officer'
+            elif role == 'SRO':
+                role = 'Sub-Receiving Officer'
+            elif role == 'ACT':
+                role = 'Action Officer'
+
+            if activity.remarks is None:
+                remarks = ""
+            else:
+                remarks = activity.remarks.remarks
+
+            log = {
+                'date': local_time.strftime('%Y-%m-%d'),
+                'time': local_time.strftime('%I:%M %p').lstrip('0'),
+                'user_id': activity.user_id_id,
+                'name': f"{firstname} {middlename} {lastname}".strip(),
+                'office': activity.user_id.office_id.office_name,
+                'role': role,
+                'remarks': remarks,
+                'activity': activity.activity
+            }
+            log_entries.append(log)
+        data['activity_logs'] = log_entries
+
+        return JsonResponse(data)
+    except Document.DoesNotExist:
+        return JsonResponse({'error': 'Document not found'}, status=404)
+
+# ---------- PARTIALS --------------
+def update_user_display(request, office):
+
+    search_query = request.GET.get('search', '').strip()
+
+    if office == 'all-office':
+        users = User.objects.exclude(status='archived')
+    elif office == 'administrative':
+        office_instance  = Office.objects.get(office_id='ADM')
+        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
+    elif office == 'accounting':
+        office_instance  = Office.objects.get(office_id='ACC')
+        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
+    elif office == 'budgeting':
+        office_instance  = Office.objects.get(office_id='BMD')
+        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
+    elif office == 'cashier':
+        office_instance  = Office.objects.get(office_id='CSR')
+        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
+    elif office == 'payroll':
+        office_instance  = Office.objects.get(office_id='PRL')
+        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
+    else:
+        users = User.objects.none()
+
+     # Exclude the user with user_id 'SYS-0001'
+    users = users.exclude(user_id='SYS-0001')
+    users = users.exclude(user_id='DIR-0001')
+
+    sort_by = request.GET.get('sort_by')
+    order = request.GET.get('order', 'asc')
+
+    # Search filter
+    if search_query:
+        users = users.filter(
+            Q(firstname__icontains=search_query) |
+            Q(middlename__icontains=search_query) |
+            Q(lastname__icontains=search_query) |
+            Q(contact_no__icontains=search_query) |
+            Q(employee_id__icontains=search_query) |
+            Q(email__icontains=search_query)
+        )
+
+        for user in users:
+
+            if search_query in user.employee_id:
+                user.highlighted_employee_id = user.employee_id.replace(
+                    search_query, f"<span class='highlight-search'>{search_query}</span>"
+                )
+            else:
+                user.highlighted_employee_id = user.employee_id
+
+            firstname = user.firstname.title()
+            middlename = (user.middlename[0].capitalize() + '.' if user.middlename else '')
+            lastname = user.lastname.capitalize()
+            fullname = f"{firstname} {middlename} {lastname}".strip()
+            
+            if search_query in fullname:
+                user.highlighted_fullname = fullname.replace(
+                    search_query, f"<span class='highlight-search'>{search_query}</span>"
+                )
+            else:
+                user.highlighted_fullname = fullname
+
+            if search_query in user.contact_no:
+                user.highlighted_contact_no = user.contact_no.replace(
+                    search_query, f"<span class='highlight-search'>{search_query}</span>"
+                )
+            else:
+                user.highlighted_contact_no = user.contact_no
+
+            if search_query in user.email:
+                user.highlighted_email = user.email.replace(
+                    search_query, f"<span class='highlight-search'>{search_query}</span>"
+                )
+            else:
+                user.highlighted_email = user.email
+
+
+    if sort_by in ['role', 'status', 'lastname', 'email']:  # Only allow sorting by valid fields
+        if order == 'asc':
+            users = users.order_by(sort_by)
+        else:
+            users = users.order_by(f'-{sort_by}')
+
+    context = {
+        'users': users,
+        'office': office,
+        'search_query': search_query,
+    }    
+
+    html = render_to_string('partials/system-admin-users.html', context)
+    return JsonResponse({'html': html})
+
+def update_all_records_display(request):
+
+    search_query = request.GET.get('search', '').strip()
+
+    documents = Document.objects.exclude(status='archived')
+
+    sort_by = request.GET.get('sort_by')
+    order = request.GET.get('order', 'asc')
+
+    if search_query:
+
+        documents = documents.filter(
+            Q(tracking_no__icontains=search_query) |
+            Q(sender_name__icontains=search_query) |
+            Q(subject__icontains=search_query) |
+            Q(remarks__icontains=search_query) 
+        )
+  
+        for document in documents:
+
+            if search_query in document.tracking_no:
+                document.highlighted_tracking_no = document.tracking_no.replace(
+                    search_query, f"<span class='highlight-search'>{search_query}</span>"
+                )
+            else:
+                document.highlighted_tracking_no = document.tracking_no
+
+            if search_query in document.sender_name:
+                document.highlighted_sender_name = document.sender_name.replace(
+                    search_query, f"<span class='highlight-search'>{search_query}</span>"
+                )
+            else:
+                document.highlighted_sender_name = document.sender_name
+
+            if search_query in document.subject:
+                document.highlighted_subject = document.subject.replace(
+                    search_query, f"<span class='highlight-search'>{search_query}</span>"
+                )
+            else:
+                document.highlighted_subject = document.subject
+
+
+    if sort_by in ['status', 'document_type', 'deadline', 'priority_level']:  # Only allow sorting by valid fields
+
+        if sort_by == 'status':
+            if order == 'asc':
+                documents = documents.order_by(sort_by)
+            else:
+                documents = documents.order_by(f'-{sort_by}')
+        else:
+
+            if sort_by == 'document_type':
+                documents = Document.objects.order_by('document_type__category')
+            elif sort_by == 'deadline':
+                documents = Document.objects.order_by('document_type__priority_level__deadline')
+            else:
+                documents = Document.objects.order_by('document_type__priority_level__priority_level')
+
+    context = {
+        'documents': documents,
+        'search_query': search_query
+    }
+
+    html = render_to_string('partials/admin-officer-all-records.html', context)
+    return JsonResponse({'html': html})
+
+def admin_officer_update_needs_action_display(request, panel):
+
+    search_query = request.GET.get('search', '').strip()
+
+    sort_by = request.GET.get('sort_by')
+    order = request.GET.get('order', 'asc')
+
+    if panel == 'For-DIR-Approval':
+        documents = Document.objects.filter(status='For DIR Approval')
+    elif panel == 'For-Routing':
+        documents = Document.objects.filter(status='For Routing')
+    elif panel == 'For-Archiving':
+        documents = Document.objects.filter(status='For Archiving')
+    else:
+        documents = Document.objects.filter(status__in=["For DIR Approval", "For Routing", "For Archiving"])
+
+    if search_query:
+
+        documents = documents.filter(
+            Q(tracking_no__icontains=search_query) |
+            Q(sender_name__icontains=search_query) |
+            Q(subject__icontains=search_query) |
+            Q(remarks__icontains=search_query) 
+        )
+  
+        for document in documents:
+
+            if search_query in document.tracking_no:
+                document.highlighted_tracking_no = document.tracking_no.replace(
+                    search_query, f"<span class='highlight-search'>{search_query}</span>"
+                )
+            else:
+                document.highlighted_tracking_no = document.tracking_no
+
+            if search_query in document.sender_name:
+                document.highlighted_sender_name = document.sender_name.replace(
+                    search_query, f"<span class='highlight-search'>{search_query}</span>"
+                )
+            else:
+                document.highlighted_sender_name = document.sender_name
+
+            if search_query in document.subject:
+                document.highlighted_subject = document.subject.replace(
+                    search_query, f"<span class='highlight-search'>{search_query}</span>"
+                )
+            else:
+                document.highlighted_subject = document.subject
+
+    if sort_by in ['status', 'document_type', 'deadline', 'priority_level']:  # Only allow sorting by valid fields
+
+        if sort_by == 'status':
+            if order == 'asc':
+                documents = documents.order_by(sort_by)
+            else:
+                documents = documents.order_by(f'-{sort_by}')
+        else:
+
+            if sort_by == 'document_type':
+                documents = Document.objects.order_by('document_type__category')
+            elif sort_by == 'deadline':
+                documents = Document.objects.order_by('document_type__priority_level__deadline')
+            else:
+                documents = Document.objects.order_by('document_type__priority_level__priority_level')
+
+    context = {
+        'documents': documents,
+        'search_query': search_query
+    }
+
+    html = render_to_string('partials/admin-officer-needs-action.html', context)
+    return JsonResponse({'html': html})

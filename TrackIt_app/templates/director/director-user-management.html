@@ -24,7 +24,15 @@
     <!--Container Main start-->
     <div class="h-100">
         <!-- Overlay -->
-        <h3 class="fw-semibold">User Management</h3>
+        <div class="d-flex justify-content-between align-items-center">
+            <h3 class="fw-semibold m-0">User Management</h3>
+            <div class="input-group" style="max-width: 300px; margin-bottom: 0 !important;">
+                <input type="text" id="searchInput" data-url="{% url 'update_user_display' office %}" class="form-search form-control shadow-sm" placeholder="Search a document" onkeyup="fetchUsers()">
+                <button type="button" class="btn btn-primary m-0 shadow-sm" style="font-size: 13.5px !important; padding: 8px 12.8px;" onclick="fetchUsers()">
+                    <i class="fa-solid fa-search"></i>
+                </button>
+            </div>
+        </div>
         <div class="my-3 p-3 pt-2 bg-white rounded shadow-sm">
             <ul class="custom-tabs">
                 <li class="tab-item">
@@ -75,70 +83,14 @@
                     </thead>
 
                     <tbody id="userTableBody">
-                        {% if users %}
-                            {% for user in users %}
-                                <tr>
-                                    <td>{{ user.employee_id }}</td>
-                                    <td>
-                                        {{ user.firstname|capfirst }} 
-                                        {% if user.middlename %}
-                                            {{ user.middlename|slice:":1"|capfirst }}. 
-                                        {% endif %}
-                                        {{ user.lastname|capfirst }}
-                                    </td>
-                                    <td>{{ user.contact_no }}</td>
-                                    <td>{{ user.email }}</td>
-                                    <td>{{ user.office_id.office_name }}</td>
-                                    <td>{{ user.role }}</td>
-                                
-                                    {% if user.status == "for verification" %}
-                                        <td><span class="badge badge-orange rounded-pill fw-semibold">FOR VERIFICATION</span></td>
-                                        <td>
-                                            <div class="table-action">
-                                                <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#verifyUserModal" data-user-id="{{ user.user_id }}" data-action="verify" data-url="{% url 'update_user_status' 'USER_ID' 'verify' office 'director' %}">
-                                                    <i class="fa-solid fa-user-check"></i>
-                                                </button>
-                                                <button type="button" class="btn btn-sm btn-red" data-bs-toggle="modal" data-bs-target="#rejectUserModal" data-user-id="{{ user.user_id }}" data-action="reject" data-url="{% url 'update_user_status' 'USER_ID' 'reject' office 'director' %}">
-                                                    <i class="fa-solid fa-user-xmark"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    {% elif user.status == "active" %}
-                                        <td><span class="badge badge-green rounded-pill fw-semibold">ACTIVE</span></td>
-                                        <td>
-                                            <div class="table-action">
-                                                <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#deactivateUserModal" data-user-id="{{ user.user_id }}" data-action="deactivate" data-url="{% url 'update_user_status' 'USER_ID' 'deactivate' office 'director' %}">
-                                                    <i class="fa-solid fa-user-lock"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    {% elif user.status == "inactive" %}
-                                        <td><span class="badge badge-red rounded-pill fw-semibold">DEACTIVATED</span></td>
-                                        <td>
-                                            <div class="table-action">
-                                                <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#reactivateUserModal" data-user-id="{{ user.user_id }}" data-action="reactivate" data-url="{% url 'update_user_status' 'USER_ID' 'reactivate' office 'director' %}">
-                                                    <i class="fa-solid fa-user-check"></i>
-                                                </button>
-                                                <button type="button" class="btn btn-sm btn-red" data-bs-toggle="modal" data-bs-target="#archiveUserModal" data-user-id="{{ user.user_id }}" data-action="archive" data-url="{% url 'update_user_status' 'USER_ID' 'archive' office 'director' %}">
-                                                    <i class="fa-solid fa-user-minus"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    {% endif %}
-                                </tr>
-                            {% endfor %}
-                        {% else %}
-                            <tr>
-                                <td colspan="8" class="text-center">No data to display in table.</td>
-                            </tr>
-                        {% endif %}
+                        {% include 'partials/system-admin-users.html' %}
                     </tbody>
                 </table>
             </div>
 
             <!-- Adjust record count to exclude archived users -->
             <p class="d-block text-start my-0 ps-2 mb-1 fw-semibold" id="record-count" style="color: #000000; opacity: 0.6;">
-                Showing total of <span id="recordCount">{{ users|length|default:"0" }}</span> record(s)
+                Showing total of <span id="recordCount"></span> record(s)
             </p>                 
         </div>
     </div>
@@ -243,6 +195,7 @@
     <script src="{% static 'js/tabs-nav.js' %}"></script>  
     <script src="{% static 'js/records-count.js' %}"></script>
     <script src="{% static 'js/update_user_status.js' %}"></script>
+    <script src="{% static 'js/fetch-users.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {

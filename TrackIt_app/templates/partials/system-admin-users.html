@@ -1,16 +1,38 @@
 {% if users %}
     {% for user in users %}
         <tr>
-            <td>{{ user.employee_id }}</td>
             <td>
-                {{ user.firstname|capfirst }} 
-                {% if user.middlename %}
-                    {{ user.middlename|slice:":1"|capfirst }}. 
+                {% if search_query %}
+                    {{ user.highlighted_employee_id|safe }}
+                {% else %}
+                    {{ user.employee_id }}
                 {% endif %}
-                {{ user.lastname|capfirst }}
             </td>
-            <td>{{ user.contact_no }}</td>
-            <td>{{ user.email }}</td>
+            <td>
+                {% if search_query %}
+                    {{ user.highlighted_fullname|safe }}
+                {% else %}
+                    {{ user.firstname|capfirst }} 
+                    {% if user.middlename %}
+                        {{ user.middlename|slice:":1"|capfirst }}. 
+                    {% endif %}
+                    {{ user.lastname|capfirst }}
+                {% endif %}
+            </td>
+            <td>
+                {% if search_query %}
+                    {{ user.highlighted_contact_no|safe }}
+                {% else %}
+                    {{ user.contact_no }}
+                {% endif %}
+            </td>
+            <td>
+                {% if search_query %}
+                    {{ user.highlighted_email|safe }}
+                {% else %}
+                    {{ user.email }}
+                {% endif %}
+            </td>
             <td>{{ user.office_id.office_name }}</td>
             <td>{{ user.role }}</td>
         
@@ -52,6 +74,8 @@
     {% endfor %}
 {% else %}
     <tr>
-        <td colspan="8" class="text-center">No data to display in haha haha table.</td>
+        <td colspan="8" class="text-center">No data to display in table.</td>
     </tr>
 {% endif %}
+
+<input type="hidden" id="userLength" value="{{ users|length|default:'0' }}">

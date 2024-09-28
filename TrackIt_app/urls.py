@@ -13,13 +13,14 @@ urlpatterns = [
 
     path('system-admin-user-management/<str:office>/', views.system_admin_user_management, name='system_admin_user_management'),
     path('system-admin-update-user-display/<str:office>/', views.update_user_display, name='update_user_display'),
-    #path('update-user-status/<str:user_id>/<str:action>/', views.update_user_status, name='update_user_status'),
     path('update-user-status/<str:user_id>/<str:action>/<str:office>/<str:user_type>', views.update_user_status, name='update_user_status'),
     path('system-admin-doc-management/',views.system_admin_doc_management, name='system_admin_doc_management'),
     path('edit-document-type/', views.edit_document_type, name='edit_document_type'),
     path('delete-document-type/<int:document_no>/', views.delete_document_type, name='delete_document_type'),
     path('system-admin-new-record/',views.new_record_system_admin, name='new_record_system_admin'),
     
+    path('document-update-status/<str:action>/<int:document_no>/', views.document_update_status, name='document_update_status'),
+
     path('director-login/',views.director_login, name='director_login'),
     path('director-user-management/<str:office>/', views.director_user_management, name='director_user_management'),
     path('director-doc-management/',views.director_doc_management, name='director_doc_management'),
@@ -31,7 +32,13 @@ urlpatterns = [
     path('generate-qrcode/<int:document_no>/', views.generate_qr_code, name='generate_qr_code'),
 
     path('admin-officer-all-records/',views.all_records_admin_officer, name='all_records_admin_officer'),
-    path('admin-officer-needs-action/',views.needs_action_admin_officer, name='needs_action_admin_officer'),
+    path('admin-officer-all-records-display/', views.update_all_records_display, name='update_all_records_display'),
+    path('fetch-document-details/<int:document_no>/', views.fetch_document_details, name='fetch_document_details'),
+    path('add-remarks/<int:document_no>/<int:remarks_no>/', views.add_remarks, name='add_remarks'),
+    path('delete-empty-remarks/', views.delete_empty_remarks, name='delete_empty_remarks'),
+    path('get-routes/<int:document_no>/', views.get_routes, name='get_routes'),
+    path('admin-officer-needs-action/<str:panel>/',views.admin_officer_needs_action, name='admin_officer_needs_action'),
+    path('admin-officer-update-needs-action-display/<str:panel>/', views.admin_officer_update_needs_action_display, name='admin_officer_update_needs_action_display'),
     path('admin-officer-overdue/',views.overdue_admin_officer, name='overdue_admin_officer'),
     path('admin-officer-archive/',views.archive_admin_officer, name='archive_admin_officer'),
     path('admin-officer-activity-logs/',views.activity_logs_admin_officer, name='activity_logs_admin_officer'),
