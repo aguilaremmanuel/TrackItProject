@@ -127,7 +127,7 @@ def director_login(request):
                 request.session['role'] = 'DIRECTOR'
 
                 # Redirect to the director's dashboard
-                return redirect('dashboard_director')
+                return redirect('director_dashboard')
             else:
                 messages.error(request, "Invalid credentials.")
     else:
@@ -141,7 +141,7 @@ def user_login(request):
     role = request.session.get('role')
 
     if role == 'ADO':
-        return redirect(dashboard_admin_officer)
+        return redirect(admin_officer_dashboard)
     elif role == 'SRO':
         return redirect(dashboard_sro)
     elif role == 'ACT':
@@ -149,7 +149,7 @@ def user_login(request):
     elif role == 'SYSTEM_ADMIN':
         return redirect(system_admin_dashboard)
     elif role == 'DIRECTOR':
-        return redirect(dashboard_director)
+        return redirect(director_dashboard)
     else:
         pass
 
@@ -183,7 +183,7 @@ def user_login(request):
         # Redirect based on user role
         if user.role == 'ADO':  # Admin Officer
             request.session['ado_user_id'] = user.user_id
-            return redirect('dashboard_admin_officer')
+            return redirect('admin_officer_dashboard')
         elif user.role == 'SRO':  # Sub-Receiving Officer
             request.session['sro_user_id'] = user.user_id
             return redirect('dashboard_sro')
@@ -210,10 +210,8 @@ def user_logout(request):
         del request.session['act_user_id']
     elif role == 'SYSTEM_ADMIN':
         del request.session['system_admin_user_id']
-        return redirect(system_admin_login)
     elif role == 'DIRECTOR':
         del request.session['director_user_id']
-        return redirect(director_login)
         
     del request.session['role']
     return redirect(user_login)
@@ -232,7 +230,7 @@ def system_admin_dashboard(request):
     return render(request, 'system_admin/system-admin-dashboard.html')
 
 # DIRECTOR DASHBOARD
-def dashboard_director(request):
+def director_dashboard(request):
     director_user_id = request.session.get('director_user_id')
 
     if  director_user_id:
@@ -243,7 +241,7 @@ def dashboard_director(request):
     return render(request, 'director/director-dashboard.html')
 
 # ADMIN OFFICER DASHBOARD
-def dashboard_admin_officer(request):
+def admin_officer_dashboard(request):
     return render(request, 'admin_officer/admin-officer-dashboard.html')
 
 # SRO DASHBOARD

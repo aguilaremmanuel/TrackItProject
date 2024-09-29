@@ -19,26 +19,26 @@
         </div>
         <ul class="nav-list flex-column mb-auto">
             <li>
-                <a href="#" class="nav-link mb-1">
+                <a href="{% url 'director_dashboard' %}?status=active" class="nav-link mb-1" id="dashboard">
                     <i class='bx bx-grid-alt nav-icon'></i>
                     <span class="nav-name">Dashboard</span>
                 </a> 
             </li>
             <li>
-                <a href="{% url 'director_user_management' 'all-office' %}" class="nav-link mb-1">
+                <a href="{% url 'director_user_management' 'all-office' %}?status=active" class="nav-link mb-1" id="userManagement">
                     <i class='bx bx-user nav-icon'></i>
                     <span class="nav-name">User Management</span>
                 </a>
             </li>
             <li>
-                <a href="{% url 'director_doc_management' %}" class="nav-link mb-1">
+                <a href="{% url 'director_doc_management' %}?status=active" class="nav-link mb-1" id="docManagement">
                     <i class='bx bx-file-blank nav-icon'></i>
                     <span class="nav-name">Doc. Management</span>
                 </a>
             </li>
             <li>
                 <a href="#" class="nav-link mb-1">
-                    <i class='bx bx-folder nav-icon'></i>
+                    <i class='bx bx-folder-open nav-icon'></i>
                     <span class="nav-name">All Records</span>
                 </a>
             </li>

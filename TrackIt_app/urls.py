@@ -11,6 +11,7 @@ urlpatterns = [
     path('admin-login/',views.system_admin_login, name='system_admin_login'),
     path('admin-dashboard/',views.system_admin_dashboard, name='system_admin_dashboard'),
 
+    path('system-admin-dashboard/', views.system_admin_dashboard, name='system_admin_dashboard'),
     path('system-admin-user-management/<str:office>/', views.system_admin_user_management, name='system_admin_user_management'),
     path('system-admin-update-user-display/<str:office>/', views.update_user_display, name='update_user_display'),
     path('update-user-status/<str:user_id>/<str:action>/<str:office>/<str:user_type>', views.update_user_status, name='update_user_status'),
@@ -24,9 +25,9 @@ urlpatterns = [
     path('director-login/',views.director_login, name='director_login'),
     path('director-user-management/<str:office>/', views.director_user_management, name='director_user_management'),
     path('director-doc-management/',views.director_doc_management, name='director_doc_management'),
-    path('director-dashboard/',views.dashboard_director, name='dashboard_director'),
+    path('director-dashboard/',views.director_dashboard, name='director_dashboard'),
 
-    path('admin-officer-dashboard/',views.dashboard_admin_officer, name='dashboard_admin_officer'),
+    path('admin-officer-dashboard/',views.admin_officer_dashboard, name='admin_officer_dashboard'),
     path('admin-officer-new-record/',views.new_record_admin_officer, name='new_record_admin_officer'),
     path('load-document-types/', views.load_document_types, name='load_document_types'),
     path('generate-qrcode/<int:document_no>/', views.generate_qr_code, name='generate_qr_code'),
