@@ -23,13 +23,17 @@
     <div class="h-100">
         <div class="d-flex justify-content-between align-items-center">
             <h3 class="fw-semibold m-0">Needs Action</h3>
-            <div class="input-group" style="max-width: 300px; margin-bottom: 0 !important;">
-                <input type="text" id="searchInput" data-url="{% url 'admin_officer_update_needs_action_display' panel %}" class="form-search form-control shadow-sm" placeholder="Search a document">
-                <button type="button" class="btn btn-primary m-0 shadow-sm" style="font-size: 13.5px !important; padding: 8px 12.8px;">
-                    <i class="fa-solid fa-search"></i>
+            <div class="d-flex justify-content-between align-items-center" style="gap: 12px;">
+                <div class="search-container">
+                    <input type="text" id="searchInput" data-url="{% url 'admin_officer_update_needs_action_display' panel %}" class="form-search form-control shadow-sm" style="font-size: 14px !important;" placeholder="Search a document">
+                    <i class="fa-solid fa-search search-icon"></i>  
+                    <i class="fa-solid fa-xmark clear-icon" style="display: none;"></i>
+                </div>
+                <button type="button" class="btn btn-primary m-0 shadow-sm" style="font-size: 14px; max-height: 37.85; padding: 7.63px 11.2px;" data-bs-toggle="modal" data-bs-target="#scanQRCodeModal">
+                    <i class="fa-solid fa-qrcode" style="font-size: 16px !important;"></i>&nbsp; Scan QR Code
                 </button>
             </div>
-        </div>
+        </div>        
 
         <div class="my-3 px-3 py-2 bg-white rounded shadow-sm">
             <ul class="custom-tabs">
@@ -221,6 +225,29 @@
         </div>
     </div>
 
+    <!-- Scan QR Code Modal -->
+    <div class="modal fade" id="scanQRCodeModal" tabindex="-1" aria-labelledby="addRemarksModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="max-width: 400px;">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0 d-flex justify-content-between align-items-center" style="font-size: 13.5px;">
+                    <button type="button" class="btn-close" style="visibility: hidden;"></button>
+                    <h5 class="fw-bold mb-0 text-center flex-grow-1" id="confirmRecordCreationLabel">Scan QR Code</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p class="mb-2">You may now scan the QR code. For optimal scanning, keep the code in focus and avoid any obstructions.</p>
+                </div>
+                <div class="modal-footer p-3 pt-0 border-top-0 d-flex flex-column align-items-center">
+                    
+                </div>                
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/tabs-nav.js' %}"></script>  
+    <script src="{% static 'js/records-count.js' %}"></script>
+    <script src="{% static 'js/update_user_status.js' %}"></script>
+    <script src="{% static 'js/clear-search.js' %}"></script> 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'js/fetch-document.js' %}"></script>
     <script src="{% static 'js/qr-code.js' %}"></script>
@@ -292,5 +319,3 @@
 
 </body>
 </html>
-
-<!-- TEST COMMIT -->

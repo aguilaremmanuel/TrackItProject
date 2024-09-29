@@ -26,6 +26,8 @@ urlpatterns = [
     path('director-user-management/<str:office>/', views.director_user_management, name='director_user_management'),
     path('director-doc-management/',views.director_doc_management, name='director_doc_management'),
     path('director-dashboard/',views.director_dashboard, name='director_dashboard'),
+    path('director-all-records/',views.all_records_director, name='all_records_director'),
+    path('director-needs-action/',views.needs_action_director, name='needs_action_director'),
 
     path('admin-officer-dashboard/',views.admin_officer_dashboard, name='admin_officer_dashboard'),
     path('admin-officer-new-record/',views.new_record_admin_officer, name='new_record_admin_officer'),
@@ -40,18 +42,18 @@ urlpatterns = [
     path('get-routes/<int:document_no>/', views.get_routes, name='get_routes'),
     path('admin-officer-needs-action/<str:panel>/',views.admin_officer_needs_action, name='admin_officer_needs_action'),
     path('admin-officer-update-needs-action-display/<str:panel>/', views.admin_officer_update_needs_action_display, name='admin_officer_update_needs_action_display'),
-    path('admin-officer-overdue/',views.overdue_admin_officer, name='overdue_admin_officer'),
+    path('admin-officer-unacted-records/',views.unacted_records_admin_officer, name='unacted_records_admin_officer'),
     path('admin-officer-archive/',views.archive_admin_officer, name='archive_admin_officer'),
     path('admin-officer-activity-logs/',views.activity_logs_admin_officer, name='activity_logs_admin_officer'),
 
     path('sro-dashboard/',views.dashboard_sro, name='dashboard_sro'),
-    path('sro-all-records/',views.all_records_sro, name='all_records_sro'),
-    path('sro-unacted-documents/',views.unacted_documents_sro, name='unacted_documents_sro'),
+    path('sro-records/',views.records_sro, name='records_sro'),
+    path('sro-unacted-records/',views.unacted_records_sro, name='unacted_records_sro'),
     path('sro-activity-logs/',views.activity_logs_sro, name='activity_logs_sro'),
     
     path('action-officer-dashboard/',views.dashboard_action_officer, name='dashboard_action_officer'),
-    path('action-officer-all-records/',views.all_records_action_officer, name='all_records_action_officer'),
-    path('action-officer-unacted-documents/',views.unacted_documents_action_officer, name='unacted_documents_action_officer'),
+    path('action-officer-records/',views.records_action_officer, name='records_action_officer'),
+    path('action-officer-unacted-records/',views.unacted_records_action_officer, name='unacted_records_action_officer'),
     path('action-officer-activity-logs/',views.activity_logs_action_officer, name='activity_logs_action_officer'),
 
     path('forgot-password/',views.forgot_password, name='forgot_password'),

@@ -509,18 +509,22 @@ def all_records_admin_officer(request):
 
     return render(request, 'admin_officer/admin-officer-all-records.html')
 
+# DIRECTOR ALL RECORDS
+def all_records_director(request):
+    return render(request, 'director/director-all-records.html')
+
 # -------------- RECORDS -------------------
 
-# SRO ALL RECORDS
-def all_records_sro(request):
-    return render(request, 'sro/sro-all-records.html')
+# SRO RECORDS
+def records_sro(request):
+    return render(request, 'sro/sro-records.html')
 
-# ACTION OFFICER ALL RECORDS
-def all_records_action_officer(request):
+# ACTION OFFICER RECORDS
+def records_action_officer(request):
 
     document_no = request.GET.get('document_no')
 
-    return render(request, 'action_officer/action-officer-all-records.html')
+    return render(request, 'action_officer/action-officer-records.html')
 
 # -------------- NEEDS ACTION -------------------
 
@@ -538,18 +542,21 @@ def admin_officer_needs_action(request, panel):
 
     return render(request, 'admin_officer/admin-officer-needs-action.html', {'panel': panel})
 
+# DIRECTOR NEEDS ACTION
+def needs_action_director(request):
+    return render(request, 'director/director-needs-action.html')
 
-# SRO UNACTED DOCUMENTS
-def unacted_documents_sro(request):
-    return render(request, 'sro/sro-unacted-documents.html')
+# SRO UNACTED RECORDS
+def unacted_records_sro(request):
+    return render(request, 'sro/sro-unacted-records.html')
 
 # SRO ACTIVITY LOGS
 def activity_logs_sro(request):
     return render(request, 'sro/sro-activity-logs.html')
 
-# ADMIN OFFICER OVERDUE
-def overdue_admin_officer(request):
-    return render(request, 'admin_officer/admin-officer-overdue.html')
+# ADMIN OFFICER UNACTED RECORDS
+def unacted_records_admin_officer(request):
+    return render(request, 'admin_officer/admin-officer-unacted-records.html')
 
 # ADMIN OFFICER ARCHIVE
 def archive_admin_officer(request):
@@ -559,9 +566,9 @@ def archive_admin_officer(request):
 def activity_logs_admin_officer(request):
     return render(request, 'admin_officer/admin-officer-activity-logs.html')
 
-# ACTION OFFICER UNACTED DOCUMENTS
-def unacted_documents_action_officer(request):
-    return render(request, 'action_officer/action-officer-unacted-documents.html')
+# ACTION OFFICER UNACTED RECORDS
+def unacted_records_action_officer(request):
+    return render(request, 'action_officer/action-officer-unacted-records.html')
 
 # ACTION OFFICER ACTIVITY LOGS
 def activity_logs_action_officer(request):
