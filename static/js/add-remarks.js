@@ -40,5 +40,5 @@ function deleteEmptyRemarks() {
 
 document.addEventListener('DOMContentLoaded', function() {
     addRemarks();
-    eleteEmptyRemarks();
+    deleteEmptyRemarks();
 });

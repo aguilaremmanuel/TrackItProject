@@ -2,8 +2,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const modals = {
         route: document.getElementById('routeDocumentModal'),
         approve: document.getElementById('approveDocumentModal'),
-        forwardToACT: document.getElementById('forwardToACTDocumentModal'),
-        endorseResolve: document.getElementById('endorseResolveDocumentModal'),
+        forward: document.getElementById('forwardDocumentModal'),
+        endorse: document.getElementById('endorseDocumentModal'),
         resolve: document.getElementById('resolveDocumentModal'),
         archive: document.getElementById('archiveDocumentModal')
     };
@@ -11,8 +11,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const confirmButtons = {
         route: document.getElementById('confirmRoute'),
         approve: document.getElementById('confirmApprove'),
-        forwardToACT: document.getElementById('confirmForwardToACT'),
+        forward: document.getElementById('confirmForward'),
         resolve: document.getElementById('confirmResolve'),
+        endorse: document.getElementById('confirmEndorse'),
         archive: document.getElementById('confirmArchive')
     };
 
@@ -22,10 +23,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 const button = event.relatedTarget;
                 const documentNo = button.getAttribute('data-document-no');
                 const actionType = button.getAttribute('data-action'); // Changed from 'action' to 'actionType'
-
+                
                 if (confirmButtons[actionType]) {
                     confirmButtons[actionType].onclick = function () {
-                        fetch(`/document-update-status/${action}/${documentNo}/`)
+                        const user = confirmButtons[actionType].getAttribute('data-user');
+                        console.log("naclick si beh" + user);
+                        fetch(`/document-update-status/${user}/${action}/${documentNo}/`)
                             .then(response => response.json())
                             .then(data => {
                                 document.getElementById('saveRemarks').setAttribute('data-remarks-no', data.remarks_no);

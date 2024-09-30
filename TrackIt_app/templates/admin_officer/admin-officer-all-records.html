@@ -26,7 +26,7 @@
             <h3 class="fw-semibold m-0">All Records</h3>
             <div class="d-flex justify-content-between align-items-center" style="gap: 12px;">
                 <div class="search-container">
-                    <input type="text" id="searchInput" data-url="{% url 'update_all_records_display' %}" class="form-search form-control shadow-sm" placeholder="Search a document" onkeyup="fetchDocuments()">
+                    <input type="text" id="searchInput" data-url="{% url 'update_all_records_display' 'ADO' %}" class="form-search form-control shadow-sm" placeholder="Search a document" onkeyup="fetchDocuments()">
                     <i class="fa-solid fa-search search-icon"></i>  
                     <i class="fa-solid fa-xmark clear-icon" style="display: none;"></i>
                 </div>
@@ -137,7 +137,6 @@
                     </thead>
                     
                     <tbody id="docTableBody">
-                        {% include 'partials/admin-officer-all-records.html' %}
                     </tbody>
                 </table>           
             </div>
@@ -235,7 +234,7 @@
                     <p>Are you sure you want to route this document? Once routed, the document will be forwarded to the assigned recipient for further processing.</p>
                 </div>
                 <div class="modal-footer p-3 pt-0 border-top-0">
-                    <button type="button" class="m-0 mb-2 btn btn-primary" id="confirmRoute">Confirm</button>
+                    <button type="button" class="m-0 mb-2 btn btn-primary" data-user="ADO"  id="confirmRoute">Confirm</button>
                     <button type="button" class="m-0 mb-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </div>
@@ -254,7 +253,7 @@
                     <p>Are you sure you want to archive this document? Once archived, it will be moved to storage and will no longer appear in active workflows.</p>
                 </div>
                 <div class="modal-footer p-3 pt-0 border-top-0">
-                    <button type="button" class="m-0 mb-2 btn btn-primary" id="confirmArchive">Confirm</button>
+                    <button type="button" class="m-0 mb-2 btn btn-primary" data-user="ADO" id="confirmArchive">Confirm</button>
                     <button type="button" class="m-0 mb-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </div>
@@ -302,8 +301,6 @@
     </div>
 
     <script src="{% static 'js/tabs-nav.js' %}"></script>  
-    <script src="{% static 'js/records-count.js' %}"></script>
-    <script src="{% static 'js/update_user_status.js' %}"></script>
     <script src="{% static 'js/clear-search.js' %}"></script>  
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'js/fetch-document.js' %}"></script>

@@ -19,7 +19,6 @@ function fetchDocuments() {
             document.getElementById('docTableBody').innerHTML = data.html;
             let noOfRecords = document.getElementById('docuLength').value;
             document.getElementById('recordCount').textContent = noOfRecords;
-
             bindViewButtons();
     });
 
@@ -31,7 +30,7 @@ function bindViewButtons() {
     viewButtons.forEach(button => {
         button.addEventListener('click', function () {
             const documentNo = this.getAttribute('data-document-no');
-
+            console.log("document no: " + documentNo);
             // Fetch document details via AJAX
             fetch(`/fetch-document-details/${documentNo}/`)
                 .then(response => response.json())
@@ -81,4 +80,5 @@ function bindViewButtons() {
 document.addEventListener('DOMContentLoaded', function() {
     fetchDocuments();
     setInterval(fetchDocuments, 3000);
+    bindViewButtons();
 });

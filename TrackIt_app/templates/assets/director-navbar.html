@@ -37,13 +37,13 @@
                 </a>
             </li>
             <li>
-                <a href="{% url 'all_records_director' %}" class="nav-link mb-1">
-                    <i class='bx bx-folder nav-icon'></i>
+                <a href="{% url 'all_records_director' %}?status=active" id="allRecords" class="nav-link mb-1">
+                    <i class='bx bx-folder-open nav-icon'></i>
                     <span class="nav-name">All Records</span>
                 </a>
             </li>
             <li>
-                <a href="{% url 'needs_action_director' %}" class="nav-link mb-1" id="needs-action">
+                <a href="{% url 'needs_action_director' %}?status=active" class="nav-link mb-1" id="needsAction">
                     <i class='bx bx-alarm-exclamation nav-icon'></i>
                     <span class="nav-name">Needs Action</span>
                 </a>

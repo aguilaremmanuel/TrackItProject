@@ -98,6 +98,10 @@ class UserSignupForm(forms.ModelForm):
             }),
         }
 
+    # Make the middlename field optional
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['middlename'].required = False
     
     def clean(self):
 
