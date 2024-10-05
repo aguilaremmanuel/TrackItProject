@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="/static/images/logo-icon.png" type="image/png">
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
-    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
     <link rel="stylesheet" href="{% static 'css/table-content.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,78 +17,103 @@
     <title>Sub-Receiving Officer Records</title>
 </head>
 
-<body id="bodyPd">
-    {% include "assets/sro-navbar.html" %}
+<body>
+    <div class="container">
+        {% include "assets/sro-sidebar.html" %}
 
-    <!--Container Main start-->
-    <div class="h-100">
-        <div class="d-flex justify-content-between align-items-center">
-            <h3 class="fw-semibold m-0">Records</h3>
-            <div class="d-flex justify-content-between align-items-center" style="gap: 12px;">
-                <div class="search-container">
-                    <input type="text" id="searchInput" data-url="{% url 'sro_update_records_display' panel %}" class="form-search form-control shadow-sm" style="font-size: 14px !important;" placeholder="Search a document">
-                    <i class="fa-solid fa-search search-icon"></i>  
-                    <i class="fa-solid fa-xmark clear-icon" style="display: none;"></i>
+        <div class="right-section">
+            <header class="header">
+                <button class="toggle-sidebar" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
+                <div class="header-right">
+                    <button class="toggle-notification" id="notification"><i class="fa-solid fa-bell"></i></button>
+                    <button class="profile">
+                        <div class="profile-pic placeholder"></div>
+                        <div class="profile-info">
+                            <span class="profile-name">John Doe</span>
+                            <span class="profile-role">Sub-Receiving Officer</span>
+                        </div>
+                    </button>
                 </div>
-                <button type="button" class="btn btn-primary m-0 shadow-sm" style="font-size: 14px; max-height: 37.85; padding: 7.63px 11.2px;" data-bs-toggle="modal" data-bs-target="#scanQRCodeModal">
-                    <i class="fa-solid fa-qrcode" style="font-size: 16px !important;"></i>&nbsp; Scan QR Code
-                </button>
-            </div>
-        </div> 
+            </header>
+            
+            <main class="main-content">
+                <div class="title-container d-flex justify-content-between align-items-center">
+                    <h3 class="fw-semibold m-0">Records</h3>
+                    <div class="d-flex justify-content-between align-items-center" style="gap: 12px;">
+                        <div class="search-container">
+                            <input type="text" id="searchInput" data-url="{% url 'sro_update_records_display' panel %}" class="form-search form-control shadow-sm" style="font-size: 14px !important;" placeholder="Search a document">
+                            <i class="fa-solid fa-search search-icon"></i>  
+                            <i class="fa-solid fa-xmark clear-icon" style="display: none;"></i>
+                        </div>
+                        <button type="button" class="btn btn-primary m-0 shadow-sm" style="font-size: 14px; max-height: 37.85; padding: 7.63px 11.2px;" data-bs-toggle="modal" data-bs-target="#scanQRCodeModal">
+                            <i class="fa-solid fa-qrcode" style="font-size: 16px !important;"></i>&nbsp; Scan QR Code
+                        </button>
+                        <button type="button" class="btn btn-primary m-0 shadow-sm" style="max-height: 37.85; padding: 7.63px 11.2px;" data-bs-toggle="modal" data-bs-target="#selectForwardModal">
+                            Forward
+                        </button>
+                        <button type="button" class="btn btn-primary m-0 shadow-sm" style="max-height: 37.85; padding: 7.63px 11.2px;" data-bs-toggle="modal" data-bs-target="#selectRouteModal">
+                            Route
+                        </button>
+                        <button type="button" class="btn btn-primary m-0 shadow-sm" style="max-height: 37.85; padding: 7.63px 11.2px;" data-bs-toggle="modal" data-bs-target="#selectResolveModal">
+                            Resolve
+                        </button>
+                    </div>  
+                </div>
 
-        <div class="my-3 px-3 py-2 bg-white rounded shadow-sm">
-            <ul class="custom-tabs">
-                <li class="tab-item">
-                    <a class="tab-link {% if panel == 'All-Documents' %}active{% endif %}" href="{% url 'sro_records' 'All-Documents' %}?status=active">All Documents</a>
-                </li>
-                <li class="tab-item">
-                    <a class="tab-link {% if panel == 'For-ACT-Forwarding' %}active{% endif %}" href="{% url 'sro_records' 'For-ACT-Forwarding' %}?status=active">For ACT Forwarding</a>
-                </li>
-                <li class="tab-item">
-                    <a class="tab-link {% if panel == 'For-Resolving' %}active{% endif %}" href="{% url 'sro_records' 'For-Resolving' %}?status=active">For Resolving</a>
-                </li>
-            </ul>
-
-            <div class="table-tab-wrapper table-responsive d-flex mt-2">
-                <table class="table mb-1">
-                    <thead>
-                        <tr>
-                            <th>Tracking Number</th>
-                            <th>
-                                Status 
-                                <a href="?status=active&sort_by=status&order=asc"><i class='bx bxs-sort-alt'></i></a>
-                            </th>
-                            <th>Sender</th>
-                            <th>Particulars</th>
-                            <th>
-                                Type 
-                                <a href="?status=active&sort_by=document_type&order=asc"><i class='bx bxs-sort-alt'></i></a>
-                            </th>
-                            <th>Remarks</th>
-                            <th>Updated</th>
-                            <th>
-                                Due In 
-                                <a href="?status=active&sort_by=deadline&order=asc"><i class='bx bxs-sort-alt'></i></a>
-                            </th>
-                            <th>
-                                Priority 
-                                <a href="?status=active&sort_by=priority_level&order=asc"><i class='bx bxs-sort-alt'></i></a>
-                            </th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-
-                    <tbody id="docTableBody">
-                    </tbody>
-                </table>
-            </div>
-
-            <p class="d-block text-start my-0 p-2 fw-semibold" id="record-count" style="color: #000000; opacity: 0.6;">
-                Showing total of <span id="recordCount"></span> record(s)
-            </p>
+                <div class="my-3 p-3 pt-2 bg-white rounded shadow-sm">
+                    <ul class="custom-tabs">
+                        <li class="tab-item">
+                            <a class="tab-link {% if panel == 'All-Documents' %}active{% endif %}" href="{% url 'sro_records' 'All-Documents' %}?status=active">All Documents</a>
+                        </li>
+                        <li class="tab-item">
+                            <a class="tab-link {% if panel == 'For-ACT-Forwarding' %}active{% endif %}" href="{% url 'sro_records' 'For-ACT-Forwarding' %}?status=active">For ACT Forwarding</a>
+                        </li>
+                        <li class="tab-item">
+                            <a class="tab-link {% if panel == 'For-Resolving' %}active{% endif %}" href="{% url 'sro_records' 'For-Resolving' %}?status=active">For Resolving</a>
+                        </li>
+                    </ul>
+        
+                    <div class="table-tab-wrapper table-responsive d-flex mt-2">
+                        <table class="table mb-1">
+                            <thead>
+                                <tr>
+                                    <th>Tracking Number</th>
+                                    <th>
+                                        Status 
+                                        <a href="?status=active&sort_by=status&order=asc"><i class='bx bxs-sort-alt'></i></a>
+                                    </th>
+                                    <th>Sender</th>
+                                    <th>Particulars</th>
+                                    <th>
+                                        Type 
+                                        <a href="?status=active&sort_by=document_type&order=asc"><i class='bx bxs-sort-alt'></i></a>
+                                    </th>
+                                    <th>Remarks</th>
+                                    <th>Updated</th>
+                                    <th>
+                                        Due In 
+                                        <a href="?status=active&sort_by=deadline&order=asc"><i class='bx bxs-sort-alt'></i></a>
+                                    </th>
+                                    <th>
+                                        Priority 
+                                        <a href="?status=active&sort_by=priority_level&order=asc"><i class='bx bxs-sort-alt'></i></a>
+                                    </th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+        
+                            <tbody id="docTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+        
+                    <p class="d-block text-start my-0 p-2 fw-semibold" id="record-count" style="color: #000000; opacity: 0.6;">
+                        Showing total of <span id="recordCount"></span> record(s)
+                    </p>
+                </div>
+            </main>
         </div>
     </div>
-    <!--Container Main end-->
 
     <!-- View Document Modal -->
     <div class="modal fade" id="viewDocumentModal" tabindex="-1" aria-labelledby="viewDocumentModalLabel" aria-hidden="true">
@@ -177,7 +202,7 @@
             <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
                 <div class="modal-header pb-0 border-bottom-0">
                     <h5 class="modal-title" id="forwardDocumentModalLabel">Forward Document</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" id="forwardModalCloseBtn" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <p>Are you sure you want to forward this document? Once forwarded, the document will be sent to the next person or stage in the process.</p>
@@ -190,13 +215,32 @@
         </div>
     </div>
 
+    <!-- Route Document Modal -->
+    <div class="modal fade" id="routeDocumentModal" tabindex="-1" aria-labelledby="routeDocumentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0">
+                    <h5 class="modal-title" id="routeDocumentModalLabel">Route Document</h5>
+                    <button type="button" class="btn-close" id="routeModalCloseBtn" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to route this document? Once routed, the document will be forwarded to the assigned recipient for further processing.</p>
+                </div>
+                <div class="modal-footer p-3 pt-0 border-top-0">
+                    <button type="button" class="m-0 mb-2 btn btn-primary" data-user="ADO"  id="confirmRoute">Confirm</button>
+                    <button type="button" class="m-0 mb-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Resolve Document Modal -->
     <div class="modal fade" id="resolveDocumentModal" tabindex="-1" aria-labelledby="resolveDocumentModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
                 <div class="modal-header pb-0 border-bottom-0">
                     <h5 class="modal-title" id="resolveDocumentModalLabel">Resolve Document</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" id="resolveModalCloseBtn" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <p>Are you sure you want to resolve this document? Once resolved, the document will be endorsed for archiving or final processing.</p>
@@ -249,6 +293,79 @@
         </div>
     </div>
 
+    <!-- Select Document Action - Forward Modal -->
+    <div class="modal fade" id="selectForwardModal" tabindex="-1" aria-labelledby="selectForwardModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="max-width: 400px;">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0 d-flex justify-content-between align-items-center" style="font-size: 13.5px;">
+                    <button type="button" class="btn-close" style="visibility: hidden;"></button>
+                    <h5 class="fw-bold mb-0 text-center flex-grow-1" id="selectForwardLabel">Select Document Action</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center mt-1 mb-2">
+                    <div class="d-flex flex-wrap justify-content-center text-center" style="gap: .4rem 1rem !important;">
+                        <p class=""><strong>Tracking Number:</strong> <span id="documentTrackingNumber">112922023-DEPT-001</span></p>
+                        <p class=""><strong>User ID:</strong> <span id="userID"></span>SRO-1000</p>
+                        <p class=""><strong>Role:</strong> <span id="userRole">Sub-Receiving Officer</span></p>
+                    </div>
+                </div>
+                <div class="modal-footer p-3 pt-0 border-top-0 d-flex flex-column align-items-center">
+                    <button type="button" class="m-0 mb-1 btn btn-primary w-100" id="forwardDocument">Forward Document</button>
+                    <button type="button" class="m-0 mb-2 btn btn-secondary w-100" id="trackDocument">Track Document</button>
+                </div>                
+            </div>
+        </div>
+    </div>
+
+    <!-- Select Document Action - Route Modal -->
+    <div class="modal fade" id="selectRouteModal" tabindex="-1" aria-labelledby="selectRouteModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="max-width: 400px;">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0 d-flex justify-content-between align-items-center" style="font-size: 13.5px;">
+                    <button type="button" class="btn-close" style="visibility: hidden;"></button>
+                    <h5 class="fw-bold mb-0 text-center flex-grow-1" id="selectRouteLabel">Select Document Action</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center mt-1 mb-2">
+                    <div class="d-flex flex-wrap justify-content-center text-center" style="gap: .4rem 1rem !important;">
+                        <p class=""><strong>Tracking Number:</strong> <span id="documentTrackingNumber">112922023-DEPT-001</span></p>
+                        <p class=""><strong>User ID:</strong> <span id="userID"></span>SRO-1000</p>
+                        <p class=""><strong>Role:</strong> <span id="userRole">Sub-Receiving Officer</span></p>
+                    </div>
+                </div>
+                <div class="modal-footer p-3 pt-0 border-top-0 d-flex flex-column align-items-center">
+                    <button type="button" class="m-0 mb-1 btn btn-primary w-100" id="routeDocument">Route Document</button>
+                    <button type="button" class="m-0 mb-2 btn btn-secondary w-100" id="trackDocument">Track Document</button>
+                </div>                
+            </div>
+        </div>
+    </div>
+
+    <!-- Select Document Action - Resolve Modal -->
+    <div class="modal fade" id="selectResolveModal" tabindex="-1" aria-labelledby="selectResolveModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="max-width: 400px;">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0 d-flex justify-content-between align-items-center" style="font-size: 13.5px;">
+                    <button type="button" class="btn-close" style="visibility: hidden;"></button>
+                    <h5 class="fw-bold mb-0 text-center flex-grow-1" id="selectResolveLabel">Select Document Action</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center mt-1 mb-2">
+                    <div class="d-flex flex-wrap justify-content-center text-center" style="gap: .4rem 1rem !important;">
+                        <p class=""><strong>Tracking Number:</strong> <span id="documentTrackingNumber">112922023-DEPT-001</span></p>
+                        <p class=""><strong>User ID:</strong> <span id="userID"></span>SRO-1000</p>
+                        <p class=""><strong>Role:</strong> <span id="userRole">Sub-Receiving Officer</span></p>
+                    </div>
+                </div>
+                <div class="modal-footer p-3 pt-0 border-top-0 d-flex flex-column align-items-center">
+                    <button type="button" class="m-0 mb-1 btn btn-primary w-100" id="resolveDocument">Resolve Document</button>
+                    <button type="button" class="m-0 mb-2 btn btn-secondary w-100" id="trackDocument">Track Document</button>
+                </div>                
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/toggle-sidebar.js' %}"></script>
     <script src="{% static 'js/tabs-nav.js' %}"></script>  
     <script src="{% static 'js/clear-search.js' %}"></script> 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -288,6 +405,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const forwardModal = new bootstrap.Modal(document.getElementById('forwardDocumentModal'));
+            const routeModal = new bootstrap.Modal(document.getElementById('routeDocumentModal'));
             const resolveModal = new bootstrap.Modal(document.getElementById('resolveDocumentModal'));
             const remarksModal = new bootstrap.Modal(document.getElementById('addRemarksModal'));
     
@@ -297,6 +415,13 @@
             document.getElementById('confirmForward').addEventListener('click', function () {
                 forwardModal.hide();
                 actionMessage.textContent = "The document has been successfully forwarded. Add any additional remarks related to this action below, or leave as blank if not applicable.";
+                remarksModal.show();
+            });
+
+            // Handle Confirm Route Action
+            document.getElementById('confirmRoute').addEventListener('click', function () {
+                routeModal.hide();
+                actionMessage.textContent = "The document has been successfully routed. Add any additional remarks related to this action below, or leave as blank if not applicable.";
                 remarksModal.show();
             });
     
@@ -313,6 +438,63 @@
                 console.log('Remarks:', remarks);
                 // Logic to save remarks goes here
                 remarksModal.hide();
+            });
+        });
+    </script>
+    <!-- For select action and and confirm action switching -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Select buttons and modals for routing
+            const forwardDocument = document.getElementById('forwardDocument');
+            const selectForwardModal = new bootstrap.Modal(document.getElementById('selectForwardModal'));
+            const forwardDocumentModal = new bootstrap.Modal(document.getElementById('forwardDocumentModal'));
+            const forwardModalCloseBtn = document.getElementById('forwardModalCloseBtn');
+
+            // When Route Document is clicked
+            forwardDocument.addEventListener('click', function () {
+                selectForwardModal.hide();
+                forwardDocumentModal.show();
+            });
+
+            // When Route Document Modal is closed
+            forwardModalCloseBtn.addEventListener('click', function () {
+                forwardDocumentModal.hide();
+                selectForwardModal.show();
+            });
+
+            // Select buttons and modals for routing
+            const routeDocument = document.getElementById('routeDocument');
+            const selectRouteModal = new bootstrap.Modal(document.getElementById('selectRouteModal'));
+            const routeDocumentModal = new bootstrap.Modal(document.getElementById('routeDocumentModal'));
+            const routeModalCloseBtn = document.getElementById('routeModalCloseBtn');
+
+            // When Route Document is clicked
+            routeDocument.addEventListener('click', function () {
+                selectRouteModal.hide();
+                routeDocumentModal.show();
+            });
+
+            // When Route Document Modal is closed
+            routeModalCloseBtn.addEventListener('click', function () {
+                routeDocumentModal.hide();
+                selectRouteModal.show();
+            });
+
+            const resolveDocument = document.getElementById('resolveDocument');
+            const selectResolveModal = new bootstrap.Modal(document.getElementById('selectResolveModal'));
+            const resolveDocumentModal = new bootstrap.Modal(document.getElementById('resolveDocumentModal'));
+            const resolveModalCloseBtn = document.getElementById('resolveModalCloseBtn');
+
+            // When Archive Document is clicked
+            resolveDocument.addEventListener('click', function () {
+                selectResolveModal.hide();
+                resolveDocumentModal.show();
+            });
+
+            // When Archive Document Modal is closed
+            resolveModalCloseBtn.addEventListener('click', function () {
+                resolveDocumentModal.hide();
+                selectResolveModal.show();
             });
         });
     </script>

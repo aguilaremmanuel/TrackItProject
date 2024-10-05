@@ -8,7 +8,8 @@
     <link rel="icon" href="/static/images/logo-icon.png" type="image/png">
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
 	<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
-    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/table-content.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -17,70 +18,93 @@
     <title>System Admin Officer New Record</title>
 </head>
 
-<body id="bodyPd">
-    {% include "assets/system-admin-navbar.html" %}
-
+<body>
     <div class="container">
-        <h3 class="fw-semibold pb-2">Create New Record</h3>
-        <div class="create-record container p-3 rounded" style="background-color: white;">
-            <h5 class="fw-semibold pb-2"><i class='bx bxs-info-circle py-0' style="color: #2E72EA;"></i>    Document Information</h5 >
-            <form method="post" action="{% url 'new_record_system_admin' %}" id="recordForm">
-                {% csrf_token %}
-                <div class="row mb-3 g-2">
-                    <div class="col-12 col-md-4">
-                        <label for="TrackingNumber" class="form-label">Tracking Number</label>
-                        <input type="text" class="form-control" name="tracking_no" id="TrackingNumber" aria-describedby="TrackingNumber" placeholder="e.g. 112922032-DEPT-001" required>
-                    </div>
+        {% include "assets/sys-sidebar.html" %}
 
-                    <div class="col-12 col-md-4">
-                        <label for="SenderName" class="form-label">Sender Name</label>
-                        <input type="text" class="form-control" name="sender_name" id="SenderName" aria-describedby="SenderName" placeholder="e.g. Juan S. Dela Cruz" required>
-                    </div>
-
-                    <div class="col-12 col-md-4">
-                        <label for="SenderDepartment" class="form-label">Sender Department</label>
-                        <select class="form-select" name="sender_dept" id="SenderDepartment" aria-label="SenderDepartment" required>
-                            <option value="">Select Sender Department</option>
-                            <option value="Admin">Admin</option>
-                            <option value="Finance">Finance</option>
-                            <option value="Budget">Budget</option>
-                            <option value="Cashier">Cashier</option>
-                        </select>
-                    </div>
+        <div class="right-section">
+            <header class="header">
+                <button class="toggle-sidebar" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
+                <div class="header-right">
+                    <button class="toggle-notification" id="notification"><i class="fa-solid fa-bell"></i></button>
+                    <button class="profile">
+                        <div class="profile-pic placeholder"></div>
+                        <div class="profile-info">
+                            <span class="profile-name">John Doe</span>
+                            <span class="profile-role">System Administrator</span>
+                        </div>
+                    </button>
+                </div>
+            </header>
+            
+            <main class="main-content">
+                <div class="title-container d-flex justify-content-between align-items-center">
+                    <h3 class="fw-semibold m-0">Create New Record</h3>
                 </div>
 
-                <div class="row mb-3 g-2">
-                    <div class="col-12 col-md-6">
-                        <label for="DocumentCategory" class="form-label">Select Document Category</label>
-                        <select class="form-select" id="DocumentCategory" aria-label="DocumentCategory" required>
-                            <option value="">Select Document Category</option>
-                            <option value="Regular">Regular</option>
-                            <option value="SCPF">SCPF</option>
-                        </select>
-                    </div>
-
-                    <div class="col-12 col-md-6">
-                        <label for="DocumentType" class="form-label">Select Document Type</label>
-                        <select class="form-select" name="doc_type" id="DocumentType" aria-label="DocumentType" disabled required>
-                            <option value="">Select Document Type</option>
-                        </select>
-                    </div>
+                <div class="content-wrapper my-3 p-4 pt-3 bg-white rounded shadow-sm">
+                    <p class="fw-semibold pt-1" style="font-size: 18px">
+                        <i class="fa-solid fa-circle-info" style="color: #2E72EA;"></i>&nbsp; Document Information
+                    </p>
+                    <form method="post" action="{% url 'new_record_system_admin' %}" id="recordForm">
+                        {% csrf_token %}
+                        <div class="row mb-3 g-3">
+                            <div class="col-12 col-md-4">
+                                <label for="TrackingNumber" class="form-label">Tracking Number</label>
+                                <input type="text" class="form-control" name="tracking_no" id="TrackingNumber" aria-describedby="TrackingNumber" placeholder="e.g. 112922032-DEPT-001" required>
+                            </div>
+        
+                            <div class="col-12 col-md-4">
+                                <label for="SenderName" class="form-label">Sender Name</label>
+                                <input type="text" class="form-control" name="sender_name" id="SenderName" aria-describedby="SenderName" placeholder="e.g. Juan S. Dela Cruz" required>
+                            </div>
+        
+                            <div class="col-12 col-md-4">
+                                <label for="SenderDepartment" class="form-label">Sender Department</label>
+                                <select class="form-select" name="sender_dept" id="SenderDepartment" aria-label="SenderDepartment" required>
+                                    <option value="">Select Sender Department</option>
+                                    <option value="Admin">Admin</option>
+                                    <option value="Finance">Finance</option>
+                                    <option value="Budget">Budget</option>
+                                    <option value="Cashier">Cashier</option>
+                                </select>
+                            </div>
+                        </div>
+        
+                        <div class="row mb-3 g-3">
+                            <div class="col-12 col-md-6">
+                                <label for="DocumentCategory" class="form-label">Select Document Category</label>
+                                <select class="form-select" id="DocumentCategory" aria-label="DocumentCategory" required>
+                                    <option value="" disabled selected hidden>Document Category</option>
+                                    <option value="Regular">Regular</option>
+                                    <option value="SCPF">SCPF</option>
+                                </select>
+                            </div>
+        
+                            <div class="col-12 col-md-6">
+                                <label for="DocumentType" class="form-label">Select Document Type</label>
+                                <select class="form-select" name="doc_type" id="DocumentType" aria-label="DocumentType" disabled required>
+                                    <option value="">Select Document Type</option>
+                                </select>
+                            </div>
+                        </div>
+        
+                        <div class="mb-3">
+                            <label for="Subject" class="form-label">Subject / Particulars</label>
+                            <input class="form-control" name="subject" id="Subject" placeholder="e.g. Request for Amendment of Expense List for Cash Advance Under Special Order No. 34" required>
+                        </div>
+        
+                        <div class="mb-3">
+                            <label for="Remarks" class="form-label">Remarks</label>
+                            <textarea type="text" class="form-control" name="remarks"  id="Remarks" placeholder="e.g. For Immediate Approval of Cash Disbursement"></textarea>
+                        </div>
+        
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-primary" id="submitBtn">Confirm</button>
+                        </div>
+                    </form>
                 </div>
-
-                <div class="mb-3">
-                    <label for="Subject" class="form-label">Subject / Particulars</label>
-                    <input class="form-control" name="subject" id="Subject" placeholder="e.g. Request for Amendment of Expense List for Cash Advance Under Special Order No. 34" required>
-                </div>
-
-                <div class="mb-3">
-                    <label for="Remarks" class="form-label">Remarks</label>
-                    <textarea type="text" class="form-control" name="remarks"  id="Remarks" placeholder="e.g. For Immediate Approval of Cash Disbursement"></textarea>
-                </div>
-
-                <div class="d-flex justify-content-end">
-                    <button type="button" class="btn btn-primary" id="submitBtn">Confirm</button>
-                </div>
-            </form>
+            </main>
         </div>
     </div>
 
@@ -144,7 +168,8 @@
         </div>
     </div>
 
-    <script src="{% static 'js/tabs-nav.js' %}"></script>  
+    <script src="{% static 'js/toggle-sidebar.js' %}"></script>  
+    <script src="{% static 'js/tabs-nav.js' %}"></script>
     <script src="{% static 'js/records-count.js' %}"></script>
     <script src="{% static 'js/new-record.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

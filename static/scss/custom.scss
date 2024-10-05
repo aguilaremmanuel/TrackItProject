@@ -51,6 +51,16 @@ a {
 }
 
 // BUTTONS
+.btn-check:checked + .btn,
+:not(.btn-check) + .btn:active,
+.btn:first-child:active,
+.btn.active,
+.btn.show {
+    color: #ffffff !important;
+    background-color: darken($primary, 12%) !important;
+    border-color: darken($primary, 12%);
+}
+
 .btn-light {
     &:hover {
         background-color: #e2e6ea;
@@ -207,6 +217,12 @@ a {
 .badge-green {
     background-color: #22a03f;
     color: #FFFFFF;
+}
+
+// CONTAINERS
+
+.title-container {
+    height: 37.85px;
 }
 
 // SEARCH

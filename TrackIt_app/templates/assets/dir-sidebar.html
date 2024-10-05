@@ -1,0 +1,66 @@
+{% load static %}
+
+<aside class="sidebar">
+    <nav class="nav d-flex flex-column flex-shrink-0 p-2 pt-0">
+        <div class="nav-logo mb-2">
+            <img src="{% static 'images/logo-icon.png' %}" alt="Logo Icon" class="nav-logo-icon">
+            <img src="{% static 'images/logo-name.png' %}" alt="Logo Name" class="nav-logo-name">
+        </div>
+        <ul class="nav-list">
+            <li>
+                <a href="{% url 'director_dashboard' %}?status=active" class="nav-link mb-2" id="dashboard">
+                    <i class='bx bx-grid-alt nav-icon'></i>
+                    <span class="nav-name">Dashboard</span>
+                </a> 
+            </li>
+            <li>
+                <a href="{% url 'director_user_management' 'all-office' %}?status=active" class="nav-link mb-2" id="userManagement">
+                    <i class='bx bx-user nav-icon'></i>
+                    <span class="nav-name">User Management</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'director_doc_management' %}?status=active" class="nav-link mb-2" id="docManagement">
+                    <i class='bx bx-file-blank nav-icon'></i>
+                    <span class="nav-name">Doc. Management</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'all_records_director' %}?status=active" class="nav-link mb-2" id="allRecords">
+                    <i class='bx bx-folder-open nav-icon'></i>
+                    <span class="nav-name">All Records</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'needs_action_director' %}?status=active" class="nav-link mb-2" id="needsAction">
+                    <i class='bx bx-alarm-exclamation nav-icon'></i>
+                    <span class="nav-name">Needs Action</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link mb-1">
+                    <i class='bx bx-box nav-icon'></i>
+                    <span class="nav-name">Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link mb-1">
+                    <i class='bx bx-history nav-icon'></i>
+                    <span class="nav-name">Activity Logs</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link mb-1">
+                    <i class='bx bx-broadcast nav-icon'></i>
+                    <span class="nav-name">Announcements</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link mb-1">
+                    <i class='bx bx-bar-chart-alt-2 nav-icon'></i>
+                    <span class="nav-name">Generate Reports</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</aside>

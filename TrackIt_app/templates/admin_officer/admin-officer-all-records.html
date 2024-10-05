@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="/static/images/logo-icon.png" type="image/png">
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
-    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
     <link rel="stylesheet" href="{% static 'css/table-content.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,136 +17,87 @@
     <title>Admin Officer All Records</title>
 </head>
 
-<body id="bodyPd">
-    {% include "assets/admin-officer-navbar.html" %}
+<body>
+    <div class="container">
+        {% include "assets/ado-sidebar.html" %}
 
-    <!--Container Main start-->
-    <div class="h-100">
-        <div class="d-flex justify-content-between align-items-center">
-            <h3 class="fw-semibold m-0">All Records</h3>
-            <div class="d-flex justify-content-between align-items-center" style="gap: 12px;">
-                <div class="search-container">
-                    <input type="text" id="searchInput" data-url="{% url 'update_all_records_display' 'ADO' %}" class="form-search form-control shadow-sm" placeholder="Search a document" onkeyup="fetchDocuments()">
-                    <i class="fa-solid fa-search search-icon"></i>  
-                    <i class="fa-solid fa-xmark clear-icon" style="display: none;"></i>
-                </div>
-                <!-- Filter Button with Dropdown -->
-                <div class="dropdown">
-                    <button 
-                        type="button" 
-                        class="btn btn-primary m-0 shadow-sm" 
-                        id="filterButton" 
-                        data-bs-toggle="dropdown" 
-                        aria-expanded="false"
-                        style="font-size: 14px; max-height: 37.85px; padding: 7.63px 11.2px;">
-                        <i class="fa-solid fa-filter" style="font-size: 14px !important;"></i>&nbsp; Filter
+        <div class="right-section">
+            <header class="header">
+                <button class="toggle-sidebar" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
+                <div class="header-right">
+                    <button class="toggle-notification" id="notification"><i class="fa-solid fa-bell"></i></button>
+                    <button class="profile">
+                        <div class="profile-pic placeholder"></div>
+                        <div class="profile-info">
+                            <span class="profile-name">John Doe</span>
+                            <span class="profile-role">Admin Officer</span>
+                        </div>
                     </button>
-                    <ul class="dropdown-menu" aria-labelledby="filterButton">
-                        <li>
-                            <h6 class="dropdown-header">Status</h6>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="dirApproval">
-                                <label class="form-check-label" for="dirApproval">For DIR Approval</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="forRouting">
-                                <label class="form-check-label" for="forRouting">For Routing</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="forSROReceiving">
-                                <label class="form-check-label" for="forSROReceiving">For SRO Receiving</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="forACTReceiving">
-                                <label class="form-check-label" for="forACTReceiving">For ACT Receiving</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="forResolving">
-                                <label class="form-check-label" for="forResolving">For Resolving</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="forArchiving">
-                                <label class="form-check-label" for="forArchiving">For Archiving</label>
-                            </div>
-                        </li>
-                        <li>
-                            <h6 class="dropdown-header">Type</h6>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="regularType">
-                                <label class="form-check-label" for="regularType">Regular</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="scpType">
-                                <label class="form-check-label" for="scpType">SCPF</label>
-                            </div>
-                        </li>
-                        <li>
-                            <h6 class="dropdown-header">Priority</h6>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="prefAction">
-                                <label class="form-check-label" for="prefAction">For Pref. Action</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="normalPriority">
-                                <label class="form-check-label" for="normalPriority">Normal</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="urgentPriority">
-                                <label class="form-check-label" for="urgentPriority">Urgent</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="veryUrgentPriority">
-                                <label class="form-check-label" for="veryUrgentPriority">Very Urgent</label>
-                            </div>
-                        </li>
-                    </ul>
                 </div>
-                <button type="button" class="btn btn-primary m-0 shadow-sm" style="font-size: 14px; max-height: 37.85; padding: 7.63px 11.2px;" data-bs-toggle="modal" data-bs-target="#scanQRCodeModal">
-                    <i class="fa-solid fa-qrcode" style="font-size: 16px !important;"></i>&nbsp; Scan QR Code
-                </button>
-            </div>
-        </div>        
-        <div class="my-3 px-3 py-2 bg-white rounded shadow-sm">
-            <div class="table-responsive table-wrapper d-flex">
-                <table class="table mb-1">
-                    <thead>
-                        <tr>
-                            <th>Tracking Number</th>
-                            <th>
-                                Status
-                                <a href="?status=active&sort_by=status&order=asc"><i class='bx bxs-sort-alt'></i></a>
-                            </th>
-                            <th>Sender</th>
-                            <th>Particulars</th>
-                            <th>
-                                Type 
-                                <a href="?status=active&sort_by=document_type&order=asc"><i class='bx bxs-sort-alt'></i></a>
-                            </th>
-                            <th>Remarks</th>
-                            <th>Updated</th>
-                            <th>
-                                Due In 
-                                <a href="?status=active&sort_by=deadline&order=asc"><i class='bx bxs-sort-alt'></i></a>
-                            </th>
-                            <th>
-                                Priority 
-                                <a href="?status=active&sort_by=priority_level&order=asc"><i class='bx bxs-sort-alt'></i></a>
-                            </th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    
-                    <tbody id="docTableBody">
-                    </tbody>
-                </table>           
-            </div>
-
-            <p class="d-block text-start my-0 p-2 fw-semibold" id="record-count" style="color: #000000; opacity: 0.6;">
-                Showing total of <span id="recordCount"></span> record(s)
-            </p>
+            </header>
+            
+            <main class="main-content">
+                <div class="title-container d-flex justify-content-between align-items-center">
+                    <h3 class="fw-semibold m-0">All Records</h3>
+                    <div class="d-flex justify-content-between align-items-center" style="gap: 12px;">
+                        <div class="search-container">
+                            <input type="text" id="searchInput" data-url="{% url 'update_all_records_display' 'ADO' %}" class="form-search form-control shadow-sm" placeholder="Search a document" onkeyup="fetchDocuments()">
+                            <i class="fa-solid fa-search search-icon"></i>  
+                            <i class="fa-solid fa-xmark clear-icon" style="display: none;"></i>
+                        </div>
+                        <button type="button" class="btn btn-primary m-0 shadow-sm" style="max-height: 37.85; padding: 7.63px 11.2px;" data-bs-toggle="modal" data-bs-target="#scanQRCodeModal">
+                            <i class="fa-solid fa-qrcode" style="font-size: 16px !important;"></i>&nbsp; Scan QR Code
+                        </button>
+                        <button type="button" class="btn btn-primary m-0 shadow-sm" style="max-height: 37.85; padding: 7.63px 11.2px;" data-bs-toggle="modal" data-bs-target="#selectRouteModal">
+                            Route
+                        </button>
+                        <button type="button" class="btn btn-primary m-0 shadow-sm" style="max-height: 37.85; padding: 7.63px 11.2px;" data-bs-toggle="modal" data-bs-target="#selectArchiveModal">
+                            Archive
+                        </button>
+                    </div>
+                </div>        
+                <div class="my-3 px-3 py-2 bg-white rounded shadow-sm">
+                    <div class="table-responsive table-wrapper d-flex">
+                        <table class="table mb-1">
+                            <thead>
+                                <tr>
+                                    <th>Tracking Number</th>
+                                    <th>
+                                        Status
+                                        <a href="?status=active&sort_by=status&order=asc"><i class='bx bxs-sort-alt'></i></a>
+                                    </th>
+                                    <th>Sender</th>
+                                    <th>Particulars</th>
+                                    <th>
+                                        Type 
+                                        <a href="?status=active&sort_by=document_type&order=asc"><i class='bx bxs-sort-alt'></i></a>
+                                    </th>
+                                    <th>Remarks</th>
+                                    <th>Updated</th>
+                                    <th>
+                                        Due In 
+                                        <a href="?status=active&sort_by=deadline&order=asc"><i class='bx bxs-sort-alt'></i></a>
+                                    </th>
+                                    <th>
+                                        Priority 
+                                        <a href="?status=active&sort_by=priority_level&order=asc"><i class='bx bxs-sort-alt'></i></a>
+                                    </th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            
+                            <tbody id="docTableBody">
+                            </tbody>
+                        </table>           
+                    </div>
+        
+                    <p class="d-block text-start my-0 p-2 fw-semibold" id="record-count" style="color: #000000; opacity: 0.6;">
+                        Showing total of <span id="recordCount"></span> record(s)
+                    </p>
+                </div>
+            </main>
         </div>
     </div>
-    <!--Container Main end-->
 
     <!-- View Document Modal -->
     <div class="modal fade" id="viewDocumentModal" tabindex="-1" aria-labelledby="viewDocumentModalLabel" aria-hidden="true">
@@ -211,6 +162,7 @@
         <div class="modal-dialog" style="max-width: 400px;">
             <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
                 <div class="modal-header pb-0 border-bottom-0 d-flex justify-content-between align-items-center" style="font-size: 13.5px;">
+                    <button type="button" class="btn-close" style="visibility: hidden;"></button>
                     <h5 class="fw-bold mb-0 text-center flex-grow-1" id="confirmRecordCreationLabel">Document QR Code</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -254,7 +206,7 @@
             <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
                 <div class="modal-header pb-0 border-bottom-0">
                     <h5 class="modal-title" id="archiveDocumentModalLabel">Archive Document</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" id="archiveModalCloseBtn" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <p>Are you sure you want to archive this document? Once archived, it will be moved to storage and will no longer appear in active workflows.</p>
@@ -289,7 +241,7 @@
     </div>
 
     <!-- Scan QR Code Modal -->
-    <div class="modal fade" id="scanQRCodeModal" tabindex="-1" aria-labelledby="addRemarksModalLabel" aria-hidden="true">
+    <div class="modal fade" id="scanQRCodeModal" tabindex="-1" aria-labelledby="scanQRCodeModalLabel" aria-hidden="true">
         <div class="modal-dialog" style="max-width: 400px;">
             <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
                 <div class="modal-header pb-0 border-bottom-0 d-flex justify-content-between align-items-center" style="font-size: 13.5px;">
@@ -307,6 +259,55 @@
         </div>
     </div>
 
+    <!-- Select Document Action - Route Modal -->
+    <div class="modal fade" id="selectRouteModal" tabindex="-1" aria-labelledby="selectRouteModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="max-width: 400px;">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0 d-flex justify-content-between align-items-center" style="font-size: 13.5px;">
+                    <button type="button" class="btn-close" style="visibility: hidden;"></button>
+                    <h5 class="fw-bold mb-0 text-center flex-grow-1" id="selectRouteLabel">Select Document Action</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center mt-1 mb-2">
+                    <div class="d-flex flex-wrap justify-content-center text-center" style="gap: .4rem 1rem !important;">
+                        <p class=""><strong>Tracking Number:</strong> <span id="documentTrackingNumber">112922023-DEPT-001</span></p>
+                        <p class=""><strong>User ID:</strong> <span id="userID"></span>ADO-1000</p>
+                        <p class=""><strong>Role:</strong> <span id="userRole">Admin Officer</span></p>
+                    </div>
+                </div>
+                <div class="modal-footer p-3 pt-0 border-top-0 d-flex flex-column align-items-center">
+                    <button type="button" class="m-0 mb-1 btn btn-primary w-100" id="routeDocument">Route Document</button>
+                    <button type="button" class="m-0 mb-2 btn btn-secondary w-100" id="trackDocument">Track Document</button>
+                </div>                
+            </div>
+        </div>
+    </div>
+
+    <!-- Select Document Action - Archive Modal -->
+    <div class="modal fade" id="selectArchiveModal" tabindex="-1" aria-labelledby="selectArchiveModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="max-width: 400px;">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0 d-flex justify-content-between align-items-center" style="font-size: 13.5px;">
+                    <button type="button" class="btn-close" style="visibility: hidden;"></button>
+                    <h5 class="fw-bold mb-0 text-center flex-grow-1" id="selectArchiveLabel">Select Document Action</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center mt-1 mb-2">
+                    <div class="d-flex flex-wrap justify-content-center text-center" style="gap: .4rem 1rem !important;">
+                        <p class=""><strong>Tracking Number:</strong> <span id="documentTrackingNumber">112922023-DEPT-001</span></p>
+                        <p class=""><strong>User ID:</strong> <span id="userID"></span>ADO-1000</p>
+                        <p class=""><strong>Role:</strong> <span id="userRole">Admin Officer</span></p>
+                    </div>
+                </div>
+                <div class="modal-footer p-3 pt-0 border-top-0 d-flex flex-column align-items-center">
+                    <button type="button" class="m-0 mb-1 btn btn-primary w-100" id="archiveDocument">Archive Document</button>
+                    <button type="button" class="m-0 mb-2 btn btn-secondary w-100" id="trackDocument">Track Document</button>
+                </div>                
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/toggle-sidebar.js' %}"></script>
     <script src="{% static 'js/tabs-nav.js' %}"></script>  
     <script src="{% static 'js/clear-search.js' %}"></script>  
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -325,6 +326,7 @@
             }
         });
     </script>
+    <!-- For view document and qr modal switching -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const documentModal = new bootstrap.Modal(document.getElementById('viewDocumentModal'));
@@ -343,6 +345,7 @@
             });
         });
     </script>
+    <!-- For add remarks modal opening -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const routeModal = new bootstrap.Modal(document.getElementById('routeDocumentModal'));
@@ -372,19 +375,44 @@
             });
         });
     </script>
+    <!-- For select action and and confirm action switching -->
     <script>
-        // Example JavaScript to handle checkbox changes
-        const checkboxes = document.querySelectorAll('.form-check-input');
-        checkboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', (event) => {
-                if (event.target.checked) {
-                    console.log(`${event.target.labels[0].innerText} is checked`);
-                } else {
-                    console.log(`${event.target.labels[0].innerText} is unchecked`);
-                }
+        document.addEventListener('DOMContentLoaded', function () {
+            // Select buttons and modals for routing
+            const routeDocument = document.getElementById('routeDocument');
+            const selectRouteModal = new bootstrap.Modal(document.getElementById('selectRouteModal'));
+            const routeDocumentModal = new bootstrap.Modal(document.getElementById('routeDocumentModal'));
+            const routeModalCloseBtn = document.getElementById('routeModalCloseBtn');
+
+            // When Route Document is clicked
+            routeDocument.addEventListener('click', function () {
+                selectRouteModal.hide();
+                routeDocumentModal.show();
+            });
+
+            // When Route Document Modal is closed
+            routeModalCloseBtn.addEventListener('click', function () {
+                routeDocumentModal.hide();
+                selectRouteModal.show();
+            });
+
+            const archiveDocument = document.getElementById('archiveDocument');
+            const selectArchiveModal = new bootstrap.Modal(document.getElementById('selectArchiveModal'));
+            const archiveDocumentModal = new bootstrap.Modal(document.getElementById('archiveDocumentModal'));
+            const archiveModalCloseBtn = document.getElementById('archiveModalCloseBtn');
+
+            // When Archive Document is clicked
+            archiveDocument.addEventListener('click', function () {
+                selectArchiveModal.hide();
+                archiveDocumentModal.show();
+            });
+
+            // When Archive Document Modal is closed
+            archiveModalCloseBtn.addEventListener('click', function () {
+                archiveDocumentModal.hide();
+                selectArchiveModal.show();
             });
         });
     </script>
-
 </body>
 </html>

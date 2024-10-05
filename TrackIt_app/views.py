@@ -19,6 +19,8 @@ from datetime import datetime
 import pytz
 import json
 
+def test(request):
+    return render(request, 'test.html')
 
 # ----------- LOGIN AND SIGNUP -----------------
 

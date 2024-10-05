@@ -61,5 +61,7 @@ urlpatterns = [
     path('action-officer-activity-logs/',views.activity_logs_action_officer, name='activity_logs_action_officer'),
 
     path('forgot-password/',views.forgot_password, name='forgot_password'),
-    path('new-password/<uidb64>/<token>/', views.new_password, name='new_password')
+    path('new-password/<uidb64>/<token>/', views.new_password, name='new_password'),
+
+    path('test/',views.test, name='test')
 ]
