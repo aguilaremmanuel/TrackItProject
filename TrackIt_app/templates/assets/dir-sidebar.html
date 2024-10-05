@@ -1,49 +1,38 @@
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
 {% load static %}
 
-<header class="header" id="header">
-    <div class="header-toggle">
-        <i class='bx bx-menu' id="headerToggle"></i>
-    </div>
-    <div class="header-img">
-    </div>
-    <a href="{% url 'user_logout' %}" class="nav-link"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
-</header>
-
-<div class="l-navbar" id="navBar">
+<aside class="sidebar">
     <nav class="nav d-flex flex-column flex-shrink-0 p-2 pt-0">
         <div class="nav-logo mb-2">
             <img src="{% static 'images/logo-icon.png' %}" alt="Logo Icon" class="nav-logo-icon">
             <img src="{% static 'images/logo-name.png' %}" alt="Logo Name" class="nav-logo-name">
         </div>
-        <ul class="nav-list flex-column mb-auto">
+        <ul class="nav-list">
             <li>
-                <a href="{% url 'director_dashboard' %}?status=active" class="nav-link mb-1" id="dashboard">
+                <a href="{% url 'director_dashboard' %}?status=active" class="nav-link mb-2" id="dashboard">
                     <i class='bx bx-grid-alt nav-icon'></i>
                     <span class="nav-name">Dashboard</span>
                 </a> 
             </li>
             <li>
-                <a href="{% url 'director_user_management' 'all-office' %}?status=active" class="nav-link mb-1" id="userManagement">
+                <a href="{% url 'director_user_management' 'all-office' %}?status=active" class="nav-link mb-2" id="userManagement">
                     <i class='bx bx-user nav-icon'></i>
                     <span class="nav-name">User Management</span>
                 </a>
             </li>
             <li>
-                <a href="{% url 'director_doc_management' %}?status=active" class="nav-link mb-1" id="docManagement">
+                <a href="{% url 'director_doc_management' %}?status=active" class="nav-link mb-2" id="docManagement">
                     <i class='bx bx-file-blank nav-icon'></i>
                     <span class="nav-name">Doc. Management</span>
                 </a>
             </li>
             <li>
-                <a href="{% url 'all_records_director' %}?status=active" id="allRecords" class="nav-link mb-1">
+                <a href="{% url 'all_records_director' %}?status=active" class="nav-link mb-2" id="allRecords">
                     <i class='bx bx-folder-open nav-icon'></i>
                     <span class="nav-name">All Records</span>
                 </a>
             </li>
             <li>
-                <a href="{% url 'needs_action_director' %}?status=active" class="nav-link mb-1" id="needsAction">
+                <a href="{% url 'needs_action_director' %}?status=active" class="nav-link mb-2" id="needsAction">
                     <i class='bx bx-alarm-exclamation nav-icon'></i>
                     <span class="nav-name">Needs Action</span>
                 </a>
@@ -74,7 +63,4 @@
             </li>
         </ul>
     </nav>
-</div>
-<!--TEST COMMIT-->
-
-<script src="{% static 'js/toggle-navbar.js' %}"></script>
+</aside>

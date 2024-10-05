@@ -8,7 +8,7 @@
     <link rel="icon" href="/static/images/logo-icon.png" type="image/png">
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
 	<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
-    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -17,15 +17,35 @@
     <title>Sub-Receiving Officer Activity Logs</title>
 </head>
 
-<body id="bodyPd">
-    {% include "assets/sro-navbar.html" %}
+<body>
+    <div class="container">
+        {% include "assets/sro-sidebar.html" %}
 
-    <!--Container Main start-->
-    <div class="h-100">
-        <h3 class="fw-semibold">Sub-Receiving Officer Activity Logs</h3>
+        <div class="right-section">
+            <header class="header">
+                <button class="toggle-sidebar" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
+                <div class="header-right">
+                    <button class="toggle-notification" id="notification"><i class="fa-solid fa-bell"></i></button>
+                    <button class="profile">
+                        <div class="profile-pic placeholder"></div>
+                        <div class="profile-info">
+                            <span class="profile-name">John Doe</span>
+                            <span class="profile-role">Sub-Receiving Officer</span>
+                        </div>
+                    </button>
+                </div>
+            </header>
+            
+            <main class="main-content">
+                <div class="title-container d-flex justify-content-between align-items-center">
+                    <h3 class="fw-semibold m-0">Activity Logs</h3>
+                </div>
+            </main>
+        </div>
     </div>
-    <!--Container Main end-->
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/toggle-sidebar.js' %}"></script>
     <script>
         // On page load, read the URL parameter and update the class
         document.addEventListener('DOMContentLoaded', function () {
@@ -39,5 +59,3 @@
     </script>
 </body>
 </html>
-
-<!-- TEST COMMIT -->
