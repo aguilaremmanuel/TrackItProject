@@ -24,6 +24,7 @@ import json
 
 # USER SIGNUP
 def user_signup(request):
+
     if request.method == 'POST':
         form = UserSignupForm(request.POST)
         if form.is_valid():
@@ -53,6 +54,23 @@ def user_signup(request):
 
 # SYSTEM ADMIN LOGIN
 def system_admin_login(request):
+
+    user_id = request.session.get('user_id')
+    if  user_id:
+        role = user_id.split('-')[0]
+        if role == 'ADO':
+            return redirect(admin_officer_dashboard)
+        elif role == 'SRO':
+            return redirect(dashboard_sro)
+        elif role == 'ACT':
+            return redirect(dashboard_action_officer)
+        elif role == 'DIR':
+            return redirect(director_dashboard)
+        elif role == 'SYS':
+            return redirect(system_admin_dashboard)
+    else:
+        pass
+
     # Default credentials
     default_user_id = 'SYS-0001'
     default_password = 'SysAdmin@2024'
@@ -81,8 +99,7 @@ def system_admin_login(request):
                         print(f"Default user {default_user_id} status was updated to active.")
 
                 # Store the credentials in session to keep the user logged in
-                request.session['system_admin_user_id'] = default_user_id
-                request.session['role'] = 'SYSTEM_ADMIN'
+                request.session['user_id'] = default_user_id
 
                 # Redirect to the system admin dashboard
                 return redirect('system_admin_dashboard')
@@ -95,6 +112,23 @@ def system_admin_login(request):
 
 # DIRECTOR LOGIN
 def director_login(request):
+
+    user_id = request.session.get('user_id')
+    if  user_id:
+        role = user_id.split('-')[0]
+        if role == 'ADO':
+            return redirect(admin_officer_dashboard)
+        elif role == 'SRO':
+            return redirect(dashboard_sro)
+        elif role == 'ACT':
+            return redirect(dashboard_action_officer)
+        elif role == 'DIR':
+            return redirect(director_dashboard)
+        elif role == 'SYS':
+            return redirect(system_admin_dashboard)
+    else:
+        pass
+
     # Default credentials
     default_user_id = 'DIR-0001'
     default_password = 'Director@2024'
@@ -123,8 +157,7 @@ def director_login(request):
                         print(f"Default user {default_user_id} status was updated to active.")
 
                 # Store the credentials in session to keep the user logged in
-                request.session['director_user_id'] = default_user_id
-                request.session['role'] = 'DIRECTOR'
+                request.session['user_id'] = default_user_id
 
                 # Redirect to the director's dashboard
                 return redirect('director_dashboard')
@@ -138,18 +171,19 @@ def director_login(request):
 # USER LOGIN
 def user_login(request):
 
-    role = request.session.get('role')
-
-    if role == 'ADO':
-        return redirect(admin_officer_dashboard)
-    elif role == 'SRO':
-        return redirect(dashboard_sro)
-    elif role == 'ACT':
-        return redirect(dashboard_action_officer)
-    elif role == 'SYSTEM_ADMIN':
-        return redirect(system_admin_dashboard)
-    elif role == 'DIRECTOR':
-        return redirect(director_dashboard)
+    user_id = request.session.get('user_id')
+    if  user_id:
+        role = user_id.split('-')[0]
+        if role == 'ADO':
+            return redirect(admin_officer_dashboard)
+        elif role == 'SRO':
+            return redirect(dashboard_sro)
+        elif role == 'ACT':
+            return redirect(dashboard_action_officer)
+        elif role == 'DIR':
+            return redirect(director_dashboard)
+        elif role == 'SYS':
+            return redirect(system_admin_dashboard)
     else:
         pass
 
@@ -178,17 +212,16 @@ def user_login(request):
 
         user.last_login = timezone.now()
         user.save()
-        request.session['role'] = user.role
+
+        request.session['user_id'] = user_id
+        role = user_id.split('-')[0]
 
         # Redirect based on user role
-        if user.role == 'ADO':  # Admin Officer
-            request.session['ado_user_id'] = user.user_id
+        if role == 'ADO':  # Admin Officer
             return redirect('admin_officer_dashboard')
-        elif user.role == 'SRO':  # Sub-Receiving Officer
-            request.session['sro_user_id'] = user.user_id
+        elif role == 'SRO':  # Sub-Receiving Officer
             return redirect('dashboard_sro')
-        elif user.role == 'ACT':  # Action Officer
-            request.session['act_user_id'] = user.user_id
+        elif role == 'ACT':  # Action Officer
             return redirect('dashboard_action_officer')
         else:
             # In case the role is not recognized
@@ -200,40 +233,37 @@ def user_login(request):
 # USER LOGOUT
 def user_logout(request):
 
-    role = request.session.get('role')
+    user_id = request.session.get('user_id')
+    role = user_id.split('-')[0]
 
-    if role == 'ADO':
-        del request.session['ado_user_id']
-    elif role == 'SRO':
-        del request.session['sro_user_id']
-    elif role == 'ACT':
-        del request.session['act_user_id']
-    elif role == 'SYSTEM_ADMIN':
-        del request.session['system_admin_user_id']
-    elif role == 'DIRECTOR':
-        del request.session['director_user_id']
-        
-    del request.session['role']
+    if user_id:
+        del request.session['user_id']
+    
+    if role == 'DIR':
+        return redirect(director_dashboard)
+    elif role == 'SYS':
+        return redirect(system_admin_login)
+
     return redirect(user_login)
 
 # -------------- DASHBOARD -------------------
 
 # SYSTEM ADMIN DASHBOARD
 def system_admin_dashboard(request):
-    system_admin_user_id = request.session.get('system_admin_user_id')
-
-    if  system_admin_user_id:
+    
+    user_id = request.session.get('user_id')
+    if  user_id:
         pass
     else:
-
         return redirect('system_admin_login')
+
     return render(request, 'system_admin/system-admin-dashboard.html')
 
 # DIRECTOR DASHBOARD
 def director_dashboard(request):
-    director_user_id = request.session.get('director_user_id')
 
-    if  director_user_id:
+    user_id = request.session.get('user_id')
+    if  user_id:
         pass
     else:
         return redirect('director_login')
@@ -242,23 +272,44 @@ def director_dashboard(request):
 
 # ADMIN OFFICER DASHBOARD
 def admin_officer_dashboard(request):
+
+    user_id = request.session.get('user_id')
+    if  user_id:
+        pass
+    else:
+        return redirect('user_login')
+
     return render(request, 'admin_officer/admin-officer-dashboard.html')
 
 # SRO DASHBOARD
 def dashboard_sro(request):
+
+    user_id = request.session.get('user_id')
+    if  user_id:
+        pass
+    else:
+        return redirect('user_login')
+
     return render(request, 'sro/sro-dashboard.html')
 
 # ACTION OFFICER DASHBOARD
 def dashboard_action_officer(request):
+
+    user_id = request.session.get('user_id')
+    if  user_id:
+        pass
+    else:
+        return redirect('user_login')
+
     return render(request, 'action_officer/action-officer-dashboard.html')
 
 # -------------- USER MANAGEMENT -------------------
 
 # SYSTEM ADMIN USER MANAGEMENT MODULE
 def system_admin_user_management(request, office):
-    system_admin_user_id = request.session.get('system_admin_user_id')
 
-    if  system_admin_user_id:
+    user_id = request.session.get('user_id')
+    if  user_id:
         pass
     else:
         return redirect('system_admin_login')
@@ -267,9 +318,9 @@ def system_admin_user_management(request, office):
 
 # DIRECTOR USER MANAGEMENT MODULE
 def director_user_management(request, office):
-    director_user_id = request.session.get('director_user_id')
 
-    if  director_user_id:
+    user_id = request.session.get('user_id')
+    if  user_id:
         pass
     else:
         return redirect('director_login')
@@ -280,9 +331,9 @@ def director_user_management(request, office):
 
 # SYSTEM ADMIN DOC MANAGEMENT
 def system_admin_doc_management(request):
-    system_admin_user_id = request.session.get('system_admin_user_id')
 
-    if  system_admin_user_id:
+    user_id = request.session.get('user_id')
+    if  user_id:
         pass
     else:
         return redirect('system_admin_login')
@@ -342,9 +393,9 @@ def system_admin_doc_management(request):
 
 # SYSTEM ADMIN DOC MANAGEMENT
 def director_doc_management(request):
-    director_user_id = request.session.get('director_user_id')
 
-    if  director_user_id:
+    user_id = request.session.get('user_id')
+    if  user_id:
         pass
     else:
         return redirect('director_login')
@@ -407,102 +458,82 @@ def director_doc_management(request):
 # SYSTEM ADMIN OFFICER NEW RECORD
 def new_record_system_admin(request):
 
-    system_admin_user_id = request.session.get('system_admin_user_id')
+    user_id = request.session.get('user_id')
 
-    if  system_admin_user_id:
-        pass
-    else:
+    if not user_id:
         return redirect('system_admin_login')
 
-    showQRModal = False
-    qr_code_url = None
-    str_routes, str_routes_titles, str_tracking_no = '', '', ''
-    document_no = 0
-
-    # Credentials are correct, proceed to handle new record creation
-    if request.method == 'POST':
-        tracking_no = request.POST.get('tracking_no')
-        sender_name = request.POST.get('sender_name')
-        sender_dept = request.POST.get('sender_dept')
-        doc_type = request.POST.get('doc_type')
-        subject = request.POST.get('subject')
-        remarks = request.POST.get('remarks')
-
-        document = create_document(tracking_no, sender_name, sender_dept, doc_type, subject, remarks, system_admin_user_id)
-
-        routes = DocumentRoute.objects.filter(document_type=document.document_type)
-        
-        str_routes, str_routes_titles = generate_route_strings(routes)
-        showQRModal = True
-        qr_code_url = request.build_absolute_uri(f'/generate-qrcode/{document.document_no}/')
-        str_tracking_no = tracking_no
-        document_no = document.document_no
-
-
-    return render(request, 'system_admin/system-admin-new-record.html', {
-        'showQRModal': showQRModal, 
-        'qr_code_url': qr_code_url, 
-        'str_routes': str_routes,
-        'str_routes_titles': str_routes_titles,
-        'str_tracking_no': str_tracking_no,
-        'document_no': document_no})
+    return render(request, 'system_admin/system-admin-new-record.html')
 
 # ADMIN OFFICER NEW RECORD
 def new_record_admin_officer(request):
 
-    ado_user_id = request.session.get('ado_user_id')
+    user_id = request.session.get('user_id')
     
-    if ado_user_id:
-        pass
-    else:
+    if not user_id:
         return redirect('user_login')
 
-    showQRModal = False
-    qr_code_url = None
-    str_routes = ''
-    str_routes_titles = ''
-    str_tracking_no = ''
-    document_no = 0
+    return render(request, 'admin_officer/admin-officer-new-record.html')
+
+def add_record(request):
+
+    user_id = request.session.get('user_id')
+    role = user_id.split('-')[0]
+
+    if not user_id:
+        return redirect('user_login')
 
     if request.method == 'POST':
-
+        # Extract data from POST request
         tracking_no = request.POST.get('tracking_no')
         sender_name = request.POST.get('sender_name')
         sender_dept = request.POST.get('sender_dept')
         doc_type = request.POST.get('doc_type')
         subject = request.POST.get('subject')
         remarks = request.POST.get('remarks')
-
-
+        
         if Document.objects.filter(tracking_no=tracking_no).exists():
-            return redirect('new_record_admin_officer')
 
-        document = create_document(tracking_no, sender_name, sender_dept, doc_type, subject, remarks, ado_user_id)
+            data = {
+                'trackingNo': tracking_no,
+                'recordExists': True
+            }
+
+            return JsonResponse(data)
+
+        document = create_document(tracking_no, sender_name, sender_dept, doc_type, subject, remarks, user_id)
 
         routes = DocumentRoute.objects.filter(document_type=document.document_type)
         
         str_routes, str_routes_titles = generate_route_strings(routes)
-        showQRModal = True
         qr_code_url = request.build_absolute_uri(f'/generate-qrcode/{document.document_no}/')
         str_tracking_no = tracking_no
         document_no = document.document_no
 
-    return render(request, 'admin_officer/admin-officer-new-record.html', {
-        'showQRModal': showQRModal, 
-        'qr_code_url': qr_code_url, 
-        'str_routes': str_routes,
-        'str_routes_titles': str_routes_titles,
-        'str_tracking_no': str_tracking_no,
-        'document_no': document_no})
+        data = {
+            'str_routes': str_routes,
+            'str_routes_titles': str_routes_titles,
+            'qr_code_url': qr_code_url,
+            'str_tracking_no': str_tracking_no,
+            'document_no': document_no,
+            'recordExists': False
+        }
+        
+        # Return a JSON response indicating success
+        return JsonResponse(data)
+    
+    if role == 'ADO':
+        return redirect(new_record_admin_officer)
+    elif role == 'SYS':
+        return redirect(new_record_system_admin)
 
 # -------------- ALL RECORDS -------------------
 
 # ADMIN OFFICER ALL RECORDS
 def all_records_admin_officer(request):
 
-    ado_user_id = request.session.get('ado_user_id')
-
-    if ado_user_id:
+    user_id = request.session.get('user_id')
+    if user_id:
         pass
     else:
         return redirect('user_login')
@@ -511,6 +542,14 @@ def all_records_admin_officer(request):
 
 # DIRECTOR ALL RECORDS
 def all_records_director(request):
+
+    user_id = request.session.get('user_id')
+    if user_id:
+        pass
+    else:
+        return redirect('user_login')
+
+
     return render(request, 'director/director-all-records.html')
 
 # -------------- RECORDS -------------------
@@ -518,9 +557,8 @@ def all_records_director(request):
 # SRO RECORDS
 def sro_records(request, panel):
 
-    sro_user_id = request.session.get('sro_user_id')
-
-    if sro_user_id:
+    user_id = request.session.get('user_id')
+    if user_id:
         pass
     else:
         return redirect('user_login')
@@ -530,7 +568,13 @@ def sro_records(request, panel):
 # ACTION OFFICER RECORDS
 def records_action_officer(request):
 
-    document_no = request.GET.get('document_no')
+    user_id = request.session.get('user_id')
+    if user_id:
+        pass
+    else:
+        return redirect('user_login')
+
+    #document_no = request.GET.get('document_no')
 
     return render(request, 'action_officer/action-officer-records.html')
 
@@ -539,9 +583,8 @@ def records_action_officer(request):
 # ADMIN OFFICER NEEDS ACTION
 def admin_officer_needs_action(request, panel):
 
-    ado_user_id = request.session.get('ado_user_id')
-
-    if ado_user_id:
+    user_id = request.session.get('user_id')
+    if user_id:
         pass
     else:
         return redirect('user_login')
@@ -550,34 +593,90 @@ def admin_officer_needs_action(request, panel):
 
 # DIRECTOR NEEDS ACTION
 def needs_action_director(request):
+
+    user_id = request.session.get('user_id')
+    if user_id:
+        pass
+    else:
+        return redirect('director_login')
+
     return render(request, 'director/director-needs-action.html')
 
 # SRO UNACTED RECORDS
 def unacted_records_sro(request):
+
+    user_id = request.session.get('user_id')
+    if user_id:
+        pass
+    else:
+        return redirect('user_login')
+
     return render(request, 'sro/sro-unacted-records.html')
 
 # SRO ACTIVITY LOGS
 def activity_logs_sro(request):
+
+    user_id = request.session.get('user_id')
+    if user_id:
+        pass
+    else:
+        return redirect('user_login')
+
     return render(request, 'sro/sro-activity-logs.html')
 
 # ADMIN OFFICER UNACTED RECORDS
 def unacted_records_admin_officer(request):
+
+    user_id = request.session.get('user_id')
+    if user_id:
+        pass
+    else:
+        return redirect('user_login')
+
     return render(request, 'admin_officer/admin-officer-unacted-records.html')
 
 # ADMIN OFFICER ARCHIVE
 def archive_admin_officer(request):
+
+    user_id = request.session.get('user_id')
+    if user_id:
+        pass
+    else:
+        return redirect('user_login')
+
     return render(request, 'admin_officer/admin-officer-archive.html')
 
 # ADMIN OFFICER ACTIVITY LOGS
 def activity_logs_admin_officer(request):
+
+    user_id = request.session.get('user_id')
+    if user_id:
+        pass
+    else:
+        return redirect('user_login')
+
     return render(request, 'admin_officer/admin-officer-activity-logs.html')
 
 # ACTION OFFICER UNACTED RECORDS
 def unacted_records_action_officer(request):
+
+    user_id = request.session.get('user_id')
+    if user_id:
+        pass
+    else:
+        return redirect('user_login')
+
     return render(request, 'action_officer/action-officer-unacted-records.html')
 
 # ACTION OFFICER ACTIVITY LOGS
 def activity_logs_action_officer(request):
+
+    user_id = request.session.get('user_id')
+    if user_id:
+        pass
+    else:
+        return redirect('user_login')
+
     return render(request, 'action_officer/action-officer-activity-logs.html')
 
 
@@ -922,7 +1021,7 @@ def search_documents(documents, search_query):
 
     return documents
 
-def sort_documents(documents, sort_by, order):
+def sort_documents(documents, sort_by, order, status):
     if sort_by == 'status':
         if order == 'asc':
             documents = documents.order_by(sort_by)
@@ -930,28 +1029,103 @@ def sort_documents(documents, sort_by, order):
             documents = documents.order_by(f'-{sort_by}')
     else:
         if sort_by == 'document_type':
-            documents = Document.objects.order_by('document_type__category')
+            if status == 'For DIR Approval':
+                documents = Document.objects.filter(status="For DIR Approval").order_by('document_type__category')
+            elif status == 'For Routing':
+                documents = Document.objects.filter(status="For Routing").order_by('document_type__category')
+            elif status == 'For Archiving':
+                documents = Document.objects.filter(status="For Archiving").order_by('document_type__category')
+            elif status == 'ADO - All Documents':
+                documents = Document.objects.filter(status__in=["For DIR Approval", "For Routing", "For Archiving"]).order_by('document_type__category')
+            else:
+                documents = Document.objects.exclude(status="Archived").order_by('document_type__category')
+
         elif sort_by == 'deadline':
-            documents = Document.objects.order_by('document_type__priority_level__deadline')
+            if status == 'For DIR Approval':
+                documents = Document.objects.filter(status="For DIR Approval").order_by('document_type__priority_level__deadline')
+            elif status == 'For Routing':
+                documents = Document.objects.filter(status="For Routing").order_by('document_type__priority_level__deadline')
+            elif status == 'For Archiving':
+                documents = Document.objects.filter(status="For Archiving").order_by('document_type__priority_level__deadline')
+            elif status == 'ADO - All Documents':
+                documents = Document.objects.filter(status__in=["For DIR Approval", "For Routing", "For Archiving"]).order_by('document_type__priority_level__deadline')
+            else:
+                documents = Document.objects.exclude(status="Archived").order_by('document_type__priority_level__deadline')
+
         else:
-            documents = Document.objects.order_by('document_type__priority_level__priority_level')
+            if status == 'For DIR Approval':
+                documents = Document.objects.filter(status="For DIR Approval").order_by('document_type__priority_level__priority_level')
+            elif status == 'For Routing':
+                documents = Document.objects.filter(status="For Routing").order_by('document_type__priority_level__priority_level')
+            elif status == 'For Archiving':
+                documents = Document.objects.filter(status="For Archiving").order_by('document_type__priority_level__priority_level')
+            elif status == 'ADO - All Documents':
+                documents = Document.objects.filter(status__in=["For DIR Approval", "For Routing", "For Archiving"]).order_by('document_type__priority_level__priority_level')
+            else:
+                documents = Document.objects.exclude(status="Archived").order_by('document_type__priority_level__priority_level')
 
     return documents
 
-# FUNCTION FOR ALL ACTIONS (APPROVE, ROUTE, ARCHIVED...)
-def document_update_status(request, user, action, document_no):
-    
-    if user == 'ADO':
-        user_id = request.session.get('ado_user_id')
-    elif user == 'SRO':
-        user_id = request.session.get('sro_user_id')
-    elif user == 'ACT':
-        user_id = request.session.get('act_user_id')
-    elif user == 'SYSTEM_ADMIN':
-        user_id = request.session.get('system_admin_user_id')
-    elif user == 'DIR':
-        user_id = request.session.get('director_user_id')
+def sort_documents_sro(documents, sort_by, order, status, next_route):
+
+    if sort_by == 'status':
+        if order == 'asc':
+            documents = documents.order_by(sort_by)
+        else:
+            documents = documents.order_by(f'-{sort_by}')
     else:
+
+        # For Type
+        if sort_by == 'document_type':
+            if status == 'For ACT Forwarding':
+                documents = Document.objects.filter(status="For SRO Receiving", next_route=next_route).order_by('document_type__category')
+            elif status == 'For Resolving':
+                documents = Document.objects.filter(status="For Resolving", next_route=next_route).order_by('document_type__category')
+            else:
+                documents = Document.objects.filter(status__in=["For SRO Receiving", "For Resolving"], next_route=next_route).order_by('document_type__category')
+        # For Due
+        elif sort_by == 'deadline':
+            if status == 'For ACT Forwarding':
+                documents = Document.objects.filter(status="For SRO Receiving", next_route=next_route).order_by('document_type__priority_level__deadline')
+            if status == 'For Resolving':
+                documents = Document.objects.filter(status="For Resolving", next_route=next_route).order_by('document_type__priority_level__deadline')
+            else:
+                documents = Document.objects.filter(status__in=["For SRO Receiving", "For Resolving"], next_route=next_route).order_by('document_type__priority_level__deadline')
+        # For Priority Level
+        else:
+            if status == 'For ACT Forwarding':
+                documents = Document.objects.filter(status="For SRO Receiving", next_route=next_route).order_by('document_type__priority_level__priority_level')
+            elif status == 'For Resolving':
+                documents = Document.objects.filter(status="For Resolving", next_route=next_route).order_by('document_type__priority_level__priority_level')
+            else:
+                documents = Document.objects.filter(status__in=["For SRO Receiving", "For Resolving"], next_route=next_route).order_by('document_type__priority_level__priority_level')
+
+    return documents
+
+def sort_documents_act(documents, sort_by, order, user_id):
+
+    if sort_by == 'status':
+        if order == 'asc':
+            documents = documents.order_by(sort_by)
+        else:
+            documents = documents.order_by(f'-{sort_by}')
+    else:
+        if sort_by == 'document_type':
+            documents = Document.objects.filter(status="For ACT Receiving", act_receiver=user_id).order_by('document_type__category')
+        elif sort_by == 'deadline':
+            documents = Document.objects.filter(status="For ACT Receiving", act_receiver=user_id).order_by('document_type__priority_level__deadline')
+        else:
+            documents = Document.objects.filter(status="For ACT Receiving", act_receiver=user_id).order_by('document_type__priority_level__priority_level')
+
+    return documents
+
+
+# FUNCTION FOR ALL ACTIONS (APPROVE, ROUTE, ARCHIVED...)
+def document_update_status(request, action, document_no):
+    
+    user_id = request.session.get('user_id')
+
+    if not user_id:
         return redirect('user_login')
 
     document = Document.objects.get(document_no=document_no)
@@ -964,9 +1138,7 @@ def document_update_status(request, user, action, document_no):
         status = 'For SRO Receiving'
         activity = 'Document Routed'
 
-        if document.next_route:
-            pass
-        else:
+        if not document.next_route:
             first_route = DocumentRoute.objects.filter(document_type=document.document_type).first()
             document.next_route = first_route.route_id
 
@@ -1005,7 +1177,37 @@ def document_update_status(request, user, action, document_no):
         activity = 'Document Endorsed by Action Officer'
 
     elif action == 'resolve':
-        status = 'For Archiving'
+        
+        print("document no is: ", document_no)
+        routes = DocumentRoute.objects.filter(document_type_id=document.document_type_id)
+
+
+
+        if routes.count() > 1:
+            print("more than one routes")
+            current_route = document.next_route
+            routes_list = list(routes.values_list('route_id', flat=True))
+
+            try:
+                current_route_index = routes_list.index(current_route)
+            except ValueError:
+                print("Current route not found in the route list.")
+                current_route_index = -1
+
+            # Check if it's the last route
+            if current_route_index != -1 and current_route_index < len(routes_list) - 1:
+                # If it's not the last route, assign the next route
+                next_route = routes_list[current_route_index + 1]
+                document.next_route = next_route
+                status = 'For SRO Receiving'
+            else:
+                # If it's the last route
+                print("Last route reached")
+                status = 'For Archiving'
+        else:
+            print("1 route only")
+            status = 'For Archiving'
+        
         activity = 'Document Resolved'
 
     elif action == 'archive':
@@ -1065,11 +1267,15 @@ def fetch_document_details(request, document_no):
     try:
         document = Document.objects.get(document_no=document_no)
 
+        d_type = document.document_type.category
+        d_type = d_type[0].upper() + d_type[1:]
+        d_type += " - " + document.document_type.document_type.title()
+
         data = {
             'tracking_no': document.tracking_no,
             'sender_name': document.sender_name.title(),
             'status': document.status,
-            'document_type': document.document_type.category,  # Assuming foreign key
+            'document_type': d_type,  # Assuming foreign key
             'priority': document.document_type.priority_level.priority_level.title(),
             'due_in': document.document_type.priority_level.deadline,  # Calculate if needed
             'subject': document.subject,
@@ -1229,7 +1435,7 @@ def update_all_records_display(request, user):
         documents = search_documents(documents, search_query)
 
     if sort_by in ['status', 'document_type', 'deadline', 'priority_level']:  # Only allow sorting by valid fields
-        documents = sort_documents(documents, sort_by, order)
+        documents = sort_documents(documents, sort_by, order, "All Records")
 
     context = {
         'documents': documents,
@@ -1248,18 +1454,22 @@ def admin_officer_update_needs_action_display(request, panel):
 
     if panel == 'For-DIR-Approval':
         documents = Document.objects.filter(status='For DIR Approval')
+        status = "For DIR Approval"
     elif panel == 'For-Routing':
         documents = Document.objects.filter(status='For Routing')
+        status = "For Routing"
     elif panel == 'For-Archiving':
         documents = Document.objects.filter(status='For Archiving')
+        status = "For Archiving"
     else:
         documents = Document.objects.filter(status__in=["For DIR Approval", "For Routing", "For Archiving"])
+        status = "ADO - All Documents"
 
     if search_query:
         documents = search_documents(documents, search_query)
 
     if sort_by in ['status', 'document_type', 'deadline', 'priority_level']:  # Only allow sorting by valid fields
-        documents = sort_documents(documents, sort_by, order)
+        documents = sort_documents(documents, sort_by, order, status)
 
     context = {
         'documents': documents,
@@ -1282,7 +1492,7 @@ def director_update_needs_action_display(request):
         documents = search_documents(documents, search_query)
 
     if sort_by in ['status', 'document_type', 'deadline', 'priority_level']:  # Only allow sorting by valid fields
-        documents = sort_documents(documents, sort_by, order)
+        documents = sort_documents(documents, sort_by, order, "For DIR Approval")
 
     context = {
         'documents': documents,
@@ -1295,7 +1505,7 @@ def director_update_needs_action_display(request):
 
 def sro_update_records_display(request, panel):
 
-    user_id = request.session.get('sro_user_id')
+    user_id = request.session.get('user_id')
 
     if user_id:
         pass
@@ -1311,16 +1521,19 @@ def sro_update_records_display(request, panel):
 
     if panel == 'For-ACT-Forwarding':
         documents = Document.objects.filter(status='For SRO Receiving', next_route=office)
+        status = 'For ACT Forwarding'
     elif panel == 'For-Resolving':
         documents = Document.objects.filter(status='For Resolving', next_route=office)
+        status = 'For Resolving'
     else:
         documents = Document.objects.filter(status__in=["For SRO Receiving", "For Resolving"], next_route=office)
+        status = 'SRO All Documents'
 
     if search_query:
         documents = search_documents(documents, search_query)
 
     if sort_by in ['status', 'document_type', 'deadline', 'priority_level']:  # Only allow sorting by valid fields
-        documents = sort_documents(documents, sort_by, order)
+        documents = sort_documents_sro(documents, sort_by, order, status, office)
 
     context = {
         'documents': documents,
@@ -1333,7 +1546,10 @@ def sro_update_records_display(request, panel):
 
 def action_officer_update_records_display(request):
 
-    user_id = request.session.get('act_user_id')
+    user_id = request.session.get('user_id')
+
+    if not user_id:
+        return redirect(user_login)
 
     search_query = request.GET.get('search', '').strip()
     sort_by = request.GET.get('sort_by')
@@ -1345,7 +1561,7 @@ def action_officer_update_records_display(request):
         documents = search_documents(documents, search_query)
 
     if sort_by in ['status', 'document_type', 'deadline', 'priority_level']:  # Only allow sorting by valid fields
-        documents = sort_documents(documents, sort_by, order)
+        documents = sort_documents_act(documents, sort_by, order, user_id)
 
     context = {
         'documents': documents,

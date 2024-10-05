@@ -20,7 +20,7 @@ urlpatterns = [
     path('delete-document-type/<int:document_no>/', views.delete_document_type, name='delete_document_type'),
     path('system-admin-new-record/',views.new_record_system_admin, name='new_record_system_admin'),
     
-    path('document-update-status/<str:user>/<str:action>/<int:document_no>/', views.document_update_status, name='document_update_status'),
+    path('document-update-status/<str:action>/<int:document_no>/', views.document_update_status, name='document_update_status'),
 
     path('director-login/',views.director_login, name='director_login'),
     path('director-user-management/<str:office>/', views.director_user_management, name='director_user_management'),
@@ -32,6 +32,7 @@ urlpatterns = [
 
     path('admin-officer-dashboard/',views.admin_officer_dashboard, name='admin_officer_dashboard'),
     path('admin-officer-new-record/',views.new_record_admin_officer, name='new_record_admin_officer'),
+    path('add-record/', views.add_record, name='add_record'),
     path('load-document-types/', views.load_document_types, name='load_document_types'),
     path('generate-qrcode/<int:document_no>/', views.generate_qr_code, name='generate_qr_code'),
 

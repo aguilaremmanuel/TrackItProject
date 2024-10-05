@@ -26,9 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 
                 if (confirmButtons[actionType]) {
                     confirmButtons[actionType].onclick = function () {
-                        const user = confirmButtons[actionType].getAttribute('data-user');
-                        console.log("naclick si beh" + user);
-                        fetch(`/document-update-status/${user}/${action}/${documentNo}/`)
+                        fetch(`/document-update-status/${action}/${documentNo}/`)
                             .then(response => response.json())
                             .then(data => {
                                 document.getElementById('saveRemarks').setAttribute('data-remarks-no', data.remarks_no);

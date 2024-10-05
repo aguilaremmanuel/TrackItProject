@@ -89,7 +89,14 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="d-flex flex-wrap">
+
+                    <div id="loadingSpinner" class="text-center my-5" style="display: none;">
+                        <div class="spinner-border" role="status" style="width: 3rem; height: 3rem;">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-wrap"  id="documentDetailsContent" style="display: none;">
                         <p class="me-4 mb-2"><strong>Tracking Number:</strong> <span id="documentTrackingNumber"></span></p>
                         <p class="me-4 mb-2"><strong>Sender:</strong> <span id="documentSender"></span></p>
                         <p class="me-4 mb-2"><strong>Status:</strong> <span id="documentStatus"></span></p>
@@ -103,7 +110,7 @@
                         </div>
                     </div>
 
-                    <div class="table-responsive d-flex">
+                    <div class="table-responsive d-flex" id="activitiesContent" style="display: none;">
                         <table class="table mb-1">
                             <thead>
                                 <tr>
@@ -217,6 +224,8 @@
     <script src="{% static 'js/fetch-document.js' %}"></script>
     <script src="{% static 'js/qr-code.js' %}"></script>
     <script src="{% static 'js/update-document-status.js' %}"></script>
+    <script src="{% static 'js/add-remarks.js' %}"></script>
+    <script src="{% static 'js/qr-code.js' %}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const params = new URLSearchParams(window.location.search);
@@ -224,17 +233,6 @@
             if (status) {
                 // Assuming you want to add the class to the element with ID 'targetElement'
                 document.querySelector('#allRecords').classList.add(status);
-            }
-        });
-    </script>
-    <script>
-        // On page load, read the URL parameter and update the class
-        document.addEventListener('DOMContentLoaded', function () {
-            const params = new URLSearchParams(window.location.search);
-            const status = params.get('status');
-            if (status) {
-                // Assuming you want to add the class to the element with ID 'targetElement'
-                document.querySelector('#all-records').classList.add(status);
             }
         });
     </script>

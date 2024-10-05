@@ -53,7 +53,7 @@
                     <div class="col-12 col-md-6">
                         <label for="DocumentCategory" class="form-label">Select Document Category</label>
                         <select class="form-select" id="DocumentCategory" aria-label="DocumentCategory" required>
-                            <option value="" disabled selected hidden>Document Category</option>
+                            <option value="">Select Document Category</option>
                             <option value="Regular">Regular</option>
                             <option value="SCPF">SCPF</option>
                         </select>
@@ -96,7 +96,7 @@
                     <p>Are you sure you want to create this new record? Please review the information before proceeding.</p>
                 </div>
                 <div class="modal-footer p-3 pt-0 border-top-0">
-                    <button type="button" class="m-0 mb-2 btn btn-primary" id="confirmCreate" data-bs-toggle="modal" data-bs-target="#generateQRCode">Confirm</button>
+                    <button type="button" class="m-0 mb-2 btn btn-primary" id="confirmCreate" data-bs-toggle="modal">Confirm</button>
                     <button type="button" class="m-0 mb-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </div>
@@ -104,29 +104,45 @@
     </div>
 
     <!-- Modal to Generate QR Code -->
-    {% if showQRModal %}
-        <div class="modal fade" id="generateQRCode" tabindex="-1" aria-labelledby="generateQRCodeLabel" aria-hidden="true">
-            <div class="modal-dialog" style="max-width: 400px;">
-                <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
-                    <div class="modal-header pb-0 border-bottom-0 d-flex justify-content-between align-items-center" style="font-size: 13.5px;">
-                        <button type="button" class="btn-close" style="visibility: hidden;"></button>
-                        <h5 class="fw-bold mb-0 text-center flex-grow-1" id="confirmRecordCreationLabel">Document QR Code</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body text-center">
-                        <p class="mb-2">Scan the code to quickly access the document details or perform a specified action.</p>
-                        <p class="fw-bold my-0">{{ str_routes }}</p>
-                        <img id='qrCodeImage' src="{{ qr_code_url }}" alt="Document QR Code" style="height: 218px; width: auto;">
-                        <p class="fw-bold my-0">{{ str_tracking_no }}</p>
-                    </div>
-                    <div class="modal-footer p-3 pt-0 border-top-0 d-flex flex-column align-items-center">
-                        <button type="button" class="m-0 mb-1 btn btn-primary w-100" id="printQR">Print QR Code</button>
-                        <button type="button" class="m-0 mb-2 btn btn-secondary w-100" id="saveQR">Save a Copy</button>
-                    </div>                
+    <div class="modal fade" id="generateQRCode" tabindex="-1" aria-labelledby="generateQRCodeLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 shadow">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5 mx-auto" id="confirmRecordCreationLabel">Document QR Code</h1>
+                    <button type="button" class="btn-close ps-0 ms-0" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>                
+                <div class="modal-body text-center">
+                    <p class="fs-6">Scan the code to quickly access the document details or perform a specified action.</p>
+                    <p class="fs-6 fw-bold my-0" id="routesQr"></p>
+                    <p class="fs-6 fw-bold my-0" id="str_routesQr" style="display:none;"></p>
+                    <img id='qrCodeImage' src="" alt="Document QR Code" style="height: 218px; width: auto;">
+                    <p class="fs-6 fw-bold my-0" id="trackingNoQr"></p>
+                </div>
+                <div class="modal-footer d-flex flex-column align-items-center">
+                    <button type="button" class="btn btn-primary mb-2 w-50" id="printQR">Print QR Code</button>
+                    <button type="button" class="btn btn-secondary w-50" id="saveQR">Save a Copy</button>
+                </div>                
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Record Already Exists Error -->
+    <div class="modal fade" id="recordExistsModal" tabindex="-1" aria-labelledby="recordExistsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 shadow">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="recordExistsModalLabel" style="color: red;">Failed to Upload Document.</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="fs-6">A record with Tracking Number: <strong><span id="existingTrackingNo"></span></strong> already exists.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
-    {% endif %}
+    </div>
 
     <script src="{% static 'js/tabs-nav.js' %}"></script>  
     <script src="{% static 'js/records-count.js' %}"></script>
@@ -139,72 +155,6 @@
             if (status) {
                 // Assuming you want to add the class to the element with ID 'targetElement'
                 document.querySelector('#newRecord').classList.add(status);
-            }
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const printQRButton = document.getElementById('printQR');
-            const saveQRButton = document.getElementById('saveQR');
-            const qrCodeImage = document.getElementById('qrCodeImage');
-            if (printQRButton) {
-                printQRButton.addEventListener('click', function () {
-                    const printWindow = window.open('', '', 'height=600,width=700');
-                    printWindow.document.write('<html><head><title>Print QR Code</title>');
-                    printWindow.document.write('<style>');
-                    printWindow.document.write('body, html { font-family: Inter, sans-serif; text-align: center; margin: 0; padding: 0; }');
-                    printWindow.document.write('img { max-width: 45mm;}'); // Limit QR code width to 45mm
-                    printWindow.document.write('p { font-size: 18px; font-weight: bold; margin: 0; padding: 0; }'); // Adjust font size
-                    printWindow.document.write('@media print { body, html { margin: 0; padding: 0; } }'); // Additional print-specific styles
-                    printWindow.document.write('</style>');
-                    printWindow.document.write('</head><body>');;    
-                    printWindow.document.write('<div style="width: 165px; display: flex; flex-direction: column; align-items: center;">'); // Centering div
-                    printWindow.document.write('<p>{{ str_routes }}</p>');
-                    printWindow.document.write('<p style="font-size: 9px; font-weight: 400">({{ str_routes_titles }})</p>');
-                    printWindow.document.write('<img src="' + qrCodeImage.src + '" />');
-                    printWindow.document.write('<p style="font-size: 13px;">{{ str_tracking_no }}</p>');
-                    printWindow.document.write('<p style="font-size: 8px; font-weight: 400">(Document Tracking Number)</p>');
-                    printWindow.document.write('</div>');
-                    printWindow.document.write('</body></html>');
-                    printWindow.document.close();
-                    printWindow.focus();
-                    printWindow.print();
-            });
-            }
-            if (saveQRButton) {
-                saveQRButton.addEventListener('click', function () {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    const strRoutes = "{{ str_routes|escapejs }}";
-                    const strTrackingNo = "{{ str_tracking_no|escapejs }}";
-                    const documentNo = "{{ document_no }}"
-                    const qrCodeImg = new Image();
-                    qrCodeImg.src = qrCodeImage.src;
-                    qrCodeImg.onload = function () {
-                        canvas.width = qrCodeImg.width;
-                        canvas.height = qrCodeImg.height + 60; // Extra space for text
-                        // Fill the canvas with a white background
-                        ctx.fillStyle = 'white';
-                        ctx.fillRect(0, 0, canvas.width, canvas.height);
-                        // Draw the QR code image
-                        ctx.drawImage(qrCodeImg, 0, 30); // Adjust y position for QR code
-                        // Set font for the text
-                        ctx.font = 'bold 31px Inter, sans-serif';
-                        ctx.textAlign = 'center';
-                        ctx.fillStyle = 'black'; // Set text color to black
-                        // Add text above and below the QR code
-                        ctx.fillText(strRoutes, canvas.width / 2, 43);
-                        ctx.font = 'bold 20px Inter, sans-serif';
-                        ctx.fillText(strTrackingNo, canvas.width / 2, canvas.height - 24);
-                        // Trigger download
-                        const link = document.createElement('a');
-                        link.href = canvas.toDataURL('image/png');
-                        link.download = 'doc_' + documentNo + '_qr_code.png';
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                    };
-                });
             }
         });
     </script>
