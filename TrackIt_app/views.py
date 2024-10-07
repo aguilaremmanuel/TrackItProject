@@ -407,7 +407,7 @@ def director_doc_management(request):
 # -------------- NEW RECORD -------------------
 
 # SYSTEM ADMIN OFFICER NEW RECORD
-def new_record_system_admin(request):
+def system_admin_new_record(request):
 
     system_admin_user_id = request.session.get('system_admin_user_id')
 
@@ -450,7 +450,7 @@ def new_record_system_admin(request):
         'document_no': document_no})
 
 # ADMIN OFFICER NEW RECORD
-def new_record_admin_officer(request):
+def admin_officer_new_record(request):
 
     ado_user_id = request.session.get('ado_user_id')
     
@@ -500,7 +500,7 @@ def new_record_admin_officer(request):
 # -------------- ALL RECORDS -------------------
 
 # ADMIN OFFICER ALL RECORDS
-def all_records_admin_officer(request):
+def admin_officer_all_records(request):
 
     ado_user_id = request.session.get('ado_user_id')
 
@@ -512,7 +512,7 @@ def all_records_admin_officer(request):
     return render(request, 'admin_officer/admin-officer-all-records.html')
 
 # DIRECTOR ALL RECORDS
-def all_records_director(request):
+def director_all_records(request):
     return render(request, 'director/director-all-records.html')
 
 # -------------- RECORDS -------------------
@@ -530,7 +530,7 @@ def sro_records(request, panel):
     return render(request, 'sro/sro-records.html', {'panel': panel})
 
 # ACTION OFFICER RECORDS
-def records_action_officer(request):
+def action_officer_records(request):
 
     document_no = request.GET.get('document_no')
 
@@ -551,35 +551,35 @@ def admin_officer_needs_action(request, panel):
     return render(request, 'admin_officer/admin-officer-needs-action.html', {'panel': panel})
 
 # DIRECTOR NEEDS ACTION
-def needs_action_director(request):
+def director_needs_action(request):
     return render(request, 'director/director-needs-action.html')
 
 # SRO UNACTED RECORDS
-def unacted_records_sro(request):
+def sro_unacted_records(request):
     return render(request, 'sro/sro-unacted-records.html')
 
 # SRO ACTIVITY LOGS
-def activity_logs_sro(request):
+def sro_activity_logs(request):
     return render(request, 'sro/sro-activity-logs.html')
 
 # ADMIN OFFICER UNACTED RECORDS
-def unacted_records_admin_officer(request):
+def admin_officer_unacted_records(request):
     return render(request, 'admin_officer/admin-officer-unacted-records.html')
 
 # ADMIN OFFICER ARCHIVE
-def archive_admin_officer(request):
+def admin_officer_archive(request):
     return render(request, 'admin_officer/admin-officer-archive.html')
 
 # ADMIN OFFICER ACTIVITY LOGS
-def activity_logs_admin_officer(request):
+def admin_officer_activity_logs(request):
     return render(request, 'admin_officer/admin-officer-activity-logs.html')
 
 # ACTION OFFICER UNACTED RECORDS
-def unacted_records_action_officer(request):
+def action_officer_unacted_records(request):
     return render(request, 'action_officer/action-officer-unacted-records.html')
 
 # ACTION OFFICER ACTIVITY LOGS
-def activity_logs_action_officer(request):
+def action_officer_activity_logs(request):
     return render(request, 'action_officer/action-officer-activity-logs.html')
 
 
