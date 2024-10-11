@@ -14,13 +14,13 @@
                 </a> 
             </li>
             <li>
-                <a href="{% url 'all_records_director' %}?status=active" class="nav-link mb-2" id="allRecords">
+                <a href="{% url 'director_all_records' %}?status=active" class="nav-link mb-2" id="allRecords">
                     <i class='bx bx-folder-open nav-icon'></i>
                     <span class="nav-name">All Records</span>
                 </a>
             </li>
             <li>
-                <a href="{% url 'needs_action_director' '-1' %}?status=active" class="nav-link mb-2" id="needsAction">
+                <a href="{% url 'director_needs_action' '-1' %}?status=active" class="nav-link mb-2" id="needsAction">
                     <i class='bx bx-alarm-exclamation nav-icon'></i>
                     <span class="nav-name">Needs Action</span>
                 </a>
@@ -35,18 +35,6 @@
                 <a href="{% url 'director_doc_management' %}?status=active" class="nav-link mb-2" id="docManagement">
                     <i class='bx bx-file-blank nav-icon'></i>
                     <span class="nav-name">Doc. Management</span>
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'director_all_records' %}?status=active" class="nav-link mb-2" id="allRecords">
-                    <i class='bx bx-folder-open nav-icon'></i>
-                    <span class="nav-name">All Records</span>
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'director_needs_action' '-1' %}?status=active" class="nav-link mb-2" id="needsAction">
-                    <i class='bx bx-alarm-exclamation nav-icon'></i>
-                    <span class="nav-name">Needs Action</span>
                 </a>
             </li>
             <li>

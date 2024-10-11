@@ -502,7 +502,7 @@ def system_admin_new_record(request):
     return render(request, 'system_admin/system-admin-new-record.html', {'user_name': user_name})
 
 # ADMIN OFFICER NEW RECORD
-def new_record_admin_officer(request):
+def admin_officer_new_record(request):
 
     user_id = request.session.get('user_id')
     
@@ -800,7 +800,7 @@ def activity_logs_action_officer(request):
 
 # -------------- UNACTED RECORDS -------------------
 # SRO UNACTED RECORDS
-def unacted_records_sro(request):
+def sro_unacted_records(request):
 
     user_id = request.session.get('user_id')
     if user_id:
@@ -831,7 +831,7 @@ def sro_activity_logs(request):
     return render(request, 'sro/sro-activity-logs.html', context)
 
 # ADMIN OFFICER ACTIVITY LOGS
-def activity_logs_admin_officer(request):
+def admin_officer_activity_logs(request):
 
     user_id = request.session.get('user_id')
     if user_id:
@@ -851,7 +851,7 @@ def activity_logs_admin_officer(request):
     return render(request, 'admin_officer/admin-officer-activity-logs.html', context)
 
 # ACTION OFFICER ACTIVITY LOGS
-def activity_logs_action_officer(request):
+def action_officer_activity_logs(request):
 
     user_id = request.session.get('user_id')
     if user_id:
@@ -905,9 +905,6 @@ def admin_officer_archive(request):
 
     return render(request, 'admin_officer/admin-officer-archive.html')
 
-# ADMIN OFFICER ACTIVITY LOGS
-def admin_officer_activity_logs(request):
-    return render(request, 'admin_officer/admin-officer-activity-logs.html')
 
 # ACTION OFFICER UNACTED RECORDS
 def action_officer_unacted_records(request):
