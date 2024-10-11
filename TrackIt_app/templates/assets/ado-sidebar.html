@@ -26,7 +26,7 @@
                 </a>
             </li>
             <li>
-                <a href="{% url 'admin_officer_needs_action' 'all-documents' %}?status=active" class="nav-link mb-2" id="needs-action">
+                <a href="{% url 'admin_officer_needs_action' 'all-documents' '-1' %}?status=active" class="nav-link mb-2" id="needs-action">
                     <i class='bx bx-alarm-exclamation nav-icon'></i>
                     <span class="nav-name">Needs Action</span>
                 </a>
@@ -46,7 +46,7 @@
             <li>
                 <a href="{% url 'activity_logs_admin_officer'%}?status=active" class="nav-link mb-2" id="act-logs">
                     <i class='bx bx-history nav-icon'></i>
-                    <span class="nav-name">Activity Logs</span>
+                    <span class="nav-name">Recent Activities</span>
                 </a>
             </li> 
         </ul>

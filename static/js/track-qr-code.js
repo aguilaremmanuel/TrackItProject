@@ -1,4 +1,4 @@
-async function getQRCodeURL(documentNo) {
+async function getQRCodeURLTracking(documentNo) {
 
     try {
         const response = await fetch(`/generate-qrcode/${documentNo}/`);
@@ -14,40 +14,40 @@ async function getQRCodeURL(documentNo) {
     }
 }
 
-function displayRoutes(documentNo) {
+function displayRoutesTracking(documentNo) {
     fetch(`/get-routes/${documentNo}/`) // Adjust the endpoint to match your view
         .then(response => response.json())
         .then(data => {
-            document.getElementById('routesInitials').textContent = data.str_routes;
-            document.getElementById('routesTitles').textContent = "(" + data.str_routes_titles + ")";
+            document.getElementById('t_routesInitials').textContent = data.str_routes;
+            document.getElementById('t_routesTitles').textContent = "(" + data.str_routes_titles + ")";
         })
         .catch(error => console.error('Error:', error));
 }
 
 document.addEventListener('DOMContentLoaded', function() {
 
-    const documentQRCodeLink = document.getElementById('documentTitleLink');
+    const documentQRCodeLink = document.getElementById('t_documentTitleLink');
 
     documentQRCodeLink.addEventListener('click', async function () {
         documentNo = documentQRCodeLink.getAttribute('data-document-no');
-        let url = await getQRCodeURL(documentNo);
+        let url = await getQRCodeURLTracking(documentNo);
         if(url) {
-            document.getElementById('qrCodeImage').src = url;
+            document.getElementById('t_qrCodeImage').src = url;
         }
-        displayRoutes(documentNo);
-        let trackingNo = document.getElementById('documentTrackingNumber').textContent;
-        document.getElementById('qrModalTrackingNo').textContent = trackingNo;
+        displayRoutesTracking(documentNo);
+        let trackingNo = document.getElementById('t_documentTrackingNumber').textContent;
+        document.getElementById('t_qrModalTrackingNo').textContent = trackingNo;
     });
 
-    document.getElementById('saveQR').addEventListener('click', async function() {
+    document.getElementById('t_saveQR').addEventListener('click', async function() {
 
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        const strRoutes = document.getElementById('routesInitials').textContent;
-        const routesTitles = document.getElementById('routesTitles').textContent;
-        const strTrackingNo = document.getElementById('documentTrackingNumber').textContent;
-        const documentNo = document.getElementById('documentTitleLink').getAttribute('data-document-no');
-        let url = await getQRCodeURL(documentNo);
+        const strRoutes = document.getElementById('t_routesInitials').textContent;
+        const routesTitles = document.getElementById('t_routesTitles').textContent;
+        const strTrackingNo = document.getElementById('t_documentTrackingNumber').textContent;
+        const documentNo = document.getElementById('t_documentTitleLink').getAttribute('data-document-no');
+        let url = await getQRCodeURLTracking(documentNo);
         const qrCodeImg = new Image();
         qrCodeImg.src = url;
         qrCodeImg.onload = function () {

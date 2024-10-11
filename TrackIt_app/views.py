@@ -19,9 +19,6 @@ from datetime import datetime
 import pytz
 import json
 
-def test(request):
-    return render(request, 'test.html')
-
 # ----------- LOGIN AND SIGNUP -----------------
 
 # USER SIGNUP
@@ -102,9 +99,10 @@ def system_admin_login(request):
 
                 # Store the credentials in session to keep the user logged in
                 request.session['user_id'] = default_user_id
+                request.session['user_name'] = user_instance.firstname.title() + " " + user_instance.lastname.title()
 
                 # Redirect to the system admin dashboard
-                return redirect('system_admin_dashboard')
+                return redirect(f"{reverse('system_admin_dashboard')}?status=active")
             else:
                 messages.error(request, "Invalid credentials.")
     else:
@@ -160,9 +158,10 @@ def director_login(request):
 
                 # Store the credentials in session to keep the user logged in
                 request.session['user_id'] = default_user_id
+                request.session['user_name'] = user_instance.firstname.title() + " " + user_instance.lastname.title()
 
                 # Redirect to the director's dashboard
-                return redirect('director_dashboard')
+                return redirect(f"{reverse('director_dashboard')}?status=active")
             else:
                 messages.error(request, "Invalid credentials.")
     else:
@@ -216,15 +215,17 @@ def user_login(request):
         user.save()
 
         request.session['user_id'] = user_id
+        request.session['user_name'] = user.firstname.title() + " " + user.lastname.title()
+
         role = user_id.split('-')[0]
 
         # Redirect based on user role
         if role == 'ADO':  # Admin Officer
-            return redirect('admin_officer_dashboard')
+            return redirect(f"{reverse('admin_officer_dashboard')}?status=active")
         elif role == 'SRO':  # Sub-Receiving Officer
-            return redirect('dashboard_sro')
+            return redirect(f"{reverse('dashboard_sro')}?status=active")
         elif role == 'ACT':  # Action Officer
-            return redirect('dashboard_action_officer')
+            return redirect(f"{reverse('dashboard_action_officer')}?status=active")
         else:
             # In case the role is not recognized
             messages.error(request, "Invalid role. Please contact the administrator.")
@@ -238,11 +239,14 @@ def user_logout(request):
     user_id = request.session.get('user_id')
     role = user_id.split('-')[0]
 
+    print(user_id)
+
     if user_id:
         del request.session['user_id']
+        del request.session['user_name']
     
     if role == 'DIR':
-        return redirect(director_dashboard)
+        return redirect(director_login)
     elif role == 'SYS':
         return redirect(system_admin_login)
 
@@ -258,8 +262,10 @@ def system_admin_dashboard(request):
         pass
     else:
         return redirect('system_admin_login')
+    
+    user_name = request.session.get('user_name')
 
-    return render(request, 'system_admin/system-admin-dashboard.html')
+    return render(request, 'system_admin/system-admin-dashboard.html', {'user_name': user_name})
 
 # DIRECTOR DASHBOARD
 def director_dashboard(request):
@@ -270,7 +276,13 @@ def director_dashboard(request):
     else:
         return redirect('director_login')
 
-    return render(request, 'director/director-dashboard.html')
+    user_name = request.session.get('user_name')
+
+    context = {
+        'user_name': user_name
+    }
+
+    return render(request, 'director/director-dashboard.html', context)
 
 # ADMIN OFFICER DASHBOARD
 def admin_officer_dashboard(request):
@@ -281,7 +293,9 @@ def admin_officer_dashboard(request):
     else:
         return redirect('user_login')
 
-    return render(request, 'admin_officer/admin-officer-dashboard.html')
+    user_name = request.session.get('user_name')
+
+    return render(request, 'admin_officer/admin-officer-dashboard.html', {'user_name': user_name})
 
 # SRO DASHBOARD
 def dashboard_sro(request):
@@ -291,8 +305,10 @@ def dashboard_sro(request):
         pass
     else:
         return redirect('user_login')
+    
+    user_name = request.session.get('user_name')
 
-    return render(request, 'sro/sro-dashboard.html')
+    return render(request, 'sro/sro-dashboard.html', {'user_name': user_name})
 
 # ACTION OFFICER DASHBOARD
 def dashboard_action_officer(request):
@@ -302,8 +318,10 @@ def dashboard_action_officer(request):
         pass
     else:
         return redirect('user_login')
+    
+    user_name = request.session.get('user_name')
 
-    return render(request, 'action_officer/action-officer-dashboard.html')
+    return render(request, 'action_officer/action-officer-dashboard.html', {'user_name': user_name})
 
 # -------------- USER MANAGEMENT -------------------
 
@@ -316,7 +334,14 @@ def system_admin_user_management(request, office):
     else:
         return redirect('system_admin_login')
 
-    return render(request, 'system_admin/system-admin-user-management.html', {'office': office})
+    user_name = request.session.get('user_name')
+
+    context = {
+        'office': office,
+        'user_name': user_name
+    }
+
+    return render(request, 'system_admin/system-admin-user-management.html', context)
 
 # DIRECTOR USER MANAGEMENT MODULE
 def director_user_management(request, office):
@@ -339,6 +364,8 @@ def system_admin_doc_management(request):
         pass
     else:
         return redirect('system_admin_login')
+
+    user_name = request.session.get('user_name')
 
     if request.method == 'POST':
         
@@ -391,7 +418,12 @@ def system_admin_doc_management(request):
         record['routes'] = temp_route
         records.append(record)
 
-    return render(request, 'system_admin/system-admin-doc-management.html', {'records': records})
+    context = {
+        'records': records,
+        'user_name': user_name
+    }
+
+    return render(request, 'system_admin/system-admin-doc-management.html', context)
 
 # SYSTEM ADMIN DOC MANAGEMENT
 def director_doc_management(request):
@@ -465,7 +497,9 @@ def new_record_system_admin(request):
     if not user_id:
         return redirect('system_admin_login')
 
-    return render(request, 'system_admin/system-admin-new-record.html')
+    user_name = request.session.get('user_name')
+
+    return render(request, 'system_admin/system-admin-new-record.html', {'user_name': user_name})
 
 # ADMIN OFFICER NEW RECORD
 def new_record_admin_officer(request):
@@ -475,7 +509,9 @@ def new_record_admin_officer(request):
     if not user_id:
         return redirect('user_login')
 
-    return render(request, 'admin_officer/admin-officer-new-record.html')
+    user_name = request.session.get('user_name')
+
+    return render(request, 'admin_officer/admin-officer-new-record.html', {'user_name': user_name})
 
 def add_record(request):
 
@@ -540,7 +576,9 @@ def all_records_admin_officer(request):
     else:
         return redirect('user_login')
 
-    return render(request, 'admin_officer/admin-officer-all-records.html')
+    user_name = request.session.get('user_name')
+
+    return render(request, 'admin_officer/admin-officer-all-records.html', {'user_name': user_name})
 
 # DIRECTOR ALL RECORDS
 def all_records_director(request):
@@ -557,7 +595,7 @@ def all_records_director(request):
 # -------------- RECORDS -------------------
 
 # SRO RECORDS
-def sro_records(request, panel):
+def sro_records(request, panel, scanned_document_no):
 
     user_id = request.session.get('user_id')
     if user_id:
@@ -565,10 +603,34 @@ def sro_records(request, panel):
     else:
         return redirect('user_login')
 
-    return render(request, 'sro/sro-records.html', {'panel': panel})
+    user_name = request.session.get('user_name')
+
+    if int(scanned_document_no) < 0:
+        return render(request, 'sro/sro-records.html', {'panel': panel, 'user_name': user_name})
+    
+    user = User.objects.get(user_id=user_id)
+    office = user.office_id_id
+
+    document = Document.objects.get(document_no=scanned_document_no)
+
+    if not document:
+        scanned_status = "not-found"
+    elif document.status in ["For SRO Receiving", "For Resolving"] and document.next_route == office:
+        scanned_status = 'authorized'
+    else:
+        scanned_status = 'unauthorized'
+
+    context = {
+        'user_name': user_name,
+        'panel': panel,
+        'scanned_status': scanned_status,
+        'document': document
+    }
+
+    return render(request, 'sro/sro-records.html', context)
 
 # ACTION OFFICER RECORDS
-def records_action_officer(request):
+def records_action_officer(request, scanned_document_no):
 
     user_id = request.session.get('user_id')
     if user_id:
@@ -576,14 +638,35 @@ def records_action_officer(request):
     else:
         return redirect('user_login')
 
-    #document_no = request.GET.get('document_no')
+    user_name = request.session.get('user_name')
 
-    return render(request, 'action_officer/action-officer-records.html')
+    if int(scanned_document_no) < 0:
+        return render(request, 'action_officer/action-officer-records.html', {'user_name': user_name})
+
+    user = User.objects.get(user_id=user_id)
+
+    document = Document.objects.get(document_no=scanned_document_no)
+
+    if not document:
+        scanned_status = "not-found"
+    elif document.status == 'For ACT Receiving' and document.next_route == user.office_id_id and document.act_receiver == user_id:
+        scanned_status = 'authorized'
+    else:
+        scanned_status = 'unauthorized'
+
+    context = {
+        'user_name': user_name,
+        'scanned_status': scanned_status,
+        'document': document
+    }
+
+    return render(request, 'action_officer/action-officer-records.html', context)
+
 
 # -------------- NEEDS ACTION -------------------
 
 # ADMIN OFFICER NEEDS ACTION
-def admin_officer_needs_action(request, panel):
+def admin_officer_needs_action(request, panel, scanned_document_no):
 
     user_id = request.session.get('user_id')
     if user_id:
@@ -591,19 +674,131 @@ def admin_officer_needs_action(request, panel):
     else:
         return redirect('user_login')
 
-    return render(request, 'admin_officer/admin-officer-needs-action.html', {'panel': panel})
+    user_name = request.session.get('user_name')
+
+    if int(scanned_document_no) < 0:
+        return render(request, 'admin_officer/admin-officer-needs-action.html', {'panel': panel, 'user_name': user_name})    
+
+    document = Document.objects.get(document_no=scanned_document_no)
+
+    if not document:
+        scanned_status = "not-found"
+    elif document.status in ["For Routing", "For Archiving"]:
+        scanned_status = 'authorized'
+    else:
+        scanned_status = 'unauthorized'
+    
+    context = {
+        'user_name': user_name,
+        'panel': panel,
+        'scanned_status': scanned_status,
+        'document': document
+    }
+
+    return render(request, 'admin_officer/admin-officer-needs-action.html', context) 
 
 # DIRECTOR NEEDS ACTION
-def needs_action_director(request):
+def needs_action_director(request, scanned_document_no):
+
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('director_login')
+    
+    if int(scanned_document_no) < 0:
+        return render(request, 'director/director-needs-action.html')
+
+    document = Document.objects.get(document_no=scanned_document_no)
+
+    if not document:
+        scanned_status = "not-found"
+    elif document.status == 'For DIR Approval':
+        scanned_status = 'authorized'
+    else:
+        scanned_status = 'unauthorized'
+
+    context = {
+        'scanned_status': scanned_status,
+        'document': document
+    }
+
+    return render(request, 'director/director-needs-action.html', context)
+
+# -------------- ACTIVITY LOGS -------------------
+# DIRECTOR ACTIVITY LOGS
+def director_activity_logs(request):
 
     user_id = request.session.get('user_id')
     if user_id:
         pass
     else:
         return redirect('director_login')
+    
+    logs = ActivityLogs.objects.filter(user_id_id=user_id).order_by('-time_stamp')
 
-    return render(request, 'director/director-needs-action.html')
+    return render(request, 'director/director-activity-logs.html', {'logs':logs})
 
+# SRO ACTIVITY LOGS
+def activity_logs_sro(request):
+
+    user_id = request.session.get('user_id')
+    if user_id:
+        pass
+    else:
+        return redirect('user_login')
+    
+    user_name = request.session.get('user_name')
+
+    logs = ActivityLogs.objects.filter(user_id_id=user_id).order_by('-time_stamp')
+
+    context = {
+        'logs': logs,
+        'user_name': user_name
+    }
+
+    return render(request, 'sro/sro-activity-logs.html', context)
+
+# ADMIN OFFICER ACTIVITY LOGS
+def activity_logs_admin_officer(request):
+
+    user_id = request.session.get('user_id')
+    if user_id:
+        pass
+    else:
+        return redirect('user_login')
+    
+    user_name = request.session.get('user_name')
+
+    logs = ActivityLogs.objects.filter(user_id_id=user_id).order_by('-time_stamp')
+
+    context = {
+        'logs': logs,
+        'user_name': user_name
+    }
+
+    return render(request, 'admin_officer/admin-officer-activity-logs.html', context)
+
+# ACTION OFFICER ACTIVITY LOGS
+def activity_logs_action_officer(request):
+
+    user_id = request.session.get('user_id')
+    if user_id:
+        pass
+    else:
+        return redirect('user_login')
+    
+    user_name = request.session.get('user_name')
+
+    logs = ActivityLogs.objects.filter(user_id_id=user_id).order_by('-time_stamp')
+
+    context = {
+        'logs': logs,
+        'user_name': user_name
+    }
+
+    return render(request, 'action_officer/action-officer-activity-logs.html', context)
+
+
+# -------------- UNACTED RECORDS -------------------
 # SRO UNACTED RECORDS
 def unacted_records_sro(request):
 
@@ -614,17 +809,6 @@ def unacted_records_sro(request):
         return redirect('user_login')
 
     return render(request, 'sro/sro-unacted-records.html')
-
-# SRO ACTIVITY LOGS
-def activity_logs_sro(request):
-
-    user_id = request.session.get('user_id')
-    if user_id:
-        pass
-    else:
-        return redirect('user_login')
-
-    return render(request, 'sro/sro-activity-logs.html')
 
 # ADMIN OFFICER UNACTED RECORDS
 def unacted_records_admin_officer(request):
@@ -648,17 +832,6 @@ def archive_admin_officer(request):
 
     return render(request, 'admin_officer/admin-officer-archive.html')
 
-# ADMIN OFFICER ACTIVITY LOGS
-def activity_logs_admin_officer(request):
-
-    user_id = request.session.get('user_id')
-    if user_id:
-        pass
-    else:
-        return redirect('user_login')
-
-    return render(request, 'admin_officer/admin-officer-activity-logs.html')
-
 # ACTION OFFICER UNACTED RECORDS
 def unacted_records_action_officer(request):
 
@@ -669,17 +842,6 @@ def unacted_records_action_officer(request):
         return redirect('user_login')
 
     return render(request, 'action_officer/action-officer-unacted-records.html')
-
-# ACTION OFFICER ACTIVITY LOGS
-def activity_logs_action_officer(request):
-
-    user_id = request.session.get('user_id')
-    if user_id:
-        pass
-    else:
-        return redirect('user_login')
-
-    return render(request, 'action_officer/action-officer-activity-logs.html')
 
 
 # ------------- PASSWORD UPDATE -------------------
@@ -1121,6 +1283,21 @@ def sort_documents_act(documents, sort_by, order, user_id):
 
     return documents
 
+def scanning_qr_code(request, document_no):
+
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('user_login')
+    user_role = user_id.split('-')[0]
+
+    if user_role == 'DIR':
+        return redirect('needs_action_director', scanned_document_no=document_no)
+    elif user_role == 'ADO':
+        return redirect('admin_officer_needs_action', panel='all-documents', scanned_document_no=document_no)
+    elif user_role == 'SRO':
+        return redirect('sro_records', panel='All-Documents', scanned_document_no=document_no)
+    elif user_role == 'ACT':
+        return redirect('records_action_officer', scanned_document_no=document_no)
 
 # FUNCTION FOR ALL ACTIONS (APPROVE, ROUTE, ARCHIVED...)
 def document_update_status(request, action, document_no):
@@ -1180,10 +1357,7 @@ def document_update_status(request, action, document_no):
 
     elif action == 'resolve':
         
-        print("document no is: ", document_no)
         routes = DocumentRoute.objects.filter(document_type_id=document.document_type_id)
-
-
 
         if routes.count() > 1:
             print("more than one routes")

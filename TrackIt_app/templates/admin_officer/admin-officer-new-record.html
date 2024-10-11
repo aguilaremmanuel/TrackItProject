@@ -15,7 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 	<link href="{% static 'fontawesomefree/css/all.min.css' %}" rel="stylesheet" type="text/css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <title>Admin Officer New Record</title>
+    <title>New Record</title>
 </head>
 
 <body>
@@ -30,7 +30,7 @@
                     <button class="profile">
                         <div class="profile-pic placeholder"></div>
                         <div class="profile-info">
-                            <span class="profile-name">John Doe</span>
+                            <span class="profile-name">{{ user_name }}</span>
                             <span class="profile-role">Admin Officer</span>
                         </div>
                     </button>
@@ -155,15 +155,11 @@
             <div class="modal-dialog">
                 <div class="modal-content rounded-4 shadow">
                     <div class="modal-header">
-                        <h1 class="modal-title fs-5 mx-auto" id="confirmRecordCreationLabel">Document QR Code</h1>
-                        <button type="button" class="btn-close ps-0 ms-0" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>                
-                    <div class="modal-body text-center">
-                        <p class="mb-2">Scan the code to quickly access the document details or perform a specified action.</p>
-                        <p class="fw-bold my-0" id="routesQr"></p>
-                        <p class="fs-6 fw-bold my-0" id="str_routesQr" style="display:none;"></p>
-                        <img id='qrCodeImage' src="" alt="Document QR Code" style="height: 218px; width: auto;">
-                        <p class="fw-bold my-0" id="trackingNoQr"></p>
+                        <h1 class="modal-title fs-5" id="recordExistsModalLabel" style="color: red;">Failed to Upload Document.</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="fs-6">A record with Tracking Number: <strong><span id="existingTrackingNo"></span></strong> already exists.</p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -171,7 +167,6 @@
                 </div>
             </div>
         </div>
-    {% endif %}
 
     <script src="{% static 'js/toggle-sidebar.js' %}"></script>  
     <script src="{% static 'js/tabs-nav.js' %}"></script>  

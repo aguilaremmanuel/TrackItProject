@@ -1,0 +1,23 @@
+<!-- Document QR Code Modal -->
+<div class="modal fade" id="trackingGenerateQRCode" tabindex="-1" aria-labelledby="trackingGenerateQRCodeLabel" aria-hidden="true">
+    <div class="modal-dialog" style="max-width: 400px;">
+        <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+            <div class="modal-header pb-0 border-bottom-0 d-flex justify-content-between align-items-center" style="font-size: 13.5px;">
+                <button type="button" class="btn-close" style="visibility: hidden;"></button>
+                <h5 class="fw-bold mb-0 text-center flex-grow-1" id="confirmRecordCreationLabel">Document QR Code</h5>
+                <button type="button" id="trackingQrCodeCloseBtn" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p class="mb-2">Scan the code to quickly access the document details or perform a specified action.</p>
+                <p class="fw-bold my-0" id="t_routesInitials"></p>
+                <p class="fw-regular my-0" id="t_routesTitles" style="font-size: 12px;"></p>
+                <img id='t_qrCodeImage' src="" alt="Generating QR Code..." style="height: 218px; width: auto;">
+                <p class="fw-bold my-0" id="t_qrModalTrackingNo"></p>
+                <p class="fw-regular my-0" style="font-size: 12px;">(Document Tracking Number)</p>
+            </div>
+            <div class="modal-footer p-3 pt-0 border-top-0 d-flex flex-column align-items-center">
+                <button type="button" class="m-0 mb-2 btn btn-primary w-100" id="t_saveQR">Save a Copy</button>
+            </div>                
+        </div>
+    </div>
+</div>

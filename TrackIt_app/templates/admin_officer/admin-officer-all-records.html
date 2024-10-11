@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 	<link href="{% static 'fontawesomefree/css/all.min.css' %}" rel="stylesheet" type="text/css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <title>Admin Officer All Records</title>
+    <title>All Records</title>
 </head>
 
 <body>
@@ -29,7 +29,7 @@
                     <button class="profile">
                         <div class="profile-pic placeholder"></div>
                         <div class="profile-info">
-                            <span class="profile-name">John Doe</span>
+                            <span class="profile-name">{{ user_name }}</span>
                             <span class="profile-role">Admin Officer</span>
                         </div>
                     </button>
@@ -47,12 +47,6 @@
                         </div>
                         <button type="button" class="btn btn-primary m-0 shadow-sm" style="max-height: 37.85; padding: 7.63px 11.2px;" data-bs-toggle="modal" data-bs-target="#scanQRCodeModal">
                             <i class="fa-solid fa-qrcode" style="font-size: 16px !important;"></i>&nbsp; Scan QR Code
-                        </button>
-                        <button type="button" class="btn btn-primary m-0 shadow-sm" style="max-height: 37.85; padding: 7.63px 11.2px;" data-bs-toggle="modal" data-bs-target="#selectRouteModal">
-                            Route
-                        </button>
-                        <button type="button" class="btn btn-primary m-0 shadow-sm" style="max-height: 37.85; padding: 7.63px 11.2px;" data-bs-toggle="modal" data-bs-target="#selectArchiveModal">
-                            Archive
                         </button>
                     </div>
                 </div>        
@@ -253,55 +247,7 @@
                     <p class="mb-2">You may now scan the QR code. For optimal scanning, keep the code in focus and avoid any obstructions.</p>
                 </div>
                 <div class="modal-footer p-3 pt-0 border-top-0 d-flex flex-column align-items-center">
-                    
-                </div>                
-            </div>
-        </div>
-    </div>
-
-    <!-- Select Document Action - Route Modal -->
-    <div class="modal fade" id="selectRouteModal" tabindex="-1" aria-labelledby="selectRouteModalLabel" aria-hidden="true">
-        <div class="modal-dialog" style="max-width: 400px;">
-            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
-                <div class="modal-header pb-0 border-bottom-0 d-flex justify-content-between align-items-center" style="font-size: 13.5px;">
-                    <button type="button" class="btn-close" style="visibility: hidden;"></button>
-                    <h5 class="fw-bold mb-0 text-center flex-grow-1" id="selectRouteLabel">Select Document Action</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body text-center mt-1 mb-2">
-                    <div class="d-flex flex-wrap justify-content-center text-center" style="gap: .4rem 1rem !important;">
-                        <p class=""><strong>Tracking Number:</strong> <span id="documentTrackingNumber">112922023-DEPT-001</span></p>
-                        <p class=""><strong>User ID:</strong> <span id="userID"></span>ADO-1000</p>
-                        <p class=""><strong>Role:</strong> <span id="userRole">Admin Officer</span></p>
-                    </div>
-                </div>
-                <div class="modal-footer p-3 pt-0 border-top-0 d-flex flex-column align-items-center">
-                    <button type="button" class="m-0 mb-1 btn btn-primary w-100" id="routeDocument">Route Document</button>
-                    <button type="button" class="m-0 mb-2 btn btn-secondary w-100" id="trackDocument">Track Document</button>
-                </div>                
-            </div>
-        </div>
-    </div>
-
-    <!-- Select Document Action - Archive Modal -->
-    <div class="modal fade" id="selectArchiveModal" tabindex="-1" aria-labelledby="selectArchiveModalLabel" aria-hidden="true">
-        <div class="modal-dialog" style="max-width: 400px;">
-            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
-                <div class="modal-header pb-0 border-bottom-0 d-flex justify-content-between align-items-center" style="font-size: 13.5px;">
-                    <button type="button" class="btn-close" style="visibility: hidden;"></button>
-                    <h5 class="fw-bold mb-0 text-center flex-grow-1" id="selectArchiveLabel">Select Document Action</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body text-center mt-1 mb-2">
-                    <div class="d-flex flex-wrap justify-content-center text-center" style="gap: .4rem 1rem !important;">
-                        <p class=""><strong>Tracking Number:</strong> <span id="documentTrackingNumber">112922023-DEPT-001</span></p>
-                        <p class=""><strong>User ID:</strong> <span id="userID"></span>ADO-1000</p>
-                        <p class=""><strong>Role:</strong> <span id="userRole">Admin Officer</span></p>
-                    </div>
-                </div>
-                <div class="modal-footer p-3 pt-0 border-top-0 d-flex flex-column align-items-center">
-                    <button type="button" class="m-0 mb-1 btn btn-primary w-100" id="archiveDocument">Archive Document</button>
-                    <button type="button" class="m-0 mb-2 btn btn-secondary w-100" id="trackDocument">Track Document</button>
+                    <input type="text" id="scannedQrURL" autocomplete="off" style="opacity: 0; position: absolute; pointer-events: none;">
                 </div>                
             </div>
         </div>

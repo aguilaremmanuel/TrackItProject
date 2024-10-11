@@ -14,7 +14,7 @@
                 </a> 
             </li>            
             <li>
-                <a href="{% url 'sro_records' 'All-Documents' %}?status=active" class="nav-link mb-2" id="records">
+                <a href="{% url 'sro_records' 'All-Documents' '-1' %}?status=active" class="nav-link mb-2" id="records">
                     <i class='bx bx-folder-open nav-icon'></i>
                     <span class="nav-name">Records</span>
                 </a>
@@ -28,7 +28,7 @@
             <li>
                 <a href="{% url 'activity_logs_sro'%}?status=active" class="nav-link mb-2" id="act-logs">
                     <i class='bx bx-history nav-icon'></i>
-                    <span class="nav-name">Activity Logs</span>
+                    <span class="nav-name">Recent Activities</span>
                 </a>
             </li> 
         </ul>

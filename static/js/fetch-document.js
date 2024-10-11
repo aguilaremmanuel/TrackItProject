@@ -93,7 +93,34 @@ function bindViewButtons() {
     });
 }
 
+function scanningQRCode() {
+    var inputField = document.getElementById('scannedQrURL');
+    var scanQRCodeModal = document.getElementById('scanQRCodeModal');
+        scanQRCodeModal.addEventListener('shown.bs.modal', function () {
+            // Focus on the input field
+            inputField.value = "";
+            document.getElementById('scannedQrURL').focus();
+        });
+    var typingTimer; // Timer identifier
+    var doneTypingInterval = 1000; // Time in ms (1 second)
+    
+    inputField.addEventListener('input', function() {
+
+        clearTimeout(typingTimer); // Clear the timer on every input
+        // Set a new timer
+        typingTimer = setTimeout(function() {
+            var inputValue = inputField.value.trim(); // Trim whitespace
+
+            window.location.href = inputValue; // Redirect to the input URL
+            // Hide the modal after processing the input
+            var bootstrapModalInstance = bootstrap.Modal.getInstance(scanQRCodeModal);
+            bootstrapModalInstance.hide();
+        }, doneTypingInterval); 
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     fetchDocuments();
+    scanningQRCode();
     setInterval(fetchDocuments, 3000);
 });

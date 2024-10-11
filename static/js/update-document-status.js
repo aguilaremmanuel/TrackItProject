@@ -21,6 +21,10 @@ document.addEventListener('DOMContentLoaded', function () {
         if (modal) {
             modal.addEventListener('show.bs.modal', function (event) {
                 const button = event.relatedTarget;
+                if (!button) {
+                    console.error('No button element triggered the modal.');
+                    return;
+                }
                 const documentNo = button.getAttribute('data-document-no');
                 const actionType = button.getAttribute('data-action'); // Changed from 'action' to 'actionType'
                 
