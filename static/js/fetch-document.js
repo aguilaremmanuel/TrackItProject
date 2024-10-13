@@ -21,7 +21,6 @@ function fetchDocuments() {
             document.getElementById('recordCount').textContent = noOfRecords;
             bindViewButtons();
     });
-
 }
 
 function bindViewButtons() {
@@ -77,7 +76,9 @@ function bindViewButtons() {
                         activitiesTableBody.appendChild(row);
                     });
                     
-                    document.getElementById('documentTitleLink').setAttribute('data-document-no', documentNo); 
+                    document.getElementById('documentTitleLink').setAttribute('data-document-no', documentNo);
+                    document.getElementById('generateDocumentReportBtn').setAttribute('data-document-no', documentNo);
+
                     // Hide spinner and show content once data is loaded
                     document.getElementById('loadingSpinner').style.display = 'none';
                     document.getElementById('documentDetailsContent').style.display = 'flex';

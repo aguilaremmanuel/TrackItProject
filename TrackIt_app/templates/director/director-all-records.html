@@ -147,7 +147,7 @@
                     </div>
                 </div>
                 <div class="modal-footer p-3 pt-0 border-top-0">
-                    <button type="button" class="m-0 mb-2 btn btn-primary" id="generateReport">Generate Document Report</button>
+                    <button type="button" onclick="openDocumentReportPDF()" class="m-0 mb-2 btn btn-primary" id="generateDocumentReportBtn">Generate Document Report</button>
                 </div>
             </div>
         </div>
@@ -225,8 +225,24 @@
                     <h5 class="fw-bold mb-0 text-center flex-grow-1" id="confirmRecordCreationLabel">Scan QR Code</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body text-center">
-                    <p class="mb-2">You may now scan the QR code. For optimal scanning, keep the code in focus and avoid any obstructions.</p>
+                <div class="modal-body text-center d-flex justify-content-center align-items-center flex-column">
+                    
+                    <!-- Load the DotLottie Player component -->
+				    <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
+
+                    <!-- Embed the Lottie Animation -->
+                    <dotlottie-player 
+                        src="{% static 'gif/qr-scanning-1.json' %}" 
+                        background="transparent" 
+                        speed="1" 
+                        style="width: 250px; height: 250" 
+                        direction="1" 
+                        playMode="normal" 
+                        loop
+                        autoplay>
+                    </dotlottie-player>	
+
+                    <p class="mb-2" style="font-size: 14px;">You may now scan the QR code. For optimal scanning, keep the code in focus and avoid any obstructions.</p>
                 </div>
                 <div class="modal-footer p-3 pt-0 border-top-0 d-flex flex-column align-items-center">
                     <input type="text" id="scannedQrURL" autocomplete="off" style="opacity: 0; position: absolute; pointer-events: none;">
@@ -244,6 +260,7 @@
     <script src="{% static 'js/update-document-status.js' %}"></script>
     <script src="{% static 'js/add-remarks.js' %}"></script>
     <script src="{% static 'js/qr-code.js' %}"></script>
+    <script src="{% static 'js/generate-document-report.js' %}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const params = new URLSearchParams(window.location.search);

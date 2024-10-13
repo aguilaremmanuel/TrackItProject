@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
 from django.core.mail import send_mail
 from django.conf import settings
-import qrcode
+import qrcode, pytz, json
 from io import BytesIO
 from django.urls import reverse
 from django.utils.encoding import force_str, force_bytes
@@ -15,9 +15,8 @@ from django.contrib.auth.tokens import default_token_generator, PasswordResetTok
 from django.utils.http import urlsafe_base64_encode
 from django.template.loader import render_to_string
 from django.db.models import Q
-from datetime import datetime
-import pytz
-import json
+from django.utils.timezone import now
+from xhtml2pdf import pisa
 
 # ----------- LOGIN AND SIGNUP -----------------
 
@@ -263,6 +262,10 @@ def system_admin_dashboard(request):
     else:
         return redirect('system_admin_login')
     
+    role = user_id.split('-')[0]
+    if role != 'SYS':
+        return redirect(user_login)
+
     user_name = request.session.get('user_name')
 
     return render(request, 'system_admin/system-admin-dashboard.html', {'user_name': user_name})
@@ -271,10 +274,12 @@ def system_admin_dashboard(request):
 def director_dashboard(request):
 
     user_id = request.session.get('user_id')
-    if  user_id:
-        pass
-    else:
+    if  not user_id:
         return redirect('director_login')
+
+    role = user_id.split('-')[0]
+    if role != 'DIR':
+        return redirect(user_login)
 
     user_name = request.session.get('user_name')
 
@@ -288,10 +293,12 @@ def director_dashboard(request):
 def admin_officer_dashboard(request):
 
     user_id = request.session.get('user_id')
-    if  user_id:
-        pass
-    else:
+    if  not user_id:
         return redirect('user_login')
+
+    role = user_id.split('-')[0]
+    if role != 'ADO':
+        return redirect(user_login)
 
     user_name = request.session.get('user_name')
 
@@ -301,11 +308,13 @@ def admin_officer_dashboard(request):
 def dashboard_sro(request):
 
     user_id = request.session.get('user_id')
-    if  user_id:
-        pass
-    else:
+    if  not user_id:
         return redirect('user_login')
     
+    role = user_id.split('-')[0]
+    if role != 'SRO':
+        return redirect(user_login)
+
     user_name = request.session.get('user_name')
 
     return render(request, 'sro/sro-dashboard.html', {'user_name': user_name})
@@ -314,10 +323,12 @@ def dashboard_sro(request):
 def dashboard_action_officer(request):
 
     user_id = request.session.get('user_id')
-    if  user_id:
-        pass
-    else:
+    if  not user_id:
         return redirect('user_login')
+    
+    role = user_id.split('-')[0]
+    if role != 'ACT':
+        return redirect(user_login)
     
     user_name = request.session.get('user_name')
 
@@ -329,10 +340,12 @@ def dashboard_action_officer(request):
 def system_admin_user_management(request, office):
 
     user_id = request.session.get('user_id')
-    if  user_id:
-        pass
-    else:
+    if  not user_id:
         return redirect('system_admin_login')
+
+    role = user_id.split('-')[0]
+    if role != 'SYS':
+        return redirect(user_login)
 
     user_name = request.session.get('user_name')
 
@@ -347,10 +360,12 @@ def system_admin_user_management(request, office):
 def director_user_management(request, office):
 
     user_id = request.session.get('user_id')
-    if  user_id:
-        pass
-    else:
+    if not user_id:
         return redirect('director_login')
+    
+    role = user_id.split('-')[0]
+    if role != 'DIR':
+        return redirect(user_login)
 
     return render(request, 'director/director-user-management.html', {'office': office})
 
@@ -360,10 +375,12 @@ def director_user_management(request, office):
 def system_admin_doc_management(request):
 
     user_id = request.session.get('user_id')
-    if  user_id:
-        pass
-    else:
+    if  not user_id:
         return redirect('system_admin_login')
+
+    role = user_id.split('-')[0]
+    if role != 'SYS':
+        return redirect(user_login)
 
     user_name = request.session.get('user_name')
 
@@ -429,10 +446,13 @@ def system_admin_doc_management(request):
 def director_doc_management(request):
 
     user_id = request.session.get('user_id')
-    if  user_id:
-        pass
-    else:
+    if not user_id:
         return redirect('director_login')
+
+    role = user_id.split('-')[0]
+    if role != 'DIR':
+        return redirect(user_login)
+
 
     if request.method == 'POST':
         
@@ -497,6 +517,10 @@ def system_admin_new_record(request):
     if not user_id:
         return redirect('system_admin_login')
 
+    role = user_id.split('-')[0]
+    if role != 'SYS':
+        return redirect(user_login)
+
     user_name = request.session.get('user_name')
 
     return render(request, 'system_admin/system-admin-new-record.html', {'user_name': user_name})
@@ -508,6 +532,10 @@ def admin_officer_new_record(request):
     
     if not user_id:
         return redirect('user_login')
+
+    role = user_id.split('-')[0]
+    if role != 'ADO':
+        return redirect(user_login)
 
     user_name = request.session.get('user_name')
 
@@ -571,10 +599,12 @@ def add_record(request):
 def admin_officer_all_records(request):
 
     user_id = request.session.get('user_id')
-    if user_id:
-        pass
-    else:
+    if not user_id:
         return redirect('user_login')
+
+    role = user_id.split('-')[0]
+    if role != 'ADO':
+        return redirect(user_login)
 
     user_name = request.session.get('user_name')
 
@@ -584,11 +614,12 @@ def admin_officer_all_records(request):
 def director_all_records(request):
 
     user_id = request.session.get('user_id')
-    if user_id:
-        pass
-    else:
+    if not user_id:
         return redirect('user_login')
 
+    role = user_id.split('-')[0]
+    if role != 'DIR':
+        return redirect(user_login)
 
     return render(request, 'director/director-all-records.html')
 
@@ -598,10 +629,12 @@ def director_all_records(request):
 def sro_records(request, panel, scanned_document_no):
 
     user_id = request.session.get('user_id')
-    if user_id:
-        pass
-    else:
+    if not user_id:
         return redirect('user_login')
+
+    role = user_id.split('-')[0]
+    if role != 'SRO':
+        return redirect(user_login)
 
     user_name = request.session.get('user_name')
 
@@ -633,10 +666,12 @@ def sro_records(request, panel, scanned_document_no):
 def action_officer_records(request, scanned_document_no):
 
     user_id = request.session.get('user_id')
-    if user_id:
-        pass
-    else:
+    if not user_id:
         return redirect('user_login')
+
+    role = user_id.split('-')[0]
+    if role != 'ACT':
+        return redirect(user_login)
 
     user_name = request.session.get('user_name')
 
@@ -669,10 +704,12 @@ def action_officer_records(request, scanned_document_no):
 def admin_officer_needs_action(request, panel, scanned_document_no):
 
     user_id = request.session.get('user_id')
-    if user_id:
-        pass
-    else:
+    if not user_id:
         return redirect('user_login')
+
+    role = user_id.split('-')[0]
+    if role != 'ADO':
+        return redirect(user_login)
 
     user_name = request.session.get('user_name')
 
@@ -704,6 +741,10 @@ def director_needs_action(request, scanned_document_no):
     if not user_id:
         return redirect('director_login')
     
+    role = user_id.split('-')[0]
+    if role != 'DIR':
+        return redirect(user_login)
+
     if int(scanned_document_no) < 0:
         return render(request, 'director/director-needs-action.html')
 
@@ -728,11 +769,13 @@ def director_needs_action(request, scanned_document_no):
 def director_activity_logs(request):
 
     user_id = request.session.get('user_id')
-    if user_id:
-        pass
-    else:
+    if not user_id:
         return redirect('director_login')
     
+    role = user_id.split('-')[0]
+    if role != 'DIR':
+        return redirect(user_login)
+
     logs = ActivityLogs.objects.filter(user_id_id=user_id).order_by('-time_stamp')
 
     return render(request, 'director/director-activity-logs.html', {'logs':logs})
@@ -741,11 +784,13 @@ def director_activity_logs(request):
 def sro_activity_logs(request):
 
     user_id = request.session.get('user_id')
-    if user_id:
-        pass
-    else:
+    if not user_id:
         return redirect('user_login')
     
+    role = user_id.split('-')[0]
+    if role != 'SRO':
+        return redirect(user_login)
+
     user_name = request.session.get('user_name')
 
     logs = ActivityLogs.objects.filter(user_id_id=user_id).order_by('-time_stamp')
@@ -761,11 +806,13 @@ def sro_activity_logs(request):
 def activity_logs_admin_officer(request):
 
     user_id = request.session.get('user_id')
-    if user_id:
-        pass
-    else:
+    if not user_id:
         return redirect('user_login')
     
+    role = user_id.split('-')[0]
+    if role != 'ADO':
+        return redirect(user_login)
+
     user_name = request.session.get('user_name')
 
     logs = ActivityLogs.objects.filter(user_id_id=user_id).order_by('-time_stamp')
@@ -781,11 +828,13 @@ def activity_logs_admin_officer(request):
 def activity_logs_action_officer(request):
 
     user_id = request.session.get('user_id')
-    if user_id:
-        pass
-    else:
+    if not user_id:
         return redirect('user_login')
     
+    role = user_id.split('-')[0]
+    if role != 'ACT':
+        return redirect(user_login)
+
     user_name = request.session.get('user_name')
 
     logs = ActivityLogs.objects.filter(user_id_id=user_id).order_by('-time_stamp')
@@ -803,10 +852,12 @@ def activity_logs_action_officer(request):
 def sro_unacted_records(request):
 
     user_id = request.session.get('user_id')
-    if user_id:
-        pass
-    else:
+    if not user_id:
         return redirect('user_login')
+
+    role = user_id.split('-')[0]
+    if role != 'SRO':
+        return redirect(user_login)
 
     return render(request, 'sro/sro-unacted-records.html')
 
@@ -814,11 +865,13 @@ def sro_unacted_records(request):
 def sro_activity_logs(request):
 
     user_id = request.session.get('user_id')
-    if user_id:
-        pass
-    else:
+    if not user_id:
         return redirect('user_login')
     
+    role = user_id.split('-')[0]
+    if role != 'SRO':
+        return redirect(user_login)
+
     user_name = request.session.get('user_name')
 
     logs = ActivityLogs.objects.filter(user_id_id=user_id).order_by('-time_stamp')
@@ -834,11 +887,13 @@ def sro_activity_logs(request):
 def admin_officer_activity_logs(request):
 
     user_id = request.session.get('user_id')
-    if user_id:
-        pass
-    else:
+    if not user_id:
         return redirect('user_login')
     
+    role = user_id.split('-')[0]
+    if role != 'ADO':
+        return redirect(user_login)
+
     user_name = request.session.get('user_name')
 
     logs = ActivityLogs.objects.filter(user_id_id=user_id).order_by('-time_stamp')
@@ -854,11 +909,13 @@ def admin_officer_activity_logs(request):
 def action_officer_activity_logs(request):
 
     user_id = request.session.get('user_id')
-    if user_id:
-        pass
-    else:
+    if not user_id:
         return redirect('user_login')
     
+    role = user_id.split('-')[0]
+    if role != 'ACT':
+        return redirect(user_login)
+
     user_name = request.session.get('user_name')
 
     logs = ActivityLogs.objects.filter(user_id_id=user_id).order_by('-time_stamp')
@@ -876,10 +933,12 @@ def action_officer_activity_logs(request):
 def unacted_records_sro(request):
 
     user_id = request.session.get('user_id')
-    if user_id:
-        pass
-    else:
+    if not user_id:
         return redirect('user_login')
+
+    role = user_id.split('-')[0]
+    if role != 'SRO':
+        return redirect(user_login)
 
     return render(request, 'sro/sro-unacted-records.html')
 
@@ -887,10 +946,12 @@ def unacted_records_sro(request):
 def admin_officer_unacted_records(request):
 
     user_id = request.session.get('user_id')
-    if user_id:
-        pass
-    else:
+    if not user_id:
         return redirect('user_login')
+
+    role = user_id.split('-')[0]
+    if role != 'ADO':
+        return redirect(user_login)
 
     return render(request, 'admin_officer/admin-officer-unacted-records.html')
 
@@ -898,10 +959,12 @@ def admin_officer_unacted_records(request):
 def admin_officer_archive(request):
 
     user_id = request.session.get('user_id')
-    if user_id:
-        pass
-    else:
+    if not user_id:
         return redirect('user_login')
+
+    role = user_id.split('-')[0]
+    if role != 'ADO':
+        return redirect(user_login)
 
     return render(request, 'admin_officer/admin-officer-archive.html')
 
@@ -910,10 +973,12 @@ def admin_officer_archive(request):
 def action_officer_unacted_records(request):
 
     user_id = request.session.get('user_id')
-    if user_id:
-        pass
-    else:
+    if not user_id:
         return redirect('user_login')
+
+    role = user_id.split('-')[0]
+    if role != 'ACT':
+        return redirect(user_login)
 
     return render(request, 'action_officer/action-officer-unacted-records.html')
 
@@ -925,7 +990,6 @@ class CustomTokenGenerator(PasswordResetTokenGenerator):
         return str(user.pk) + str(timestamp)
 
 account_activation_token = CustomTokenGenerator()
-
 
 # FORGOT PASSWORD
 def forgot_password(request):
@@ -1365,13 +1429,13 @@ def scanning_qr_code(request, document_no):
     user_role = user_id.split('-')[0]
 
     if user_role == 'DIR':
-        return redirect('needs_action_director', scanned_document_no=document_no)
+        return redirect('director_needs_action', scanned_document_no=document_no)
     elif user_role == 'ADO':
         return redirect('admin_officer_needs_action', panel='all-documents', scanned_document_no=document_no)
     elif user_role == 'SRO':
         return redirect('sro_records', panel='All-Documents', scanned_document_no=document_no)
     elif user_role == 'ACT':
-        return redirect('records_action_officer', scanned_document_no=document_no)
+        return redirect('action_officer_records', scanned_document_no=document_no)
 
 # FUNCTION FOR ALL ACTIONS (APPROVE, ROUTE, ARCHIVED...)
 def document_update_status(request, action, document_no):
@@ -1544,7 +1608,7 @@ def fetch_document_details(request, document_no):
             lastname = activity.user_id.lastname.capitalize()
             role = activity.user_id.role
 
-            if role in ['ADO', 'SRO', 'ACT']:
+            if role in ['ADO', 'SRO', 'ACT', 'Director', 'System Admin']:
                 office = activity.user_id.office_id.office_name
             else:
                 office = ""
@@ -1821,3 +1885,53 @@ def action_officer_update_records_display(request):
 
     html = render_to_string('partials/display-records.html', context)
     return JsonResponse({'html': html})
+
+# ------------------ REPORTS -----------------------
+
+def generate_document_report(request, document_no):
+
+    user_id = request.session.get('user_id')
+    user_name = request.session.get('user_name')
+
+    if not user_id:
+        return redirect(user_login)
+
+    role = user_id.split('-')[0]
+
+    if role == 'SYS':
+        role = 'System Admin'
+    elif role == 'DIR':
+        role = 'Director'
+    elif role == 'ADO':
+        role = 'Admin Officer'
+    elif role == 'SRO':
+        role = 'Sub-Receiving Officer'
+    else:
+        role = 'Action Officer'
+
+    reporter = user_name + ", " + role
+
+
+    document = Document.objects.get(document_no=document_no)
+    logs = ActivityLogs.objects.filter(document_id_id=document_no).order_by('-time_stamp')
+
+    context = {
+        'document': document,
+        'logs': logs,
+        'now': now(),
+        'reporter': reporter
+    }
+
+    html_string = render_to_string('partials/document-report-pdf.html', context)
+
+    pdf_file = BytesIO()
+    pisa_status = pisa.CreatePDF(html_string, dest=pdf_file)
+
+    # If there was an error
+    if pisa_status.err:
+        return HttpResponse('We had some errors <pre>' + html_string + '</pre>')
+
+    response = HttpResponse(pdf_file.getvalue(), content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename="Document-Report.pdf"'
+
+    return response

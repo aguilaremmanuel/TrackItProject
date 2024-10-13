@@ -65,4 +65,6 @@ urlpatterns = [
     path('new-password/<uidb64>/<token>/', views.new_password, name='new_password'),
 
     path('scanned-qr-code/<int:document_no>/', views.scanning_qr_code, name='scanning_qr_code'),
+
+    path('generate-document-report/<int:document_no>/', views.generate_document_report, name='generate_document_report'),
 ]
