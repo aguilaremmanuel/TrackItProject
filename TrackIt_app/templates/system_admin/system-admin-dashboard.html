@@ -15,6 +15,45 @@
 	<link href="{% static 'fontawesomefree/css/all.min.css' %}" rel="stylesheet" type="text/css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <title>Dashboard</title>
+
+    <style>
+        #datetime-container {
+            font-size: 13px;
+            font-weight: bold;
+            color: #333;
+            display: flex;
+            align-items: center;
+        }
+
+        #datetime-container span {
+            margin: 0 5px;
+        }
+
+        .card {
+            border: 2px solid #007bff;
+            text-align: center;
+            padding: 10px;
+            border-radius: 10px; /* Rounded corners */
+            background-color: white;
+        }
+
+        .card h2 {
+            color: #007bff; /* Number color */
+            font-size: 36px;
+            margin-bottom: 0;
+        }
+
+        .card p {
+            font-size: 15px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .table, .table-count, .announcements{
+            font-size: 12px;
+        }
+    </style>
+
 </head>
 
 <body>
@@ -40,7 +79,149 @@
             <main class="main-content">
                 <div class="title-container d-flex justify-content-between align-items-center">
                     <h3 class="fw-semibold m-0">Dashboard</h3>
+                    <div class="m-0" id="datetime-container">
+                        <span id="day"></span> | 
+                        <span id="date"></span> | 
+                        <span id="time"></span>
+                    </div>
                 </div>
+
+                <div class="row g-2 my-2">
+                    <div class="col-lg-2 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <p>Total Records</p>
+                            <h2>123</h2>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <p>For Approval</p>
+                            <h2>12</h2>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <p>Payroll</p>
+                            <h2>18</h2>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <p>Accounting</p>
+                            <h2>29</h2>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <p>Cashier</p>
+                            <h2>14</h2>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-6 mb-2">
+                        <div class="card">
+                            <p>Budgeting</p>
+                            <h2>23</h2>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="rounded-2 p-3 mb-3" style="background-color: white; height: auto;">
+                    <p class="mb-0 fw-bold"><i class='bx bxs-megaphone' style="color: #007bff;"></i> Latest Announcements</p>
+                        <p class="announcements border border-primary rounded-2 my-2 p-2" style="background-color: #F5F7F8; border-color: #007bff;">
+                            To all users, please be advised that the system will undergo scheduled maintenance on August 10, 2024, from 12:00 AM to 4:00 AM. During this time, the system will be unavailable. Thank you for your understanding and cooperation!
+                        </p>
+                        <p class="announcements border border-primary rounded-2 my-2 p-2" style="background-color: #F5F7F8; border-color: #007bff;">
+                            This is a reminder to all departments that the Q3 Financial Reports must be submitted no later than October 25, 2024. Please ensure that all expenses, invoices, and financial statements are accurately recorded and attached.
+                        </p>
+                        <p class="announcements border border-primary rounded-2 my-2 p-2" style="background-color: #F5F7F8; border-color: #007bff;">
+                            Please be informed that the deadline for the submission of all budget requests for the upcoming fiscal year is November 15, 2024. All requests must be submitted through the system for proper tracking and documentation.
+                        </p>
+                </div>
+
+                <div class="rounded-2 p-3 mb-3" style="background-color: white; height: auto;">
+                    <p class="mb-0 fw-bold"><i class='bx bxs-info-circle' style='color:#dc3545'></i> Unacted Records</p>
+                    <div class="my-3">
+                        <div class="table-responsive table-wrapper d-flex">
+                            <table class="table mb-1">
+                                <thead>
+                                    <tr>
+                                        <th>Tracking Number</th>
+                                        <th>
+                                            Status 
+                                            <a href="?status=active&sort_by=status&order=asc"><i class='bx bxs-sort-alt'></i></a>
+                                        </th>
+                                        <th>Sender</th>
+                                        <th>Particulars</th>
+                                        <th>
+                                            Type 
+                                            <a href="?status=active&sort_by=document_type&order=asc"><i class='bx bxs-sort-alt'></i></a>
+                                        </th>
+                                        <th>Remarks</th>
+                                        <th>Updated</th>
+                                        <th>
+                                            Due In 
+                                            <a href="?status=active&sort_by=deadline&order=asc"><i class='bx bxs-sort-alt'></i></a>
+                                        </th>
+                                        <th>
+                                            Priority 
+                                            <a href="?status=active&sort_by=priority_level&order=asc"><i class='bx bxs-sort-alt'></i></a>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                
+                                <tbody id="docTableBody">
+                                    {% include 'partials/display-records.html' %}
+                                </tbody>
+                            </table>           
+                        </div>
+            
+                        <p class="d-block text-start my-0 p-2 fw-semibold table-count" id="record-count" style="color: #000000; opacity: 0.6;">
+                            Showing total of <span id="recordCount">{{ users|length|default:"0" }}</span> record(s)
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="row p-2 mt-0 pt-0">
+                    <!-- Latest Activity Section -->
+                    <div class="col-lg-7 rounded-2 p-3" style="background-color: white;">
+                        <p class="mb-0 fw-bold"><i class='bx bx-stats' style='color:#007bff'></i> Latest Activity</p>
+                        <div class="table-responsive"> 
+                            <table class="table mt-3">
+                                <thead>
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>User Name</th>
+                                        <th>Tracking Number</th>
+                                        <th>Activity</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>2024-08-05 05:15 PM</td>
+                                        <td>Ramon D. Torres</td>
+                                        <td>1122920232-DEPT-001</td>
+                                        <td>Document Approved</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2024-08-05 05:15 PM</td>
+                                        <td>Ramon D. Torres</td>
+                                        <td>1122920232-DEPT-001</td>
+                                        <td>Document Archived</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                
+                    <!-- Unacted Documents Section -->
+                    <div class="col-lg-5 rounded-2 p-3" style="background-color: white;">
+                        <p class="mb-0 fw-bold"><i class='bx bx-stats' style='color:#007bff'></i> Unacted Documents</p>
+                        <div class="d-flex justify-content-center my-2">
+                            <canvas id="unactedDocumentsChart" width=auto height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
             </main>
         </div>
     </div>
@@ -56,6 +237,45 @@
                     document.querySelector('#dashboard').classList.add(status);
                 }
             });
+    </script>
+    <script>
+        function updateTime() {
+            const now = new Date();
+
+            const dayOptions = { weekday: 'long' };
+            const dateOptions = { year: 'numeric', month: 'short', day: 'numeric' };
+
+            const day = now.toLocaleDateString('en-US', dayOptions);
+            const date = now.toLocaleDateString('en-US', dateOptions);
+            const time = now.toLocaleTimeString('en-US', { hour12: true });
+
+            document.getElementById('day').textContent = day;
+            document.getElementById('date').textContent = date;
+            document.getElementById('time').textContent = time;
+        }
+
+        setInterval(updateTime, 1000);
+        updateTime();
+    </script>
+    <!-- Include Chart.js for pie chart functionality -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        var ctx = document.getElementById('unactedDocumentsChart').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Accounting', 'Budgeting', 'Payroll'],
+                datasets: [{
+                    label: 'Unacted Documents',
+                    data: [10, 6, 4], // Replace with actual data
+                    backgroundColor: ['#007bff', '#6c757d', '#28a745']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+            }
+        });
     </script>
 </body>
 </html>
