@@ -19,6 +19,8 @@ urlpatterns = [
     path('edit-document-type/', views.edit_document_type, name='edit_document_type'),
     path('delete-document-type/<int:document_no>/', views.delete_document_type, name='delete_document_type'),
     path('system-admin-new-record/',views.new_record_system_admin, name='new_record_system_admin'),
+    path('system-admin-generate-reports/<str:report>/',views.system_admin_generate_reports, name='system_admin_generate_reports'),
+
     
     path('document-update-status/<str:user>/<str:action>/<int:document_no>/', views.document_update_status, name='document_update_status'),
 
@@ -29,6 +31,7 @@ urlpatterns = [
     path('director-all-records/',views.all_records_director, name='all_records_director'),
     path('director-needs-action/',views.needs_action_director, name='needs_action_director'),
     path('director-update-needs-action-display', views.director_update_needs_action_display, name='director_update_needs_action_display'),
+    path('director-generate-reports/<str:report>/',views.director_generate_reports, name='director_generate_reports'),
 
     path('admin-officer-dashboard/',views.admin_officer_dashboard, name='admin_officer_dashboard'),
     path('admin-officer-new-record/',views.new_record_admin_officer, name='new_record_admin_officer'),

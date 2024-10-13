@@ -497,7 +497,7 @@ def new_record_admin_officer(request):
         'str_tracking_no': str_tracking_no,
         'document_no': document_no})
 
-# -------------- ALL RECORDS -------------------
+# ---------------- ALL RECORDS -------------------
 
 # ADMIN OFFICER ALL RECORDS
 def all_records_admin_officer(request):
@@ -515,7 +515,7 @@ def all_records_admin_officer(request):
 def all_records_director(request):
     return render(request, 'director/director-all-records.html')
 
-# -------------- RECORDS -------------------
+# ----------------- RECORDS -------------------
 
 # SRO RECORDS
 def sro_records(request, panel):
@@ -536,7 +536,7 @@ def records_action_officer(request):
 
     return render(request, 'action_officer/action-officer-records.html')
 
-# -------------- NEEDS ACTION -------------------
+# ---------------- NEEDS ACTION -------------------
 
 # ADMIN OFFICER NEEDS ACTION
 def admin_officer_needs_action(request, panel):
@@ -553,6 +553,32 @@ def admin_officer_needs_action(request, panel):
 # DIRECTOR NEEDS ACTION
 def needs_action_director(request):
     return render(request, 'director/director-needs-action.html')
+
+# ------------------ GENERATE REPORTS ------------------
+
+# SYSTEM ADMIN GENERATE REPORTS MODULE
+def system_admin_generate_reports(request, report):
+    system_admin_user_id = request.session.get('system_admin_user_id')
+
+    if  system_admin_user_id:
+        pass
+    else:
+        return redirect('system_admin_login')
+
+    return render(request, 'system_admin/system-admin-generate-reports.html', {'report': report})
+
+# DIRECTOR GENERATE REPORTS MODULE
+def director_generate_reports(request, report):
+    director_user_id = request.session.get('director_user_id')
+
+    if  director_user_id:
+        pass
+    else:
+        return redirect('director_login')
+
+    return render(request, 'director/director-generate-reports.html', {'report': report})
+
+# ------------------------------------------------------
 
 # SRO UNACTED RECORDS
 def unacted_records_sro(request):
