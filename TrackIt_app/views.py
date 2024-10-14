@@ -927,6 +927,7 @@ def director_generate_reports(request, report):
     return render(request, 'director/director-generate-reports.html', {'report': report})
 
 # ------------- PASSWORD UPDATE -------------------
+
 # Custom token generator
 class CustomTokenGenerator(PasswordResetTokenGenerator):
     def _make_hash_value(self, user, timestamp):
@@ -1520,6 +1521,7 @@ def delete_empty_remarks(request):
     return JsonResponse(data)
 
 # ---------- FETCHING --------------
+
 def fetch_document_details(request, document_no):
     try:
         document = Document.objects.get(document_no=document_no)
@@ -1587,6 +1589,7 @@ def fetch_document_details(request, document_no):
         return JsonResponse({'error': 'Document not found'}, status=404)
 
 # ---------- PARTIALS --------------
+
 def update_user_display(request, office):
 
     search_query = request.GET.get('search', '').strip()
