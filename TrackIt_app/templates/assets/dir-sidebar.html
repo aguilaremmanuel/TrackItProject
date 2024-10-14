@@ -14,6 +14,18 @@
                 </a> 
             </li>
             <li>
+                <a href="{% url 'director_all_records' %}?status=active" class="nav-link mb-2" id="allRecords">
+                    <i class='bx bx-folder-open nav-icon'></i>
+                    <span class="nav-name">All Records</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'director_needs_action' '-1' %}?status=active" class="nav-link mb-2" id="needsAction">
+                    <i class='bx bx-alarm-exclamation nav-icon'></i>
+                    <span class="nav-name">Needs Action</span>
+                </a>
+            </li>
+            <li>
                 <a href="{% url 'director_user_management' 'all-office' %}?status=active" class="nav-link mb-2" id="userManagement">
                     <i class='bx bx-user nav-icon'></i>
                     <span class="nav-name">User Management</span>
@@ -26,18 +38,6 @@
                 </a>
             </li>
             <li>
-                <a href="{% url 'all_records_director' %}?status=active" class="nav-link mb-2" id="allRecords">
-                    <i class='bx bx-folder-open nav-icon'></i>
-                    <span class="nav-name">All Records</span>
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'needs_action_director' %}?status=active" class="nav-link mb-2" id="needsAction">
-                    <i class='bx bx-alarm-exclamation nav-icon'></i>
-                    <span class="nav-name">Needs Action</span>
-                </a>
-            </li>
-            <li>
                 <a href="#" class="nav-link mb-2">
                     <i class='bx bx-box nav-icon'></i>
                     <span class="nav-name">Archive</span>
@@ -45,13 +45,16 @@
             </li>
             <li>
                 <a href="#" class="nav-link mb-2">
+                <a href="{% url 'director_activity_logs' %}?status=active" class="nav-link mb-1">
                     <i class='bx bx-history nav-icon'></i>
-                    <span class="nav-name">Activity Logs</span>
+                    <span class="nav-name">Recent Activities</span>
                 </a>
             </li>
             <li>
                 <a href="#" class="nav-link mb-2">
                     <i class='bx bx-broadcast nav-icon'></i>
+                <a href="#" class="nav-link mb-1">
+                    <i class='bx bx-podcast nav-icon'></i>
                     <span class="nav-name">Announcements</span>
                 </a>
             </li>

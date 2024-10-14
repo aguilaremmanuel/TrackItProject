@@ -19,7 +19,7 @@ function displayRoutes(documentNo) {
         .then(response => response.json())
         .then(data => {
             document.getElementById('routesInitials').textContent = data.str_routes;
-            document.getElementById('routesTitles').textContent = data.str_routes_titles;
+            document.getElementById('routesTitles').textContent = "(" + data.str_routes_titles + ")";
         })
         .catch(error => console.error('Error:', error));
 }
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         const strRoutes = document.getElementById('routesInitials').textContent;
-        const routesTitles = "(" + document.getElementById('routesTitles').textContent + ")";
+        const routesTitles = document.getElementById('routesTitles').textContent;
         const strTrackingNo = document.getElementById('documentTrackingNumber').textContent;
         const documentNo = document.getElementById('documentTitleLink').getAttribute('data-document-no');
         let url = await getQRCodeURL(documentNo);

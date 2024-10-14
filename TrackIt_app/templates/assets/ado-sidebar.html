@@ -14,39 +14,39 @@
                 </a> 
             </li>            
             <li>
-                <a href="{% url 'new_record_admin_officer' %}?status=active" class="nav-link mb-2" id="new"> 
+                <a href="{% url 'admin_officer_new_record' %}?status=active" class="nav-link mb-2" id="new"> 
                     <i class='bx bx-folder-plus nav-icon'></i>
                     <span class="nav-name">New Record</span>
                 </a>
             </li>
             <li>
-                <a href="{% url 'all_records_admin_officer'%}?status=active" class="nav-link mb-2" id="all-records">
+                <a href="{% url 'admin_officer_all_records'%}?status=active" class="nav-link mb-2" id="all-records">
                     <i class='bx bx-folder-open nav-icon'></i>
                     <span class="nav-name">All Records</span>
                 </a>
             </li>
             <li>
-                <a href="{% url 'admin_officer_needs_action' 'all-documents' %}?status=active" class="nav-link mb-2" id="needs-action">
+                <a href="{% url 'admin_officer_needs_action' 'all-documents' '-1' %}?status=active" class="nav-link mb-2" id="needs-action">
                     <i class='bx bx-alarm-exclamation nav-icon'></i>
                     <span class="nav-name">Needs Action</span>
                 </a>
             </li>
             <li>
-                <a href="{% url 'unacted_records_admin_officer'%}?status=active" class="nav-link mb-2" id="overdue">
+                <a href="{% url 'admin_officer_unacted_records'%}?status=active" class="nav-link mb-2" id="overdue">
                     <i class='bx bx-calendar-x nav-icon'></i>   
                     <span class="nav-name">Unacted Records</span>
                 </a>
             </li>
             <li>
-                <a href="{% url 'archive_admin_officer'%}?status=active" class="nav-link mb-2" id="archive">
+                <a href="{% url 'admin_officer_archive'%}?status=active" class="nav-link mb-2" id="archive">
                     <i class='bx bx-box nav-icon'></i>
                     <span class="nav-name">Archive</span>
                 </a>
             </li>
             <li>
-                <a href="{% url 'activity_logs_admin_officer'%}?status=active" class="nav-link mb-2" id="act-logs">
+                <a href="{% url 'admin_officer_activity_logs'%}?status=active" class="nav-link mb-2" id="act-logs">
                     <i class='bx bx-history nav-icon'></i>
-                    <span class="nav-name">Activity Logs</span>
+                    <span class="nav-name">Recent Activities</span>
                 </a>
             </li> 
         </ul>

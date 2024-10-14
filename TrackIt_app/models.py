@@ -88,3 +88,8 @@ class ActivityLogs(models.Model):
     class Meta:
         db_table = 'tbl_activity_logs'
 
+class Test(models.Model):
+    no = models.BigAutoField(primary_key=True)
+    activity = models.CharField(max_length=50)
+    class Meta:
+        db_table = 'tbl_test'

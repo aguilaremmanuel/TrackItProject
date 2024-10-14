@@ -21,7 +21,6 @@ function fetchDocuments() {
             document.getElementById('recordCount').textContent = noOfRecords;
             bindViewButtons();
     });
-
 }
 
 function bindViewButtons() {
@@ -30,11 +29,19 @@ function bindViewButtons() {
     viewButtons.forEach(button => {
         button.addEventListener('click', function () {
             const documentNo = this.getAttribute('data-document-no');
-            console.log("document no: " + documentNo);
+
+             // Show spinner and hide content before fetching data
+             document.getElementById('loadingSpinner').style.display = 'block';
+             document.getElementById('documentDetailsContent').style.display = 'none';
+             document.getElementById('activitiesContent').style.display = 'none';
+             document.getElementById('activitiesTableBody').innerHTML = ''; // Clear previous entries
+
             // Fetch document details via AJAX
             fetch(`/fetch-document-details/${documentNo}/`)
                 .then(response => response.json())
                 .then(data => {
+
+      
                     // Populate the modal with the new data
                     document.getElementById('documentTrackingNumber').textContent = data.tracking_no;
                     document.getElementById('documentSender').textContent = data.sender_name;
@@ -69,16 +76,52 @@ function bindViewButtons() {
                         activitiesTableBody.appendChild(row);
                     });
                     
-                    document.getElementById('documentTitleLink').setAttribute('data-document-no', documentNo); 
+                    document.getElementById('documentTitleLink').setAttribute('data-document-no', documentNo);
+                    document.getElementById('generateDocumentReportBtn').setAttribute('data-document-no', documentNo);
 
+                    // Hide spinner and show content once data is loaded
+                    document.getElementById('loadingSpinner').style.display = 'none';
+                    document.getElementById('documentDetailsContent').style.display = 'flex';
+                    document.getElementById('activitiesContent').style.display = 'flex';
+                   
                 })
-                .catch(error => console.error('Error:', error));
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('loadingSpinner').style.display = 'none';
+                });
+                
         });
+    });
+}
+
+function scanningQRCode() {
+    var inputField = document.getElementById('scannedQrURL');
+    var scanQRCodeModal = document.getElementById('scanQRCodeModal');
+        scanQRCodeModal.addEventListener('shown.bs.modal', function () {
+            // Focus on the input field
+            inputField.value = "";
+            document.getElementById('scannedQrURL').focus();
+        });
+    var typingTimer; // Timer identifier
+    var doneTypingInterval = 1000; // Time in ms (1 second)
+    
+    inputField.addEventListener('input', function() {
+
+        clearTimeout(typingTimer); // Clear the timer on every input
+        // Set a new timer
+        typingTimer = setTimeout(function() {
+            var inputValue = inputField.value.trim(); // Trim whitespace
+
+            window.location.href = inputValue; // Redirect to the input URL
+            // Hide the modal after processing the input
+            var bootstrapModalInstance = bootstrap.Modal.getInstance(scanQRCodeModal);
+            bootstrapModalInstance.hide();
+        }, doneTypingInterval); 
     });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
     fetchDocuments();
+    scanningQRCode();
     setInterval(fetchDocuments, 3000);
-    bindViewButtons();
 });

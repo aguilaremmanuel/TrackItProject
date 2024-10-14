@@ -21,14 +21,16 @@ document.addEventListener('DOMContentLoaded', function () {
         if (modal) {
             modal.addEventListener('show.bs.modal', function (event) {
                 const button = event.relatedTarget;
+                if (!button) {
+                    console.error('No button element triggered the modal.');
+                    return;
+                }
                 const documentNo = button.getAttribute('data-document-no');
                 const actionType = button.getAttribute('data-action'); // Changed from 'action' to 'actionType'
                 
                 if (confirmButtons[actionType]) {
                     confirmButtons[actionType].onclick = function () {
-                        const user = confirmButtons[actionType].getAttribute('data-user');
-                        console.log("naclick si beh" + user);
-                        fetch(`/document-update-status/${user}/${action}/${documentNo}/`)
+                        fetch(`/document-update-status/${action}/${documentNo}/`)
                             .then(response => response.json())
                             .then(data => {
                                 document.getElementById('saveRemarks').setAttribute('data-remarks-no', data.remarks_no);

@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 	<link href="{% static 'fontawesomefree/css/all.min.css' %}" rel="stylesheet" type="text/css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <title>Director All Records</title>
+    <title>All Records</title>
 </head>
 
 <body>
@@ -47,9 +47,6 @@
                         </div>
                         <button type="button" class="btn btn-primary m-0 shadow-sm" style="max-height: 37.85; padding: 7.63px 11.2px;" data-bs-toggle="modal" data-bs-target="#scanQRCodeModal">
                             <i class="fa-solid fa-qrcode" style="font-size: 16px !important;"></i>&nbsp; Scan QR Code
-                        </button>
-                        <button type="button" class="btn btn-primary m-0 shadow-sm" style="max-height: 37.85; padding: 7.63px 11.2px;" data-bs-toggle="modal" data-bs-target="#selectApproveModal">
-                            Approve
                         </button>
                     </div>
                 </div>
@@ -109,7 +106,14 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="d-flex flex-wrap">
+
+                    <div id="loadingSpinner" class="text-center my-5" style="display: none;">
+                        <div class="spinner-border" role="status" style="width: 3rem; height: 3rem;">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-wrap"  id="documentDetailsContent" style="display: none;">
                         <p class="me-4 mb-2"><strong>Tracking Number:</strong> <span id="documentTrackingNumber"></span></p>
                         <p class="me-4 mb-2"><strong>Sender:</strong> <span id="documentSender"></span></p>
                         <p class="me-4 mb-2"><strong>Status:</strong> <span id="documentStatus"></span></p>
@@ -123,7 +127,7 @@
                         </div>
                     </div>
 
-                    <div class="table-responsive d-flex">
+                    <div class="table-responsive d-flex" id="activitiesContent" style="display: none;">
                         <table class="table mb-1">
                             <thead>
                                 <tr>
@@ -143,7 +147,7 @@
                     </div>
                 </div>
                 <div class="modal-footer p-3 pt-0 border-top-0">
-                    <button type="button" class="m-0 mb-2 btn btn-primary" id="generateReport">Generate Document Report</button>
+                    <button type="button" onclick="openDocumentReportPDF()" class="m-0 mb-2 btn btn-primary" id="generateDocumentReportBtn">Generate Document Report</button>
                 </div>
             </div>
         </div>
@@ -221,35 +225,27 @@
                     <h5 class="modal-title" id="confirmRecordCreationLabel">Scan QR Code</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body text-center">
-                    <p class="mb-2">You may now scan the QR code. For optimal scanning, keep the code in focus and avoid any obstructions.</p>
-                </div>
-                <div class="modal-footer p-3 pt-0 border-top-0 d-flex flex-column align-items-center">
+                <div class="modal-body text-center d-flex justify-content-center align-items-center flex-column">
                     
-                </div>                
-            </div>
-        </div>
-    </div>
+                    <!-- Load the DotLottie Player component -->
+				    <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
 
-    <!-- Select Document Action - Approve Modal -->
-    <div class="modal fade" id="selectApproveModal" tabindex="-1" aria-labelledby="selectApproveModalLabel" aria-hidden="true">
-        <div class="modal-dialog" style="max-width: 400px;">
-            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
-                <div class="modal-header pb-0 border-bottom-0 d-flex justify-content-between align-items-center" style="font-size: 13.5px;">
-                    <button type="button" class="btn-close" style="visibility: hidden;"></button>
-                    <h5 class="modal-title" id="selectApproveLabel">Select Document Action</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body text-center mt-1 mb-2">
-                    <div class="d-flex flex-wrap justify-content-center text-center" style="gap: .4rem 1rem !important;">
-                        <p class=""><strong>Tracking Number:</strong> <span id="documentTrackingNumber">112922023-DEPT-001</span></p>
-                        <p class=""><strong>User ID:</strong> <span id="userID"></span>DIR-0001</p>
-                        <p class=""><strong>Role:</strong> <span id="userRole">Director</span></p>
-                    </div>
+                    <!-- Embed the Lottie Animation -->
+                    <dotlottie-player 
+                        src="{% static 'gif/qr-scanning-1.json' %}" 
+                        background="transparent" 
+                        speed="1" 
+                        style="width: 250px; height: 250" 
+                        direction="1" 
+                        playMode="normal" 
+                        loop
+                        autoplay>
+                    </dotlottie-player>	
+
+                    <p class="mb-2" style="font-size: 14px;">You may now scan the QR code. For optimal scanning, keep the code in focus and avoid any obstructions.</p>
                 </div>
                 <div class="modal-footer p-3 pt-0 border-top-0 d-flex flex-column align-items-center">
-                    <button type="button" class="m-0 mb-1 btn btn-primary w-100" id="approveDocument">Approve Document</button>
-                    <button type="button" class="m-0 mb-2 btn btn-secondary w-100" id="trackDocument">Track Document</button>
+                    <input type="text" id="scannedQrURL" autocomplete="off" style="opacity: 0; position: absolute; pointer-events: none;">
                 </div>                
             </div>
         </div>
@@ -262,6 +258,9 @@
     <script src="{% static 'js/fetch-document.js' %}"></script>
     <script src="{% static 'js/qr-code.js' %}"></script>
     <script src="{% static 'js/update-document-status.js' %}"></script>
+    <script src="{% static 'js/add-remarks.js' %}"></script>
+    <script src="{% static 'js/qr-code.js' %}"></script>
+    <script src="{% static 'js/generate-document-report.js' %}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const params = new URLSearchParams(window.location.search);
@@ -269,17 +268,6 @@
             if (status) {
                 // Assuming you want to add the class to the element with ID 'targetElement'
                 document.querySelector('#allRecords').classList.add(status);
-            }
-        });
-    </script>
-    <script>
-        // On page load, read the URL parameter and update the class
-        document.addEventListener('DOMContentLoaded', function () {
-            const params = new URLSearchParams(window.location.search);
-            const status = params.get('status');
-            if (status) {
-                // Assuming you want to add the class to the element with ID 'targetElement'
-                document.querySelector('#all-records').classList.add(status);
             }
         });
     </script>
