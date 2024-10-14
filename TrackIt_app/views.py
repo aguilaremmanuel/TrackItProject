@@ -1139,7 +1139,7 @@ def delete_document_type(request, document_no):
 def load_document_types(request):
     category = request.GET.get('category')
 
-    if category in ['SCPF', 'Regular']:
+    if category in ['Trust', 'Regular']:
         document_types = DocumentType.objects.filter(category=category).values('document_no', 'document_type')
         return JsonResponse(list(document_types), safe=False)
     else:
@@ -1448,10 +1448,45 @@ def document_update_status(request, action, document_no):
     document = Document.objects.get(document_no=document_no)
 
     if action == 'approve':
-        status = 'For Routing'
+
+        routes = DocumentRoute.objects.filter(document_type_id=document.document_type_id)
+
+
+        if document.next_route:
+
+            current_route = document.next_route
+            routes_list = list(routes.values_list('route_id', flat=True))
+
+            try:
+                current_route_index = routes_list.index(current_route)
+            except ValueError:
+                print("Current route not found in the route list.")
+                current_route_index = -1
+
+            # Check if it's the last route
+            if current_route_index != -1 and current_route_index < len(routes_list) - 1:
+                # If it's not the last route, assign the next route
+                next_route = routes_list[current_route_index + 1]
+                document.next_route = next_route
+                status = 'For SRO Receiving'
+
+            else:
+                # If it's the last route
+                print("Last route reached")
+                status = 'For Archiving'
+
+        else:
+            
+            if routes.count() == 1 and routes.first().route_id == 'DIR':
+                status = 'For Archiving'
+            else:
+                status = 'For Routing'
+
+
         activity = 'Document Approved'
 
     elif action == 'route':
+
         status = 'For SRO Receiving'
         activity = 'Document Routed'
 
@@ -1513,7 +1548,12 @@ def document_update_status(request, action, document_no):
                 # If it's not the last route, assign the next route
                 next_route = routes_list[current_route_index + 1]
                 document.next_route = next_route
-                status = 'For SRO Receiving'
+
+                if next_route == 'DIR':
+                    status = 'For DIR Approval'
+                else:
+                    status = 'For SRO Receiving'
+
             else:
                 # If it's the last route
                 print("Last route reached")

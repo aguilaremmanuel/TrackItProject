@@ -38,6 +38,8 @@ document.addEventListener('DOMContentLoaded', function () {
             routeStep.innerHTML = `
                 <span class="input-group-text">Route ${index + 1}</span>
                 <select class="form-select edit-route-select" name="editRoutes[]" required>
+                    <option value="" disabled hidden></option>
+                    <option value="Director" ${route === 'Director' ? 'selected' : ''}>Director</option>
                     <option value="Accounting" ${route === 'Accounting' ? 'selected' : ''}>Accounting</option>
                     <option value="Budgeting" ${route === 'Budgeting' ? 'selected' : ''}>Budgeting</option>
                     <option value="Cashier" ${route === 'Cashier' ? 'selected' : ''}>Cashier</option>
