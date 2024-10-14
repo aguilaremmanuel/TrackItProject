@@ -849,7 +849,7 @@ def action_officer_activity_logs(request):
 # -------------- UNACTED RECORDS -------------------
 
 # SRO UNACTED RECORDS
-def unacted_records_sro(request):
+def sro_unacted_records(request):
 
     user_id = request.session.get('user_id')
     if not user_id:
