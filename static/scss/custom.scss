@@ -100,6 +100,66 @@ a {
     }
 }
 
+.btn-green, .btn-red, .btn-blue {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    width: 25px;
+    height: 25px;
+    font-size: 14px;
+    padding: 0;
+    margin: 0;
+
+    &.btn-green {
+        background-color: #28A745;
+
+        &:hover {
+            background-color: darken(#28A745, 10%);
+            color: #FFFFFF;
+        }
+
+        &:active {
+            background-color: darken(#28A745, 15%) !important;
+            box-shadow: none !important;
+            color: #FFFFFF;
+            border: none;
+        }
+    }
+
+    &.btn-red {
+        background-color: #EA2E2E;
+
+        &:hover {
+            background-color: darken(#EA2E2E, 10%);
+            color: #FFFFFF;
+        }
+
+        &:active {
+            background-color: darken(#EA2E2E, 15%) !important;
+            box-shadow: none !important;
+            color: #FFFFFF;
+            border: none;
+        }
+    }
+
+    &.btn-blue {
+        background-color: #2E72EA;
+
+        &:hover {
+            background-color: darken(#2E72EA, 10%);
+            color: #FFFFFF;
+        }
+
+        &:active {
+            background-color: darken(#2E72EA, 15%) !important;
+            box-shadow: none !important;
+            color: #FFFFFF;
+            border: none;
+        }
+    }
+}
+
 .btn-secondary {
     background-color: #FFFFFF;
     font-size: 15px;
@@ -122,77 +182,6 @@ a {
     }
 }
 
-.btn-blue {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #2E72EA;
-    color: #FFFFFF;
-    width: 25px;
-    height: 25px;
-    font-size: 14px;
-    padding: 0;
-    margin: 0;
-
-    &:hover {
-        background-color: darken(#2E72EA, 10%); 
-        color: #FFFFFF;
-    }
-
-    &:active {
-        background-color: darken(#2E72EA, 15%) !important;
-        color: #FFFFFF !important;
-        box-shadow: none !important;
-    }
-}
-
-.btn-green {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #28A745;
-    color: #FFFFFF;
-    width: 25px;
-    height: 25px;
-    font-size: 14px;
-    padding: 0;
-    margin: 0;
-
-    &:hover {
-        background-color: darken(#28A745, 10%); 
-        color: #FFFFFF;
-    }
-
-    &:active {
-        background-color: darken(#28A745, 15%) !important;
-        color: #FFFFFF !important;
-        box-shadow: none !important;
-    }
-}
-
-.btn-red {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #EA2E2E;
-    color: #FFFFFF;
-    width: 25px;
-    height: 25px;
-    font-size: 14px;
-    padding: 0;
-    margin: 0;
-
-    &:hover {
-        background-color: darken(#EA2E2E, 10%); 
-        color: #FFFFFF;
-    }
-
-    &:active {
-        background-color: darken(#EA2E2E, 15%) !important;
-        color: #FFFFFF !important;
-        box-shadow: none !important;
-    }
-}
 
 // BADGES
 .badge {
@@ -340,7 +329,7 @@ input:focus::-webkit-datetime-edit {
 
     .input-group-text {
         background-color: rgba(177, 193, 207, 0.1);
-        font-size: 15px !important;
+        font-size: 14px !important;
         color: #000000;
         border-color: #B1C1CF;
         font-weight: 500;
@@ -366,7 +355,7 @@ input:focus::-webkit-datetime-edit {
 
     .btn-x-red {
         background-color: #EA2E2E;
-        font-size: 15px !important;
+        font-size: 14px !important;
         color: #FFFFFF;
         font-weight: 600;
         padding: 0.5rem 0.8rem;
@@ -516,3 +505,28 @@ table th:last-child {
 .modal-footer {
     gap: 9px;
 }
+
+// DROPDOWN
+
+.dropdown-menu {
+    background-color: #fff;
+    margin-top: 5px !important;
+    padding: 9px;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    
+
+    .dropdown-item {
+        font-size: 14px;
+        font-weight: 600;
+        padding: 8.45px 11.5px;
+        max-height: 37.85px;
+        border-radius: 6px;
+        color: #000;
+        
+        &:hover {
+            background-color: #eff3f5;
+        }
+    }
+}
+

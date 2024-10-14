@@ -589,11 +589,11 @@ def add_record(request):
         return JsonResponse(data)
     
     if role == 'ADO':
-        return redirect(new_record_admin_officer)
+        return redirect(admin_officer_new_record)
     elif role == 'SYS':
-        return redirect(new_record_system_admin)
+        return redirect(system_admin_new_record)
 
-# -------------- ALL RECORDS -------------------
+# ---------------- ALL RECORDS -------------------
 
 # ADMIN OFFICER ALL RECORDS
 def admin_officer_all_records(request):
@@ -623,7 +623,7 @@ def director_all_records(request):
 
     return render(request, 'director/director-all-records.html')
 
-# -------------- RECORDS -------------------
+# ----------------- RECORDS -------------------
 
 # SRO RECORDS
 def sro_records(request, panel, scanned_document_no):
@@ -697,8 +697,7 @@ def action_officer_records(request, scanned_document_no):
 
     return render(request, 'action_officer/action-officer-records.html', context)
 
-
-# -------------- NEEDS ACTION -------------------
+# ---------------- NEEDS ACTION -------------------
 
 # ADMIN OFFICER NEEDS ACTION
 def admin_officer_needs_action(request, panel, scanned_document_no):
@@ -765,6 +764,7 @@ def director_needs_action(request, scanned_document_no):
     return render(request, 'director/director-needs-action.html', context)
 
 # -------------- ACTIVITY LOGS -------------------
+
 # DIRECTOR ACTIVITY LOGS
 def director_activity_logs(request):
 
@@ -779,87 +779,6 @@ def director_activity_logs(request):
     logs = ActivityLogs.objects.filter(user_id_id=user_id).order_by('-time_stamp')
 
     return render(request, 'director/director-activity-logs.html', {'logs':logs})
-
-# SRO ACTIVITY LOGS
-def sro_activity_logs(request):
-
-    user_id = request.session.get('user_id')
-    if not user_id:
-        return redirect('user_login')
-    
-    role = user_id.split('-')[0]
-    if role != 'SRO':
-        return redirect(user_login)
-
-    user_name = request.session.get('user_name')
-
-    logs = ActivityLogs.objects.filter(user_id_id=user_id).order_by('-time_stamp')
-
-    context = {
-        'logs': logs,
-        'user_name': user_name
-    }
-
-    return render(request, 'sro/sro-activity-logs.html', context)
-
-# ADMIN OFFICER ACTIVITY LOGS
-def activity_logs_admin_officer(request):
-
-    user_id = request.session.get('user_id')
-    if not user_id:
-        return redirect('user_login')
-    
-    role = user_id.split('-')[0]
-    if role != 'ADO':
-        return redirect(user_login)
-
-    user_name = request.session.get('user_name')
-
-    logs = ActivityLogs.objects.filter(user_id_id=user_id).order_by('-time_stamp')
-
-    context = {
-        'logs': logs,
-        'user_name': user_name
-    }
-
-    return render(request, 'admin_officer/admin-officer-activity-logs.html', context)
-
-# ACTION OFFICER ACTIVITY LOGS
-def activity_logs_action_officer(request):
-
-    user_id = request.session.get('user_id')
-    if not user_id:
-        return redirect('user_login')
-    
-    role = user_id.split('-')[0]
-    if role != 'ACT':
-        return redirect(user_login)
-
-    user_name = request.session.get('user_name')
-
-    logs = ActivityLogs.objects.filter(user_id_id=user_id).order_by('-time_stamp')
-
-    context = {
-        'logs': logs,
-        'user_name': user_name
-    }
-
-    return render(request, 'action_officer/action-officer-activity-logs.html', context)
-
-
-# -------------- UNACTED RECORDS -------------------
-# SRO UNACTED RECORDS
-def sro_unacted_records(request):
-
-    user_id = request.session.get('user_id')
-    if not user_id:
-        return redirect('user_login')
-
-    role = user_id.split('-')[0]
-    if role != 'SRO':
-        return redirect(user_login)
-
-    return render(request, 'sro/sro-unacted-records.html')
 
 # SRO ACTIVITY LOGS
 def sro_activity_logs(request):
@@ -927,10 +846,10 @@ def action_officer_activity_logs(request):
 
     return render(request, 'action_officer/action-officer-activity-logs.html', context)
 
-
 # -------------- UNACTED RECORDS -------------------
+
 # SRO UNACTED RECORDS
-def unacted_records_sro(request):
+def sro_unacted_records(request):
 
     user_id = request.session.get('user_id')
     if not user_id:
@@ -955,20 +874,6 @@ def admin_officer_unacted_records(request):
 
     return render(request, 'admin_officer/admin-officer-unacted-records.html')
 
-# ADMIN OFFICER ARCHIVE
-def admin_officer_archive(request):
-
-    user_id = request.session.get('user_id')
-    if not user_id:
-        return redirect('user_login')
-
-    role = user_id.split('-')[0]
-    if role != 'ADO':
-        return redirect(user_login)
-
-    return render(request, 'admin_officer/admin-officer-archive.html')
-
-
 # ACTION OFFICER UNACTED RECORDS
 def action_officer_unacted_records(request):
 
@@ -982,8 +887,47 @@ def action_officer_unacted_records(request):
 
     return render(request, 'action_officer/action-officer-unacted-records.html')
 
+# -------------- ARCHIVE -------------------
+
+# ADMIN OFFICER ARCHIVE
+def admin_officer_archive(request):
+
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('user_login')
+
+    role = user_id.split('-')[0]
+    if role != 'ADO':
+        return redirect(user_login)
+
+    return render(request, 'admin_officer/admin-officer-archive.html')
+
+# ------------------ GENERATE REPORTS ------------------
+
+# SYSTEM ADMIN GENERATE REPORTS MODULE
+def system_admin_generate_reports(request, report):
+    system_admin_user_id = request.session.get('system_admin_user_id')
+
+    if  system_admin_user_id:
+        pass
+    else:
+        return redirect('system_admin_login')
+
+    return render(request, 'system_admin/system-admin-generate-reports.html', {'report': report})
+
+# DIRECTOR GENERATE REPORTS MODULE
+def director_generate_reports(request, report):
+    director_user_id = request.session.get('director_user_id')
+
+    if  director_user_id:
+        pass
+    else:
+        return redirect('director_login')
+
+    return render(request, 'director/director-generate-reports.html', {'report': report})
 
 # ------------- PASSWORD UPDATE -------------------
+
 # Custom token generator
 class CustomTokenGenerator(PasswordResetTokenGenerator):
     def _make_hash_value(self, user, timestamp):
@@ -1617,6 +1561,7 @@ def delete_empty_remarks(request):
     return JsonResponse(data)
 
 # ---------- FETCHING --------------
+
 def fetch_document_details(request, document_no):
     try:
         document = Document.objects.get(document_no=document_no)
@@ -1684,6 +1629,7 @@ def fetch_document_details(request, document_no):
         return JsonResponse({'error': 'Document not found'}, status=404)
 
 # ---------- PARTIALS --------------
+
 def update_user_display(request, office):
 
     search_query = request.GET.get('search', '').strip()

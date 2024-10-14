@@ -1,8 +1,8 @@
 body {
-    font-size: 13.5px !important;
+    font-size: 14px !important;
 }
 
-.content-wrapper {
+.block-container {
     font-size: 14px !important;
 }
 
@@ -14,6 +14,8 @@ body {
     font-size: 14px !important;
 }
 
-.btn-primary {
-    font-size: 14px !important;
+.title-container .btn-primary {
+    font-size: 14px;
+    max-height: 37.85;
+    padding: 7.63px 11.2px;
 }

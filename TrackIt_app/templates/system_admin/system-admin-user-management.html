@@ -41,7 +41,7 @@
                     <h3 class="fw-semibold m-0">User Management</h3>
                     <div class="d-flex justify-content-between align-items-center" style="gap: 12px;">
                         <div class="search-container">
-                            <input type="text" id="searchInput" data-url="{% url 'update_user_display' office %}" class="form-search form-control shadow-sm" placeholder="Search a document" onkeyup="fetchUsers()">
+                            <input type="text" id="searchInput" data-url="{% url 'update_user_display' office %}" class="form-search form-control shadow-sm" placeholder="Search a user" onkeyup="fetchUsers()">
                             <i class="fa-solid fa-search search-icon"></i>  
                             <i class="fa-solid fa-xmark clear-icon" style="display: none;"></i>
                         </div>
@@ -104,17 +104,17 @@
                     </div>
         
                     <p class="d-block text-start my-0 p-2 fw-semibold" id="record-count" style="color: #000000; opacity: 0.6;">
-                        Showing total of <span id="recordCount"></span> record(s)
+                        Showing total of <span id="recordCount"></span> user(s)
                     </p>
                 </div>
             </main>
         </div>
     </div>
 
-    <!-- Modal for Verify User -->
+    <!-- Verify User Modal -->
     <div class="modal fade" id="verifyUserModal" tabindex="-1" aria-labelledby="verifyUserModalLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <div class="modal-content rounded-4 px-3 py-2 shadow">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
                 <div class="modal-header pb-0 border-bottom-0">
                     <h5 class="modal-title" id="verifyUserModalLabel">Verify User</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -123,37 +123,17 @@
                     <p>Are you sure you want to verify this user?</p>
                 </div>
                 <div class="modal-footer p-3 pt-0 border-top-0">
-                    <button type="button" class="m-0 mb-2 btn btn-primary" id="confirmVerify">Confirm</button>
-                    <button type="button" class="m-0 mb-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="m-0 my-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="m-0 my-2 btn btn-primary" id="confirmVerify">Verify</button>
                 </div>
             </div>
         </div>
     </div>
 
-
-    <!-- Modal for Reactivate User -->
-    <div class="modal fade" id="reactivateUserModal" tabindex="-1" aria-labelledby="reactivateUserModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content rounded-4 px-3 py-2 shadow">
-                <div class="modal-header pb-0 border-bottom-0">
-                    <h5 class="modal-title" id="reactivateUserModalLabel">Reactivate User</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Are you sure you want to reactivate this user?</p>
-                </div>
-                <div class="modal-footer p-3 pt-0 border-top-0">
-                    <button type="button" class="m-0 mb-2 btn btn-primary" id="confirmReactivate">Confirm</button>
-                    <button type="button" class="m-0 mb-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal for Reject User -->
+    <!-- Reject User Modal -->
     <div class="modal fade" id="rejectUserModal" tabindex="-1" aria-labelledby="rejectUserModalLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <div class="modal-content rounded-4 px-3 py-2 shadow">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
                 <div class="modal-header pb-0 border-bottom-0">
                     <h5 class="modal-title" id="rejectUserModalLabel">Reject User</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -162,17 +142,17 @@
                     <p>Are you sure you want to reject this user?</p>
                 </div>
                 <div class="modal-footer p-3 pt-0 border-top-0">
-                    <button type="button" class="m-0 mb-2 btn btn-primary" id="confirmReject">Confirm</button>
-                    <button type="button" class="m-0 mb-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="m-0 my-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="m-0 my-2 btn btn-primary" id="confirmReject">Reject</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal for Deactivate User -->
+    <!-- Deactivate User Modal -->
     <div class="modal fade" id="deactivateUserModal" tabindex="-1" aria-labelledby="deactivateUserModalLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <div class="modal-content rounded-4 px-3 py-2 shadow">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
                 <div class="modal-header pb-0 border-bottom-0">
                     <h5 class="modal-title" id="deactivateUserModalLabel">Deactivate User</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -181,17 +161,36 @@
                     <p>Are you sure you want to deactivate this user?</p>
                 </div>
                 <div class="modal-footer p-3 pt-0 border-top-0">
-                    <button type="button" class="m-0 mb-2 btn btn-primary" id="confirmDeactivate">Confirm</button>
-                    <button type="button" class="m-0 mb-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="m-0 my-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="m-0 my-2 btn btn-primary" id="confirmDeactivate">Deactivate</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal for Archive User -->
+    <!-- Reactivate User Modal -->
+    <div class="modal fade" id="reactivateUserModal" tabindex="-1" aria-labelledby="reactivateUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0">
+                    <h5 class="modal-title" id="reactivateUserModalLabel">Reactivate User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to reactivate this user?</p>
+                </div>
+                <div class="modal-footer p-3 pt-0 border-top-0">
+                    <button type="button" class="m-0 my-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="m-0 my-2 btn btn-primary" id="confirmReactivate">Reactivate</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Archive User Modal -->
     <div class="modal fade" id="archiveUserModal" tabindex="-1" aria-labelledby="archiveUserModalLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <div class="modal-content rounded-4 px-3 py-2 shadow">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
                 <div class="modal-header pb-0 border-bottom-0">
                     <h5 class="modal-title" id="archiveUserModalLabel">Archive User</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -200,8 +199,8 @@
                     <p>Are you sure you want to archive this user?</p>
                 </div>
                 <div class="modal-footer p-3 pt-0 border-top-0">
-                    <button type="button" class="m-0 mb-2 btn btn-primary" id="confirmArchive">Confirm</button>
-                    <button type="button" class="m-0 mb-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="m-0 my-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="m-0 my-2 btn btn-primary" id="confirmArchive">Archive</button>
                 </div>
             </div>
         </div>
