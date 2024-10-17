@@ -8,7 +8,7 @@ urlpatterns = [
     path('logout/', views.user_logout, name='user_logout'),
     path('signup/',views.user_signup, name='user_signup'),
 
-    path('admin-login/',views.system_admin_login, name='system_admin_login'),
+    #path('admin-login/',views.system_admin_login, name='system_admin_login'),
     path('admin-dashboard/',views.system_admin_dashboard, name='system_admin_dashboard'),
 
     path('system-admin-dashboard/', views.system_admin_dashboard, name='system_admin_dashboard'),
@@ -25,7 +25,7 @@ urlpatterns = [
     
     path('document-update-status/<str:action>/<int:document_no>/', views.document_update_status, name='document_update_status'),
 
-    path('director-login/',views.director_login, name='director_login'),
+    #path('director-login/',views.director_login, name='director_login'),
     path('director-user-management/<str:office>/', views.director_user_management, name='director_user_management'),
     path('director-doc-management/',views.director_doc_management, name='director_doc_management'),
     path('director-dashboard/',views.director_dashboard, name='director_dashboard'),
