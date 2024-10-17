@@ -1,16 +1,35 @@
+#datetime-container {
+    font-size: 13px;
+    font-weight: bold;
+    color: #333;
+    display: flex;
+    align-items: center;
+}
+
+#datetime-container span {
+    margin: 0 5px;
+}
+
 .card {
-    border: 2px solid #007bff;
+    border: 2px solid #007bff !important;
     text-align: center;
-    padding: 20px;
+    padding: 10px;
     border-radius: 10px; /* Rounded corners */
+    background-color: white;
 }
 
 .card h2 {
     color: #007bff; /* Number color */
     font-size: 36px;
+    margin-bottom: 0;
 }
 
 .card p {
-    font-size: 18px;
+    font-size: 15px;
     color: #333;
+    font-weight: bold;
+}
+
+.table, .table-count, .announcements{
+    font-size: 12px;
 }
