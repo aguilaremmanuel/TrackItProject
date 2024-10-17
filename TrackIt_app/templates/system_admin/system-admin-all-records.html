@@ -1,0 +1,487 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/static/images/logo-icon.png" type="image/png">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/table-content.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+	<link href="{% static 'fontawesomefree/css/all.min.css' %}" rel="stylesheet" type="text/css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <title>All Records</title>
+</head>
+
+<body>
+    <div class="container">
+        {% include "assets/sys-sidebar.html" %}
+
+        <div class="right-section">
+            <header class="header">
+                <button class="toggle-sidebar" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
+                <div class="header-right">
+                    <button class="toggle-notification" id="notification"><i class="fa-solid fa-bell"></i></button>
+                    <button class="profile">
+                        <div class="profile-pic placeholder"></div>
+                        <div class="profile-info">
+                            <span class="profile-name">{{ user_name }}</span>
+                            <span class="profile-role">System Administrator</span>
+                        </div>
+                    </button>
+                </div>
+            </header>
+            
+            <main class="main-content">
+                <div class="title-container d-flex justify-content-between align-items-center">
+                    <h3 class="fw-semibold m-0">All Records</h3>
+                    <div class="d-flex justify-content-between align-items-center" style="gap: 12px;">
+                        <div class="search-container">
+                            <input type="text" id="searchInput" data-url="{% url 'update_all_records_display' 'SYS' %}" class="form-search form-control shadow-sm" placeholder="Search a document" onkeyup="fetchDocuments()">
+                            <i class="fa-solid fa-search search-icon"></i>  
+                            <i class="fa-solid fa-xmark clear-icon" style="display: none;"></i>
+                        </div>
+                        <button type="button" class="btn btn-primary m-0 shadow-sm" style="max-height: 37.85; padding: 7.63px 11.2px;" data-bs-toggle="modal" data-bs-target="#scanQRCodeModal">
+                            <i class="fa-solid fa-qrcode" style="font-size: 16px !important;"></i>&nbsp; Scan QR Code
+                        </button>
+                    </div>
+                </div>        
+                <div class="my-3 px-3 py-2 bg-white rounded shadow-sm">
+                    <div class="table-responsive table-wrapper d-flex">
+                        <table class="table mb-1">
+                            <thead>
+                                <tr>
+                                    <th>Tracking Number</th>
+                                    <th>
+                                        Status
+                                        <a href="?status=active&sort_by=status&order=asc"><i class='bx bxs-sort-alt'></i></a>
+                                    </th>
+                                    <th>Sender</th>
+                                    <th>Particulars</th>
+                                    <th>
+                                        Type 
+                                        <a href="?status=active&sort_by=document_type&order=asc"><i class='bx bxs-sort-alt'></i></a>
+                                    </th>
+                                    <th>Remarks</th>
+                                    <th>Updated</th>
+                                    <th>
+                                        Due In 
+                                        <a href="?status=active&sort_by=deadline&order=asc"><i class='bx bxs-sort-alt'></i></a>
+                                    </th>
+                                    <th>
+                                        Priority 
+                                        <a href="?status=active&sort_by=priority_level&order=asc"><i class='bx bxs-sort-alt'></i></a>
+                                    </th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            
+                            <tbody id="docTableBody">
+                            </tbody>
+                        </table>           
+                    </div>
+        
+                    <p class="d-block text-start my-0 p-2 fw-semibold" id="record-count" style="color: #000000; opacity: 0.6;">
+                        Showing total of <span id="recordCount"></span> record(s)
+                    </p>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- View Document Modal -->
+    <div class="modal fade" id="viewDocumentModal" tabindex="-1" aria-labelledby="viewDocumentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0">
+                    <h5 class="modal-title" id="viewDocumentModalLabel">
+                        <i class="fa-solid fa-circle-info" style="color: #2E72EA;"></i>&nbsp; Document Details
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    <div id="loadingSpinner" class="text-center my-5" style="display: none;">
+                        <div class="spinner-border" role="status" style="width: 3rem; height: 3rem;">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-wrap" id="documentDetailsContent" style="display: none;">
+                        <p class="me-4 mb-2"><strong>Tracking Number:</strong> <span id="documentTrackingNumber"></span></p>
+                        <p class="me-4 mb-2"><strong>Sender:</strong> <span id="documentSender"></span></p>
+                        <p class="me-4 mb-2"><strong>Status:</strong> <span id="documentStatus"></span></p>
+                        <p class="me-4 mb-2"><strong>Type:</strong> <span id="documentType"></span></p>
+                        <p class="me-4 mb-2"><strong>Priority:</strong> <span id="documentPriority"></span></p>
+                        <p class="me-4 mb-2"><strong>Due In:</strong> <span id="documentDueIn"></span></p>
+                        <p class="me-4 mb-2"><strong>Subject/Particulars:</strong> <span id="documentSubject"></span></p>
+                        
+                        <div class="w-100 mb-2">
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#generateQRCode" id="documentTitleLink" style="font-size: 15px !important;">Document QR Code</a>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive d-flex" id="activitiesContent" style="display: none;">
+                        <table class="table mb-1">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>User ID</th>
+                                    <th>Name</th>
+                                    <th>Office</th>
+                                    <th>Role/Position</th>
+                                    <th>Remarks</th>
+                                    <th class="text-start">Activity</th>
+                                </tr>
+                            </thead>
+                            
+                            <tbody id="activitiesTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer p-3 pt-0 border-top-0">
+                    <button type="button" onclick="openDocumentReportPDF()" class="m-0 mb-2 btn btn-primary" id="generateDocumentReportBtn">Generate Document Report</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Document QR Code Modal -->
+    <div class="modal fade" id="generateQRCode" tabindex="-1" aria-labelledby="generateQRCodeLabel" aria-hidden="true">
+        <div class="modal-dialog" style="max-width: 400px;">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0 d-flex justify-content-between align-items-center">
+                    <button type="button" class="btn-close" style="visibility: hidden;"></button>
+                    <h5 class="modal-title" id="confirmRecordCreationLabel">Document QR Code</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p class="mb-2">Scan the code to quickly access the document details or perform a specified action.</p>
+                    <p class="fw-bold my-0" id="routesInitials"></p>
+                    <p class="fw-bold my-0" id="routesTitles" style="display: none;"></p>
+                    <img id='qrCodeImage' src="" alt="Generating QR Code..." style="height: 218px; width: auto;">
+                    <p class="fw-bold my-0" id="qrModalTrackingNo"></p>
+                </div>
+                <div class="modal-footer p-3 pt-0 border-top-0 d-flex flex-column align-items-center">
+                    <button type="button" class="m-0 mb-1 btn btn-primary w-100" id="printQR">Print QR Code</button>
+                    <button type="button" class="m-0 mb-2 btn btn-secondary w-100" id="saveQR">Save a Copy</button>
+                </div>                
+            </div>
+        </div>
+    </div>
+
+    <!-- Approve Document Modal -->
+    <div class="modal fade" id="approveDocumentModal" tabindex="-1" aria-labelledby="approveDocumentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0">
+                    <h5 class="modal-title" id="approveDocumentModalLabel">Approve Document</h5>
+                    <button type="button" class="btn-close" id="approveModalCloseBtn" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to approve this document? Once approved, the document will be ready for routing and further action.</p>
+                </div>
+                <div class="modal-footer p-3 pt-0 border-top-0">
+                    <button type="button" class="m-0 my-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="m-0 my-2 btn btn-primary" data-user="SYS" id="confirmApprove">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Route Document Modal -->
+    <div class="modal fade" id="routeDocumentModal" tabindex="-1" aria-labelledby="routeDocumentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0">
+                    <h5 class="modal-title" id="routeDocumentModalLabel">Route Document</h5>
+                    <button type="button" class="btn-close" id="routeModalCloseBtn" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to route this document? Once routed, the document will be forwarded to the assigned recipient for further processing.</p>
+                </div>
+                <div class="modal-footer p-3 pt-0 border-top-0">
+                    <button type="button" class="m-0 my-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="m-0 my-2 btn btn-primary" data-user="SYS"  id="confirmRoute">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Archive Document Modal -->
+    <div class="modal fade" id="archiveDocumentModal" tabindex="-1" aria-labelledby="archiveDocumentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0">
+                    <h5 class="modal-title" id="archiveDocumentModalLabel">Archive Document</h5>
+                    <button type="button" class="btn-close" id="archiveModalCloseBtn" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to archive this document? Once archived, it will be moved to storage and will no longer appear in active workflows.</p>
+                </div>
+                <div class="modal-footer p-3 pt-0 border-top-0">
+                    <button type="button" class="m-0 my-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="m-0 my-2 btn btn-primary" data-user="ADO" id="confirmArchive">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forward Document Modal -->
+    <div class="modal fade" id="forwardDocumentModal" tabindex="-1" aria-labelledby="forwardDocumentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0">
+                    <h5 class="modal-title" id="forwardDocumentModalLabel">Forward Document</h5>
+                    <button type="button" class="btn-close" id="forwardModalCloseBtn" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to forward this document? Once forwarded, the document will be sent to the next person or stage in the process.</p>
+                </div>
+                <div class="modal-footer p-3 pt-0 border-top-0">
+                    <button type="button" class="m-0 my-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="m-0 my-2 btn btn-primary" data-user="SRO" id="confirmForward">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Endorse Document Modal -->
+    <div class="modal fade" id="endorseDocumentModal" tabindex="-1" aria-labelledby="endorseDocumentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0">
+                    <h5 class="modal-title" id="endorseDocumentModalLabel">Endorse Document</h5>
+                    <button type="button" class="btn-close" id="endorseModalCloseBtn" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to endorse this document for resolution? Once endorsed, the document will be ready for either resolution or further routing.</p>
+                </div>
+                <div class="modal-footer p-3 pt-0 border-top-0">
+                    <button type="button" class="m-0 my-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="m-0 my-2 btn btn-primary" data-user="SYS" id="confirmEndorse">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Resolve Document Modal -->
+    <div class="modal fade" id="resolveDocumentModal" tabindex="-1" aria-labelledby="resolveDocumentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0">
+                    <h5 class="modal-title" id="resolveDocumentModalLabel">Resolve Document</h5>
+                    <button type="button" class="btn-close" id="resolveModalCloseBtn" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to resolve this document? Once resolved, the document will be endorsed for archiving or final processing.</p>
+                </div>
+                <div class="modal-footer p-3 pt-0 border-top-0">
+                    <button type="button" class="m-0 my-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="m-0 my-2 btn btn-primary" data-user="SYS" id="confirmResolve">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Remarks Modal -->
+    <div class="modal fade" id="addRemarksModal" tabindex="-1" aria-labelledby="addRemarksModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0">
+                    <h5 class="modal-title" id="addRemarksModalLabel">Add Remarks</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="actionMessage" class="mb-3"></p>
+                    <div class="form-group">
+                        <textarea class="form-control" id="remarks" rows="3" placeholder="Add any additional remarks here..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer p-3 pt-0 border-top-0">
+                    <button type="button" class="m-0 mt-1 mb-2 btn btn-primary w-100" id="saveRemarks">Save Remarks</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scan QR Code Modal -->
+    <div class="modal fade" id="scanQRCodeModal" tabindex="-1" aria-labelledby="scanQRCodeModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="max-width: 400px;">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0 d-flex justify-content-between align-items-center" style="font-size: 13.5px;">
+                    <button type="button" class="btn-close" style="visibility: hidden;"></button>
+                    <h5 class="modal-title" id="confirmRecordCreationLabel">Scan QR Code</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center d-flex justify-content-center align-items-center flex-column">
+                    <!-- Load the DotLottie Player component -->
+				    <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
+
+                    <!-- Embed the Lottie Animation -->
+                    <dotlottie-player 
+                        src="{% static 'gif/qr-scanning-1.json' %}" 
+                        background="transparent" 
+                        speed="1" 
+                        style="width: 250px; height: 250" 
+                        direction="1" 
+                        playMode="normal" 
+                        loop
+                        autoplay>
+                    </dotlottie-player>	
+                    <p class="mb-2" style="font-size: 14px;">You may now scan the QR code. For optimal scanning, keep the code in focus and avoid any obstructions.</p>
+                </div>
+                <div class="modal-footer p-3 pt-0 border-top-0 d-flex flex-column align-items-center">
+                    <input type="text" id="scannedQrURL" autocomplete="off" style="opacity: 0; position: absolute; pointer-events: none;">
+                </div>                
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/toggle-sidebar.js' %}"></script>
+    <script src="{% static 'js/tabs-nav.js' %}"></script>  
+    <script src="{% static 'js/clear-search.js' %}"></script>  
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/fetch-document.js' %}"></script>
+    <script src="{% static 'js/update-document-status.js' %}"></script>
+    <script src="{% static 'js/add-remarks.js' %}"></script>
+    <script src="{% static 'js/qr-code.js' %}"></script>
+    <script src="{% static 'js/print-qr-code.js' %}"></script>
+    <script src="{% static 'js/generate-document-report.js' %}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const params = new URLSearchParams(window.location.search);
+            const status = params.get('status');
+            if (status) {
+                // Assuming you want to add the class to the element with ID 'targetElement'
+                document.querySelector('#all-records').classList.add(status);
+            }
+        });
+    </script>
+    <!-- For view document and qr modal switching -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const documentModal = new bootstrap.Modal(document.getElementById('viewDocumentModal'));
+            const qrCodeModal = new bootstrap.Modal(document.getElementById('generateQRCode'));
+        
+            // Show QR Code Modal and hide Document Details Modal
+            document.getElementById('documentTitleLink').addEventListener('click', function (e) {
+                e.preventDefault();
+                documentModal.hide();
+                qrCodeModal.show();
+            });
+        
+            // When QR Code Modal is closed, show Document Details Modal again
+            document.getElementById('generateQRCode').addEventListener('hidden.bs.modal', function () {
+                documentModal.show();
+            });
+        });
+    </script>
+    <!-- For add remarks modal opening -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const approveModal = new bootstrap.Modal(document.getElementById('approveDocumentModal'));
+            const routeModal = new bootstrap.Modal(document.getElementById('routeDocumentModal'));
+            const archiveModal = new bootstrap.Modal(document.getElementById('archiveDocumentModal'));
+            const forwardModal = new bootstrap.Modal(document.getElementById('forwardDocumentModal'));
+            const endorseModal = new bootstrap.Modal(document.getElementById('endorseDocumentModal'));
+            const resolveModal = new bootstrap.Modal(document.getElementById('resolveDocumentModal'));
+            const remarksModal = new bootstrap.Modal(document.getElementById('addRemarksModal'));
+        
+            const actionMessage = document.getElementById('actionMessage');
+
+            // Handle Confirm Route Action
+            document.getElementById('confirmApprove').addEventListener('click', function () {
+                approveModal.hide();
+                actionMessage.textContent = "The document has been successfully routed. Add any additional remarks related to this action below, or leave as blank if not applicable.";
+                remarksModal.show();
+            });
+            
+            // Handle Confirm Route Action
+            document.getElementById('confirmRoute').addEventListener('click', function () {
+                routeModal.hide();
+                actionMessage.textContent = "The document has been successfully routed. Add any additional remarks related to this action below, or leave as blank if not applicable.";
+                remarksModal.show();
+            });
+        
+            // Handle Confirm Archive Action
+            document.getElementById('confirmArchive').addEventListener('click', function () {
+                archiveModal.hide();
+            });
+
+            // Handle Confirm Route Action
+            document.getElementById('confirmForward').addEventListener('click', function () {
+                forwardModal.hide();
+                actionMessage.textContent = "The document has been successfully routed. Add any additional remarks related to this action below, or leave as blank if not applicable.";
+                remarksModal.show();
+            });
+
+            // Handle Confirm Route Action
+            document.getElementById('confirmEndorse').addEventListener('click', function () {
+                endorseModal.hide();
+                actionMessage.textContent = "The document has been successfully routed. Add any additional remarks related to this action below, or leave as blank if not applicable.";
+                remarksModal.show();
+            });
+
+            // Handle Confirm Route Action
+            document.getElementById('confirmResolve').addEventListener('click', function () {
+                resolveModal.hide();
+                actionMessage.textContent = "The document has been successfully routed. Add any additional remarks related to this action below, or leave as blank if not applicable.";
+                remarksModal.show();
+            });
+        
+            // Handle saving remarks (you can send an AJAX request or form submission here)
+            document.getElementById('saveRemarks').addEventListener('click', function () {
+                const remarks = document.getElementById('remarks').value;
+                console.log('Remarks:', remarks);
+                // Logic to save remarks goes here
+                remarksModal.hide();
+            });
+        });
+    </script>
+    <!-- For select action and and confirm action switching -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Select buttons and modals for routing
+            const routeDocument = document.getElementById('routeDocument');
+            const selectRouteModal = new bootstrap.Modal(document.getElementById('selectRouteModal'));
+            const routeDocumentModal = new bootstrap.Modal(document.getElementById('routeDocumentModal'));
+            const routeModalCloseBtn = document.getElementById('routeModalCloseBtn');
+
+            // When Route Document is clicked
+            routeDocument.addEventListener('click', function () {
+                selectRouteModal.hide();
+                routeDocumentModal.show();
+            });
+
+            // When Route Document Modal is closed
+            routeModalCloseBtn.addEventListener('click', function () {
+                routeDocumentModal.hide();
+                selectRouteModal.show();
+            });
+
+            const archiveDocument = document.getElementById('archiveDocument');
+            const selectArchiveModal = new bootstrap.Modal(document.getElementById('selectArchiveModal'));
+            const archiveDocumentModal = new bootstrap.Modal(document.getElementById('archiveDocumentModal'));
+            const archiveModalCloseBtn = document.getElementById('archiveModalCloseBtn');
+
+            // When Archive Document is clicked
+            archiveDocument.addEventListener('click', function () {
+                selectArchiveModal.hide();
+                archiveDocumentModal.show();
+            });
+
+            // When Archive Document Modal is closed
+            archiveModalCloseBtn.addEventListener('click', function () {
+                archiveDocumentModal.hide();
+                selectArchiveModal.show();
+            });
+        });
+    </script>
+</body>
+</html>

@@ -87,11 +87,11 @@ CHANNEL_LAYERS = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'db_trackIt',
-        'USER': 'root',
-        'PASSWORD': 'azel1122',
-        'HOST': 'localhost',
-        'PORT': '3307',
+        'NAME': 'aguilaremman3$db_trackit',
+        'USER': 'aguilaremman3',
+        'PASSWORD': 'kapitanstone@2024',
+        'HOST': 'aguilaremman3.mysql.pythonanywhere-services.com',
+        'PORT': '',
     }
 }
 

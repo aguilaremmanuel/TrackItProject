@@ -594,6 +594,19 @@ def add_record(request):
         return redirect(system_admin_new_record)
 
 # ---------------- ALL RECORDS -------------------
+# SYSTEM ADMIN ALL RECORDS
+def system_admin_all_records(request):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect(system_admin_login)
+
+    role = user_id.split('-')[0]
+    if role != 'SYS':
+        return redirect(system_admin_login)
+
+    user_name = request.session.get('user_name')
+
+    return render(request, 'system_admin/system-admin-all-records.html', {'user_name': user_name})
 
 # ADMIN OFFICER ALL RECORDS
 def admin_officer_all_records(request):
@@ -906,9 +919,9 @@ def admin_officer_archive(request):
 
 # SYSTEM ADMIN GENERATE REPORTS MODULE
 def system_admin_generate_reports(request, report):
-    system_admin_user_id = request.session.get('system_admin_user_id')
+    user_id = request.session.get('user_id')
 
-    if  system_admin_user_id:
+    if  user_id:
         pass
     else:
         return redirect('system_admin_login')
@@ -917,11 +930,9 @@ def system_admin_generate_reports(request, report):
 
 # DIRECTOR GENERATE REPORTS MODULE
 def director_generate_reports(request, report):
-    director_user_id = request.session.get('director_user_id')
+    user_id = request.session.get('user_id')
 
-    if  director_user_id:
-        pass
-    else:
+    if not user_id:
         return redirect('director_login')
 
     return render(request, 'director/director-generate-reports.html', {'report': report})
