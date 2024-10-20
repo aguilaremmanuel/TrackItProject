@@ -78,8 +78,8 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#departmentReportModal">
-                                        Department Performance Report
+                                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#officeReportModal">
+                                        Office Performance Report
                                     </a>
                                 </li>
                             </ul>
@@ -96,7 +96,7 @@
                             <a class="tab-link {% if report == 'employee-performance' %}active{% endif %}" href="{% url 'director_generate_reports' 'employee-performance' %}?status=active">Employee Performance Report</a>
                         </li>
                         <li class="tab-item">
-                            <a class="tab-link {% if report == 'department-performance' %}active{% endif %}" href="{% url 'director_generate_reports' 'department-performance' %}?status=active">Department Performance Report</a>
+                            <a class="tab-link {% if report == 'office-performance' %}active{% endif %}" href="{% url 'director_generate_reports' 'office-performance' %}?status=active">Office Performance Report</a>
                         </li>
                     </ul>
         
@@ -117,7 +117,7 @@
                             <tbody id="userTableBody">
                                 <tr>
                                     <td>2024 Accounting Report</td>
-                                    <td>Department Performance</td>
+                                    <td>Office Performance</td>
                                     <td>Accounting</td>
                                     <td>2024-01-01</td>
                                     <td>2024-12-31</td>
@@ -190,12 +190,12 @@
 
                         <div class="row mb-3 g-3">
 							<div class="col">
-                                <label for="startDateDepartment" class="form-label">Start Date</label>
-                                <input type="date" class="form-control" id="startDateDepartment" name="start_date" required>								
+                                <label for="startDateOffice" class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="startDateOffice" name="start_date" required>								
 							</div>
 							<div class="col">
-                                <label for="endDateDepartment" class="form-label">End Date</label>
-                                <input type="date" class="form-control" id="endDateDepartment" name="end_date" required>								
+                                <label for="endDateOffice" class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="endDateOffice" name="end_date" required>								
 							</div>
 						</div>
 
@@ -211,40 +211,40 @@
         </div>
     </div>
 
-    <!-- Department Performance Report Modal -->
-    <div class="modal fade" id="departmentReportModal" tabindex="-1" aria-labelledby="departmentReportModalLabel" aria-hidden="true">
+    <!-- Office Performance Report Modal -->
+    <div class="modal fade" id="officeReportModal" tabindex="-1" aria-labelledby="officeReportModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
                 <div class="modal-header pb-0 border-bottom-0">
-                    <h5 class="modal-title" id="departmentReportModalLabel">Department Performance Report</h5>
+                    <h5 class="modal-title" id="officeReportModalLabel">Office Performance Report</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
                 <div class="modal-body mt-1 pt-2">
-                    <div id="alert-container-department"></div>
+                    <div id="alert-container-office"></div>
 
-                    <form id="departmentReportForm" method="post" action="">
+                    <form id="officeReportForm" method="post" action="">
                         
                         <div class="mb-3">
-                            <label for="reportNameDepartment" class="form-label">Report Name</label>
-                            <input type="text" class="form-control" id="reportNameDepartment" placeholder="Enter Report Name" name="report_name" required>
+                            <label for="reportNameOffice" class="form-label">Report Name</label>
+                            <input type="text" class="form-control" id="reportNameOffice" placeholder="Enter Report Name" name="report_name" required>
                         </div>
 
                         <div class="row mb-3 g-3">
 							<div class="col">
-                                <label for="startDateDepartment" class="form-label">Start Date</label>
-                                <input type="date" class="form-control" id="startDateDepartment" name="start_date" required>								
+                                <label for="startDateOffice" class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="startDateOffice" name="start_date" required>								
 							</div>
 							<div class="col">
-                                <label for="endDateDepartment" class="form-label">End Date</label>
-                                <input type="date" class="form-control" id="endDateDepartment" name="end_date" required>								
+                                <label for="endDateOffice" class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="endDateOffice" name="end_date" required>								
 							</div>
 						</div>
 
                         <div class="mb-3">
-                            <label for="department" class="form-label">Target Department</label>
-                            <select class="form-select" id="department" name="department" required>
-                                <option value="" selected>Select Department</option>
+                            <label for="office" class="form-label">Target Office</label>
+                            <select class="form-select" id="office" name="office" required>
+                                <option value="" selected>Select Office</option>
                                 <option value="Administrative">Administrative</option>
                                 <option value="Accounting">Accounting</option>
                                 <option value="Budgeting">Budgeting</option>

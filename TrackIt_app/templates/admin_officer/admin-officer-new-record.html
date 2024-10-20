@@ -73,12 +73,12 @@
                         <div class="row mb-3 g-3">
                             <div class="col-12 col-md-4">
                                 <label for="TrackingNumber" class="form-label">Tracking Number</label>
-                                <input type="text" class="form-control" name="tracking_no" id="TrackingNumber" aria-describedby="TrackingNumber" placeholder="e.g. 112922032-DEPT-001" required>
+                                <input type="text" maxlength="18" class="form-control" name="tracking_no" id="TrackingNumber" aria-describedby="TrackingNumber" placeholder="e.g. 112922032-DEPT-001" required>
                             </div>
         
                             <div class="col-12 col-md-4">
                                 <label for="SenderName" class="form-label">Sender Name</label>
-                                <input type="text" class="form-control" name="sender_name" id="SenderName" aria-describedby="SenderName" placeholder="e.g. Juan S. Dela Cruz" required>
+                                <input type="text" maxlength="40" class="form-control" name="sender_name" id="SenderName" aria-describedby="SenderName" placeholder="e.g. Juan S. Dela Cruz" required>
                             </div>
         
                             <div class="col-12 col-md-4">
@@ -99,7 +99,7 @@
                                 <select class="form-select" id="DocumentCategory" aria-label="DocumentCategory" required>
                                     <option value="">Select Document Category</option>
                                     <option value="Regular">Regular</option>
-                                    <option value="SCPF">SCPF</option>
+                                    <option value="Trust">Trust</option>
                                 </select>
                             </div>
         
@@ -113,12 +113,12 @@
         
                         <div class="mb-3">
                             <label for="Subject" class="form-label">Subject / Particulars</label>
-                            <input class="form-control" name="subject" id="Subject" placeholder="e.g. Request for Amendment of Expense List for Cash Advance Under Special Order No. 34" required>
+                            <input class="form-control" maxlength="110" name="subject" id="Subject" placeholder="e.g. Request for Amendment of Expense List for Cash Advance Under Special Order No. 34" required>
                         </div>
         
                         <div class="mb-3">
                             <label for="Remarks" class="form-label">Remarks</label>
-                            <textarea type="text" class="form-control" name="remarks"  id="Remarks" placeholder="e.g. For Immediate Approval of Cash Disbursement"></textarea>
+                            <textarea type="text" maxlength="190" class="form-control" name="remarks"  id="Remarks" placeholder="e.g. For Immediate Approval of Cash Disbursement"></textarea>
                         </div>
         
                         <div class="d-flex justify-content-end">

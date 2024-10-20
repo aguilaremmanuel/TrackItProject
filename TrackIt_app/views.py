@@ -17,8 +17,83 @@ from django.template.loader import render_to_string
 from django.db.models import Q
 from django.utils.timezone import now
 from xhtml2pdf import pisa
-
+#---------------
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.db import IntegrityError
 # ----------- LOGIN AND SIGNUP -----------------
+
+#-------- STYLES FOR USER UPDATE ------------
+# Define a common CSS style
+common_style = """
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+        line-height: 1.6;
+        color: #333;
+    }
+    .email-container {
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        margin: 50px auto;
+        overflow: hidden;
+    }
+    .email-header {
+        background-color: #007BFF;
+        padding: 15px;
+        text-align: center;
+        color: #fff;
+        font-size: 18px;
+        font-weight: bold;
+        border-radius: 10px 10px 0 0;
+    }
+    .email-content {
+        padding: 30px;
+        font-size: 16px;
+        color: #555;
+    }
+    .email-content p {
+        margin: 0 0 20px;
+    }
+    .email-content h1 {
+        font-size: 22px;
+        margin-bottom: 10px;
+        color: #007BFF;
+    }
+    .email-content a.button {
+        display: inline-block;
+        padding: 12px 25px;
+        font-size: 16px;
+        background-color: #28a745;
+        color: white;
+        border-radius: 5px;
+        text-decoration: none;
+        margin-top: 20px;
+    }
+    .email-footer {
+        text-align: center;
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-top: 1px solid #dddddd;
+        font-size: 14px;
+        color: #777777;
+    }
+    .email-footer p {
+        margin: 0;
+    }
+    .email-container .logo {
+        width: 120px;
+        margin: 0 auto;
+    }
+</style>
+"""
 
 # USER SIGNUP
 def user_signup(request):
@@ -26,30 +101,139 @@ def user_signup(request):
     if request.method == 'POST':
         form = UserSignupForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
-            role_prefix = form.cleaned_data['role']
-            user.user_id = generate_user_id(role_prefix)
-            user.verified_date = timezone.now()
-            form.save()
 
-            # Get user email
             user_email = form.cleaned_data['email']
+            if User.objects.filter(email=user_email).exists():
+                form.add_error('email', "A user with this email already exists.")
+            else:
+                try:
+                    user = form.save(commit=False)
+                    role_prefix = form.cleaned_data['role']
+                    user.user_id = generate_user_id(role_prefix)
+                    user.verified_date = timezone.now()
+                    user.save()
 
-            # Send an email notifying the user of their status
-            send_mail(
-                subject='TrackIt: Account Status',
-                message=f"Hello {user.firstname},\n\nThank you for signing up! Your account is currently '{user.status}'. We will notify you when it is verified.\n\nRegards,\nTrackIt Team",
-                from_email=settings.DEFAULT_FROM_EMAIL,  # Ensure this is set in your settings
-                recipient_list=[user_email],
-                fail_silently=False,
-            )
+                    # Get user email
+                    user_email = form.cleaned_data['email']
 
-            return redirect('user_login')
+                    # Define subject and message content
+                    subject = 'TrackIt: Account Status'
+
+                    # HTML message with advanced styling
+                    html_message = f"""
+                    <html>
+                    <head>
+                        <style>
+                            body {{
+                                font-family: 'Arial', sans-serif;
+                                background-color: #f4f4f4;
+                                margin: 0;
+                                padding: 0;
+                                line-height: 1.6;
+                                color: #333;
+                            }}
+                            .email-container {{
+                                background-color: #ffffff;
+                                padding: 30px;
+                                border-radius: 10px;
+                                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+                                max-width: 600px;
+                                margin: 50px auto;
+                                overflow: hidden;
+                            }}
+                            .email-header {{
+                                background-color: #007BFF;
+                                padding: 20px;
+                                text-align: center;
+                                color: #fff;
+                                font-size: 24px;
+                                font-weight: bold;
+                                border-radius: 10px 10px 0 0;
+                            }}
+                            .email-content {{
+                                padding: 30px;
+                                font-size: 16px;
+                                color: #555;
+                            }}
+                            .email-content p {{
+                                margin: 0 0 20px;
+                            }}
+                            .email-content h1 {{
+                                font-size: 22px;
+                                margin-bottom: 10px;
+                                color: #007BFF;
+                            }}
+                            .email-content a.button {{
+                                display: inline-block;
+                                padding: 12px 25px;
+                                font-size: 16px;
+                                background-color: #28a745;
+                                color: white;
+                                border-radius: 5px;
+                                text-decoration: none;
+                                margin-top: 20px;
+                            }}
+                            .email-footer {{
+                                text-align: center;
+                                padding: 20px;
+                                background-color: #f8f9fa;
+                                border-top: 1px solid #dddddd;
+                                font-size: 14px;
+                                color: #777777;
+                            }}
+                            .email-footer p {{
+                                margin: 0;
+                            }}
+                            .email-container .logo {{
+                                width: 120px;
+                                margin: 0 auto;
+                            }}
+                        </style>
+                    </head>
+                    <body>
+                        <div class="email-container">
+                            <!-- Email Header -->
+                            <div class="email-header">
+                                <h1>TrackIt: Account Status</h1>
+                            </div>
+                            
+                            <div class="email-content">
+                                <h1>Hello {user.firstname},</h1>
+                                <p>Thank you for signing up for TrackIt! We're excited to have you on board.</p>
+                                <p>Your account is currently <strong>{user.status}</strong>. We will notify you as soon as it is verified.</p>
+                                <p>In the meantime, if you have any questions, don't hesitate to reach out to our support team.</p>
+                            </div>
+
+                            <!-- Email Footer -->
+                            <div class="email-footer">
+                                <p>Regards,<br><strong>TrackIt Team</strong></p>
+                            </div>
+                        </div>
+                    </body>
+                    </html>
+                    """
+
+                    # Plain text fallback
+                    plain_message = strip_tags(html_message)
+
+                    # Create and send the email
+                    email = EmailMultiAlternatives(
+                        subject=subject,
+                        body=plain_message,
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        to=[user_email]
+                    )
+                    email.attach_alternative(html_message, "text/html")
+                    email.send(fail_silently=False)
+
+                    return redirect('user_login')
+                except IntegrityError:
+                    form.add_error('email', "A user with this email already exists.")
     else:
         form = UserSignupForm()
-    
-    return render(request, "user-signup.html", {'form': form})
 
+    return render(request, "user-signup.html", {'form': form})
+"""
 # SYSTEM ADMIN LOGIN
 def system_admin_login(request):
 
@@ -231,9 +415,120 @@ def user_login(request):
             return redirect('user_login')
 
     return render(request, "user-login.html")
+"""
 
+# USER LOGIN
+def user_login(request):
+    # Check if a user is already logged in
+    user_id = request.session.get('user_id')
+    if user_id:
+        role = user_id.split('-')[0]
+        if role == 'ADO':
+            return redirect(admin_officer_dashboard)
+        elif role == 'SRO':
+            return redirect(dashboard_sro)
+        elif role == 'ACT':
+            return redirect(dashboard_action_officer)
+        elif role == 'DIR':
+            return redirect(director_dashboard)
+        elif role == 'SYS':
+            return redirect(system_admin_dashboard)
+
+    if request.method == 'POST':
+        user_id = request.POST['user_id']
+        password = request.POST['password']
+        remember_me = request.POST.get('remember_me')
+
+        # Check for System Admin login
+        if user_id == 'SYS-0001' and password == 'SysAdmin@2024':
+            # Ensure the default user exists and is active
+            user_instance, created = User.objects.get_or_create(
+                user_id='SYS-0001',
+                defaults={'password': 'SysAdmin@2024', 'role': 'System Admin', 'status': 'active'}
+            )
+            if created:
+                print("Default System Admin user created.")
+            else:
+                if user_instance.status != 'active':
+                    user_instance.status = 'active'
+                    user_instance.save()
+                    print("Default System Admin user status updated to active.")
+
+            # Store in session
+            request.session['user_id'] = 'SYS-0001'
+            request.session['user_name'] = f"{user_instance.firstname.title()} {user_instance.lastname.title()}"
+            user_instance.last_login = timezone.now()
+            user_instance.save()
+
+            # Handle session expiration
+            request.session.set_expiry(1209600 if remember_me else 0)
+            return redirect(f"{reverse('system_admin_dashboard')}?status=active")
+
+        # Check for Director login
+        elif user_id == 'DIR-0001' and password == 'Director@2024':
+            user_instance, created = User.objects.get_or_create(
+                user_id='DIR-0001',
+                defaults={'password': 'Director@2024', 'role': 'Director', 'status': 'active'}
+            )
+            if created:
+                print("Default Director user created.")
+            else:
+                if user_instance.status != 'active':
+                    user_instance.status = 'active'
+                    user_instance.save()
+                    print("Default Director user status updated to active.")
+
+            # Store in session
+            request.session['user_id'] = 'DIR-0001'
+            request.session['user_name'] = f"{user_instance.firstname.title()} {user_instance.lastname.title()}"
+            user_instance.last_login = timezone.now()
+            user_instance.save()
+
+            # Handle session expiration
+            request.session.set_expiry(1209600 if remember_me else 0)
+            return redirect(f"{reverse('director_dashboard')}?status=active")
+
+        # Fetch user by user_id and password for regular users
+        try:
+            user = User.objects.get(user_id=user_id, password=password)
+        except User.DoesNotExist:
+            messages.error(request, "Invalid credentials.")
+            return redirect('user_login')
+
+        # Check user status
+        if user.status == 'for verification':
+            messages.error(request, "Your account is pending for verification. Please wait for approval.")
+            return redirect('user_login')
+        elif user.status == 'inactive':
+            messages.error(request, "Your account is inactive. Please contact the administrator to reactivate.")
+            return redirect('user_login')
+        elif user.status == 'archived':
+            messages.error(request, "Your account has been deleted and cannot be accessed.")
+            return redirect('user_login')
+
+        user.last_login = timezone.now()
+        user.save()
+        request.session['role'] = user.role
+
+        # Manage session expiration based on Remember Me
+        if user.role not in ['SYS', 'DIR']:  # Exclude System Admin and Director
+            request.session.set_expiry(1209600 if remember_me else 0)
+
+        # Redirect based on user role
+        if user.role == 'ADO':
+            return redirect(f"{reverse('admin_officer_dashboard')}?status=active")
+        elif user.role == 'SRO':
+            return redirect(f"{reverse('dashboard_sro')}?status=active")
+        elif user.role == 'ACT':
+            return redirect(f"{reverse('dashboard_action_officer')}?status=active")
+        else:
+            messages.error(request, "Invalid role. Please contact the administrator.")
+            return redirect('user_login')
+
+    return render(request, "user-login.html")
 # USER LOGOUT
 def user_logout(request):
+
 
     user_id = request.session.get('user_id')
     role = user_id.split('-')[0]
@@ -245,9 +540,9 @@ def user_logout(request):
         del request.session['user_name']
     
     if role == 'DIR':
-        return redirect(director_login)
+        return redirect(user_login)
     elif role == 'SYS':
-        return redirect(system_admin_login)
+        return redirect(user_login)
 
     return redirect(user_login)
 
@@ -594,6 +889,19 @@ def add_record(request):
         return redirect(system_admin_new_record)
 
 # ---------------- ALL RECORDS -------------------
+# SYSTEM ADMIN ALL RECORDS
+def system_admin_all_records(request):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect(user_login)
+
+    role = user_id.split('-')[0]
+    if role != 'SYS':
+        return redirect(user_login)
+
+    user_name = request.session.get('user_name')
+
+    return render(request, 'system_admin/system-admin-all-records.html', {'user_name': user_name})
 
 # ADMIN OFFICER ALL RECORDS
 def admin_officer_all_records(request):
@@ -906,9 +1214,9 @@ def admin_officer_archive(request):
 
 # SYSTEM ADMIN GENERATE REPORTS MODULE
 def system_admin_generate_reports(request, report):
-    system_admin_user_id = request.session.get('system_admin_user_id')
+    user_id = request.session.get('user_id')
 
-    if  system_admin_user_id:
+    if  user_id:
         pass
     else:
         return redirect('system_admin_login')
@@ -917,11 +1225,9 @@ def system_admin_generate_reports(request, report):
 
 # DIRECTOR GENERATE REPORTS MODULE
 def director_generate_reports(request, report):
-    director_user_id = request.session.get('director_user_id')
+    user_id = request.session.get('user_id')
 
-    if  director_user_id:
-        pass
-    else:
+    if not user_id:
         return redirect('director_login')
 
     return render(request, 'director/director-generate-reports.html', {'report': report})
@@ -943,7 +1249,6 @@ def forgot_password(request):
 
         # Verify if the user exists with the provided user_id
         try:
-            # Attempt to fetch the user based on the user_id
             user = User.objects.get(user_id=user_id)
 
             # Check if the retrieved user's email matches the provided email
@@ -952,7 +1257,6 @@ def forgot_password(request):
                 return render(request, 'forgot-password.html', {'displayForgotPassword': '', 'displayEmailConfirmation': 'd-none', 'displayPasswordSuccess': 'd-none'})
 
         except User.DoesNotExist:
-            # If the user is not found, provide a relevant error message
             messages.error(request, "User ID does not match any account.")
             return render(request, 'forgot-password.html', {'displayForgotPassword': '', 'displayEmailConfirmation': 'd-none', 'displayPasswordSuccess': 'd-none'})
 
@@ -965,31 +1269,48 @@ def forgot_password(request):
         uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
         token = account_activation_token.make_token(user)
 
-        #print(f"Generated Token: {token}")
-
         reset_link = request.build_absolute_uri(
             reverse('new_password', kwargs={'uidb64': uidb64, 'token': token})
         )
 
-        # Send email
+        # Prepare the HTML email content with inline styles
         try:
             subject = 'Reset your password'
-            message = (
-                f'Hello {user.firstname},\n\n'
-                f'Click the link to reset your password: {reset_link}\n\n'
-                'If you did not request a password reset, please ignore this email.\n\n'
-                'Regards,\nTrackIt Team'
+            html_message = f"""
+            <html>
+            <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0;">
+                <div style="max-width: 600px; margin: 50px auto; background: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+                    <div style="background-color: #007BFF; padding: 20px; text-align: center; border-radius: 10px 10px 0 0; color: white;">
+                        <h1 style="margin: 0;">TrackIt: Password Reset Request</h1>
+                    </div>
+                    <div style="padding: 20px; color: #333;">
+                        <h2 style="color: #007BFF;">Hello {user.firstname},</h2>
+                        <p>Click the reset password below to reset your password:</p>
+                        <p><a href="{reset_link}" style="display: inline-block; padding: 12px 25px; font-size: 16px; background-color: #28a745; color: white; border-radius: 5px; text-decoration: none;">Reset Password</a></p>
+                        <p>If you did not request a password reset, please ignore this email.</p>
+                    </div>
+                    <div style="text-align: center; padding: 20px; border-top: 1px solid #dddddd;">
+                        <p style="color: #777;">Regards,<br>TrackIt Team</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+            plain_message = strip_tags(html_message)
+
+            # Create and send the email
+            email = EmailMultiAlternatives(
+                subject=subject,
+                body=plain_message,
+                from_email='noreply@trackit.com',
+                to=[user.email]
             )
-            send_mail(
-                subject,
-                message,
-                'trackit.dts@gmail.com',
-                [user.email],
-                fail_silently=False,
-            )
+            email.attach_alternative(html_message, "text/html")
+            email.send(fail_silently=False)
         except Exception as e:
             messages.error(request, f"Failed to send email: {str(e)}")
-        return render(request, 'forgot-password.html', {'displayForgotPassword': 'd-none', 'displayEmailConfirmation': '', 'displayPasswordSuccess': 'd-none'})    
+
+        return render(request, 'forgot-password.html', {'displayForgotPassword': 'd-none', 'displayEmailConfirmation': '', 'displayPasswordSuccess': 'd-none'})
 
     return render(request, 'forgot-password.html', {'displayForgotPassword': '', 'displayEmailConfirmation': 'd-none', 'displayPasswordSuccess': 'd-none'})
 
@@ -1083,7 +1404,7 @@ def delete_document_type(request, document_no):
 def load_document_types(request):
     category = request.GET.get('category')
 
-    if category in ['SCPF', 'Regular']:
+    if category in ['Trust', 'Regular']:
         document_types = DocumentType.objects.filter(category=category).values('document_no', 'document_type')
         return JsonResponse(list(document_types), safe=False)
     else:
@@ -1092,48 +1413,215 @@ def load_document_types(request):
 #USER UPDATE STATUS AND EMAILING FUNCTION
 def update_user_status(request, user_id, action, office, user_type):
     user = User.objects.get(pk=user_id)
+    login_url = request.build_absolute_uri(reverse("user_login"))
 
-    # Perform action
+    # Perform action and define subject & message
     if action == 'verify':
         user.status = 'active'
-        subject = 'Your Account Has Been Verified'
-        message = f"Hello {user.firstname},\n\nYour account has been verified and is now active.\n\nYour User ID: {user.user_id}\nYour Password: {user.password}\n\nPlease keep this information secure.\n\nRegards,\nTrackIt Team"
+        subject = 'TrackIt: Your Account Has Been Verified'
+
+        # HTML message for account verification
+        html_message = f"""
+        <html>
+        <head>{common_style}</head>
+        <body>
+            <div class="email-container">
+                <div class="email-header">
+                    <h1>TrackIt: Account Verified</h1>
+                </div>
+                <div class="email-content">
+                    <p>Hello {user.firstname},</p>
+                    <p>Your account has been verified and is now active.</p>
+                    <p><strong>User ID:</strong> {user.user_id}</p>
+                    <p><strong>Password:</strong> {user.password}</p>
+                    <p>Please keep this information secure.</p>
+                    <p>
+                        <a href="{login_url}" class="button">Go to TrackIt</a>
+                    </p>
+
+                </div>
+                <div class="email-footer">
+                    <p>Regards,<br>TrackIt Team</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+
+        plain_message = strip_tags(html_message)
+
     elif action == 'reject':
         user.status = 'rejected'
-        subject = 'Your Account Has Been Rejected'
-        message = 'Your account has been rejected. Please contact support for more information.'
+        subject = 'TrackIt: Your Account Has Been Rejected'
+        html_message = f"""
+        <html>
+        <head>{common_style}</head>
+        <body>
+            <div class="email-container">
+                <div class="email-header">
+                    <h1>TrackIt: Account Rejected</h1>
+                </div>
+                <div class="email-content">
+                    <p>Hello {user.firstname},</p>
+                    <p>Unfortunately, your account has been rejected. Please contact support for more information.</p>
+                </div>
+                <div class="email-footer">
+                    <p>Regards,<br>TrackIt Team</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        plain_message = strip_tags(html_message)
+
     elif action == 'deactivate':
         user.status = 'inactive'
-        subject = 'Your Account Has Been Deactivated'
-        message = 'Your account has been deactivated. Please contact support to reactivate it.'
+        subject = 'TrackIt: Your Account Has Been Deactivated'
+        html_message = f"""
+        <html>
+        <head>
+            <style>
+                body {{
+                    font-family: 'Arial', sans-serif;
+                    background-color: #f4f4f4;
+                    margin: 0;
+                    padding: 0;
+                    line-height: 1.6;
+                    color: #333;
+                }}
+                .email-container {{
+                    background-color: #ffffff;
+                    padding: 30px;
+                    border-radius: 10px;
+                    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+                    max-width: 600px;
+                    margin: 50px auto;
+                    overflow: hidden;
+                }}
+                .email-header {{
+                    background-color: #7F7F7F; 
+                    padding: 20px;
+                    text-align: center;
+                    color: #fff;
+                    font-size: 24px;
+                    font-weight: bold;
+                    border-radius: 10px 10px 0 0;
+                }}
+                .email-content {{
+                    padding: 30px;
+                    font-size: 16px;
+                    color: #555;
+                }}
+                .email-content p {{
+                    margin: 0 0 20px;
+                }}
+                .email-content h1 {{
+                    font-size: 22px;
+                    margin-bottom: 10px;
+                    color: #007BFF;
+                }}
+                .email-footer {{
+                    text-align: center;
+                    padding: 20px;
+                    background-color: #f8f9fa;
+                    border-top: 1px solid #dddddd;
+                    font-size: 14px;
+                    color: #777777;
+                }}
+                .email-footer p {{
+                    margin: 0;
+                }}
+            </style>
+        </head>
+        <body>
+            <div class="email-container">
+                <div class="email-header">
+                    <h1>TrackIt: Account Deactivated</h1>
+                </div>
+                <div class="email-content">
+                    <p>Hello {user.firstname},</p>
+                    <p>Your account has been deactivated. Please contact support if you wish to reactivate it.</p>
+                    <p>If you have any questions, feel free to reach out.</p>
+                </div>
+                <div class="email-footer">
+                    <p>Regards,<br>TrackIt Team</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        plain_message = strip_tags(html_message)
+
     elif action == 'archive':
         user.status = 'archived'
-        subject = 'Your Account Has Been Archived'
-        message = 'Your account has been archived. You will not be able to log in.'
+        subject = 'TrackIt: Your Account Has Been Archived'
+        html_message = f"""
+        <html>
+        <head>{common_style}</head>
+        <body>
+            <div class="email-container">
+                <div class="email-header">
+                    <h1>TrackIt: Account Archived</h1>
+                </div>
+                <div class="email-content">
+                    <p>Your account has been archived and you will not be able to log in anymore.</p>
+                </div>
+                <div class="email-footer">
+                    <p>Regards,<br>TrackIt Team</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        plain_message = strip_tags(html_message)
+
     elif action == 'reactivate':
         user.status = 'active'
-        subject = 'Your Account Has Been Reactivated'
-        message = 'Your account has been reactivated and is now active.'
+        subject = 'TrackIt: Your Account Has Been Reactivated'
+        html_message = f"""
+        <html>
+        <head>{common_style}</head>
+        <body>
+            <div class="email-container">
+                <div class="email-header">
+                    <h1>TrackIt: Account Reactivated</h1>
+                </div>
+                <div class="email-content">
+                    <p>Your account has been reactivated and is now active.</p>
+                    <p>
+                        <a href="{login_url}" class="button">Go to TrackIt</a>
+                    </p>
+                </div>
+                <div class="email-footer">
+                    <p>Regards,<br>TrackIt Team</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        plain_message = strip_tags(html_message)
+
     else:
         return HttpResponse("Invalid action", status=400)
 
     user.save()
 
-    if action != 'archive':
-        send_mail(
-            subject,
-            message,
-            settings.DEFAULT_FROM_EMAIL,
-            [user.email],
-            fail_silently=False,
-        )
+    # Send the email using EmailMultiAlternatives
+    email = EmailMultiAlternatives(
+        subject=subject,
+        body=plain_message,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=[user.email]
+    )
+    email.attach_alternative(html_message, "text/html")
+    email.send(fail_silently=False)
 
     # Redirect based on the form source
-
     if user_type == 'director':
         return redirect('director_user_management', office=office)
     else:
         return redirect('system_admin_user_management', office=office)
+
 
 # GENERATE USER ID (USER SIGN UP)
 def generate_user_id(role_prefix):
@@ -1392,10 +1880,45 @@ def document_update_status(request, action, document_no):
     document = Document.objects.get(document_no=document_no)
 
     if action == 'approve':
-        status = 'For Routing'
+
+        routes = DocumentRoute.objects.filter(document_type_id=document.document_type_id)
+
+
+        if document.next_route:
+
+            current_route = document.next_route
+            routes_list = list(routes.values_list('route_id', flat=True))
+
+            try:
+                current_route_index = routes_list.index(current_route)
+            except ValueError:
+                print("Current route not found in the route list.")
+                current_route_index = -1
+
+            # Check if it's the last route
+            if current_route_index != -1 and current_route_index < len(routes_list) - 1:
+                # If it's not the last route, assign the next route
+                next_route = routes_list[current_route_index + 1]
+                document.next_route = next_route
+                status = 'For SRO Receiving'
+
+            else:
+                # If it's the last route
+                print("Last route reached")
+                status = 'For Archiving'
+
+        else:
+            
+            if routes.count() == 1 and routes.first().route_id == 'DIR':
+                status = 'For Archiving'
+            else:
+                status = 'For Routing'
+
+
         activity = 'Document Approved'
 
     elif action == 'route':
+
         status = 'For SRO Receiving'
         activity = 'Document Routed'
 
@@ -1457,7 +1980,12 @@ def document_update_status(request, action, document_no):
                 # If it's not the last route, assign the next route
                 next_route = routes_list[current_route_index + 1]
                 document.next_route = next_route
-                status = 'For SRO Receiving'
+
+                if next_route == 'DIR':
+                    status = 'For DIR Approval'
+                else:
+                    status = 'For SRO Receiving'
+
             else:
                 # If it's the last route
                 print("Last route reached")
