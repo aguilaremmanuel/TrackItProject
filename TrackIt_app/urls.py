@@ -52,13 +52,13 @@ urlpatterns = [
     path('admin-officer-archive/',views.admin_officer_archive, name='admin_officer_archive'),
     path('admin-officer-activity-logs/',views.admin_officer_activity_logs, name='admin_officer_activity_logs'),
 
-    path('sro-dashboard/',views.dashboard_sro, name='dashboard_sro'),
+    path('sro-dashboard/',views.sro_dashboard, name='sro_dashboard'),
     path('sro-records/<str:panel>/<str:scanned_document_no>/',views.sro_records, name='sro_records'),
     path('sro-update-records-display/<str:panel>/', views.sro_update_records_display, name='sro_update_records_display'),
     path('sro-unacted-records/',views.sro_unacted_records, name='sro_unacted_records'),
     path('sro-activity-logs/',views.sro_activity_logs, name='sro_activity_logs'),
     
-    path('action-officer-dashboard/',views.dashboard_action_officer, name='dashboard_action_officer'),
+    path('action-officer-dashboard/',views.action_officer_dashboard, name='action_officer_dashboard'),
     path('action-officer-records/<str:scanned_document_no>/',views.action_officer_records, name='action_officer_records'),
     path('action-officer-update-records-display', views.action_officer_update_records_display, name='action_officer_update_records_display'),
     path('action-officer-unacted-records/',views.action_officer_unacted_records, name='action_officer_unacted_records'),

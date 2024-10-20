@@ -182,6 +182,15 @@ a {
     }
 }
 
+.btn-profile {
+    margin: 0; 
+    right: 163px; 
+    bottom: 10px; 
+    border-radius: 50%;
+    width: 30px !important;
+    height: 30px !important;
+    transition: none !important;
+}
 
 // BADGES
 .badge {
@@ -508,20 +517,32 @@ table th:last-child {
 
 // DROPDOWN
 
+.drop-profile {
+    margin-top: 17.5px !important;
+}
+
+.drop-report {
+    margin-top: 5px !important;
+}
+
 .dropdown-menu {
     background-color: #fff;
-    margin-top: 5px !important;
     padding: 9px;
     border: none;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     
 
     .dropdown-item {
+        display: grid;
+        grid-template-columns: min-content 1fr;
+        align-items: center;   
+        gap: 1rem;
         font-size: 14px;
         font-weight: 600;
         padding: 8.45px 11.5px;
         max-height: 37.85px;
         border-radius: 6px;
+        
         color: #000;
         
         &:hover {
@@ -530,3 +551,43 @@ table th:last-child {
     }
 }
 
+.dropdown-item:hover .drop-icon {
+    color: #909aa5; 
+}
+
+.drop-icon {
+    font-size: 1.4rem;
+    color: #B1C1CF;
+    width: 1.35rem;
+}
+
+.drop-name {
+    font-size: 13.5px;
+    color: #000000;
+}
+
+// PROFILE
+
+.title-cover {
+    background: #eaf0fb;
+    border-radius: 1rem 1rem 0 0;
+}
+
+.cover {
+    position: relative;
+    background: linear-gradient(to bottom, #eaf0fb 50%, transparent 50%);
+}
+
+.profile-modal-pic {
+    width: 130px; 
+    height: 130px; 
+    object-fit: cover;
+    border: 7px solid #fff;
+    border-radius: 50%;
+}
+
+.profile-icon {
+    font-size: 1rem;
+    width: 1.2rem;
+    text-align: center;
+}

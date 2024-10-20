@@ -27,13 +27,35 @@
                 <button class="toggle-sidebar" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
                 <div class="header-right">
                     <button class="toggle-notification" id="notification"><i class="fa-solid fa-bell"></i></button>
-                    <button class="profile">
-                        <div class="profile-pic placeholder"></div>
-                        <div class="profile-info">
-                            <span class="profile-name">{{ user_name }}</span>
-                            <span class="profile-role">Admin Officer</span>
-                        </div>
-                    </button>
+                    <div class="dropdown">
+                        <button class="profile m-0" type="button" id="profileDropdown" data-bs-toggle="dropdown">
+                            <div class="profile-pic placeholder"></div>
+                            <div class="profile-info">
+                                <span class="profile-name">{{ user_name }}</span>
+                                <span class="profile-role">Admin Officer</span>
+                            </div>
+                        </button>
+                        <ul class="drop-profile dropdown-menu" aria-labelledby="profileDropdown">
+                            <li>
+                                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#profileModal">
+                                    <i class='bx bx-user-circle drop-icon'></i>
+                                    <span class="drop-name">Profile</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#settingsModal">
+                                    <i class='bx bx-cog drop-icon'></i> 
+                                    <span class="drop-name">Settings</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'user_logout' %}">
+                                    <i class='bx bx-log-out drop-icon'></i> 
+                                    <span class="drop-name">Log Out</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </header>
             
