@@ -42,46 +42,74 @@
                     <h3 class="fw-semibold m-0">Post Announcements</h3>
                 </div>
 
-                <div class="content-wrapper my-3 p-4 pt-3 bg-white rounded shadow-sm">
-                    <form>
-                        <div class="pt-1 mb-3">
-                            <label for="OfficeRecipient" class="form-label">Recipient</label>
-                            <div class="d-flex align-items-center">
-                                <select class="form-select" name="recipient_office" id="recipientOffice" aria-label="recipientOffice" required 
-                                style="min-width: 15ch; width: auto; padding-right: 4ch;">
-                                    <option value="" disabled selected hidden>Select Recipient Office</option>
-                                    <option value="All">All</option>
-                                    <option value="Admin">Admin</option>
-                                    <option value="Finance">Finance</option>
-                                    <option value="Budget">Budget</option>
-                                    <option value="Cashier">Cashier</option>
-                                </select>
-                                <button type="button" class="btn btn-link p-0" id="iconButton">
-                                    <i class='bx bxs-plus-circle m-2 fs-5' style='color:#808080'></i>
-                                </button>                                
-                                <!-- <i class='bx bxs-plus-circle m-2 fs-5' style='color:#2e72ea'></i> -->
+                <div class="content-wrapper my-3 px-4 py-3 bg-white rounded shadow-sm">
+                    <form id="checkboxForm">
+                        <div class="pt-1">
+                            <label for="OfficeRecipient" class="form-label">Recipient Office</label>
+                            <div class="mx-3" style="font-size: 13px;">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="All" id="checkAll">
+                                    <label class="form-check-label" for="checkAll">
+                                        All
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="Admin" id="checkAdmin">
+                                    <label class="form-check-label" for="checkAdmin">
+                                        Admin
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="Accounting" id="checkAccounting">
+                                    <label class="form-check-label" for="checkAccounting">
+                                        Accounting
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="Budget" id="checkBudget">
+                                    <label class="form-check-label" for="checkBudget">
+                                        Budget
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="Cashier" id="checkCashier">
+                                    <label class="form-check-label" for="checkCashier">
+                                        Cashier
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="Payroll" id="checkPayroll">
+                                    <label class="form-check-label" for="checkPayroll">
+                                        Payroll
+                                    </label>
+                                </div>
                             </div>
                         </div>
-            
+                
+                        <!-- Error message for checkbox validation -->
+                        <div id="checkboxError" class="text-danger mx-3 mb-3" style="display: none;">
+                            <i class='bx bxs-info-circle' style='color:#dc3545'  ></i>&nbsp; Please select at least one recipient office.
+                        </div>
+                
                         <div class="mb-3">
                             <label for="announcementTitle" class="form-label">Announcement Title</label>
                             <input class="form-control" maxlength="100" name="announcementTitle" id="announcementTitle" placeholder="e.g. Upcoming System Maintenance" required>
                         </div>
-        
+                
                         <div class="mb-3">
                             <label for="Description" class="form-label">Description</label>
                             <textarea type="text" maxlength="200" class="form-control" name="description"  id="description" placeholder="e.g. Please be advised for an upcoming maintenance service. Expect 1-2 days system shutdown." required></textarea>
                         </div>
-
+                
                         <div class="mb-3">
                             <label for="formFile" class="form-label">Upload Attachment</label>
                             <div class="input-group">
                                 <input class="form-control" type="file" id="formFile" name="attachment">
                             </div>
                         </div>
-        
+                
                         <div class="d-flex justify-content-end">
-                            <button type="button" class="btn btn-primary  mb-1" id="submitBtn">Confirm</button>
+                            <button type="button" class="btn btn-primary mb-1" id="openModalBtn">Confirm</button>
                         </div>
                     </form>
                 </div>
@@ -89,16 +117,16 @@
         </div>
     </div>
 
-    <!-- Modal to Confirm Record Creation -->
+    <!-- Modal to Confirm Announcement Posting -->
     <div class="modal fade" id="confirmRecordCreation" tabindex="-1" aria-labelledby="confirmRecordCreationLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
                 <div class="modal-header pb-0 border-bottom-0">
-                    <h5 class="modal-title" id="confirmRecordCreationLabel">Create New Record</h5>
+                    <h5 class="modal-title" id="confirmRecordCreationLabel">Post Announcement</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Are you sure you want to create this new record? Please review the information before proceeding.</p>
+                    <p>Are you sure you want to post announcement? Please review the information before proceeding.</p>
                 </div>
                 <div class="modal-footer p-3 pt-0 border-top-0">
                     <button type="button" class="m-0 mb-2 btn btn-primary" id="confirmCreate" data-bs-toggle="modal">Confirm</button>
@@ -124,9 +152,59 @@
         });
     </script>
     <script>
-        document.getElementById("iconButton").addEventListener("click", function() {
-            const icon = document.getElementById("colorIcon");
-            icon.style.color = icon.style.color === 'rgb(46, 114, 234)' ? '#808080' : '#2e72ea';
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkAll = document.getElementById('checkAll');
+            const otherCheckboxes = document.querySelectorAll('#checkAdmin, #checkAccounting, #checkBudget, #checkCashier, #checkPayroll');
+            const form = document.getElementById('checkboxForm');
+            const checkboxError = document.getElementById('checkboxError');
+            const openModalBtn = document.getElementById('openModalBtn');
+            const confirmCreate = document.getElementById('confirmCreate');
+            const confirmModal = new bootstrap.Modal(document.getElementById('confirmRecordCreation'));
+    
+            // Function to check if at least one checkbox is checked
+            function validateCheckboxes() {
+                return Array.from(document.querySelectorAll('input[type="checkbox"]')).some(checkbox => checkbox.checked);
+            }
+    
+            // Disable other checkboxes when "All" is checked
+            checkAll.addEventListener('change', function() {
+                otherCheckboxes.forEach(checkbox => {
+                    checkbox.disabled = checkAll.checked;
+                    if (checkAll.checked) {
+                        checkbox.checked = false; // Uncheck the others
+                    }
+                });
+            });
+    
+            // Disable "All" checkbox when any other is checked
+            otherCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        checkAll.disabled = true; // Disable "All" when any other is checked
+                    } else {
+                        // Re-enable "All" if none of the other checkboxes are checked
+                        const anyChecked = Array.from(otherCheckboxes).some(checkbox => checkbox.checked);
+                        if (!anyChecked) {
+                            checkAll.disabled = false;
+                        }
+                    }
+                });
+            });
+    
+            // Open the modal after validating checkboxes and form
+            openModalBtn.addEventListener('click', function() {
+                if (validateCheckboxes()) {
+                    checkboxError.style.display = 'none';  // Hide error if validation passes
+                    confirmModal.show();  // Show confirmation modal
+                } else {
+                    checkboxError.style.display = 'block';  // Show error if no checkbox is checked
+                }
+            });
+    
+            // If confirmed, submit the form
+            confirmCreate.addEventListener('click', function() {
+                form.submit();  // Programmatically submit the form
+            });
         });
     </script>
 
