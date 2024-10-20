@@ -44,40 +44,40 @@
 
                 <div class="content-wrapper my-3 px-4 py-3 bg-white rounded shadow-sm">
                     <form id="checkboxForm">
-                        <div class="pt-1">
+                        <div class="pt-1 mb-2">
                             <label for="OfficeRecipient" class="form-label">Recipient Office</label>
                             <div class="mx-3" style="font-size: 13px;">
-                                <div class="form-check">
+                                <div class="form-check form-check-inline">
                                     <input class="form-check-input" type="checkbox" value="All" id="checkAll">
                                     <label class="form-check-label" for="checkAll">
                                         All
                                     </label>
                                 </div>
-                                <div class="form-check">
+                                <div class="form-check form-check-inline">
                                     <input class="form-check-input" type="checkbox" value="Admin" id="checkAdmin">
                                     <label class="form-check-label" for="checkAdmin">
                                         Admin
                                     </label>
                                 </div>
-                                <div class="form-check">
+                                <div class="form-check form-check-inline">
                                     <input class="form-check-input" type="checkbox" value="Accounting" id="checkAccounting">
                                     <label class="form-check-label" for="checkAccounting">
                                         Accounting
                                     </label>
                                 </div>
-                                <div class="form-check">
+                                <div class="form-check form-check-inline">
                                     <input class="form-check-input" type="checkbox" value="Budget" id="checkBudget">
                                     <label class="form-check-label" for="checkBudget">
                                         Budget
                                     </label>
                                 </div>
-                                <div class="form-check">
+                                <div class="form-check form-check-inline">
                                     <input class="form-check-input" type="checkbox" value="Cashier" id="checkCashier">
                                     <label class="form-check-label" for="checkCashier">
                                         Cashier
                                     </label>
                                 </div>
-                                <div class="form-check">
+                                <div class="form-check form-check-inline">
                                     <input class="form-check-input" type="checkbox" value="Payroll" id="checkPayroll">
                                     <label class="form-check-label" for="checkPayroll">
                                         Payroll
@@ -88,7 +88,7 @@
                 
                         <!-- Error message for checkbox validation -->
                         <div id="checkboxError" class="text-danger mx-3 mb-3" style="display: none;">
-                            <i class='bx bxs-info-circle' style='color:#dc3545'  ></i>&nbsp; Please select at least one recipient office.
+                            <i class='bx bxs-info-circle bx-rotate-180' style='color:#dc3545' ></i></i>&nbsp; Please select at least one recipient office.
                         </div>
                 
                         <div class="mb-3">
@@ -102,7 +102,10 @@
                         </div>
                 
                         <div class="mb-3">
-                            <label for="formFile" class="form-label">Upload Attachment</label>
+                            <label for="formFile" class="form-label">
+                                Upload Attachment 
+                                <span style="color: gray; font-style: italic;">(Optional)</span>
+                            </label>
                             <div class="input-group">
                                 <input class="form-control" type="file" id="formFile" name="attachment">
                             </div>
