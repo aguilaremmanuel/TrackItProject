@@ -2409,3 +2409,8 @@ def generate_document_report(request, document_no):
     response['Content-Disposition'] = 'inline; filename="Document-Report.pdf"'
 
     return response
+
+# ------------------ ANNOUNCEMENTS -----------------------
+
+def system_admin_announcements(request):
+    return render(request, 'system_admin/system-admin-announcements.html')

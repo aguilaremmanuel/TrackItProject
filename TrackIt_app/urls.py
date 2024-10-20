@@ -21,6 +21,7 @@ urlpatterns = [
     path('delete-document-type/<int:document_no>/', views.delete_document_type, name='delete_document_type'),
     path('system-admin-new-record/',views.system_admin_new_record, name='system_admin_new_record'),
     path('system-admin-all-records/', views.system_admin_all_records, name='system_admin_all_records'),
+    path('system-admin-announcements/',views.system_admin_announcements, name='system_admin_announcements'),
     path('system-admin-generate-reports/<str:report>/',views.system_admin_generate_reports, name='system_admin_generate_reports'),
 
     
