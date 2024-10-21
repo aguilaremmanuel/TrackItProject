@@ -69,6 +69,7 @@ class Document(models.Model):
     status = models.CharField(max_length=25)
     recent_update = models.DateTimeField(blank=True, null=True)
     act_receiver = models.CharField(max_length=10, blank=True, null=True)
+    ongoing_deadline = models.DateField(null=True, blank=True)
     class Meta:
         db_table = 'tbl_document'
 
@@ -88,8 +89,16 @@ class ActivityLogs(models.Model):
     class Meta:
         db_table = 'tbl_activity_logs'
 
-class Test(models.Model):
-    no = models.BigAutoField(primary_key=True)
-    activity = models.CharField(max_length=50)
+class Reports(models.Model):
+    report_no = models.BigAutoField(primary_key=True)
+    report_name = models.CharField(max_length=30)
+    report_type = models.CharField(max_length=20)
+    employee_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    office_id = models.ForeignKey(Office, on_delete=models.CASCADE, null=True, blank=True)
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
+    last_update = models.DateTimeField(blank=True)
     class Meta:
-        db_table = 'tbl_test'
+        db_table = 'tbl_reports'
+
+

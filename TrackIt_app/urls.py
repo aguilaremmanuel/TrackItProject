@@ -34,7 +34,7 @@ urlpatterns = [
     path('director-needs-action/<str:scanned_document_no>/',views.director_needs_action, name='director_needs_action'),
     path('director-activity-logs/', views.director_activity_logs, name='director_activity_logs'),
     path('director-update-needs-action-display', views.director_update_needs_action_display, name='director_update_needs_action_display'),
-    path('director-generate-reports/<str:report>/',views.director_generate_reports, name='director_generate_reports'),
+    path('director-generate-reports/<str:report_type>/',views.director_generate_reports, name='director_generate_reports'),
 
     path('admin-officer-dashboard/',views.admin_officer_dashboard, name='admin_officer_dashboard'),
     path('admin-officer-new-record/',views.admin_officer_new_record, name='admin_officer_new_record'),
@@ -72,4 +72,8 @@ urlpatterns = [
     path('scanned-qr-code/<int:document_no>/', views.scanning_qr_code, name='scanning_qr_code'),
 
     path('generate-document-report/<int:document_no>/', views.generate_document_report, name='generate_document_report'),
+    path('new-employee-report/', views.new_employee_report, name='new_employee_report'),
+    path('new-office-report/', views.new_office_report, name='new_office_report'),
+    path('update-reports/<str:report_type>', views.update_reports_display, name='update_reports_display'),
+    path('delete-report/<int:report_no>/', views.delete_report, name='delete_report'),
 ]

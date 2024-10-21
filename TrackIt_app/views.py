@@ -16,6 +16,7 @@ from django.utils.http import urlsafe_base64_encode
 from django.template.loader import render_to_string
 from django.db.models import Q
 from django.utils.timezone import now
+from datetime import datetime, timedelta, date
 from xhtml2pdf import pisa
 #---------------
 from django.core.mail import EmailMultiAlternatives
@@ -105,130 +106,136 @@ def user_signup(request):
             user_email = form.cleaned_data['email']
             if User.objects.filter(email=user_email).exists():
                 form.add_error('email', "A user with this email already exists.")
-            else:
-                try:
-                    user = form.save(commit=False)
-                    role_prefix = form.cleaned_data['role']
-                    user.user_id = generate_user_id(role_prefix)
-                    user.verified_date = timezone.now()
-                    user.save()
+                return render(request, "user-signup.html", {'form': form})
 
-                    # Get user email
-                    user_email = form.cleaned_data['email']
+            employee_id = form.cleaned_data['employee_id']
+            if User.objects.filter(employee_id=employee_id).exists():
+                form.add_error('employee_id', "A user with this Employee ID already exists.")
+                return render(request, "user-signup.html", {'form': form})
 
-                    # Define subject and message content
-                    subject = 'TrackIt: Account Status'
+            try:
+                user = form.save(commit=False)
+                role_prefix = form.cleaned_data['role']
+                user.user_id = generate_user_id(role_prefix)
+                user.verified_date = timezone.now()
+                user.save()
 
-                    # HTML message with advanced styling
-                    html_message = f"""
-                    <html>
-                    <head>
-                        <style>
-                            body {{
-                                font-family: 'Arial', sans-serif;
-                                background-color: #f4f4f4;
-                                margin: 0;
-                                padding: 0;
-                                line-height: 1.6;
-                                color: #333;
-                            }}
-                            .email-container {{
-                                background-color: #ffffff;
-                                padding: 30px;
-                                border-radius: 10px;
-                                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-                                max-width: 600px;
-                                margin: 50px auto;
-                                overflow: hidden;
-                            }}
-                            .email-header {{
-                                background-color: #007BFF;
-                                padding: 20px;
-                                text-align: center;
-                                color: #fff;
-                                font-size: 24px;
-                                font-weight: bold;
-                                border-radius: 10px 10px 0 0;
-                            }}
-                            .email-content {{
-                                padding: 30px;
-                                font-size: 16px;
-                                color: #555;
-                            }}
-                            .email-content p {{
-                                margin: 0 0 20px;
-                            }}
-                            .email-content h1 {{
-                                font-size: 22px;
-                                margin-bottom: 10px;
-                                color: #007BFF;
-                            }}
-                            .email-content a.button {{
-                                display: inline-block;
-                                padding: 12px 25px;
-                                font-size: 16px;
-                                background-color: #28a745;
-                                color: white;
-                                border-radius: 5px;
-                                text-decoration: none;
-                                margin-top: 20px;
-                            }}
-                            .email-footer {{
-                                text-align: center;
-                                padding: 20px;
-                                background-color: #f8f9fa;
-                                border-top: 1px solid #dddddd;
-                                font-size: 14px;
-                                color: #777777;
-                            }}
-                            .email-footer p {{
-                                margin: 0;
-                            }}
-                            .email-container .logo {{
-                                width: 120px;
-                                margin: 0 auto;
-                            }}
-                        </style>
-                    </head>
-                    <body>
-                        <div class="email-container">
-                            <!-- Email Header -->
-                            <div class="email-header">
-                                <h1>TrackIt: Account Status</h1>
-                            </div>
-                            
-                            <div class="email-content">
-                                <h1>Hello {user.firstname},</h1>
-                                <p>Thank you for signing up for TrackIt! We're excited to have you on board.</p>
-                                <p>Your account is currently <strong>{user.status}</strong>. We will notify you as soon as it is verified.</p>
-                                <p>In the meantime, if you have any questions, don't hesitate to reach out to our support team.</p>
-                            </div>
+                # Get user email
+                user_email = form.cleaned_data['email']
 
-                            <!-- Email Footer -->
-                            <div class="email-footer">
-                                <p>Regards,<br><strong>TrackIt Team</strong></p>
-                            </div>
+                # Define subject and message content
+                subject = 'TrackIt: Account Status'
+
+                # HTML message with advanced styling
+                html_message = f"""
+                <html>
+                <head>
+                    <style>
+                        body {{
+                            font-family: 'Arial', sans-serif;
+                            background-color: #f4f4f4;
+                            margin: 0;
+                            padding: 0;
+                            line-height: 1.6;
+                            color: #333;
+                        }}
+                        .email-container {{
+                            background-color: #ffffff;
+                            padding: 30px;
+                            border-radius: 10px;
+                            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+                            max-width: 600px;
+                            margin: 50px auto;
+                            overflow: hidden;
+                        }}
+                        .email-header {{
+                            background-color: #007BFF;
+                            padding: 20px;
+                            text-align: center;
+                            color: #fff;
+                            font-size: 24px;
+                            font-weight: bold;
+                            border-radius: 10px 10px 0 0;
+                        }}
+                        .email-content {{
+                            padding: 30px;
+                            font-size: 16px;
+                            color: #555;
+                        }}
+                        .email-content p {{
+                            margin: 0 0 20px;
+                        }}
+                        .email-content h1 {{
+                            font-size: 22px;
+                            margin-bottom: 10px;
+                            color: #007BFF;
+                        }}
+                        .email-content a.button {{
+                            display: inline-block;
+                            padding: 12px 25px;
+                            font-size: 16px;
+                            background-color: #28a745;
+                            color: white;
+                            border-radius: 5px;
+                            text-decoration: none;
+                            margin-top: 20px;
+                        }}
+                        .email-footer {{
+                            text-align: center;
+                            padding: 20px;
+                            background-color: #f8f9fa;
+                            border-top: 1px solid #dddddd;
+                            font-size: 14px;
+                            color: #777777;
+                        }}
+                        .email-footer p {{
+                            margin: 0;
+                        }}
+                        .email-container .logo {{
+                            width: 120px;
+                            margin: 0 auto;
+                        }}
+                    </style>
+                </head>
+                <body>
+                    <div class="email-container">
+                        <!-- Email Header -->
+                        <div class="email-header">
+                            <h1>TrackIt: Account Status</h1>
                         </div>
-                    </body>
-                    </html>
-                    """
+                        
+                        <div class="email-content">
+                            <h1>Hello {user.firstname},</h1>
+                            <p>Thank you for signing up for TrackIt! We're excited to have you on board.</p>
+                            <p>Your account is currently <strong>{user.status}</strong>. We will notify you as soon as it is verified.</p>
+                            <p>In the meantime, if you have any questions, don't hesitate to reach out to our support team.</p>
+                        </div>
 
-                    # Plain text fallback
-                    plain_message = strip_tags(html_message)
+                        <!-- Email Footer -->
+                        <div class="email-footer">
+                            <p>Regards,<br><strong>TrackIt Team</strong></p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+                """
 
-                    # Create and send the email
-                    email = EmailMultiAlternatives(
-                        subject=subject,
-                        body=plain_message,
-                        from_email=settings.DEFAULT_FROM_EMAIL,
-                        to=[user_email]
-                    )
-                    email.attach_alternative(html_message, "text/html")
-                    email.send(fail_silently=False)
+                # Plain text fallback
+                plain_message = strip_tags(html_message)
 
-                    return redirect('user_login')
-                except IntegrityError:
-                    form.add_error('email', "A user with this email already exists.")
+                # Create and send the email
+                email = EmailMultiAlternatives(
+                    subject=subject,
+                    body=plain_message,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    to=[user_email]
+                )
+                email.attach_alternative(html_message, "text/html")
+                email.send(fail_silently=False)
+
+                return redirect('user_login')
+            except IntegrityError:
+                form.add_error('email', "A user with this email already exists.")
     else:
         form = UserSignupForm()
 
@@ -419,6 +426,7 @@ def user_login(request):
 
 # USER LOGIN
 def user_login(request):
+
     # Check if a user is already logged in
     user_id = request.session.get('user_id')
     if user_id:
@@ -437,8 +445,8 @@ def user_login(request):
     if request.method == 'POST':
         user_id = request.POST['user_id']
         password = request.POST['password']
-        remember_me = request.POST.get('remember_me')
-
+        #remember_me = request.POST.get('remember_me')
+        """
         # Check for System Admin login
         if user_id == 'SYS-0001' and password == 'SysAdmin@2024':
             # Ensure the default user exists and is active
@@ -512,7 +520,18 @@ def user_login(request):
 
         # Manage session expiration based on Remember Me
         if user.role not in ['SYS', 'DIR']:  # Exclude System Admin and Director
-            request.session.set_expiry(1209600 if remember_me else 0)
+            request.session.set_expiry(1209600 if remember_me else 0)"""
+
+        try:
+            user = User.objects.get(user_id=user_id, password=password)
+        except User.DoesNotExist:
+            messages.error(request, "Invalid credentials.")
+            return redirect('user_login')
+
+        user.last_login = timezone.now()
+        user.save()
+        request.session['user_id'] = user.user_id
+        request.session['user_name'] = f"{user.firstname.title()} {user.lastname.title()}"
 
         # Redirect based on user role
         if user.role == 'ADO':
@@ -521,6 +540,10 @@ def user_login(request):
             return redirect(f"{reverse('dashboard_sro')}?status=active")
         elif user.role == 'ACT':
             return redirect(f"{reverse('dashboard_action_officer')}?status=active")
+        elif user.role == 'Director':
+            return redirect(f"{reverse('director_dashboard')}?status=active")
+        elif user.role == 'System Admin':
+            return redirect(f"{reverse('system_admin_dashboard')}?status=active")
         else:
             messages.error(request, "Invalid role. Please contact the administrator.")
             return redirect('user_login')
@@ -529,11 +552,8 @@ def user_login(request):
 # USER LOGOUT
 def user_logout(request):
 
-
     user_id = request.session.get('user_id')
     role = user_id.split('-')[0]
-
-    print(user_id)
 
     if user_id:
         del request.session['user_id']
@@ -1224,13 +1244,25 @@ def system_admin_generate_reports(request, report):
     return render(request, 'system_admin/system-admin-generate-reports.html', {'report': report})
 
 # DIRECTOR GENERATE REPORTS MODULE
-def director_generate_reports(request, report):
+def director_generate_reports(request, report_type):
     user_id = request.session.get('user_id')
 
     if not user_id:
         return redirect('director_login')
 
-    return render(request, 'director/director-generate-reports.html', {'report': report})
+    if report_type == 'all-reports':
+        reports = Reports.objects.all()
+    elif report_type == 'employee-performance':
+        reports = Reports.objects.filter(report_type='Employee Performance')
+    elif report_type == 'office-performance':
+        reports = Reports.objects.filter(report_type='Office Performance')
+
+    context = {
+        'report_type': report_type,
+        'reports': reports
+    }
+
+    return render(request, 'director/director-generate-reports.html', context)
 
 # ------------- PASSWORD UPDATE -------------------
 
@@ -1637,6 +1669,9 @@ def generate_user_id(role_prefix):
 def create_document(tracking_no, sender_name, sender_dept, doc_type, subject, remarks, user_id):
 
     document_type_instance = DocumentType.objects.get(document_no=doc_type)
+    
+    days_deadline = document_type_instance.priority_level.deadline
+    ongoing_deadline = date.today() + timedelta(days=days_deadline)
 
     document = Document.objects.create(
         tracking_no=tracking_no,
@@ -1646,7 +1681,8 @@ def create_document(tracking_no, sender_name, sender_dept, doc_type, subject, re
         subject=subject,
         remarks=remarks,
         status='For DIR Approval',
-        recent_update = timezone.now()
+        recent_update = timezone.now(),
+        ongoing_deadline=ongoing_deadline
     )
 
     new_remarks = Remarks.objects.create(
@@ -1873,7 +1909,6 @@ def scanning_qr_code(request, document_no):
 def document_update_status(request, action, document_no):
     
     user_id = request.session.get('user_id')
-
     if not user_id:
         return redirect('user_login')
 
@@ -1883,7 +1918,6 @@ def document_update_status(request, action, document_no):
 
         routes = DocumentRoute.objects.filter(document_type_id=document.document_type_id)
 
-
         if document.next_route:
 
             current_route = document.next_route
@@ -1892,7 +1926,6 @@ def document_update_status(request, action, document_no):
             try:
                 current_route_index = routes_list.index(current_route)
             except ValueError:
-                print("Current route not found in the route list.")
                 current_route_index = -1
 
             # Check if it's the last route
@@ -1901,19 +1934,18 @@ def document_update_status(request, action, document_no):
                 next_route = routes_list[current_route_index + 1]
                 document.next_route = next_route
                 status = 'For SRO Receiving'
-
             else:
                 # If it's the last route
-                print("Last route reached")
                 status = 'For Archiving'
 
         else:
-            
             if routes.count() == 1 and routes.first().route_id == 'DIR':
                 status = 'For Archiving'
             else:
                 status = 'For Routing'
 
+        days_deadline = document.document_type.priority_level.deadline
+        document.ongoing_deadline = date.today() + timedelta(days=days_deadline)
 
         activity = 'Document Approved'
 
@@ -1921,6 +1953,9 @@ def document_update_status(request, action, document_no):
 
         status = 'For SRO Receiving'
         activity = 'Document Routed'
+
+        days_deadline = document.document_type.priority_level.deadline
+        document.ongoing_deadline = date.today() + timedelta(days=days_deadline)
 
         if not document.next_route:
             first_route = DocumentRoute.objects.filter(document_type=document.document_type).first()
@@ -1931,8 +1966,10 @@ def document_update_status(request, action, document_no):
         status = 'For ACT Receiving'
         activity = 'Document Forwarded to Action Officer'
 
-        office = document.next_route
+        days_deadline = document.document_type.priority_level.deadline
+        document.ongoing_deadline = date.today() + timedelta(days=days_deadline)
 
+        office = document.next_route
         initial_officer = User.objects.filter(office_id_id = office, role = 'ACT', receive_recent = 0).first()
 
         #if wala, it means lahat na ng ACTO ay nakareceive, so reset nya
@@ -1959,6 +1996,9 @@ def document_update_status(request, action, document_no):
     elif action == 'endorse':
         status = 'For Resolving'
         activity = 'Document Endorsed by Action Officer'
+
+        days_deadline = document.document_type.priority_level.deadline
+        document.ongoing_deadline = date.today() + timedelta(days=days_deadline)
 
     elif action == 'resolve':
         
@@ -1993,6 +2033,9 @@ def document_update_status(request, action, document_no):
         else:
             print("1 route only")
             status = 'For Archiving'
+
+        days_deadline = document.document_type.priority_level.deadline
+        document.ongoing_deadline = date.today() + timedelta(days=days_deadline)
         
         activity = 'Document Resolved'
 
@@ -2064,7 +2107,6 @@ def fetch_document_details(request, document_no):
             'status': document.status,
             'document_type': d_type,  # Assuming foreign key
             'priority': document.document_type.priority_level.priority_level.title(),
-            'due_in': document.document_type.priority_level.deadline,  # Calculate if needed
             'subject': document.subject,
         }
 
@@ -2228,7 +2270,8 @@ def update_all_records_display(request, user):
     context = {
         'documents': documents,
         'search_query': search_query,
-        'user': user
+        'user': user,
+        'today': date.today() 
     }
 
     html = render_to_string('partials/display-records.html', context)
@@ -2262,7 +2305,8 @@ def admin_officer_update_needs_action_display(request, panel):
     context = {
         'documents': documents,
         'search_query': search_query,
-        'user': 'ADO'
+        'user': 'ADO',
+        'today': date.today() 
     }
 
     html = render_to_string('partials/display-records.html', context)
@@ -2285,7 +2329,8 @@ def director_update_needs_action_display(request):
     context = {
         'documents': documents,
         'search_query': search_query,
-        'user': 'DIR'
+        'user': 'DIR',
+        'today': date.today()
     }
 
     html = render_to_string('partials/display-records.html', context)
@@ -2326,7 +2371,8 @@ def sro_update_records_display(request, panel):
     context = {
         'documents': documents,
         'search_query': search_query,
-        'user': 'SRO'
+        'user': 'SRO',
+        'today': date.today()
     }
 
     html = render_to_string('partials/display-records.html', context)
@@ -2354,10 +2400,43 @@ def action_officer_update_records_display(request):
     context = {
         'documents': documents,
         'search_query': search_query,
-        'user': 'ACT'
+        'user': 'ACT',
+        'today': date.today()
     }
 
     html = render_to_string('partials/display-records.html', context)
+    return JsonResponse({'html': html})
+
+def update_reports_display(request, report_type):
+
+    search_query = request.GET.get('search', '').strip()
+
+    if report_type == 'employee-performance':
+        reports = Reports.objects.filter(report_type='Employee Performance')
+    elif report_type == 'office-performance':
+        reports = Reports.objects.filter(report_type='Office Performance')
+    else:
+        reports = Reports.objects.all()
+    # Search filter
+    if search_query:
+        reports = reports.filter(
+            Q(report_name__icontains=search_query)
+        )
+
+        for report in reports:
+            if search_query in report.report_name:
+                report.highlighted_report_name = report.report_name.replace(
+                    search_query, f"<span class='highlight-search'>{search_query}</span>"
+                )
+            else:
+                report.highlighted_report_name = report.report_name
+    
+    context = {
+        'reports': reports,
+        'search_query': search_query
+    }
+
+    html = render_to_string('partials/display-reports.html', context)
     return JsonResponse({'html': html})
 
 # ------------------ REPORTS -----------------------
@@ -2409,3 +2488,135 @@ def generate_document_report(request, document_no):
     response['Content-Disposition'] = 'inline; filename="Document-Report.pdf"'
 
     return response
+
+def new_employee_report(request):
+
+    user_id = request.session.get('user_id')
+    role = user_id.split('-')[0]
+
+    if not user_id:
+        return redirect('user_login')
+
+    if request.method == 'POST':
+        # Extract data from POST request
+        report_name = request.POST.get('report_name')
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        employee_id = request.POST.get('employee_id')
+
+        if not User.objects.filter(employee_id=employee_id).exists():
+            data = {
+                'employeeExists': False,
+                'validDates': True
+            }
+            return JsonResponse(data)
+
+        start_date_obj = datetime.strptime(start_date, '%Y-%m-%d')
+        end_date_obj = datetime.strptime(end_date, '%Y-%m-%d')
+
+        if end_date_obj < start_date_obj:
+            data = {
+                'employeeExists': True,
+                'validDates': False
+            }
+            return JsonResponse(data)
+
+        report = Reports.objects.create(
+            report_name=report_name,
+            report_type='Employee Performance',
+            last_update=timezone.now(),
+            start_date=start_date,
+            end_date=end_date,
+            employee_id=User.objects.get(employee_id=employee_id)
+        )
+        report.save()
+
+        data = {
+            'employeeExists': True,
+            'validDates': True,
+        }
+        return JsonResponse(data)
+
+    if role == 'SYS':
+        return redirect(system_admin_generate_reports)
+    elif role == 'DIR':
+        return redirect(director_generate_reports)
+
+def new_office_report(request):
+
+    user_id = request.session.get('user_id')
+    role = user_id.split('-')[0]
+
+    if not user_id:
+        return redirect('user_login')
+    
+    if request.method == 'POST':
+        # Extract data from POST request
+        report_name = request.POST.get('report_name')
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        office_id = request.POST.get('office')
+
+        start_date_obj = datetime.strptime(start_date, '%Y-%m-%d')
+        end_date_obj = datetime.strptime(end_date, '%Y-%m-%d')
+
+        if end_date_obj < start_date_obj:
+            data = {
+                'validDates': False
+            }
+            return JsonResponse(data)
+        
+        report = Reports.objects.create(
+            report_name=report_name,
+            report_type='Office Performance',
+            last_update=timezone.now(),
+            start_date=start_date,
+            end_date=end_date,
+            office_id_id=office_id
+        )
+        report.save()
+ 
+        data = {
+            'validDates': True
+        }
+        return JsonResponse(data)
+
+    if role == 'SYS':
+        return redirect(system_admin_generate_reports)
+    elif role == 'DIR':
+        return redirect(director_generate_reports)
+
+def delete_report(request, report_no):
+
+    report = Reports.objects.get(report_no=report_no)
+    report.delete()
+
+    data = {
+        'message': f'Report {report_no} has been successfully deleted.'
+    }
+    return JsonResponse(data)
+
+"""def download_employee_report(request, report_no):
+
+    user_id = request.session.get('user_id')
+    user_name = request.session.get('user_name')
+
+    if not user_id:
+        return redirect(user_login)
+
+    role = user_id.split('-')[0]
+
+    if role == 'SYS':
+        role = 'System Admin'
+    elif role == 'DIR':
+        role = 'Director'
+    elif role == 'ADO':
+        role = 'Admin Officer'
+    elif role == 'SRO':
+        role = 'Sub-Receiving Officer'
+    else:
+        role = 'Action Officer'
+
+    reporter = user_name + ", " + role
+
+    report = Reports.objects.get(report_no=report_no)"""

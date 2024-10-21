@@ -59,7 +59,16 @@
 								{{ error }}
 							</div>
 						{% endfor %}
-					{% endif %}	
+					{% endif %}
+
+					{% if form.employee_id.errors %}
+						{% for error in form.employee_id.errors %}
+							<div class="alert alert-danger text-center alert-dismissible fade show" id="password-error">
+								<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+								{{ error }}
+							</div>
+						{% endfor %}
+					{% endif %}
 
 					<form method="post" action="{% url 'user_signup' %}">
 						{% csrf_token %}

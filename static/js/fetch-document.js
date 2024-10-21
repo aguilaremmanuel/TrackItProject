@@ -48,13 +48,6 @@ function bindViewButtons() {
                     document.getElementById('documentStatus').textContent = data.status;
                     document.getElementById('documentType').textContent = data.document_type.charAt(0).toUpperCase() + data.document_type.slice(1)
                     document.getElementById('documentPriority').textContent = data.priority;
-
-                    if(data.due_in > 1) {
-                        document.getElementById('documentDueIn').textContent = data.due_in + " Days";
-                    } else  {
-                        document.getElementById('documentDueIn').textContent = data.due_in + " Day";
-                    }
-            
                     document.getElementById('documentSubject').textContent = data.subject;
                     
                     const activitiesTableBody = document.getElementById('activitiesTableBody');

@@ -1,3 +1,4 @@
+{% load custom_filters %}
 {% load tz %}
 {% if documents %}
     {% for document in documents %}
@@ -37,8 +38,16 @@
                 {{ document.recent_update|date:"Y-m-d" }} <br>
                 {{ document.recent_update|timezone:"Asia/Manila"|date:"h:i A" }} 
             </td>
-            <td>{{ document.document_type.priority_level.deadline }}
-                {% if document.document_type.priority_level.deadline > 1 %}Days{% else %}Day{% endif %}
+            <td>
+                {% with remaining_days=document.ongoing_deadline|date_diff:today %}
+                    {% if remaining_days > 0 %}
+                        {{ remaining_days }} day{% if remaining_days > 1 %}s{% endif %}
+                    {% elif remaining_days == 0 %}
+                        Due today
+                    {% else %}
+                        Overdue
+                    {% endif %}
+                {% endwith %}
             </td>
 
             {% if document.document_type.priority_level.priority_level == "for pref. action" %}
