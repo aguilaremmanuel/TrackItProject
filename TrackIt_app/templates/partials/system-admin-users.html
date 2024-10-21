@@ -40,10 +40,22 @@
                 <td><span class="badge badge-orange rounded-pill fw-semibold">FOR VERIFICATION</span></td>
                 <td>
                     <div class="table-action">
-                        <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#verifyUserModal" data-user-id="{{ user.user_id }}" data-action="verify" data-url="{% url 'update_user_status' 'USER_ID' 'verify' office 'system_admin' %}">
+                        <button type="button" class="btn btn-sm btn-blue" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#verifyUserModal" 
+                            data-user-id="{{ user.user_id }}" 
+                            data-action="verify" 
+                            data-url="{% url 'update_user_status' 'USER_ID' 'verify' office 'system_admin' %}" 
+                            title="Verify User">
                             <i class="fa-solid fa-user-check"></i>
                         </button>
-                        <button type="button" class="btn btn-sm btn-red" data-bs-toggle="modal" data-bs-target="#rejectUserModal" data-user-id="{{ user.user_id }}" data-action="reject" data-url="{% url 'update_user_status' 'USER_ID' 'reject' office 'system_admin' %}">
+                        <button type="button" class="btn btn-sm btn-red" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#rejectUserModal" 
+                            data-user-id="{{ user.user_id }}" 
+                            data-action="reject" 
+                            data-url="{% url 'update_user_status' 'USER_ID' 'reject' office 'system_admin' %}" 
+                            title="Reject User">
                             <i class="fa-solid fa-user-xmark"></i>
                         </button>
                     </div>
@@ -52,7 +64,13 @@
                 <td><span class="badge badge-green rounded-pill fw-semibold">ACTIVE</span></td>
                 <td>
                     <div class="table-action">
-                        <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#deactivateUserModal" data-user-id="{{ user.user_id }}" data-action="deactivate" data-url="{% url 'update_user_status' 'USER_ID' 'deactivate' office 'system_admin' %}">
+                        <button type="button" class="btn btn-sm btn-blue" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#deactivateUserModal" 
+                            data-user-id="{{ user.user_id }}" 
+                            data-action="deactivate" 
+                            data-url="{% url 'update_user_status' 'USER_ID' 'deactivate' office 'system_admin' %}" 
+                            title="Deactivate User">
                             <i class="fa-solid fa-user-lock"></i>
                         </button>
                     </div>
@@ -61,10 +79,20 @@
                 <td><span class="badge badge-red rounded-pill fw-semibold">DEACTIVATED</span></td>
                 <td>
                     <div class="table-action">
-                        <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#reactivateUserModal" data-user-id="{{ user.user_id }}" data-action="reactivate" data-url="{% url 'update_user_status' 'USER_ID' 'reactivate' office 'system_admin' %}">
+                        <button type="button" class="btn btn-sm btn-blue" 
+                            data-bs-toggle="modal" data-bs-target="#reactivateUserModal" 
+                            data-user-id="{{ user.user_id }}" 
+                            data-action="reactivate" 
+                            data-url="{% url 'update_user_status' 'USER_ID' 'reactivate' office 'system_admin' %}" 
+                            title="Reactivate User">
                             <i class="fa-solid fa-user-check"></i>
                         </button>
-                        <button type="button" class="btn btn-sm btn-red" data-bs-toggle="modal" data-bs-target="#archiveUserModal" data-user-id="{{ user.user_id }}" data-action="archive" data-url="{% url 'update_user_status' 'USER_ID' 'archive' office 'system_admin' %}">
+                        <button type="button" class="btn btn-sm btn-red" 
+                            data-bs-toggle="modal" data-bs-target="#archiveUserModal" 
+                            data-user-id="{{ user.user_id }}" 
+                            data-action="archive" 
+                            data-url="{% url 'update_user_status' 'USER_ID' 'archive' office 'system_admin' %}" 
+                            title="Archive User">
                             <i class="fa-solid fa-user-minus"></i>
                         </button>
                     </div>

@@ -15,6 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
             navLogo.classList.remove('collapsed');
             navLinks.forEach(link => {
                 link.classList.remove('collapsed');
+                // Remove tooltip on expand
+                link.removeAttribute('title');
             });
         } else {
             // Collapse the sidebar and add collapsed class
@@ -25,7 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
             navLogo.classList.add('collapsed');
             navLinks.forEach(link => {
                 link.classList.add('collapsed');
+                // Set the title for the tooltip
+                link.setAttribute('title', link.querySelector('.nav-name').textContent);
             });
         }
     });
-}); 
+});

@@ -1,0 +1,239 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/static/images/logo-icon.png" type="image/png">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+	<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/table-content.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+	<link href="{% static 'fontawesomefree/css/all.min.css' %}" rel="stylesheet" type="text/css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <title>Announcements</title>
+</head>
+
+<body>
+    <div class="container">
+        {% include "assets/sys-sidebar.html" %}
+
+        <div class="right-section">
+            <header class="header">
+                <button class="toggle-sidebar" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
+                <div class="header-right">
+                    <button class="toggle-notification" id="notification" title="Notifications"><i class="fa-solid fa-bell"></i></button>
+                    <div class="dropdown">
+                        <button class="profile m-0" type="button" id="profileDropdown" data-bs-toggle="dropdown" title="Account Menu">
+                            <div class="profile-pic placeholder"></div>
+                            <div class="profile-info">
+                                <span class="profile-name">{{ user_name }}</span>
+                                <span class="profile-role">System Administrator</span>
+                            </div>
+                        </button>
+                        <ul class="drop-profile dropdown-menu" aria-labelledby="profileDropdown">
+                            <li>
+                                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#profileModal">
+                                    <i class='bx bx-user-circle drop-icon'></i>
+                                    <span class="drop-name">Profile</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#settingsModal">
+                                    <i class='bx bx-cog drop-icon'></i> 
+                                    <span class="drop-name">Settings</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'user_logout' %}">
+                                    <i class='bx bx-log-out drop-icon'></i> 
+                                    <span class="drop-name">Log Out</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+            
+            <main class="main-content">
+                <div class="title-container d-flex justify-content-between align-items-center">
+                    <h3 class="fw-semibold m-0">Post Announcements</h3>
+                </div>
+
+                <div class="content-wrapper my-3 px-4 py-3 bg-white rounded shadow-sm">
+                    <form id="checkboxForm">
+                        <div class="pt-1 mb-2">
+                            <label for="OfficeRecipient" class="form-label">Recipient Office</label>
+                            <div class="mx-3" style="font-size: 13px;">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" value="All" id="checkAll">
+                                    <label class="form-check-label" for="checkAll">
+                                        All
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" value="Admin" id="checkAdmin">
+                                    <label class="form-check-label" for="checkAdmin">
+                                        Admin
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" value="Accounting" id="checkAccounting">
+                                    <label class="form-check-label" for="checkAccounting">
+                                        Accounting
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" value="Budget" id="checkBudget">
+                                    <label class="form-check-label" for="checkBudget">
+                                        Budget
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" value="Cashier" id="checkCashier">
+                                    <label class="form-check-label" for="checkCashier">
+                                        Cashier
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" value="Payroll" id="checkPayroll">
+                                    <label class="form-check-label" for="checkPayroll">
+                                        Payroll
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                
+                        <!-- Error message for checkbox validation -->
+                        <div id="checkboxError" class="text-danger mx-3 mb-3" style="display: none;">
+                            <i class='bx bxs-info-circle bx-rotate-180' style='color:#dc3545' ></i></i>&nbsp; Please select at least one recipient office.
+                        </div>
+                
+                        <div class="mb-3">
+                            <label for="announcementTitle" class="form-label">Announcement Title</label>
+                            <input class="form-control" maxlength="100" name="announcementTitle" id="announcementTitle" placeholder="e.g. Upcoming System Maintenance" required>
+                        </div>
+                
+                        <div class="mb-3">
+                            <label for="Description" class="form-label">Description</label>
+                            <textarea type="text" maxlength="200" class="form-control" name="description"  id="description" placeholder="e.g. Please be advised for an upcoming maintenance service. Expect 1-2 days system shutdown." required></textarea>
+                        </div>
+                
+                        <div class="mb-3">
+                            <label for="formFile" class="form-label">
+                                Upload Attachment 
+                                <span style="color: gray; font-style: italic;">(Optional)</span>
+                            </label>
+                            <div class="input-group">
+                                <input class="form-control" type="file" id="formFile" name="attachment">
+                            </div>
+                        </div>
+                
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-primary mb-1" id="openModalBtn">Confirm</button>
+                        </div>
+                    </form>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal to Confirm Announcement Posting -->
+    <div class="modal fade" id="confirmRecordCreation" tabindex="-1" aria-labelledby="confirmRecordCreationLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0">
+                    <h5 class="modal-title" id="confirmRecordCreationLabel">Post Announcement</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to post announcement? Please review the information before proceeding.</p>
+                </div>
+                <div class="modal-footer p-3 pt-0 border-top-0">
+                    <button type="button" class="m-0 mb-2 btn btn-primary" id="confirmCreate" data-bs-toggle="modal">Confirm</button>
+                    <button type="button" class="m-0 mb-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/toggle-sidebar.js' %}"></script>  
+    <script src="{% static 'js/tabs-nav.js' %}"></script>
+    <script src="{% static 'js/records-count.js' %}"></script>
+    <script src="{% static 'js/new-record.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const params = new URLSearchParams(window.location.search);
+            const status = params.get('status');
+            if (status) {
+                // Assuming you want to add the class to the element with ID 'targetElement'
+                document.querySelector('#announcements').classList.add(status);
+            }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkAll = document.getElementById('checkAll');
+            const otherCheckboxes = document.querySelectorAll('#checkAdmin, #checkAccounting, #checkBudget, #checkCashier, #checkPayroll');
+            const form = document.getElementById('checkboxForm');
+            const checkboxError = document.getElementById('checkboxError');
+            const openModalBtn = document.getElementById('openModalBtn');
+            const confirmCreate = document.getElementById('confirmCreate');
+            const confirmModal = new bootstrap.Modal(document.getElementById('confirmRecordCreation'));
+    
+            // Function to check if at least one checkbox is checked
+            function validateCheckboxes() {
+                return Array.from(document.querySelectorAll('input[type="checkbox"]')).some(checkbox => checkbox.checked);
+            }
+    
+            // Disable other checkboxes when "All" is checked
+            checkAll.addEventListener('change', function() {
+                otherCheckboxes.forEach(checkbox => {
+                    checkbox.disabled = checkAll.checked;
+                    if (checkAll.checked) {
+                        checkbox.checked = false; // Uncheck the others
+                    }
+                });
+            });
+    
+            // Disable "All" checkbox when any other is checked
+            otherCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        checkAll.disabled = true; // Disable "All" when any other is checked
+                    } else {
+                        // Re-enable "All" if none of the other checkboxes are checked
+                        const anyChecked = Array.from(otherCheckboxes).some(checkbox => checkbox.checked);
+                        if (!anyChecked) {
+                            checkAll.disabled = false;
+                        }
+                    }
+                });
+            });
+    
+            // Open the modal after validating checkboxes and form
+            openModalBtn.addEventListener('click', function() {
+                if (validateCheckboxes()) {
+                    checkboxError.style.display = 'none';  // Hide error if validation passes
+                    confirmModal.show();  // Show confirmation modal
+                } else {
+                    checkboxError.style.display = 'block';  // Show error if no checkbox is checked
+                }
+            });
+    
+            // If confirmed, submit the form
+            confirmCreate.addEventListener('click', function() {
+                form.submit();  // Programmatically submit the form
+            });
+        });
+    </script>
+
+</body>
+</html>
+
+<!-- TEST COMMIT -->

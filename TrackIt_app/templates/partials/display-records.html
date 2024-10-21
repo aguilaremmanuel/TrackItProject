@@ -63,42 +63,74 @@
             <td>
                 <div class="table-action">
 
-                    <button type="button" class="btn btn-sm btn-blue viewDocumentBtn" data-document-no="{{ document.document_no }}" data-bs-toggle="modal" data-bs-target="#viewDocumentModal">
+                    <button type="button" class="btn btn-sm btn-blue viewDocumentBtn" data-document-no="{{ document.document_no }}" 
+                        data-bs-toggle="modal" data-bs-target="#viewDocumentModal"
+                        data-bs-toggle="tooltip" title="View Document Details">
                         <i class="fa-solid fa-eye"></i>
                     </button>
                     {% if document.status == 'For DIR Approval' %}
                         {% if user == 'DIR' or user == 'SYS' %}
-                            <button type="button" class="btn btn-sm btn-green" data-action="approve" data-document-no="{{ document.document_no }}" data-bs-toggle="modal" data-bs-target="#approveDocumentModal">
+                            <button type="button" class="btn btn-sm btn-green" 
+                                data-action="approve" 
+                                data-document-no="{{ document.document_no }}" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#approveDocumentModal"
+                                data-bs-toggle="tooltip" title="Approve Document">
                                 <i class="fa-solid fa-check"></i>
                             </button>
                         {% endif %}
                     {% elif document.status == 'For Routing' %}
                         {% if user == 'ADO' or user == 'SYS' %}
-                            <button type="button" class="btn btn-sm btn-green routeDocumentBtn" data-action="route" data-document-no="{{ document.document_no }}" data-bs-toggle="modal" data-bs-target="#routeDocumentModal">
+                            <button type="button" class="btn btn-sm btn-green routeDocumentBtn" 
+                                data-action="route" 
+                                data-document-no="{{ document.document_no }}" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#routeDocumentModal"
+                                data-bs-toggle="tooltip" title="Route Document">
                                 <i class="fa-solid fa-route"></i>
                             </button>
                         {% endif %}
                     {% elif document.status == 'For Archiving' %}
                         {% if user == 'ADO' or user == 'SYS' %}
-                            <button type="button" class="btn btn-sm btn-red" data-action="archive" data-document-no="{{ document.document_no }}" data-bs-toggle="modal" data-bs-target="#archiveDocumentModal">
+                            <button type="button" class="btn btn-sm btn-red" 
+                                data-action="archive" 
+                                data-document-no="{{ document.document_no }}" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#archiveDocumentModal"
+                                data-bs-toggle="tooltip" title="Archive Document">
                                 <i class="fa-solid fa-box-archive"></i>
                             </button>
                         {% endif %}
                     {% elif document.status == 'For SRO Receiving' %}
                         {% if user == 'SRO' or user == 'SYS' %}
-                            <button type="button" class="btn btn-sm btn-green" data-action="forward" data-document-no="{{ document.document_no }}" data-bs-toggle="modal" data-bs-target="#forwardDocumentModal">
+                            <button type="button" class="btn btn-sm btn-green" 
+                                data-action="forward" 
+                                data-document-no="{{ document.document_no }}" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#forwardDocumentModal"
+                                data-bs-toggle="tooltip" title="Forward Document">
                                 <i class="fa-solid fa-share"></i>
                             </button>
                         {% endif %}
                     {% elif document.status == 'For ACT Receiving' %}
                         {% if user == 'ACT' or user == 'SYS' %}
-                            <button type="button" class="btn btn-sm btn-green" data-action="endorse" data-document-no="{{ document.document_no }}" data-bs-toggle="modal" data-bs-target="#endorseDocumentModal">
+                            <button type="button" class="btn btn-sm btn-green" 
+                                data-action="endorse" 
+                                data-document-no="{{ document.document_no }}" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#endorseDocumentModal"
+                                data-bs-toggle="tooltip" title="Endorse Document">
                                 <i class="fa-solid fa-thumbs-up"></i>
                             </button>
                         {% endif %}
                     {% elif document.status == 'For Resolving' %}
                         {% if user == 'SRO' or user == 'SYS' %}
-                            <button type="button" class="btn btn-sm btn-green" data-action="resolve" data-document-no="{{ document.document_no }}" data-bs-toggle="modal" data-bs-target="#resolveDocumentModal">
+                            <button type="button" class="btn btn-sm btn-green" 
+                                data-action="resolve" 
+                                data-document-no="{{ document.document_no }}" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#resolveDocumentModal"
+                                data-bs-toggle="tooltip" title="Resolve Document">
                                 <i class="fa-solid fa-flag"></i>
                             </button>
                         {% endif %}

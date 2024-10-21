@@ -250,9 +250,9 @@ def system_admin_login(request):
         if role == 'ADO':
             return redirect(admin_officer_dashboard)
         elif role == 'SRO':
-            return redirect(dashboard_sro)
+            return redirect(sro_dashboard)
         elif role == 'ACT':
-            return redirect(dashboard_action_officer)
+            return redirect(action_officer_dashboard)
         elif role == 'DIR':
             return redirect(director_dashboard)
         elif role == 'SYS':
@@ -309,9 +309,9 @@ def director_login(request):
         if role == 'ADO':
             return redirect(admin_officer_dashboard)
         elif role == 'SRO':
-            return redirect(dashboard_sro)
+            return redirect(sro_dashboard)
         elif role == 'ACT':
-            return redirect(dashboard_action_officer)
+            return redirect(action_officer_dashboard)
         elif role == 'DIR':
             return redirect(director_dashboard)
         elif role == 'SYS':
@@ -368,9 +368,9 @@ def user_login(request):
         if role == 'ADO':
             return redirect(admin_officer_dashboard)
         elif role == 'SRO':
-            return redirect(dashboard_sro)
+            return redirect(sro_dashboard)
         elif role == 'ACT':
-            return redirect(dashboard_action_officer)
+            return redirect(action_officer_dashboard)
         elif role == 'DIR':
             return redirect(director_dashboard)
         elif role == 'SYS':
@@ -413,9 +413,9 @@ def user_login(request):
         if role == 'ADO':  # Admin Officer
             return redirect(f"{reverse('admin_officer_dashboard')}?status=active")
         elif role == 'SRO':  # Sub-Receiving Officer
-            return redirect(f"{reverse('dashboard_sro')}?status=active")
+            return redirect(f"{reverse('sro_dashboard')}?status=active")
         elif role == 'ACT':  # Action Officer
-            return redirect(f"{reverse('dashboard_action_officer')}?status=active")
+            return redirect(f"{reverse('action_officer_dashboard')}?status=active")
         else:
             # In case the role is not recognized
             messages.error(request, "Invalid role. Please contact the administrator.")
@@ -434,9 +434,9 @@ def user_login(request):
         if role == 'ADO':
             return redirect(admin_officer_dashboard)
         elif role == 'SRO':
-            return redirect(dashboard_sro)
+            return redirect(sro_dashboard)
         elif role == 'ACT':
-            return redirect(dashboard_action_officer)
+            return redirect(action_officer_dashboard)
         elif role == 'DIR':
             return redirect(director_dashboard)
         elif role == 'SYS':
@@ -537,7 +537,7 @@ def user_login(request):
         if user.role == 'ADO':
             return redirect(f"{reverse('admin_officer_dashboard')}?status=active")
         elif user.role == 'SRO':
-            return redirect(f"{reverse('dashboard_sro')}?status=active")
+            return redirect(f"{reverse('sro_dashboard')}?status=active")
         elif user.role == 'ACT':
             return redirect(f"{reverse('dashboard_action_officer')}?status=active")
         elif user.role == 'Director':
@@ -620,7 +620,7 @@ def admin_officer_dashboard(request):
     return render(request, 'admin_officer/admin-officer-dashboard.html', {'user_name': user_name})
 
 # SRO DASHBOARD
-def dashboard_sro(request):
+def sro_dashboard(request):
 
     user_id = request.session.get('user_id')
     if  not user_id:
@@ -635,7 +635,7 @@ def dashboard_sro(request):
     return render(request, 'sro/sro-dashboard.html', {'user_name': user_name})
 
 # ACTION OFFICER DASHBOARD
-def dashboard_action_officer(request):
+def action_officer_dashboard(request):
 
     user_id = request.session.get('user_id')
     if  not user_id:
@@ -2620,3 +2620,8 @@ def delete_report(request, report_no):
     reporter = user_name + ", " + role
 
     report = Reports.objects.get(report_no=report_no)"""
+
+# ------------------ ANNOUNCEMENTS -----------------------
+
+def system_admin_announcements(request):
+    return render(request, 'system_admin/system-admin-announcements.html')

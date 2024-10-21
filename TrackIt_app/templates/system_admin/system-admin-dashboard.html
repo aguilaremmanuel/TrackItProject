@@ -8,6 +8,7 @@
     <link rel="icon" href="/static/images/logo-icon.png" type="image/png">
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
 	<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/table-content.css' %}">
     <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,15 +26,36 @@
             <header class="header">
                 <button class="toggle-sidebar" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
                 <div class="header-right">
-                    <a href="{% url 'user_logout' %}" class="nav-link"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
-                    <button class="toggle-notification" id="notification"><i class="fa-solid fa-bell"></i></button>
-                    <button class="profile">
-                        <div class="profile-pic placeholder"></div>
-                        <div class="profile-info">
-                            <span class="profile-name">{{ user_name }}</span>
-                            <span class="profile-role">System Administrator</span>
-                        </div>
-                    </button>
+                    <button class="toggle-notification" id="notification" title="Notifications"><i class="fa-solid fa-bell"></i></button>
+                    <div class="dropdown">
+                        <button class="profile m-0" type="button" id="profileDropdown" data-bs-toggle="dropdown" title="Account Menu">
+                            <div class="profile-pic placeholder"></div>
+                            <div class="profile-info">
+                                <span class="profile-name">{{ user_name }}</span>
+                                <span class="profile-role">System Administrator</span>
+                            </div>
+                        </button>
+                        <ul class="drop-profile dropdown-menu" aria-labelledby="profileDropdown">
+                            <li>
+                                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#profileModal">
+                                    <i class='bx bx-user-circle drop-icon'></i>
+                                    <span class="drop-name">Profile</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#settingsModal">
+                                    <i class='bx bx-cog drop-icon'></i> 
+                                    <span class="drop-name">Settings</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'user_logout' %}">
+                                    <i class='bx bx-log-out drop-icon'></i> 
+                                    <span class="drop-name">Log Out</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </header>
             
@@ -182,8 +204,125 @@
                         </div>
                     </div>
                 </div>
-                
             </main>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-0 pb-2 bg-white shadow">
+                <div class="title-cover modal-header pb-1 pt-4 border-bottom-0" style="padding-left: 32px; padding-right: 32px;">
+                    <h5 class="modal-title" id="departmentReportModalLabel">Your Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="cover modal-body py-3 pb-0" style="padding-left: 32px; padding-right: 32px;">
+                    <div class="text-center">
+                        <img src="https://fastly.picsum.photos/id/383/100/100.jpg?hmac=USPHQV9hy_FwDO_SsbRJ0DWcFpqtQrIo-IrwjaRuFJs" 
+                             alt="Profile Picture" id="profilePicture" class="profile-modal-pic">
+                    </div>
+                </div>
+
+                <div class="modal-body pt-1" style="padding-left: 32px; padding-right: 32px;">
+                    <div class="mb-3">
+                        <h4 id="fullName" class="text-center my-1 p-0">First Middle Last</h4>
+                        <p id="role" class="text-center p-0">System Administrator</p>
+                    </div>
+
+                    <div class="row mb-3 g-3">
+                        <div class="col text-start">
+                            <p id="userIDLabel" class="d-flex align-items-center gap-2">
+                                <i class="fa-solid fa-circle-user profile-icon"></i><strong>User ID</strong>
+                            </p>
+                        </div>
+                        <div class="col text-end">
+                            <p id="userIDValue">SYS-0000</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3 g-3">
+                        <div class="col text-start">
+                            <p id="emailAddress" class="d-flex align-items-center gap-2">
+                                <i class="fa-solid fa-envelope profile-icon"></i><strong>Email Address</strong>
+                            </p>
+                        </div>
+                        <div class="col text-end">
+                            <p id="employeeEmail">emailaddress@gmail.com</p>
+                        </div>
+                    </div>
+                
+                    <div class="row mb-3 g-3">
+                        <div class="col text-start">
+                            <p id="contactNumber" class="d-flex align-items-center gap-2">
+                                <i class="fa-solid fa-phone profile-icon"></i><strong>Contact Number</strong>
+                            </p>
+                        </div>
+                        <div class="col text-end">
+                            <p id="employeeContact">09123456789</p>
+                        </div>
+                    </div>
+
+                    <button type="button" class="w-100 mt-1 mb-2 btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit Profile</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0">
+                    <h5 class="modal-title" id="departmentReportModalLabel">Edit Profile Information</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="d-flex align-items-center justify-content-center mb-3">
+                        <div class="me-3">
+                            <img src="https://fastly.picsum.photos/id/383/100/100.jpg?hmac=USPHQV9hy_FwDO_SsbRJ0DWcFpqtQrIo-IrwjaRuFJs" 
+                                 alt="Profile Picture" id="profilePicture" class="profile-modal-pic" style="width: 115px; height: 115px;">
+                        </div>
+                        <div>
+                            <div class="mb-2">
+                                <button type="button" class="btn btn-primary me-2">Change Photo</button>
+                                <button type="button" class="btn btn-secondary">Delete Photo</button>
+                            </div>
+                            <p class="mt-2 text-muted"><small>Upload PNG or JPG. (max 300 x 300px)</small></p>
+                        </div>
+                    </div>
+
+                    <form id="editProfileForm" method="post" action="">
+                        <div class="mb-3">
+                            <label for="firstName" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="editFirstName" placeholder="Enter First Name" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="middleName" class="form-label">Middle Name</label>
+                            <input type="text" class="form-control" id="editMiddleName" placeholder="Enter Middle Name" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="lastName" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="editLastName" placeholder="Enter Last Name" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="editEmailAddress" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="editEmailAddress" placeholder="Enter Email Address" name="email_address" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="editContactNumber" class="form-label">Contact Number</label>
+                            <input type="text" class="form-control" id="editContactNumber" placeholder="Enter Contact Number" name="contact_number" required>
+                        </div>
+
+                        <button type="button" class="w-100 mt-1 mb-2 btn btn-primary" data-bs-toggle="modal" data-bs-target="#profileModal">Save Changes</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -194,7 +333,6 @@
                 const params = new URLSearchParams(window.location.search);
                 const status = params.get('status');
                 if (status) {
-                    // Assuming you want to add the class to the element with ID 'targetElement'
                     document.querySelector('#dashboard').classList.add(status);
                 }
             });
