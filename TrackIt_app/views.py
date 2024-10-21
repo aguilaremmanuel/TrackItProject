@@ -426,9 +426,9 @@ def user_login(request):
         if role == 'ADO':
             return redirect(admin_officer_dashboard)
         elif role == 'SRO':
-            return redirect(dashboard_sro)
+            return redirect(sro_dashboard)
         elif role == 'ACT':
-            return redirect(dashboard_action_officer)
+            return redirect(action_officer_dashboard)
         elif role == 'DIR':
             return redirect(director_dashboard)
         elif role == 'SYS':
@@ -518,9 +518,9 @@ def user_login(request):
         if user.role == 'ADO':
             return redirect(f"{reverse('admin_officer_dashboard')}?status=active")
         elif user.role == 'SRO':
-            return redirect(f"{reverse('dashboard_sro')}?status=active")
+            return redirect(f"{reverse('sro_dashboard')}?status=active")
         elif user.role == 'ACT':
-            return redirect(f"{reverse('dashboard_action_officer')}?status=active")
+            return redirect(f"{reverse('action_officer_dashboard')}?status=active")
         else:
             messages.error(request, "Invalid role. Please contact the administrator.")
             return redirect('user_login')

@@ -27,7 +27,7 @@
                 <div class="header-right">
                     <button class="toggle-notification" id="notification"><i class="fa-solid fa-bell"></i></button>
                     <div class="dropdown">
-                        <button class="profile m-0" type="button" id="profileDropdown" data-bs-toggle="dropdown">
+                        <button class="profile m-0" type="button" id="profileDropdown" data-bs-toggle="dropdown" title="Account Menu">
                             <div class="profile-pic placeholder"></div>
                             <div class="profile-info">
                                 <span class="profile-name">{{ user_name }}</span>
@@ -439,12 +439,10 @@
     <script src="{% static 'js/add-remarks.js' %}"></script>
     <script src="{% static 'js/generate-document-report.js' %}"></script>
     <script>
-        // On page load, read the URL parameter and update the class
         document.addEventListener('DOMContentLoaded', function () {
             const params = new URLSearchParams(window.location.search);
             const status = params.get('status');
             if (status) {
-                // Assuming you want to add the class to the element with ID 'targetElement'
                 document.querySelector('#needsAction').classList.add(status);
             }
         });
