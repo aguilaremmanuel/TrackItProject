@@ -539,7 +539,7 @@ def user_login(request):
         elif user.role == 'SRO':
             return redirect(f"{reverse('sro_dashboard')}?status=active")
         elif user.role == 'ACT':
-            return redirect(f"{reverse('dashboard_action_officer')}?status=active")
+            return redirect(f"{reverse('action_officer_dashboard')}?status=active")
         elif user.role == 'Director':
             return redirect(f"{reverse('director_dashboard')}?status=active")
         elif user.role == 'System Admin':
