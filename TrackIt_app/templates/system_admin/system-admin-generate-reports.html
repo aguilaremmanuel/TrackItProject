@@ -79,7 +79,7 @@
                                 </li>
                                 <li>
                                     <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#departmentReportModal">
-                                        Department Performance Report
+                                        Office Performance Report
                                     </a>
                                 </li>
                             </ul>
@@ -96,7 +96,7 @@
                             <a class="tab-link {% if report == 'employee-performance' %}active{% endif %}" href="{% url 'director_generate_reports' 'employee-performance' %}?status=active">Employee Performance Report</a>
                         </li>
                         <li class="tab-item">
-                            <a class="tab-link {% if report == 'department-performance' %}active{% endif %}" href="{% url 'director_generate_reports' 'department-performance' %}?status=active">Department Performance Report</a>
+                            <a class="tab-link {% if report == 'department-performance' %}active{% endif %}" href="{% url 'director_generate_reports' 'department-performance' %}?status=active">Office Performance Report</a>
                         </li>
                     </ul>
         

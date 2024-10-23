@@ -27,7 +27,7 @@
             </li>
             <li>
                 <a href="{% url 'admin_officer_needs_action' 'all-documents' '-1' %}?status=active" class="nav-link mb-2" id="needs-action">
-                    <i class='bx bx-alarm-exclamation nav-icon'></i>
+                    <i class='bx bx-calendar-exclamation nav-icon'></i>
                     <span class="nav-name">Needs Action</span>
                 </a>
             </li>
@@ -44,9 +44,9 @@
                 </a>
             </li>
             <li>
-                <a href="{% url 'admin_officer_activity_logs'%}?status=active" class="nav-link mb-2" id="act-logs">
+                <a href="{% url 'admin_officer_activity_logs' 'feed' %}?status=active" class="nav-link mb-2" id="act-logs">
                     <i class='bx bx-history nav-icon'></i>
-                    <span class="nav-name">Recent Activities</span>
+                    <span class="nav-name">Activity Logs</span>
                 </a>
             </li> 
         </ul>

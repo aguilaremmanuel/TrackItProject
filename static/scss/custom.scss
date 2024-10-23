@@ -208,7 +208,7 @@ a {
 }
 
 .badge-red {
-    background-color: #DC3545;
+    background-color: #EA2E2E;
     color: #FFFFFF;
 }
 
@@ -217,13 +217,10 @@ a {
     color: #FFFFFF;
 }
 
-// CONTAINERS
-
+// SEARCH & TITLE
 .title-container {
     height: 37.85px;
 }
-
-// SEARCH
 
 .form-search::-webkit-search-cancel-button {
     -webkit-appearance: none;
@@ -265,16 +262,14 @@ a {
     color: #B1C1CF;
     color: #000000;
     opacity: 0.6;
-    display: none; /* Initially hidden */
+    display: none;
 }
 
-/* Show clear icon when input has value */
 .form-search:not(:placeholder-shown) + .clear-icon {
     display: block;
 }
 
-// FORM CONTROL
-
+// FORMS
 .form-label {
     font-size: 15px !important;
     font-weight: 600;
@@ -331,6 +326,10 @@ input:focus::-webkit-datetime-edit {
     }     
 }
 
+.form-check-label {
+    font-size: 14px;
+}
+
 .input-group {
     display: flex;
     align-items: center;
@@ -385,7 +384,6 @@ input:focus::-webkit-datetime-edit {
 }
 
 // TABS
-
 .custom-tabs {
     list-style: none;
     padding: 0;
@@ -440,7 +438,6 @@ input:focus::-webkit-datetime-edit {
 }
 
 // TABLES
-
 table {
     border-collapse: collapse;
     width: 100%;
@@ -482,8 +479,8 @@ thead {
     line-height: 1.2;
 }
 
-table th:last-child {
-    text-align: center;
+.table.with-action th:last-child {
+    text-align: center !important;
 }
 
 .table-action {
@@ -493,8 +490,17 @@ table th:last-child {
     gap: .5rem;
 }
 
-// ICONS
+table tbody tr td.overdue {
+    font-weight: 600;
+    white-space: nowrap;
+    color: #EA2E2E !important;
+}
 
+.table-empty {
+    height: 49px;
+}
+
+// ICONS
 .bxs-sort-alt {
     font-size: 12px;
 }
@@ -505,7 +511,6 @@ table th:last-child {
 }
 
 // MODALS
-
 .modal-body p {
     font-size: 15px;
     margin: 0;
@@ -515,8 +520,7 @@ table th:last-child {
     gap: 9px;
 }
 
-// DROPDOWN
-
+// DROPDOWNS
 .drop-profile {
     margin-top: 17.5px !important;
 }
@@ -567,7 +571,6 @@ table th:last-child {
 }
 
 // PROFILE
-
 .title-cover {
     background: #eaf0fb;
     border-radius: 1rem 1rem 0 0;
@@ -591,3 +594,15 @@ table th:last-child {
     width: 1.2rem;
     text-align: center;
 }
+
+// FILTER
+.drop-filter {
+    margin-top: 5px !important;
+    padding: 15px 21px 21px 21px;
+}
+
+.title-filter {
+    font-size: 14px;
+    font-weight: 600;
+    color: #000000;
+}   

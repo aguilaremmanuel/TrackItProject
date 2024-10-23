@@ -1131,7 +1131,7 @@ def sro_activity_logs(request):
     return render(request, 'sro/sro-activity-logs.html', context)
 
 # ADMIN OFFICER ACTIVITY LOGS
-def admin_officer_activity_logs(request):
+def admin_officer_activity_logs(request, activity_type):
 
     user_id = request.session.get('user_id')
     if not user_id:

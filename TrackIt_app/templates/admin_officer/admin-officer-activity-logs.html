@@ -73,44 +73,17 @@
                 </div>
 
                 <div class="my-3 px-3 py-2 bg-white rounded shadow-sm">
-                    <div class="table-responsive table-wrapper d-flex">
-                        <table class="table mb-1">
-                            <thead>
-                                <tr>
-                                    <th>Timestamp</th>
-                                    <th>Tracking Number</th>
-                                    <th>Subject/Particulars</th>
-                                    <th>Sender Name</th>
-                                    <th>Remarks</th>
-                                    <th>Activity</th>
-                                </tr>
-                            </thead>
-                            
-                            <tbody>
-
-                                {% for log in logs %}
-                                    <tr>
-                                        <td>{{ log.time_stamp|date:"Y-m-d" }}<br>{{ log.time_stamp|timezone:"Asia/Manila"|date:"h:i A" }}</td>
-                                        <td style="min-width: 180px;">{{ log.document_id.tracking_no }}</td>
-                                        <td style="min-width: 180px;">{{ log.document_id.subject }}</td>
-                                        <td style="min-width: 180px;">{{ log.document_id.sender_name }}</td>
-                                        <td style="min-width: 180px;">
-                                            {% if log.remarks %}
-                                                {{ log.remarks.remarks }}
-                                            {% endif %}
-                                        </td>
-                                        <td style="max-width: 230px;">{{ log.activity }}</td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>           
-                    </div>
+                    <ul class="custom-tabs">
+                        <li class="tab-item">
+                            <a class="tab-link {% if activity_type == 'feed' %}active{% endif %}" href="{% url 'admin_officer_activity_logs' 'feed' %}?status=active">Feed</a>
+                        </li>
+                        <li class="tab-item">
+                            <a class="tab-link {% if activity_type == 'logs' %}active{% endif %}" href="{% url 'admin_officer_activity_logs' 'logs' %}?status=active">Logs</a>
+                        </li>
+                    </ul>
         
-                    <p class="d-block text-start my-0 p-2 fw-semibold" id="record-count" style="color: #000000; opacity: 0.6;">
-                        Showing total of {{ logs.count }} record(s)
-                    </p>
-                </div>
-
+                    <div class="table-tab-wrapper table-responsive d-flex mt-2">
+                        <table class="table mb-1">
             </main>
         </div>
     </div>

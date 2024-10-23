@@ -53,7 +53,7 @@ urlpatterns = [
     path('admin-officer-update-needs-action-display/<str:panel>/', views.admin_officer_update_needs_action_display, name='admin_officer_update_needs_action_display'),
     path('admin-officer-unacted-records/',views.admin_officer_unacted_records, name='admin_officer_unacted_records'),
     path('admin-officer-archive/',views.admin_officer_archive, name='admin_officer_archive'),
-    path('admin-officer-activity-logs/',views.admin_officer_activity_logs, name='admin_officer_activity_logs'),
+    path('admin-officer-activity-logs/<str:activity_type>/',views.admin_officer_activity_logs, name='admin_officer_activity_logs'),
 
     path('sro-dashboard/',views.sro_dashboard, name='sro_dashboard'),
     path('sro-records/<str:panel>/<str:scanned_document_no>/',views.sro_records, name='sro_records'),
