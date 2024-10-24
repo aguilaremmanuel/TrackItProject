@@ -12238,7 +12238,6 @@ input:focus::-webkit-datetime-edit {
 
 table {
   border-collapse: collapse;
-  width: 100%;
 }
 
 thead {
@@ -12296,6 +12295,18 @@ table tbody tr td.overdue {
 
 .table-empty {
   height: 49px;
+}
+
+.table-logs td:nth-child(3) {
+  max-width: 295px;
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+.table-logs td:nth-child(6) {
+  max-width: 150px;
+  word-wrap: break-word;
+  white-space: normal;
 }
 
 .bxs-sort-alt {
@@ -12394,6 +12405,39 @@ table tbody tr td.overdue {
   font-size: 14px;
   font-weight: 600;
   color: #000000;
+}
+
+.activity-tab-wrapper {
+  max-height: calc(100vh - 259px) !important;
+  overflow-y: auto;
+  margin: 14px 0;
+}
+
+.activity-item {
+  padding: 10px 9px 10px 5px;
+  margin: 0 10px;
+}
+
+.activity-class .activity-item {
+  border-bottom: 1px solid rgba(177, 193, 207, 0.2);
+}
+
+.activity-class .activity-item:last-child {
+  border: none;
+}
+
+.activity-icon-wrapper {
+  width: 39px;
+  height: 39px;
+  flex-shrink: 0;
+  opacity: 6;
+  margin-right: 18px;
+  margin-left: 4px;
+}
+
+.activity-label {
+  margin-bottom: 0;
+  padding: 10px 12px;
 }
 
 /*# sourceMappingURL=custom.css.map */

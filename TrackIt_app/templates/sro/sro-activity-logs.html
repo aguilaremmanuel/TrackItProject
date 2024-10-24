@@ -8,7 +8,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="/static/images/logo-icon.png" type="image/png">
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
-	<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
     <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
     <link rel="stylesheet" href="{% static 'css/table-content.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,7 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 	<link href="{% static 'fontawesomefree/css/all.min.css' %}" rel="stylesheet" type="text/css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <title>Recent Activities</title>
+    <title>Activity Logs</title>
 </head>
 
 <body>
@@ -65,7 +64,7 @@
                     <h3 class="fw-semibold m-0">Activity Logs</h3>
                     <div class="d-flex justify-content-between align-items-center" style="gap: 12px;">
                         <div class="search-container">
-                            <input type="text" id="searchInput" class="form-search form-control shadow-sm" style="font-size: 14px !important;" placeholder="Search a document">
+                            <input type="text" id="searchInput" class="form-search form-control shadow-sm" style="font-size: 14px !important;" placeholder="Search your activity">
                             <i class="fa-solid fa-search search-icon"></i>  
                             <i class="fa-solid fa-xmark clear-icon" style="display: none;"></i>
                         </div>
@@ -73,50 +72,155 @@
                 </div>
 
                 <div class="my-3 px-3 py-2 bg-white rounded shadow-sm">
-                    <div class="table-responsive table-wrapper d-flex">
-                        <table class="table mb-1">
+                    <ul class="custom-tabs">
+                        <li class="tab-item">
+                            <a class="tab-link {% if activity_type == 'recent' %}active{% endif %}" href="{% url 'sro_activity_logs' 'recent' %}?status=active">Recent</a>
+                        </li>
+                        <li class="tab-item">
+                            <a class="tab-link {% if activity_type == 'all-activity' %}active{% endif %}" href="{% url 'sro_activity_logs' 'all-activity' %}?status=active">All Activity</a>
+                        </li>
+                    </ul>
+
+                    {% if activity_type == 'recent' %}
+                    <div class="activity-tab-wrapper d-flex mt-2">
+                        <div class="activity-feed w-100 ">
+                            <!-- Today's Activities -->
+                            <div class="activity-class">
+                                <h6 class="activity-label">Today</h6>
+                                <div class="activity-item d-flex justify-content-between align-items-center">
+                                    <div class="d-flex">
+                                        <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center" style="background-color: #dcf0e0;">
+                                            <i class="fa-solid fa-share" style="color: #28A745; font-size: 1.1rem;"></i>
+                                        </div>
+                                        <p class="mb-0">
+                                            <strong class="d-block">Document Received - Forwarded to ACT: Tracking No. 112922032-DEPT-001</strong>
+                                            The document has been forwarded to the assigned recipient for further processing.
+                                        </p>
+                                    </div>
+                                    <p class="text-end mb-0" style="white-space: nowrap;">2024-10-24<br>10:30 AM</p>
+                                </div>
+                                <div class="activity-item d-flex justify-content-between align-items-center">
+                                    <div class="d-flex">
+                                        <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center" style="background-color: #dcf0e0;">
+                                            <i class="fa-solid fa-route" style="color: #28A745; font-size: 1.1rem;"></i>
+                                        </div>
+                                        <p class="mb-0">
+                                            <strong class="d-block">Document Routed: Tracking No. 112922032-DEPT-001</strong>
+                                            The document has been routed to the assigned recipient for further processing.
+                                        </p>
+                                    </div>
+                                    <p class="text-end mb-0" style="white-space: nowrap;">2024-10-24<br>10:30 AM</p>
+                                </div>
+                            </div>
+                    
+                            <!-- Yesterday's Activities -->
+                            <div class="activity-class">
+                                <h6 class="activity-label">Yesterday</h6>
+                                <div class="activity-item d-flex justify-content-between align-items-center">
+                                    <div class="d-flex">
+                                        <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center" style="background-color: #dcf0e0;">
+                                            <i class="fa-solid fa-flag" style="color: #28A745; font-size: 1.1rem;"></i>
+                                        </div>
+                                        <p class="mb-0">
+                                            <strong class="d-block">Document Resolved - Endorsed for Archive: Tracking No. 112922032-DEPT-001</strong>
+                                            The document has been resolved and endorsed for archiving or final processing.
+                                        </p>
+                                    </div>
+                                    <p class="text-end mb-0" style="white-space: nowrap;">2024-10-24<br>10:30 AM</p>
+                                </div>
+                            </div>
+
+                            <!-- This Week Activities -->
+                            <div class="activity-class">
+                                <h6 class="activity-label">This Week</h6>
+                                <div class="activity-item d-flex justify-content-between align-items-center">
+                                    <div class="d-flex">
+                                        <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center" style="background-color: #dcf0e0;">
+                                            <i class="fa-solid fa-flag" style="color: #28A745; font-size: 1.1rem;"></i>
+                                        </div>
+                                        <p class="mb-0">
+                                            <strong class="d-block">Document Resolved - Endorsed for Archive: Tracking No. 112922032-DEPT-001</strong>
+                                            The document has been resolved and endorsed for archiving or final processing.
+                                        </p>
+                                    </div>
+                                    <p class="text-end mb-0" style="white-space: nowrap;">2024-10-24<br>10:30 AM</p>
+                                </div>
+                            </div>
+
+                            <!-- Last 15 Days Activities -->
+                            <div class="activity-class">
+                                <h6 class="activity-label">Last 15 Days</h6>
+                                <div class="activity-item d-flex justify-content-between align-items-center">
+                                    <div class="d-flex">
+                                        <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center" style="background-color: #dcf0e0;">
+                                            <i class="fa-solid fa-share" style="color: #28A745; font-size: 1.1rem;"></i>
+                                        </div>
+                                        <p class="mb-0">
+                                            <strong class="d-block">Document Received - Forwarded to ACT: Tracking No. 112922032-DEPT-001</strong>
+                                            The document has been forwarded to the assigned recipient for further processing.
+                                        </p>
+                                    </div>
+                                    <p class="text-end mb-0" style="white-space: nowrap;">2024-10-24<br>10:30 AM</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if activity_type == 'all-activity' %}
+                    <div class="table-tab-wrapper table-responsive d-flex mt-2">
+                        <table class="table mb-1 table-logs">
                             <thead>
                                 <tr>
                                     <th>Timestamp</th>
                                     <th>Tracking Number</th>
-                                    <th>Subject/Particulars</th>
+                                    <th>Particulars</th>
                                     <th>Sender Name</th>
                                     <th>Remarks</th>
                                     <th>Activity</th>
                                 </tr>
                             </thead>
-                            
-                            <tbody>
-
-                                {% for log in logs %}
-                                    <tr>
-                                        <td>{{ log.time_stamp|date:"Y-m-d" }}<br>{{ log.time_stamp|timezone:"Asia/Manila"|date:"h:i A" }}</td>
-                                        <td style="min-width: 180px;">{{ log.document_id.tracking_no }}</td>
-                                        <td style="min-width: 180px;">{{ log.document_id.subject }}</td>
-                                        <td style="min-width: 180px;">{{ log.document_id.sender_name }}</td>
-                                        <td style="min-width: 180px;">
-                                            {% if log.remarks %}
-                                                {{ log.remarks.remarks }}
-                                            {% endif %}
-                                        </td>
-                                        <td style="max-width: 230px;">{{ log.activity }}</td>
-                                    </tr>
-                                {% endfor %}
+                            <tbody id="docTableBody">
+                                <tr>
+                                    <td style="white-space: nowrap;">2024-08-05<br>10:15 AM</td>
+                                    <td style="white-space: nowrap;">112922032-DEPT-001</td>
+                                    <td>Request for Amendment of Expense List for Cash Advance Under Special Order No. 34</td>
+                                    <td>Antonio R. Mendoza</td>
+                                    <td>This is a sample remarks</td>
+                                    <td>Document Received - Forwarded to ACT</td>
+                                </tr>
+                                <tr>
+                                    <td style="white-space: nowrap;">2024-08-05<br>10:15 AM</td>
+                                    <td style="white-space: nowrap;">112922032-DEPT-001</td>
+                                    <td>Request for Amendment of Expense List for Cash Advance Under Special Order No. 34</td>
+                                    <td>Antonio R. Mendoza</td>
+                                    <td>This is a sample remarks</td>
+                                    <td>Document Routed</td>
+                                </tr>
+                                <tr>
+                                    <td style="white-space: nowrap;">2024-08-05<br>10:15 AM</td>
+                                    <td style="white-space: nowrap;">112922032-DEPT-001</td>
+                                    <td>Request for Amendment of Expense List for Cash Advance Under Special Order No. 34</td>
+                                    <td style="white-space: nowrap;">Antonio R. Mendoza</td>
+                                    <td>This is a sample remarks</td>
+                                    <td>Document Resolved - Endorsed for Archive</td>
+                                </tr>
                             </tbody>
-                        </table>           
+                        </table>
                     </div>
-        
-                    <p class="d-block text-start my-0 p-2 fw-semibold" id="record-count" style="color: #000000; opacity: 0.6;">
-                        Showing total of {{ logs.count }} record(s)
-                    </p>
-                </div>
 
+                    <p class="d-block text-start my-0 p-2 fw-semibold" id="record-count" style="color: #000000; opacity: 0.6;">
+                        Showing total of # activity log(s)
+                    </p>
+                    {% endif %}
+                </div>
             </main>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'js/toggle-sidebar.js' %}"></script>
+    <script src="{% static 'js/clear-search.js' %}"></script>
     <script>
         // On page load, read the URL parameter and update the class
         document.addEventListener('DOMContentLoaded', function () {
