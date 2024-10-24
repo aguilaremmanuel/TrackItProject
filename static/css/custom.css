@@ -12304,7 +12304,7 @@ table tbody tr td.overdue {
 }
 
 .table-logs td:nth-child(6) {
-  max-width: 150px;
+  max-width: 160px;
   word-wrap: break-word;
   white-space: normal;
 }
