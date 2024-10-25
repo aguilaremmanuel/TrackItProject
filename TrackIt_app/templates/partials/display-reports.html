@@ -19,10 +19,13 @@
             <td style="white-space: nowrap;">{{ report.last_update|date:"Y-m-d" }}<br>{{ report.last_update|date:"h:i A" }}</td>
             <td>
                 <div class="table-action">
+                    
+                    <!--
                     <button type="button" class="preview btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#viewReportModal">
                         <i class="fa-solid fa-eye"></i>
                     </button>
-                    <button type="button" class="btn btn-sm btn-green" data-report-no="{{ report.report_no }}">
+                    -->
+                    <button type="button" class="btn btn-sm btn-green downloadButton" data-report-no="{{ report.report_no }}">
                         <i class="fa-solid fa-download"></i>
                     </button>
                     <button type="button" class="btn btn-sm btn-red" data-bs-toggle="modal" data-bs-target="#deleteReportModal" data-report-no="{{ report.report_no }}">

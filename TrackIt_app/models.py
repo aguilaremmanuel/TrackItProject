@@ -32,6 +32,7 @@ class User(models.Model):
     employee_id = models.CharField(max_length=12, blank = True)
     last_login = models.DateTimeField(null=True, blank=True)
     receive_recent = models.BooleanField(default=False)
+    max_load_per_day = models.IntegerField(default=5)
     class Meta:
         db_table = 'tbl_user'
 
@@ -86,6 +87,7 @@ class ActivityLogs(models.Model):
     document_id = models.ForeignKey(Document, on_delete=models.SET_NULL, null=True, blank=True)
     remarks = models.ForeignKey(Remarks, on_delete=models.SET_NULL, null=True, blank=True)
     user_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    receiver = models.CharField(max_length=10, blank=True, null=True)
     class Meta:
         db_table = 'tbl_activity_logs'
 
@@ -100,5 +102,14 @@ class Reports(models.Model):
     last_update = models.DateTimeField(blank=True)
     class Meta:
         db_table = 'tbl_reports'
+
+class UnactedLogs(models.Model):
+    record_no = models.BigAutoField(primary_key=True)
+    time_stamp = models.DateField(null=True, blank=True)
+    document_id = models.ForeignKey(Document, on_delete=models.SET_NULL, null=True, blank=True)
+    status = models.CharField(max_length=25, null=True, blank=True)
+    user_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    class Meta:
+        db_table = 'tbl_unacted_logs'
 
 

@@ -12372,4 +12372,11 @@ table th:last-child {
   text-align: center;
 }
 
+.highlight-search {
+  background-color: rgb(46, 114, 234); /* Change to desired color */
+  color: white; /* Text color */
+  padding: 0 3px; /* Optional: add some padding */
+  border-radius: 3px; /* Optional: rounded corners */
+}
+
 /*# sourceMappingURL=custom.css.map */

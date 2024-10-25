@@ -23,6 +23,34 @@ function getCSRFToken() {
     return cookieValue;
 }
 
+document.getElementById('EmployeeOfficeCategory').addEventListener('change', function () {
+
+    var selectedEmployeeOffice = this.value;
+    var targetEmployeeSelect = document.getElementById('TargetEmployee');
+
+    if (selectedEmployeeOffice) {
+        fetch(`/load-target-employees/?selected_employee_office=${selectedEmployeeOffice}`)
+        .then(response => response.json())
+        .then(data => {
+            // Clear previous options
+            targetEmployeeSelect.innerHTML = '<option value="">Select Document Type</option>';
+            // Enable the dropdown
+            targetEmployeeSelect.disabled = false;
+            // Populate new options
+            data.forEach(function (item) {
+
+                display_option = "(" + item.employee_id + ") - " + item.lastname + ", " + item.firstname
+
+                var option = new Option(display_option, item.employee_id);
+                targetEmployeeSelect.add(option);
+            });
+        });
+    } else {
+        targetEmployeeSelect.innerHTML = '<option value="">Select Document Type</option>';
+        targetEmployeeSelect.disabled = true;
+    }
+});
+
 document.addEventListener('DOMContentLoaded', function () {
 
     setEndDates();
@@ -89,9 +117,6 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!data.validDates) {
                 const invalidDatesModal = new bootstrap.Modal(document.getElementById('invalidDatesModal'));
                 invalidDatesModal.show();
-            }else if(!data.employeeExists) {
-                const employeeNotExistsModal = new bootstrap.Modal(document.getElementById('employeeNotExistsModal'));
-                employeeNotExistsModal.show();
             } else {
                 employeeReportForm.reset();
             }
@@ -154,5 +179,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     });
 
-
 });
+
+
+
+
+

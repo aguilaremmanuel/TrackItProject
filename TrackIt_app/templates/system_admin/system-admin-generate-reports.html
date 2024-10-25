@@ -12,9 +12,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-	<link href="{% static 'fontawesomefree/css/all.min.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/all.min.css' %}" rel="stylesheet" type="text/css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <title>System Admin Generated Reports</title>
+    <title>Generate Reports</title>
 </head>
 
 <body>
@@ -57,13 +57,13 @@
                     </div>
                 </div>
             </header>
-            
+
             <main class="main-content">
                 <div class="title-container d-flex justify-content-between align-items-center">
                     <h3 class="fw-semibold m-0">Generate Reports</h3>
                     <div class="d-flex justify-content-between align-items-center" style="gap: 12px;">
                         <div class="search-container">
-                            <input type="text" id="searchInput" data-url="" class="form-search form-control shadow-sm" placeholder="Search a report" onkeyup="">
+                            <input type="text" id="searchInput" data-url="{% url 'update_reports_display' report_type %}" class="form-search form-control shadow-sm" placeholder="Search a report" onkeyup="fetchReports()">
                             <i class="fa-solid fa-search search-icon"></i>  
                             <i class="fa-solid fa-xmark clear-icon" style="display: none;"></i>
                         </div>
@@ -71,15 +71,15 @@
                             <button class="btn btn-primary m-0 shadow-sm" type="button" id="createReportDropdown" data-bs-toggle="dropdown" style="max-height: 37.85px; padding: 7.63px 11.2px;">
                                 <i class="fa-solid fa-plus"></i>&nbsp; Create Report
                             </button>
-                            <ul class="drop-report dropdown-menu" aria-labelledby="createReportDropdown">
+                            <ul class="dropdown-menu" aria-labelledby="createReportDropdown">
                                 <li>
                                     <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#employeeReportModal">
                                         Employee Performance Report
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#departmentReportModal">
-                                        Department Performance Report
+                                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#officeReportModal">
+                                        Office Performance Report
                                     </a>
                                 </li>
                             </ul>
@@ -90,13 +90,13 @@
                 <div class="my-3 px-3 py-2 bg-white rounded shadow-sm">
                     <ul class="custom-tabs">
                         <li class="tab-item">
-                            <a class="tab-link {% if report == 'all-reports' %}active{% endif %}" href="{% url 'director_generate_reports' 'all-reports' %}?status=active">All Reports</a>
+                            <a class="tab-link {% if report_type == 'all-reports' %}active{% endif %}" href="{% url 'system_admin_generate_reports' 'all-reports' %}?status=active">All Reports</a>
                         </li>
                         <li class="tab-item">
-                            <a class="tab-link {% if report == 'employee-performance' %}active{% endif %}" href="{% url 'director_generate_reports' 'employee-performance' %}?status=active">Employee Performance Report</a>
+                            <a class="tab-link {% if report_type == 'employee-performance' %}active{% endif %}" href="{% url 'system_admin_generate_reports' 'employee-performance' %}?status=active">Employee Performance Report</a>
                         </li>
                         <li class="tab-item">
-                            <a class="tab-link {% if report == 'department-performance' %}active{% endif %}" href="{% url 'director_generate_reports' 'department-performance' %}?status=active">Department Performance Report</a>
+                            <a class="tab-link {% if report_type == 'office-performance' %}active{% endif %}" href="{% url 'system_admin_generate_reports' 'office-performance' %}?status=active">Office Performance Report</a>
                         </li>
                     </ul>
         
@@ -114,53 +114,10 @@
                                 </tr>
                             </thead>
         
-                            <tbody id="userTableBody">
-                                <tr>
-                                    <td>2024 Accounting Report</td>
-                                    <td>Department Performance</td>
-                                    <td>Accounting</td>
-                                    <td>2024-01-01</td>
-                                    <td>2024-12-31</td>
-                                    <td style="white-space: nowrap;">2024-08-05<br>10:15 AM</td>
-                                    <td>
-                                        <div class="table-action">
-                                            <button type="button" class="preview btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#viewReportModal" title="Preview Report">
-                                                <i class="fa-solid fa-eye"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-green" data-bs-toggle="modal" data-bs-target="#" title="Download Report">
-                                                <i class="fa-solid fa-download"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-red" data-bs-toggle="modal" data-bs-target="#deleteReportModal" title="Delete Report">
-                                                <i class="fa-solid fa-trash-can"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>2024 Employee Report - Malabanan</td>
-                                    <td>Employee Performance</td>
-                                    <td>ADM-1000</td>
-                                    <td>2024-01-01</td>
-                                    <td>2024-12-31</td>
-                                    <td style="white-space: nowrap;">2024-08-05<br>10:15 AM</td>
-                                    <td>
-                                        <div class="table-action">
-                                            <button type="button" class="preview btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#viewReportModal" title="Preview Report">
-                                                <i class="fa-solid fa-eye"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-green" data-bs-toggle="modal" data-bs-target="" title="Download Report">
-                                                <i class="fa-solid fa-download"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-red" data-bs-toggle="modal" data-bs-target="#deleteReportModal" title="Delete Report">
-                                                <i class="fa-solid fa-trash-can"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
+                            <tbody id="reportsTableBody">
                             </tbody>
                         </table>
                     </div>
-        
                     <p class="d-block text-start my-0 p-2 fw-semibold" id="record-count" style="color: #000000; opacity: 0.6;">
                         Showing total of <span id="recordCount"></span> report(s)
                     </p>
@@ -182,102 +139,147 @@
                     <div id="alert-container-employee"></div>
 
                     <form id="employeeReportForm" method="post" action="">
-                        
+                        {% csrf_token %}
                         <div class="mb-3">
                             <label for="reportNameEmployee" class="form-label">Report Name</label>
-                            <input type="text" class="form-control" id="reportNameEmployee" placeholder="Enter Report Name" name="report_name" required>
+                            <input type="text" class="form-control" id="reportNameEmployee" placeholder="Enter Report Name" name="report_name" required autocomplete="off">
                         </div>
 
                         <div class="row mb-3 g-3">
 							<div class="col">
-                                <label for="startDateDepartment" class="form-label">Start Date</label>
-                                <input type="date" class="form-control" id="startDateDepartment" name="start_date" required>								
+                                <label for="startDateOffice" class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="startDateOffice" name="start_date" required>								
 							</div>
 							<div class="col">
-                                <label for="endDateDepartment" class="form-label">End Date</label>
-                                <input type="date" class="form-control" id="endDateDepartment" name="end_date" required>								
+                                <label for="endDateEmployee" class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="endDateEmployee" name="end_date" required>								
 							</div>
 						</div>
 
                         <div class="mb-3">
-                            <label for="userID" class="form-label">Target Employee (User ID)</label>
-                            <input type="text" class="form-control" id="userID" placeholder="Enter User ID" name="user_id" required>
+                            <label for="officeID" class="form-label">Employee's Office</label>
+                            <select class="form-select" id="EmployeeOfficeCategory" aria-label="EmployeeOfficeCategory" required>
+                                <option value="">Select Employee's Office</option>
+                                <option value="ADM">Administrative</option>
+                                <option value="ACC">Accounting</option>
+                                <option value="BMD">Budgeting</option>
+                                <option value="CSR">Cashier</option>
+                                <option value="PRL">Payroll</option>
+                            </select>
                         </div>
 
-                        <input class="w-100 mt-1 mb-2 btn btn-primary" type="submit" value="Generate Report">
+                        <div class="mb-3">
+                            <label for="TargetEmployee" class="form-label">Target Employee (Employee ID - Name)</label>
+                            <select class="form-select" name="target_employee" id="TargetEmployee" aria-label="TargetEmployee" disabled required>
+                                <option value="" disabled selected hidden>Select Target Employee</option>
+                            </select>
+                        </div>
+                        <button type="button" id="generateEmployeeReportBtn" class="w-100 mt-1 mb-2 btn btn-primary">Generate Report</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Department Performance Report Modal -->
-    <div class="modal fade" id="departmentReportModal" tabindex="-1" aria-labelledby="departmentReportModalLabel" aria-hidden="true">
+    <!-- Office Performance Report Modal -->
+    <div class="modal fade" id="officeReportModal" tabindex="-1" aria-labelledby="officeReportModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
                 <div class="modal-header pb-0 border-bottom-0">
-                    <h5 class="modal-title" id="departmentReportModalLabel">Department Performance Report</h5>
+                    <h5 class="modal-title" id="officeReportModalLabel">Office Performance Report</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
                 <div class="modal-body mt-1 pt-2">
-                    <div id="alert-container-department"></div>
+                    <div id="alert-container-office"></div>
 
-                    <form id="departmentReportForm" method="post" action="">
+                    <form id="officeReportForm" method="post" action="">
                         
                         <div class="mb-3">
-                            <label for="reportNameDepartment" class="form-label">Report Name</label>
-                            <input type="text" class="form-control" id="reportNameDepartment" placeholder="Enter Report Name" name="report_name" required>
+                            <label for="reportNameOffice" class="form-label">Report Name</label>
+                            <input type="text" class="form-control" id="reportNameOffice" placeholder="Enter Report Name" name="report_name" required autocomplete="off">
                         </div>
 
                         <div class="row mb-3 g-3">
 							<div class="col">
-                                <label for="startDateDepartment" class="form-label">Start Date</label>
-                                <input type="date" class="form-control" id="startDateDepartment" name="start_date" required>								
+                                <label for="startDateOffice" class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="startDateOffice" name="start_date" required>								
 							</div>
 							<div class="col">
-                                <label for="endDateDepartment" class="form-label">End Date</label>
-                                <input type="date" class="form-control" id="endDateDepartment" name="end_date" required>								
+                                <label for="endDateOffice" class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="endDateOffice" name="end_date" required>								
 							</div>
 						</div>
 
                         <div class="mb-3">
-                            <label for="department" class="form-label">Target Department</label>
-                            <select class="form-select" id="department" name="department" required>
-                                <option value="" selected>Select Department</option>
-                                <option value="Administrative">Administrative</option>
-                                <option value="Accounting">Accounting</option>
-                                <option value="Budgeting">Budgeting</option>
-                                <option value="Cashier">Cashier</option>
-                                <option value="Payroll">Payroll</option>
+                            <label for="office" class="form-label">Target Office</label>
+                            <select class="form-select" id="office" name="office" required>
+                                <option value="" selected>Select Office</option>
+                                <option value="ACC">Accounting</option>
+                                <option value="BMD">Budgeting</option>
+                                <option value="CSR">Cashier</option>
+                                <option value="PRL">Payroll</option>
                             </select>
                         </div>
 
-                        <input class="w-100 mt-1 mb-2 btn btn-primary" type="submit" value="Generate Report">
+                        <button type="button" id="generateOfficeReportBtn" class="w-100 mt-1 mb-2 btn btn-primary">Generate Report</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- View Report Modal -->
-    <div class="modal fade" id="viewReportModal" tabindex="-1" aria-labelledby="viewReportModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+    <!-- Modal to Confirm Employee Report Creation -->
+    <div class="modal fade" id="confirmEmployeeReportCreation" tabindex="-1" aria-labelledby="confirmEmployeeReportCreationLabel" aria-hidden="true">
+        <div class="modal-dialog">
             <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
                 <div class="modal-header pb-0 border-bottom-0">
-                    <h5 class="modal-title" id="viewReportModalLabel">
-                        <i class="fa-solid fa-file" style="color: #2E72EA;"></i>&nbsp; <span id="reportName">Report Name Here</span>
-                    </h5>
+                    <h5 class="modal-title" id="confirmEmployeeReportCreationLabel">Confirm Employee Report Creation</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <!-- PDF Preview -->
-                    <div class="pdf-container" style="height: 68vh;">
-                        <iframe id="reportPdfFrame" src="" width="100%" height="100%" style="border: none;"></iframe>
-                    </div>
+                    <p>Are you sure you want to create this employee performance report? Please verify that all details are accurate before proceeding.</p>
                 </div>
-                <div class="modal-footer p-3 pt-0 mt-2 border-top-0">
-                    <button type="button" class="m-0 mb-2 btn btn-primary" id="confirmDownload">Download PDF</button>
+                <div class="modal-footer p-3 pt-0 border-top-0">
+                    <button type="button" class="m-0 mb-2 btn btn-primary" id="confirmEmployeeReportCreate">Confirm</button>
+                    <button type="button" class="m-0 mb-2 btn btn-secondary" id="cancelCreateEmployeeReport" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal to Confirm Office Report Creation -->
+    <div class="modal fade" id="confirmOfficeReportCreation" tabindex="-1" aria-labelledby="confirmOfficeReportCreationLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0">
+                    <h5 class="modal-title" id="confirmOfficeReportCreationLabel">Confirm Office Report Creation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to create this office performance report? Please verify that all details are accurate before proceeding.</p>
+                </div>
+                <div class="modal-footer p-3 pt-0 border-top-0">
+                    <button type="button" class="m-0 mb-2 btn btn-primary" id="confirmOfficeReportCreateBtn" data-bs-toggle="modal">Confirm</button>
+                    <button type="button" class="m-0 mb-2 btn btn-secondary" id="cancelCreateOfficeReport" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Invalid Dates -->
+    <div class="modal fade" id="invalidDatesModal" tabindex="-1" aria-labelledby="invalidDatesLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 shadow">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="invalidDatesModalLabel" style="color: red;">Failed to Create a Report.</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="fs-6">End date cannot be later than the start date. Please input valid dates.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -296,7 +298,7 @@
                 </div>
                 <div class="modal-footer p-3 pt-0 border-top-0">
                     <button type="button" class="m-0 my-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="m-0 my-2 btn btn-primary" id="confirmDelete">Delete</button>
+                    <button type="button" class="m-0 my-2 btn btn-danger" id="confirmDelete">Delete</button>
                 </div>
             </div>
         </div>
@@ -304,8 +306,9 @@
 
     <script src="{% static 'js/toggle-sidebar.js' %}"></script>
     <script src="{% static 'js/tabs-nav.js' %}"></script>  
-    <script src="{% static 'js/clear-search.js' %}"></script>  
-    <script src="{% static 'js/records-count.js' %}"></script>
+    <script src="{% static 'js/clear-search.js' %}"></script>
+    <script src="{% static 'js/generate-report.js' %}"></script>  
+    <script src="{% static 'js/fetch-reports.js' %}"></script> 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -316,16 +319,5 @@
             }
         });
     </script>
-    <script>
-        document.querySelectorAll('.preview').forEach(button => {
-            button.addEventListener('click', function() {
-                // Replace with actual logic of the generated PDF
-                const generatedPdfUrl = '/path/to/generated-report.pdf';  
-                
-                const pdfFrame = document.getElementById('reportPdfFrame');
-                pdfFrame.src = generatedPdfUrl;
-            });
-        });
-    </script>
-</body>
+<body>
 </html>

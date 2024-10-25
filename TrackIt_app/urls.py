@@ -22,7 +22,7 @@ urlpatterns = [
     path('system-admin-new-record/',views.system_admin_new_record, name='system_admin_new_record'),
     path('system-admin-all-records/', views.system_admin_all_records, name='system_admin_all_records'),
     path('system-admin-announcements/',views.system_admin_announcements, name='system_admin_announcements'),
-    path('system-admin-generate-reports/<str:report>/',views.system_admin_generate_reports, name='system_admin_generate_reports'),
+    path('system-admin-generate-reports/<str:report_type>/',views.system_admin_generate_reports, name='system_admin_generate_reports'),
 
     
     path('document-update-status/<str:action>/<int:document_no>/', views.document_update_status, name='document_update_status'),
@@ -74,7 +74,9 @@ urlpatterns = [
 
     path('generate-document-report/<int:document_no>/', views.generate_document_report, name='generate_document_report'),
     path('new-employee-report/', views.new_employee_report, name='new_employee_report'),
+    path('load-target-employees/', views.load_target_employees, name='load_target_employees'),
     path('new-office-report/', views.new_office_report, name='new_office_report'),
     path('update-reports/<str:report_type>', views.update_reports_display, name='update_reports_display'),
     path('delete-report/<int:report_no>/', views.delete_report, name='delete_report'),
+    path('download-performance-report/<int:report_no>/', views.download_performance_report, name='download_performance_report'),
 ]

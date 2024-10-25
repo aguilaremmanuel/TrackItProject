@@ -16,7 +16,7 @@ from django.utils.http import urlsafe_base64_encode
 from django.template.loader import render_to_string
 from django.db.models import Q
 from django.utils.timezone import now
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta, date, time
 from xhtml2pdf import pisa
 #---------------
 from django.core.mail import EmailMultiAlternatives
@@ -445,82 +445,6 @@ def user_login(request):
     if request.method == 'POST':
         user_id = request.POST['user_id']
         password = request.POST['password']
-        #remember_me = request.POST.get('remember_me')
-        """
-        # Check for System Admin login
-        if user_id == 'SYS-0001' and password == 'SysAdmin@2024':
-            # Ensure the default user exists and is active
-            user_instance, created = User.objects.get_or_create(
-                user_id='SYS-0001',
-                defaults={'password': 'SysAdmin@2024', 'role': 'System Admin', 'status': 'active'}
-            )
-            if created:
-                print("Default System Admin user created.")
-            else:
-                if user_instance.status != 'active':
-                    user_instance.status = 'active'
-                    user_instance.save()
-                    print("Default System Admin user status updated to active.")
-
-            # Store in session
-            request.session['user_id'] = 'SYS-0001'
-            request.session['user_name'] = f"{user_instance.firstname.title()} {user_instance.lastname.title()}"
-            user_instance.last_login = timezone.now()
-            user_instance.save()
-
-            # Handle session expiration
-            request.session.set_expiry(1209600 if remember_me else 0)
-            return redirect(f"{reverse('system_admin_dashboard')}?status=active")
-
-        # Check for Director login
-        elif user_id == 'DIR-0001' and password == 'Director@2024':
-            user_instance, created = User.objects.get_or_create(
-                user_id='DIR-0001',
-                defaults={'password': 'Director@2024', 'role': 'Director', 'status': 'active'}
-            )
-            if created:
-                print("Default Director user created.")
-            else:
-                if user_instance.status != 'active':
-                    user_instance.status = 'active'
-                    user_instance.save()
-                    print("Default Director user status updated to active.")
-
-            # Store in session
-            request.session['user_id'] = 'DIR-0001'
-            request.session['user_name'] = f"{user_instance.firstname.title()} {user_instance.lastname.title()}"
-            user_instance.last_login = timezone.now()
-            user_instance.save()
-
-            # Handle session expiration
-            request.session.set_expiry(1209600 if remember_me else 0)
-            return redirect(f"{reverse('director_dashboard')}?status=active")
-
-        # Fetch user by user_id and password for regular users
-        try:
-            user = User.objects.get(user_id=user_id, password=password)
-        except User.DoesNotExist:
-            messages.error(request, "Invalid credentials.")
-            return redirect('user_login')
-
-        # Check user status
-        if user.status == 'for verification':
-            messages.error(request, "Your account is pending for verification. Please wait for approval.")
-            return redirect('user_login')
-        elif user.status == 'inactive':
-            messages.error(request, "Your account is inactive. Please contact the administrator to reactivate.")
-            return redirect('user_login')
-        elif user.status == 'archived':
-            messages.error(request, "Your account has been deleted and cannot be accessed.")
-            return redirect('user_login')
-
-        user.last_login = timezone.now()
-        user.save()
-        request.session['role'] = user.role
-
-        # Manage session expiration based on Remember Me
-        if user.role not in ['SYS', 'DIR']:  # Exclude System Admin and Director
-            request.session.set_expiry(1209600 if remember_me else 0)"""
 
         try:
             user = User.objects.get(user_id=user_id, password=password)
@@ -539,7 +463,7 @@ def user_login(request):
         elif user.role == 'SRO':
             return redirect(f"{reverse('sro_dashboard')}?status=active")
         elif user.role == 'ACT':
-            return redirect(f"{reverse('dashboard_action_officer')}?status=active")
+            return redirect(f"{reverse('action_officer_dashboard')}?status=active")
         elif user.role == 'Director':
             return redirect(f"{reverse('director_dashboard')}?status=active")
         elif user.role == 'System Admin':
@@ -1233,15 +1157,25 @@ def admin_officer_archive(request):
 # ------------------ GENERATE REPORTS ------------------
 
 # SYSTEM ADMIN GENERATE REPORTS MODULE
-def system_admin_generate_reports(request, report):
+def system_admin_generate_reports(request, report_type):
     user_id = request.session.get('user_id')
 
-    if  user_id:
-        pass
-    else:
+    if not user_id:
         return redirect('system_admin_login')
 
-    return render(request, 'system_admin/system-admin-generate-reports.html', {'report': report})
+    if report_type == 'all-reports':
+        reports = Reports.objects.all()
+    elif report_type == 'employee-performance':
+        reports = Reports.objects.filter(report_type='Employee Performance')
+    elif report_type == 'office-performance':
+        reports = Reports.objects.filter(report_type='Office Performance')
+
+    context = {
+        'report_type': report_type,
+        'reports': reports
+    }
+
+    return render(request, 'system_admin/system-admin-generate-reports.html', context)
 
 # DIRECTOR GENERATE REPORTS MODULE
 def director_generate_reports(request, report_type):
@@ -1913,6 +1847,7 @@ def document_update_status(request, action, document_no):
         return redirect('user_login')
 
     document = Document.objects.get(document_no=document_no)
+    act_receiver = ''
 
     if action == 'approve':
 
@@ -2047,6 +1982,11 @@ def document_update_status(request, action, document_no):
     document.recent_update = timezone.now()
     document.save()
 
+    if action == 'forward':
+        act_receiver = document.act_receiver
+    elif action == 'route':
+        sro = User.objects.get(status='active', role='SRO', office_id_id=document.next_route)
+        act_receiver = sro.user_id
     new_remarks = Remarks.objects.create(
         remarks=""
     )
@@ -2056,7 +1996,8 @@ def document_update_status(request, action, document_no):
         activity=activity,
         document_id=document,
         user_id_id=user_id,
-        remarks = new_remarks
+        remarks = new_remarks,
+        receiver = act_receiver
     )
 
     data = {'remarks_no': log.remarks_id}
@@ -2502,21 +2443,14 @@ def new_employee_report(request):
         report_name = request.POST.get('report_name')
         start_date = request.POST.get('start_date')
         end_date = request.POST.get('end_date')
-        employee_id = request.POST.get('employee_id')
-
-        if not User.objects.filter(employee_id=employee_id).exists():
-            data = {
-                'employeeExists': False,
-                'validDates': True
-            }
-            return JsonResponse(data)
+        employee_id = request.POST.get('target_employee')
+        print('target employee: ', employee_id)
 
         start_date_obj = datetime.strptime(start_date, '%Y-%m-%d')
         end_date_obj = datetime.strptime(end_date, '%Y-%m-%d')
 
         if end_date_obj < start_date_obj:
             data = {
-                'employeeExists': True,
                 'validDates': False
             }
             return JsonResponse(data)
@@ -2532,7 +2466,6 @@ def new_employee_report(request):
         report.save()
 
         data = {
-            'employeeExists': True,
             'validDates': True,
         }
         return JsonResponse(data)
@@ -2596,7 +2529,15 @@ def delete_report(request, report_no):
     }
     return JsonResponse(data)
 
-"""def download_employee_report(request, report_no):
+def load_target_employees(request):
+
+    selected_employee_office = request.GET.get('selected_employee_office')
+    users = User.objects.filter(status='active', office_id_id=selected_employee_office).values(
+        'employee_id', 'firstname', 'lastname'
+    ).order_by('lastname')
+    return JsonResponse(list(users), safe=False)
+
+def download_performance_report(request, report_no):
 
     user_id = request.session.get('user_id')
     user_name = request.session.get('user_name')
@@ -2619,7 +2560,133 @@ def delete_report(request, report_no):
 
     reporter = user_name + ", " + role
 
-    report = Reports.objects.get(report_no=report_no)"""
+    report = Reports.objects.get(report_no=report_no)
+    converted_start_date = datetime.combine(report.start_date, time.min)
+    converted_end_date = datetime.combine(report.end_date, time.max)
+    converted_start_date = timezone.make_aware(converted_start_date)
+    converted_end_date = timezone.make_aware(converted_end_date)
+
+    if report.report_type == 'Employee Performance':
+
+        acted_documents_count = 0
+        total_received_documents = 0
+        
+        middlename = report.employee_id.middlename
+
+        if middlename:
+            middlename = middlename[0].title() + ". "
+        else:
+            middlename = ''
+
+        name = report.employee_id.firstname.title() + " " + middlename + report.employee_id.lastname
+
+        role = report.employee_id.role
+
+        if role == 'ADM':
+            position = 'Admin Officer'
+        elif role == 'DIR':
+            position = 'Director'
+        elif role == 'SRO':
+            position = 'Sub-receiving Officer'
+        else:
+            position = 'Action Officer'
+
+            acted_documents_count = ActivityLogs.objects.filter(
+                activity='Document Endorsed by Action Officer', 
+                user_id_id=report.employee_id_id, 
+                time_stamp__range=[converted_start_date, converted_end_date]
+            ).count()
+            total_received_documents = ActivityLogs.objects.filter(
+                activity='Document Forwarded to Action Officer',
+                receiver = report.employee_id.user_id,
+                time_stamp__range=[converted_start_date, converted_end_date]
+            ).count()
+
+            total_received_documents += ActivityLogs.objects.filter(
+                activity='Document Reassigned Due to Inaction',
+                receiver=report.employee_id.user_id,
+                time_stamp__range=[converted_start_date, converted_end_date]
+            ).count()
+
+        unacted_logs = UnactedLogs.objects.filter(
+            user_id_id = report.employee_id_id,
+            time_stamp__range=[report.start_date, report.end_date]
+        )
+
+        for log in unacted_logs: 
+            tracking_no_parts = log.document_id.tracking_no.split('-', 1)
+            log.tracking_no_first = tracking_no_parts[0]  
+            log.tracking_no_second = tracking_no_parts[1]  
+
+        context = {
+            'reporter': reporter,
+            'report': report,
+            'name': name,
+            'now': now(),
+            'position': position,
+            'acted_documents_count': acted_documents_count,
+            'total_received_documents': total_received_documents,
+            'unacted_logs': unacted_logs
+        }
+
+        html_string = render_to_string('partials/employee-performance-report.html', context)
+
+    else:
+
+        sro = User.objects.get(status='active', office_id_id=report.office_id_id, role='SRO')
+        middlename = sro.middlename
+
+        if middlename:
+            middlename = middlename[0].title() + ". "
+        else:
+            middlename = ''
+
+        name = sro.firstname.title() + " " + middlename + sro.lastname
+        no_of_employees = User.objects.filter(status='active', role='ACT', office_id_id=report.office_id_id).count()
+
+        received_documents_count = ActivityLogs.objects.filter(
+            activity='Document Routed', 
+            receiver=sro.user_id,
+            time_stamp__range=[converted_start_date, converted_end_date]
+            ).count()
+        
+        unacted_documents_count = UnactedLogs.objects.filter(
+            user_id__role__in=['SRO', 'ACT'],
+            time_stamp__range=[report.start_date, report.end_date]
+        ).count()
+
+        resolved_documents_count = ActivityLogs.objects.filter(
+            activity='Document Resolved', 
+            user_id__office_id__office_id = sro.office_id_id,
+            time_stamp__range=[converted_start_date, converted_end_date]
+            ).count()
+
+
+        context = {
+            'reporter': reporter,
+            'now': now(),
+            'name': name,
+            'no_of_employees': no_of_employees,
+            'report': report,
+            'received_documents_count': received_documents_count,
+            'unacted_documents_count': unacted_documents_count,
+            'resolved_documents_count': resolved_documents_count
+        }
+
+        html_string = render_to_string('partials/office-performance-report.html', context)
+
+    
+    pdf_file = BytesIO()
+    pisa_status = pisa.CreatePDF(html_string, dest=pdf_file)
+
+    # If there was an error
+    if pisa_status.err:
+        return HttpResponse('We had some errors <pre>' + html_string + '</pre>')
+    pdf_file.seek(0)
+    response = HttpResponse(pdf_file.getvalue(), content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename="Performance-Report.pdf"'
+
+    return response
 
 # ------------------ ANNOUNCEMENTS -----------------------
 
