@@ -12019,7 +12019,7 @@ a:hover {
 }
 
 .badge-red {
-  background-color: #DC3545;
+  background-color: #EA2E2E;
   color: #FFFFFF;
 }
 
@@ -12072,10 +12072,9 @@ a:hover {
   color: #B1C1CF;
   color: #000000;
   opacity: 0.6;
-  display: none; /* Initially hidden */
+  display: none;
 }
 
-/* Show clear icon when input has value */
 .form-search:not(:placeholder-shown) + .clear-icon {
   display: block;
 }
@@ -12131,6 +12130,10 @@ input:focus::-webkit-datetime-edit {
 .form-check-input:focus {
   border-color: #2E72EA;
   box-shadow: 0 0 0 0.15rem rgba(46, 114, 234, 0.15);
+}
+
+.form-check-label {
+  font-size: 14px;
 }
 
 .input-group {
@@ -12235,7 +12238,6 @@ input:focus::-webkit-datetime-edit {
 
 table {
   border-collapse: collapse;
-  width: 100%;
 }
 
 thead {
@@ -12274,8 +12276,8 @@ thead {
   line-height: 1.2;
 }
 
-table th:last-child {
-  text-align: center;
+.table.with-action th:last-child {
+  text-align: center !important;
 }
 
 .table-action {
@@ -12283,6 +12285,28 @@ table th:last-child {
   justify-content: center;
   align-items: center;
   gap: 0.5rem;
+}
+
+table tbody tr td.overdue {
+  font-weight: 600;
+  white-space: nowrap;
+  color: #EA2E2E !important;
+}
+
+.table-empty {
+  height: 49px;
+}
+
+.table-logs td:nth-child(3) {
+  max-width: 295px;
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+.table-logs td:nth-child(6) {
+  max-width: 160px;
+  word-wrap: break-word;
+  white-space: normal;
 }
 
 .bxs-sort-alt {
@@ -12370,6 +12394,50 @@ table th:last-child {
   font-size: 1rem;
   width: 1.2rem;
   text-align: center;
+}
+
+.drop-filter {
+  margin-top: 5px !important;
+  padding: 15px 21px 21px 21px;
+}
+
+.title-filter {
+  font-size: 14px;
+  font-weight: 600;
+  color: #000000;
+}
+
+.activity-tab-wrapper {
+  max-height: calc(100vh - 259px) !important;
+  overflow-y: auto;
+  margin: 14px 0;
+}
+
+.activity-item {
+  padding: 10px 9px 10px 5px;
+  margin: 0 10px;
+}
+
+.activity-class .activity-item {
+  border-bottom: 1px solid rgba(177, 193, 207, 0.2);
+}
+
+.activity-class .activity-item:last-child {
+  border: none;
+}
+
+.activity-icon-wrapper {
+  width: 39px;
+  height: 39px;
+  flex-shrink: 0;
+  opacity: 6;
+  margin-right: 18px;
+  margin-left: 4px;
+}
+
+.activity-label {
+  margin-bottom: 0;
+  padding: 10px 12px;
 }
 
 .highlight-search {

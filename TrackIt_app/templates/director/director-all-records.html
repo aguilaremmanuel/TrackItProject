@@ -70,12 +70,94 @@
                         <button type="button" class="btn btn-primary m-0 shadow-sm" style="max-height: 37.85; padding: 7.63px 11.2px;" data-bs-toggle="modal" data-bs-target="#scanQRCodeModal">
                             <i class="fa-solid fa-qrcode" style="font-size: 16px !important;"></i>&nbsp; Scan QR Code
                         </button>
+                        <div class="dropdown">
+                            <button 
+                                type="button" 
+                                class="btn btn-primary m-0 shadow-sm" 
+                                id="filterButton" 
+                                data-bs-toggle="dropdown" 
+                                aria-expanded="false"
+                                style="max-height: 37.85px; padding: 7.63px 11.2px;">
+                                <i class="fa-solid fa-filter" style="font-size: 14px !important;"></i>&nbsp; Filter
+                            </button>
+                            <ul class="drop-filter dropdown-menu" aria-labelledby="filterButton" style="width: 350px;">
+                                <div class="row mb-2">
+                                    <div class="col-md-6">
+                                        <label class="title-filter mb-2">Status</label>
+                                        <div class="form-check mb-1">
+                                            <input class="form-check-input mt-1" type="checkbox" value="" id="dirApproval">
+                                            <label class="form-check-label" for="dirApproval">For DIR Approval</label>
+                                        </div>
+                                        <div class="form-check mb-1">
+                                            <input class="form-check-input mt-1" type="checkbox" value="" id="forRouting">
+                                            <label class="form-check-label" for="forRouting">For Routing</label>
+                                        </div>
+                                        <div class="form-check mb-1">
+                                            <input class="form-check-input mt-1" type="checkbox" value="" id="forSROReceiving">
+                                            <label class="form-check-label" for="forSROReceiving">For SRO Receiving</label>
+                                        </div>
+                                        <div class="form-check mb-1">
+                                            <input class="form-check-input mt-1" type="checkbox" value="" id="forACTReceiving">
+                                            <label class="form-check-label" for="forACTReceiving">For ACT Receiving</label>
+                                        </div>
+                                        <div class="form-check mb-1">
+                                            <input class="form-check-input mt-1" type="checkbox" value="" id="forResolving">
+                                            <label class="form-check-label" for="forResolving">For Resolving</label>
+                                        </div>
+                                        <div class="form-check mb-1">
+                                            <input class="form-check-input mt-1" type="checkbox" value="" id="forArchiving">
+                                            <label class="form-check-label" for="forArchiving">For Archiving</label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div style="margin-bottom: 10px;">
+                                            <label class="title-filter mb-2">Type</label>
+                                            <div class="form-check mb-1">
+                                                <input class="form-check-input mt-1" type="checkbox" value="" id="regularType">
+                                                <label class="form-check-label" for="regularType">Regular</label>
+                                            </div>
+                                            <div class="form-check mb-1">
+                                                <input class="form-check-input mt-1" type="checkbox" value="" id="scpType">
+                                                <label class="form-check-label" for="scpType">SCPF</label>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="title-filter mb-2">Priority</label>
+                                            <div class="form-check mb-1">
+                                                <input class="form-check-input mt-1" type="checkbox" value="" id="prefAction">
+                                                <label class="form-check-label" for="prefAction">For Pref. Action</label>
+                                            </div>
+                                            <div class="form-check mb-1">
+                                                <input class="form-check-input mt-1" type="checkbox" value="" id="normalPriority">
+                                                <label class="form-check-label" for="normalPriority">Normal</label>
+                                            </div>
+                                            <div class="form-check mb-1">
+                                                <input class="form-check-input mt-1" type="checkbox" value="" id="urgentPriority">
+                                                <label class="form-check-label" for="urgentPriority">Urgent</label>
+                                            </div>
+                                            <div class="form-check mb-1">
+                                                <input class="form-check-input mt-1" type="checkbox" value="" id="veryUrgentPriority">
+                                                <label class="form-check-label" for="veryUrgentPriority">Very Urgent</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-between mt-3 gap-2">
+                                    <input class="btn btn-primary w-100" type="submit" value="Apply Filter">
+                                    <button id="resetFilters" class="btn btn-red d-flex align-items-center justify-content-center" style="width: 40px; height: 36px;" title="Reset Filter">
+                                        <i class="fa-solid fa-trash-can" style="font-size: 16px;"></i>
+                                    </button>
+                                </div>
+                            </ul>
+                        </div>
                     </div>
                 </div>
 
                 <div class="my-3 px-3 py-2 bg-white rounded shadow-sm">
                     <div class="table-responsive table-wrapper d-flex">
-                        <table class="table mb-1">
+                        <table class="table mb-1 with-action">
                             <thead>
                                 <tr>
                                     <th>Tracking Number</th>
@@ -272,16 +354,16 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'js/toggle-sidebar.js' %}"></script>
     <script src="{% static 'js/tabs-nav.js' %}"></script>
     <script src="{% static 'js/clear-search.js' %}"></script>  
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'js/fetch-document.js' %}"></script>
     <script src="{% static 'js/qr-code.js' %}"></script>
     <script src="{% static 'js/update-document-status.js' %}"></script>
     <script src="{% static 'js/add-remarks.js' %}"></script>
-    <script src="{% static 'js/qr-code.js' %}"></script>
     <script src="{% static 'js/generate-document-report.js' %}"></script>
+    <script src="{% static 'js/filter-dropdown.js' %}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const params = new URLSearchParams(window.location.search);

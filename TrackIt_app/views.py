@@ -1017,8 +1017,31 @@ def director_needs_action(request, scanned_document_no):
 
 # -------------- ACTIVITY LOGS -------------------
 
+# SYSTEM ADMIN ACTIVITY LOGS
+def system_admin_activity_logs(request, activity_type):
+
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect(user_login)
+
+    role = user_id.split('-')[0]
+    if role != 'SYS':
+        return redirect(user_login)
+
+    user_name = request.session.get('user_name')
+
+    logs = ActivityLogs.objects.filter(user_id_id=user_id).order_by('-time_stamp')
+
+    context = {
+        'logs': logs,
+        'user_name': user_name,
+        'activity_type': activity_type
+    }
+
+    return render(request, 'system_admin/system-admin-activity-logs.html', context)
+
 # DIRECTOR ACTIVITY LOGS
-def director_activity_logs(request):
+def director_activity_logs(request, activity_type):
 
     user_id = request.session.get('user_id')
     if not user_id:
@@ -1028,12 +1051,20 @@ def director_activity_logs(request):
     if role != 'DIR':
         return redirect(user_login)
 
+    user_name = request.session.get('user_name')
+
     logs = ActivityLogs.objects.filter(user_id_id=user_id).order_by('-time_stamp')
 
-    return render(request, 'director/director-activity-logs.html', {'logs':logs})
+    context = {
+        'logs': logs,
+        'user_name': user_name,
+        'activity_type': activity_type
+    }
+
+    return render(request, 'director/director-activity-logs.html', context)
 
 # SRO ACTIVITY LOGS
-def sro_activity_logs(request):
+def sro_activity_logs(request, activity_type):
 
     user_id = request.session.get('user_id')
     if not user_id:
@@ -1049,13 +1080,14 @@ def sro_activity_logs(request):
 
     context = {
         'logs': logs,
-        'user_name': user_name
+        'user_name': user_name,
+        'activity_type': activity_type
     }
 
     return render(request, 'sro/sro-activity-logs.html', context)
 
 # ADMIN OFFICER ACTIVITY LOGS
-def admin_officer_activity_logs(request):
+def admin_officer_activity_logs(request, activity_type):
 
     user_id = request.session.get('user_id')
     if not user_id:
@@ -1071,13 +1103,14 @@ def admin_officer_activity_logs(request):
 
     context = {
         'logs': logs,
-        'user_name': user_name
+        'user_name': user_name,
+        'activity_type': activity_type
     }
 
     return render(request, 'admin_officer/admin-officer-activity-logs.html', context)
 
 # ACTION OFFICER ACTIVITY LOGS
-def action_officer_activity_logs(request):
+def action_officer_activity_logs(request, activity_type):
 
     user_id = request.session.get('user_id')
     if not user_id:
@@ -1093,7 +1126,8 @@ def action_officer_activity_logs(request):
 
     context = {
         'logs': logs,
-        'user_name': user_name
+        'user_name': user_name,
+        'activity_type': activity_type
     }
 
     return render(request, 'action_officer/action-officer-activity-logs.html', context)
