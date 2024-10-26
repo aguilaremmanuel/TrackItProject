@@ -12302,11 +12302,33 @@ table tbody tr td.overdue {
   word-wrap: break-word;
   white-space: normal;
 }
-
 .table-logs td:nth-child(6) {
   max-width: 160px;
   word-wrap: break-word;
   white-space: normal;
+}
+
+.table-user-logs td:nth-child(4) {
+  width: 200px;
+}
+.table-user-logs td:nth-child(5) {
+  width: 170px;
+}
+.table-user-logs td:nth-child(6) {
+  width: 150px;
+}
+
+.table-doc-logs td:nth-child(3) {
+  width: 150px;
+}
+.table-doc-logs td:nth-child(4) {
+  width: 300px;
+}
+.table-doc-logs td:nth-child(5) {
+  width: 190px;
+}
+.table-doc-logs td:nth-child(6) {
+  width: 200px;
 }
 
 .bxs-sort-alt {
@@ -12316,6 +12338,30 @@ table tbody tr td.overdue {
 .fa-chevron-right {
   font-size: 12px;
   color: #2E72EA;
+}
+
+.feed-blue {
+  background-color: #EAF0FB;
+}
+.feed-blue .fa-solid {
+  color: #2E72EA;
+  font-size: 1.1rem;
+}
+
+.feed-green {
+  background-color: #dcf0e0;
+}
+.feed-green .fa-solid {
+  color: #28A745;
+  font-size: 1.1rem;
+}
+
+.feed-red {
+  background-color: #efdddd;
+}
+.feed-red .fa-solid {
+  color: #EA2E2E;
+  font-size: 1.1rem;
 }
 
 .modal-body p {
@@ -12438,13 +12484,6 @@ table tbody tr td.overdue {
 .activity-label {
   margin-bottom: 0;
   padding: 10px 12px;
-}
-
-.highlight-search {
-  background-color: rgb(46, 114, 234); /* Change to desired color */
-  color: white; /* Text color */
-  padding: 0 3px; /* Optional: add some padding */
-  border-radius: 3px; /* Optional: rounded corners */
 }
 
 /*# sourceMappingURL=custom.css.map */

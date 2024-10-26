@@ -74,7 +74,7 @@
                 <div class="my-3 px-3 py-2 bg-white rounded shadow-sm">
                     <ul class="custom-tabs">
                         <li class="tab-item">
-                            <a class="tab-link {% if activity_type == 'recent' %}active{% endif %}" href="{% url 'admin_officer_activity_logs' 'recent' %}?status=active">Recent</a>
+                            <a class="tab-link {% if activity_type == 'recent' %}active{% endif %}" href="{% url 'admin_officer_activity_logs' 'recent' %}?status=active">Recents</a>
                         </li>
                         <li class="tab-item">
                             <a class="tab-link {% if activity_type == 'all-activity' %}active{% endif %}" href="{% url 'admin_officer_activity_logs' 'all-activity' %}?status=active">All Activity</a>
@@ -89,8 +89,8 @@
                                 <h6 class="activity-label">Today</h6>
                                 <div class="activity-item d-flex justify-content-between align-items-center">
                                     <div class="d-flex">
-                                        <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center" style="background-color: #efdddd;">
-                                            <i class="fa-solid fa-box-archive" style="color: #EA2E2E; font-size: 1.1rem;"></i>
+                                        <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center feed-red">
+                                            <i class="fa-solid fa-box-archive"></i>
                                         </div>
                                         <p class="mb-0">
                                             <strong class="d-block">Document Archived: Tracking No. 112922032-DEPT-001</strong>
@@ -101,8 +101,8 @@
                                 </div>
                                 <div class="activity-item d-flex justify-content-between align-items-center">
                                     <div class="d-flex">
-                                        <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center" style="background-color: #dcf0e0;">
-                                            <i class="fa-solid fa-route" style="color: #28A745; font-size: 1.1rem;"></i>
+                                        <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center feed-green">
+                                            <i class="fa-solid fa-route"></i>
                                         </div>
                                         <p class="mb-0">
                                             <strong class="d-block">Document Routed: Tracking No. 112922032-DEPT-001</strong>
@@ -118,8 +118,8 @@
                                 <h6 class="activity-label">Yesterday</h6>
                                 <div class="activity-item d-flex justify-content-between align-items-center">
                                     <div class="d-flex">
-                                        <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center" style="background-color: #dcf0e0;">
-                                            <i class="fa-solid fa-folder-plus" style="color: #28A745; font-size: 1.1rem;"></i>
+                                        <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center feed-green">
+                                            <i class="fa-solid fa-folder-plus"></i>
                                         </div>
                                         <p class="mb-0">
                                             <strong class="d-block">Document Created: Tracking No. 112922032-DEPT-001</strong>
@@ -135,15 +135,15 @@
                                 <h6 class="activity-label">This Week</h6>
                                 <div class="activity-item d-flex justify-content-between align-items-center">
                                     <div class="d-flex">
-                                        <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center" style="background-color: #efdddd;">
-                                            <i class="fa-solid fa-box-archive" style="color: #EA2E2E; font-size: 1.1rem;"></i>
+                                        <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center feed-red">
+                                            <i class="fa-solid fa-box-archive"></i>
                                         </div>
                                         <p class="mb-0">
                                             <strong class="d-block">Document Archived: Tracking No. 112922032-DEPT-001</strong>
                                             The document has been moved to storage and will no longer appear in active workflows.
                                         </p>
                                     </div>
-                                    <p class="text-end mb-0" style="white-space: nowrap;">2024-10-23<br>10:20 AM</p>
+                                    <p class="text-end mb-0" style="white-space: nowrap;">2024-10-24<br>10:20 AM</p>
                                 </div>
                             </div>
 
@@ -152,15 +152,15 @@
                                 <h6 class="activity-label">Last 15 Days</h6>
                                 <div class="activity-item d-flex justify-content-between align-items-center">
                                     <div class="d-flex">
-                                        <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center" style="background-color: #dcf0e0;">
-                                            <i class="fa-solid fa-route" style="color: #28A745; font-size: 1.1rem;"></i>
+                                        <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center feed-green">
+                                            <i class="fa-solid fa-folder-plus"></i>
                                         </div>
                                         <p class="mb-0">
-                                            <strong class="d-block">Document Routed: Tracking No. 112922032-DEPT-001</strong>
-                                            The document has been routed to the assigned recipient for further processing.
+                                            <strong class="d-block">Document Created: Tracking No. 112922032-DEPT-001</strong>
+                                            The document has been successfully created and is now awaiting the director's approval.
                                         </p>
                                     </div>
-                                    <p class="text-end mb-0" style="white-space: nowrap;">2024-10-22<br>10:20 AM</p>
+                                    <p class="text-end mb-0" style="white-space: nowrap;">2024-10-24<br>10:30 AM</p>
                                 </div>
                             </div>
                         </div>
