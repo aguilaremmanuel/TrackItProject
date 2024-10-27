@@ -499,16 +499,44 @@ table tbody tr td.overdue {
     height: 49px;
 }
 
-.table-logs td:nth-child(3) {
-    max-width: 295px;
-    word-wrap: break-word;
-    white-space: normal;
+.table-logs  {
+    td:nth-child(3) {
+        max-width: 295px;
+        word-wrap: break-word;
+        white-space: normal;
+    }
+    td:nth-child(6) {
+        max-width: 160px;
+        word-wrap: break-word;
+        white-space: normal;
+    }
 }
 
-.table-logs td:nth-child(6) {
-    max-width: 160px;
-    word-wrap: break-word;
-    white-space: normal;
+.table-user-logs {
+    td:nth-child(4) {
+        width: 200px;
+    }
+    td:nth-child(5) {
+        width: 170px;
+    }
+    td:nth-child(6) {
+        width: 150px;
+    }
+}
+
+.table-doc-logs {
+    td:nth-child(3) {
+        width: 150px;
+    }
+    td:nth-child(4) {
+        width: 300px;
+    }
+    td:nth-child(5) {
+        width: 190px;
+    }
+    td:nth-child(6) {
+        width: 200px;
+    }
 }
 
 // ICONS
@@ -519,6 +547,30 @@ table tbody tr td.overdue {
 .fa-chevron-right {
     font-size: 12px;
     color: #2E72EA; 
+}
+
+.feed-blue {
+    background-color: #EAF0FB;
+    .fa-solid {
+        color: #2E72EA;
+        font-size: 1.1rem;
+    }
+}
+
+.feed-green {
+    background-color: #dcf0e0;
+    .fa-solid {
+        color: #28A745;
+        font-size: 1.1rem;
+    }
+}
+
+.feed-red {
+    background-color: #efdddd;
+    .fa-solid {
+        color: #EA2E2E;
+        font-size: 1.1rem;
+    }
 }
 
 // MODALS
