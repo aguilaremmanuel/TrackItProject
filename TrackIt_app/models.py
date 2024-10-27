@@ -71,6 +71,7 @@ class Document(models.Model):
     recent_update = models.DateTimeField(blank=True, null=True)
     act_receiver = models.CharField(max_length=10, blank=True, null=True)
     ongoing_deadline = models.DateField(null=True, blank=True)
+    old_document_type = models.IntegerField(null=True, blank=True)
     class Meta:
         db_table = 'tbl_document'
 
@@ -109,6 +110,8 @@ class UnactedLogs(models.Model):
     document_id = models.ForeignKey(Document, on_delete=models.SET_NULL, null=True, blank=True)
     status = models.CharField(max_length=25, null=True, blank=True)
     user_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    is_acted = models.BooleanField(default=False)
+    date_acted = models.DateField(null=True, blank=True)
     class Meta:
         db_table = 'tbl_unacted_logs'
 

@@ -19,7 +19,7 @@
 
 <body>
     <div class="container">
-        {% include "assets/sro-sidebar.html" %}
+        {% include "assets/dir-sidebar.html" %}
 
         <div class="right-section">
             <header class="header">
@@ -31,7 +31,7 @@
                             <div class="profile-pic placeholder"></div>
                             <div class="profile-info">
                                 <span class="profile-name">{{ user_name }}</span>
-                                <span class="profile-role">Sub-Receiving Officer</span>
+                                <span class="profile-role">Director</span>
                             </div>
                         </button>
                         <ul class="drop-profile dropdown-menu" aria-labelledby="profileDropdown">
@@ -91,6 +91,50 @@
                                 </tr>
                             </thead>
                             <tbody id="docTableBody">
+                                <!--
+                                <tr>
+                                    <td style="white-space: nowrap;">112922032-DEPT-001</td>
+                                    <td>For Archiving</td>
+                                    <td>Ariana A. Grande</td>
+                                    <td>Request for Amendment of Expense List for Cash Advance Under Special Order No. 34</td>
+                                    <td>Regular</td>
+                                    <td>Sample remarks</td>
+                                    <td style="white-space: nowrap;">2024-08-05<br>10:15 AM</td>
+                                    <td class="overdue">Overdue</td>
+                                    <td><span class="badge badge-green rounded-pill fw-semibold">NORMAL</span></td>
+                                    <td>
+                                        <div class="table-action">
+                                            <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#viewDocumentModal">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-red" data-bs-toggle="modal" data-bs-target="#archiveDocumentModal">
+                                                <i class="fa-solid fa-archive"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="white-space: nowrap;">112922032-DEPT-001</td>
+                                    <td>For Routing</td>
+                                    <td>Bruno F. Mars</td>
+                                    <td>Request for Amendment of Expense List for Cash Advance Under Special Order No. 34</td>
+                                    <td>Regular</td>
+                                    <td>Sample remarks</td>
+                                    <td style="white-space: nowrap;">2024-08-05<br>10:15 AM</td>
+                                    <td class="overdue">Overdue</td>
+                                    <td><span class="badge badge-orange rounded-pill fw-semibold">URGENT</span></td>
+                                    <td>
+                                        <div class="table-action">
+                                            <button type="button" class="btn btn-sm btn-blue" data-bs-toggle="modal" data-bs-target="#viewDocumentModal">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-green" data-bs-toggle="modal" data-bs-target="#routeDocumentModal">
+                                                <i class="fa-solid fa-route"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                -->
                             </tbody>
                         </table>           
                     </div>
@@ -100,6 +144,25 @@
                     </p>
                 </div>
             </main>
+        </div>
+    </div>
+
+    <!-- Modal for Unacted Records info -->
+    <div class="modal fade" id="unactedRecordsModal" tabindex="-1" aria-labelledby="unactedRecordsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="unactedRecordsModalLabel">Unacted Records Information</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            <!-- Add content here about the Unacted Records module -->
+            This module displays all records that have not been acted upon before their due date...
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
         </div>
     </div>
 
@@ -113,6 +176,7 @@
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+
                 <div class="modal-body">
 
                     <div id="loadingSpinner" class="text-center my-5" style="display: none;">
@@ -160,6 +224,25 @@
         </div>
     </div>
 
+    <!-- Approve Document Modal -->
+    <div class="modal fade" id="approveDocumentModal" tabindex="-1" aria-labelledby="approveDocumentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0">
+                    <h5 class="modal-title" id="approveDocumentModalLabel">Approve Document</h5>
+                    <button type="button" class="btn-close" id="approveModalCloseBtn" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to approve this document? Once approved, the document will be ready for routing and further action.</p>
+                </div>
+                <div class="modal-footer p-3 pt-0 border-top-0">
+                    <button type="button" class="m-0 my-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="m-0 my-2 btn btn-primary" data-user="DIR" id="confirmApprove">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Document QR Code Modal -->
     <div class="modal fade" id="generateQRCode" tabindex="-1" aria-labelledby="generateQRCodeLabel" aria-hidden="true">
         <div class="modal-dialog" style="max-width: 400px;">
@@ -177,46 +260,9 @@
                     <p class="fw-bold my-0" id="qrModalTrackingNo"></p>
                 </div>
                 <div class="modal-footer p-3 pt-0 border-top-0 d-flex flex-column align-items-center">
-                    <button type="button" class="m-0 mb-2 btn btn-primary w-100" id="saveQR">Save a Copy</button>
+                    <button type="button" class="m-0 mb-1 btn btn-primary w-100" id="printQR">Print QR Code</button>
+                    <button type="button" class="m-0 mb-2 btn btn-secondary w-100" id="saveQR">Save a Copy</button>
                 </div>                
-            </div>
-        </div>
-    </div>
-
-    <!-- Forward Document Modal -->
-    <div class="modal fade" id="forwardDocumentModal" tabindex="-1" aria-labelledby="forwardDocumentModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
-                <div class="modal-header pb-0 border-bottom-0">
-                    <h5 class="modal-title" id="forwardDocumentModalLabel">Forward Document</h5>
-                    <button type="button" class="btn-close" id="forwardModalCloseBtn" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Are you sure you want to forward this document? Once forwarded, the document will be sent to the assigned recipient for further processing.</p>
-                </div>
-                <div class="modal-footer p-3 pt-0 border-top-0">
-                    <button type="button" class="m-0 my-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="m-0 my-2 btn btn-primary" data-user="SRO" id="confirmForward">Confirm</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Resolve Document Modal -->
-    <div class="modal fade" id="resolveDocumentModal" tabindex="-1" aria-labelledby="resolveDocumentModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
-                <div class="modal-header pb-0 border-bottom-0">
-                    <h5 class="modal-title" id="resolveDocumentModalLabel">Resolve Document</h5>
-                    <button type="button" class="btn-close" id="resolveModalCloseBtn" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Are you sure you want to resolve this document? Once resolved, the document will be endorsed for archiving or final processing.</p>
-                </div>
-                <div class="modal-footer p-3 pt-0 border-top-0">
-                    <button type="button" class="m-0 my-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="m-0 my-2 btn btn-primary" data-user="SRO" id="confirmResolve">Confirm</button>
-                </div>
             </div>
         </div>
     </div>
@@ -282,15 +328,13 @@
     <script src="{% static 'js/qr-code.js' %}"></script>
     <script src="{% static 'js/generate-document-report.js' %}"></script>
     <script src="{% static 'js/update-document-status.js' %}"></script>
-    <script src="{% static 'js/add-remarks.js' %}"></script> 
+    <script src="{% static 'js/add-remarks.js' %}"></script>
     <script>
-        // On page load, read the URL parameter and update the class
         document.addEventListener('DOMContentLoaded', function () {
             const params = new URLSearchParams(window.location.search);
             const status = params.get('status');
             if (status) {
-                // Assuming you want to add the class to the element with ID 'targetElement'
-                document.querySelector('#unacted-docs').classList.add(status);
+                document.querySelector('#overdue').classList.add(status);
             }
         });
     </script>
@@ -314,31 +358,21 @@
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const forwardModal = new bootstrap.Modal(document.getElementById('forwardDocumentModal'));
-            const resolveModal = new bootstrap.Modal(document.getElementById('resolveDocumentModal'));
+            const approveModal = new bootstrap.Modal(document.getElementById('approveDocumentModal'));
             const remarksModal = new bootstrap.Modal(document.getElementById('addRemarksModal'));
-    
+
             const actionMessage = document.getElementById('actionMessage');
-    
-            // Handle Confirm Forward Action
-            document.getElementById('confirmForward').addEventListener('click', function () {
-                forwardModal.hide();
-                actionMessage.textContent = "The document has been successfully forwarded. Add any additional remarks related to this action below, or leave as blank if not applicable.";
+
+            // Handle Confirm Approve Action
+            document.getElementById('confirmApprove').addEventListener('click', function () {
+                approveModal.hide();
+                actionMessage.textContent = "The document has been successfully approved. Add any additional remarks related to this action below, or leave as blank if not applicable.";
                 remarksModal.show();
             });
-    
-            // Handle Confirm Resolve Action
-            document.getElementById('confirmResolve').addEventListener('click', function () {
-                resolveModal.hide();
-                actionMessage.textContent = "The document has been successfully resolved. Add any additional remarks related to this action below, or leave as blank if not applicable.";
-                remarksModal.show();
-            });
-    
+
             // Handle saving remarks (you can send an AJAX request or form submission here)
             document.getElementById('saveRemarks').addEventListener('click', function () {
                 const remarks = document.getElementById('remarks').value;
-                console.log('Remarks:', remarks);
-                // Logic to save remarks goes here
                 remarksModal.hide();
             });
         });

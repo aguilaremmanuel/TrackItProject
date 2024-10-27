@@ -5,7 +5,8 @@ document.addEventListener('DOMContentLoaded', function () {
         forward: document.getElementById('forwardDocumentModal'),
         endorse: document.getElementById('endorseDocumentModal'),
         resolve: document.getElementById('resolveDocumentModal'),
-        archive: document.getElementById('archiveDocumentModal')
+        archive: document.getElementById('archiveDocumentModal'),
+        delete: document.getElementById('deleteDocumentModal'),
     };
 
     const confirmButtons = {
@@ -14,7 +15,8 @@ document.addEventListener('DOMContentLoaded', function () {
         forward: document.getElementById('confirmForward'),
         resolve: document.getElementById('confirmResolve'),
         endorse: document.getElementById('confirmEndorse'),
-        archive: document.getElementById('confirmArchive')
+        archive: document.getElementById('confirmArchive'),
+        delete: document.getElementById('confirmDelete'),
     };
 
     for (const [action, modal] of Object.entries(modals)) {

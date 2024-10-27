@@ -134,6 +134,17 @@
                                 <i class="fa-solid fa-flag"></i>
                             </button>
                         {% endif %}
+                    {% elif document.status == 'Archived' %}
+                        {% if user == 'SYS' %}
+                            <button type="button" class="btn btn-sm btn-red" 
+                                data-action="delete" 
+                                data-document-no="{{ document.document_no }}" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#deleteDocumentModal"
+                                data-bs-toggle="tooltip" title="Delete Document">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        {% endif %}
                     {% endif %}
                 </div>
             </td>

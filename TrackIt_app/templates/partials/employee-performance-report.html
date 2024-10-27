@@ -82,17 +82,183 @@
             <table class="logs-table">
                 <thead>
                     <tr>
+                        <td>No. of Endorsed Documents</td>
+                        <td>Total of Received Documents</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>    
+                        <td>{{endorsed_documents_count}}</td>
+                        <td>{{action_officer_total_received_documents}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        {% elif position == 'Director' %}
+            <table class="logs-table">
+                <thead>
+                    <tr>
+                        <td>No. of Approved Documents</td>
+                        <td>Total of Received Documents</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>    
+                        <td>{{approved_documents_count}}</td>
+                        <td>{{director_total_received_documents}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        {% elif position == 'Sub-receiving Officer' %}
+            <table class="logs-table">
+                <thead>
+                    <tr>
                         <td>No. of Resolved Documents</td>
                         <td>Total of Received Documents</td>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>    
-                        <td>{{acted_documents_count}}</td>
-                        <td>{{total_received_documents}}</td>
+                        <td>{{resolved_documents_count}}</td>
+                        <td>{{sro_received_documents_count}}</td>
                     </tr>
                 </tbody>
             </table>
+        {% elif position == 'Admin Officer' %}
+            <table class="logs-table">
+                <thead>
+                    <tr>
+                        <td>No. of Routed Documents</td>
+                        <td>Total of Created Documents</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>    
+                        <td>{{routed_documents_count}}</td>
+                        <td>{{created_documents_count}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        {% endif %}
+
+
+        {% if position == 'Director' or position == 'Admin Officer' %}
+
+            <p style="margin-top: 25pt;"><b>Delayed Documents:</b></p>
+
+            <table class="logs-table">
+                <thead>
+                    <tr>
+                        <td style="width: 7%;">No</td>
+                        <td style="width: 15%;">Tracking <br> No.</td>
+                        <td style="width: 32%;">Subject</td>
+                        <td style="width: 17%;">Type</td>
+                        <td style="width: 15%;">Priority <br> Level</td>
+                        <td style="width: 14%;">Delayed <br> In</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if delayed_documents %}
+                        {% for docu in delayed_documents %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ docu.tracking_no_first }}-<br>{{ docu.tracking_no_second }}</td>
+                                <td>{{docu.document_id.subject}}</td>
+                                <td>{{docu.document_id.document_type.document_type}}</td>
+                                <td>{{docu.document_id.document_type.priority_level.priority_level|title}}</td>
+                                <td>{{ docu.delayed_days }} {{ docu.delayed_days|pluralize:"day,days" }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        
+        {% elif position == 'Sub-receiving Officer' %}
+
+            <p style="margin-top: 25pt;"><b>Delayed in Forwarding Documents:</b></p>
+
+            <table class="logs-table">
+                <thead>
+                    <tr>
+                        <td style="width: 7%;">No</td>
+                        <td style="width: 15%;">Tracking <br> No.</td>
+                        <td style="width: 32%;">Subject</td>
+                        <td style="width: 17%;">Type</td>
+                        <td style="width: 15%;">Priority <br> Level</td>
+                        <td style="width: 14%;">Delayed <br> In</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if delayed_forwarding_documents %}
+                        {% for docu in delayed_forwarding_documents %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ docu.tracking_no_first }}-<br>{{ docu.tracking_no_second }}</td>
+                                <td>{{docu.document_id.subject}}</td>
+                                <td>{{docu.document_id.document_type.document_type}}</td>
+                                <td>{{docu.document_id.document_type.priority_level.priority_level|title}}</td>
+                                <td>{{ docu.delayed_days }} {{ docu.delayed_days|pluralize:"day,days" }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+
+            <p style="margin-top: 25pt;"><b>Delayed in Resolving Documents:</b></p>
+
+            <table class="logs-table">
+                <thead>
+                    <tr>
+                        <td style="width: 7%;">No</td>
+                        <td style="width: 15%;">Tracking <br> No.</td>
+                        <td style="width: 32%;">Subject</td>
+                        <td style="width: 17%;">Type</td>
+                        <td style="width: 15%;">Priority <br> Level</td>
+                        <td style="width: 14%;">Delayed <br> In</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if delayed_resolving_documents %}
+                        {% for docu in delayed_resolving_documents %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ docu.tracking_no_first }}-<br>{{ docu.tracking_no_second }}</td>
+                                <td>{{docu.document_id.subject}}</td>
+                                <td>{{docu.document_id.document_type.document_type}}</td>
+                                <td>{{docu.document_id.document_type.priority_level.priority_level|title}}</td>
+                                <td>{{ docu.delayed_days }} {{ docu.delayed_days|pluralize:"day,days" }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+
         {% endif %}
 
         <p style="margin-top: 25pt;"><b>Unacted Documents:</b></p>
@@ -109,12 +275,10 @@
                 </tr>
             </thead>
             <tbody>
-
                 {% if unacted_logs %}
-
                     {% for log in unacted_logs %}
                         <tr>
-                            <td>1</td>
+                            <td>{{ forloop.counter }}</td>
                             <td>{{ log.tracking_no_first }}-<br>{{ log.tracking_no_second }}</td>
                             <td>{{log.document_id.subject}}</td>
                             <td>{{log.document_id.document_type.document_type}}</td>
@@ -122,9 +286,7 @@
                             <td>{{log.time_stamp|date:"m-d-Y"}}</td>
                         </tr>
                     {% endfor %}
-
                 {% else %}
-
                     <tr>
                         <td><i>No Data</i></td>
                         <td><i>No Data</i></td>
@@ -133,19 +295,7 @@
                         <td><i>No Data</i></td>
                         <td><i>No Data</i></td>
                     </tr>
-
                 {% endif %}
-
-                {% for log in logs %}
-                    <tr>    
-                        <td>{{ log.time_stamp|date:"Y-m-d" }}<br>{{ log.time_stamp|timezone:"Asia/Manila"|date:"h:i A"}}</td>
-                        <td>{{ log.user_id.employee_id}}</td>
-                        <td>{{ log.user_id.firstname|title }} {{ log.user_id.lastname|title}}</td>
-                        <td>{{ log.user_id.office_id.office_name}}</td>
-                        <td><i>{{ log.remarks.remarks}}</i></td>
-                        <td>{{ log.activity }}</td>
-                    </tr>
-                {% endfor %}
             </tbody>
         </table>
 

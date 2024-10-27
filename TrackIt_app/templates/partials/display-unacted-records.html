@@ -1,0 +1,111 @@
+{% load custom_filters %}
+{% load tz %}
+{% if unacted_logs %}
+    {% for log in unacted_logs %}
+
+        <tr>
+            <td style="white-space: nowrap;">
+                {% if search_query %}
+                    {{ log.document_id.highlighted_tracking_no|safe }}
+                {% else %}
+                    {{ log.document_id.tracking_no }}
+                {% endif %}
+            </td>
+            <td>{{ log.status }}</td>
+            <td>
+                {% if search_query %}
+                    {{ log.document_id.highlighted_sender_name|safe }}
+                {% else %}
+                    {{ log.document_id.sender_name }}
+                {% endif %}
+            </td>
+            <td>
+                {% if search_query %}
+                    {{ log.document_id.highlighted_subject|safe }}
+                {% else %}
+                    {{ log.document_id.subject }}
+                {% endif %}
+            </td>
+            <td>{{ log.document_id.document_type.category }}</td>
+            <td>
+                {% if log.document_id.remarks|length > 28 %}
+                    {{ log.document_id.remarks|slice:":28" }}&hellip;
+                {% else %}
+                    {{ log.document_id.remarks}}
+                {% endif %}
+            </td>
+            <td style="white-space: nowrap;">
+                {{ log.document_id.recent_update|date:"Y-m-d" }} <br>
+                {{ log.document_id.recent_update|timezone:"Asia/Manila"|date:"h:i A" }} 
+            </td>
+            <td class="overdue">Overdue</td>
+
+            {% if log.document_id.document_type.priority_level.priority_level == "for pref. action" %}
+                <td><span class="badge badge-yellow rounded-pill fw-semibold">FOR PREF. ACTION</span></td>
+            {% elif log.document_id.document_type.priority_level.priority_level == "normal" %}
+                <td><span class="badge badge-green rounded-pill fw-semibold">NORMAL</span></td>
+            {% elif log.document_id.document_type.priority_level.priority_level == "urgent" %}
+                <td><span class="badge badge-orange rounded-pill fw-semibold">URGENT</span></td>
+            {% elif log.document_id.document_type.priority_level.priority_level == "very urgent" %}
+                <td><span class="badge badge-red rounded-pill fw-semibold">VERY URGENT</span></td>   
+            {% endif %}
+
+            <td>
+                <div class="table-action">
+
+                    <button type="button" class="btn btn-sm btn-blue viewDocumentBtn" data-document-no="{{ log.document_id.document_no }}" 
+                        data-bs-toggle="modal" data-bs-target="#viewDocumentModal"
+                        data-bs-toggle="tooltip" title="View Document Details">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+
+                    {% if log.status == 'For Routing' %}
+                        <button type="button" class="btn btn-sm btn-green routeDocumentBtn" 
+                            data-action="route" 
+                            data-document-no="{{ log.document_id.document_no }}" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#routeDocumentModal"
+                            data-bs-toggle="tooltip" title="Route Document">
+                            <i class="fa-solid fa-route"></i>
+                        </button>
+                    {% elif log.status == 'For DIR Approval' %}
+                        <button type="button" class="btn btn-sm btn-green routeDocumentBtn" 
+                            data-action="approve" 
+                            data-document-no="{{ log.document_id.document_no }}" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#approveDocumentModal"
+                            data-bs-toggle="tooltip" title="Approve Document">
+                            <i class="fa-solid fa-check"></i>
+                        </button>
+                    {% elif log.status == 'For SRO Receiving' %}
+                        <button type="button" class="btn btn-sm btn-green" 
+                            data-action="forward" 
+                            data-document-no="{{ log.document_id.document_no }}" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#forwardDocumentModal"
+                            data-bs-toggle="tooltip" title="Forward Document">
+                            <i class="fa-solid fa-share"></i>
+                        </button>
+                    {% elif log.status == 'For Resolving' %}    
+                        <button type="button" class="btn btn-sm btn-green" 
+                            data-action="resolve" 
+                            data-document-no="{{ log.document_id.document_no }}" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#resolveDocumentModal"
+                            data-bs-toggle="tooltip" title="Resolve Document">
+                            <i class="fa-solid fa-flag"></i>
+                        </button>
+                    {% endif %}
+                    
+                </div>
+            </td>
+        </tr>
+       
+    {% endfor %}
+{% else %}
+    <tr>
+        <td colspan="10" class="text-center table-empty">No data to display in table.</td>
+    </tr>
+{% endif %}
+
+<input type="hidden" id="docuLength" value="{{ unacted_logs|length|default:'0' }}">
