@@ -48,6 +48,7 @@ class DocumentType(models.Model):
     document_type = models.CharField(max_length=45)
     category = models.CharField(max_length=7)
     priority_level = models.ForeignKey(PriorityLevel, on_delete=models.CASCADE, null=True, blank=True)
+    is_active = models.BooleanField(default=True)
     class Meta:
         db_table = 'tbl_document_type'
 
@@ -101,6 +102,7 @@ class Reports(models.Model):
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
     last_update = models.DateTimeField(blank=True)
+    is_active = models.BooleanField(default=True)
     class Meta:
         db_table = 'tbl_reports'
 
@@ -114,5 +116,32 @@ class UnactedLogs(models.Model):
     date_acted = models.DateField(null=True, blank=True)
     class Meta:
         db_table = 'tbl_unacted_logs'
+
+class DocumentManagementLogs(models.Model):
+    record_no = models.BigAutoField(primary_key=True)
+    time_stamp = models.DateTimeField(blank=True)
+    document_type = models.ForeignKey(DocumentType, on_delete=models.CASCADE, null=True, blank=True)
+    activity = models.CharField(max_length=50)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    class Meta:
+        db_table = 'tbl_document_management_logs'
+
+class ReportManagementLogs(models.Model):
+    record_no = models.BigAutoField(primary_key=True)
+    time_stamp = models.DateTimeField(blank=True)
+    report = models.ForeignKey(Reports, on_delete=models.CASCADE, null=True, blank=True)
+    activity = models.CharField(max_length=50)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    class Meta:
+        db_table = 'tbl_report_management_logs'
+
+class UserManagementLogs(models.Model):
+    record_no = models.BigAutoField(primary_key=True)
+    time_stamp = models.DateTimeField(blank=True)
+    employee = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    activity = models.CharField(max_length=50)
+    user = models.CharField(max_length=10, blank=True, null=True)
+    class Meta:
+        db_table = 'tbl_user_management_logs'
 
 
