@@ -69,144 +69,120 @@
                     </div>
                 </div>
 
-                <div class="row g-2 my-2">
-                    <div class="col-lg-2 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <p>Total Records</p>
-                            <h2>123</h2>
+                <!-- 1st Row - Total Documents and Pending Account Approval -->
+                <div class="row py-2">
+                    <!-- 1st Column | Total Records -->
+                    <div class="col-6">
+                        <div class="container d-block rounded-2 p-3 my-3" style="background-color: white; height: auto;">
+                            <div class="row">
+                                <div class="col-7 d-flex align-items-center">
+                                  <h3><span class="fw-bolder my-3 px-2 rounded-2" style="background-color: #007bff; color:white;">95</span>&nbsp;Total Records</h3>
+                                </div>
+                                <div class="col-5 p-2">
+                                  <select class="form-select" id="inputGroupSelect">
+                                    <option selected>Today</option>
+                                    <option value="1">This Week</option>
+                                    <option value="2">This Month</option>
+                                    <option value="3">This Year</option>
+                                  </select>
+                                </div>                      
+                              </div>
+                          
+                              <div class="chart-container my-2">
+                                <!-- Bar 1 -->
+                                <div class="bar">
+                                  <div class="percent-label">14</div>
+                                  <div class="bar-shape" style="height: 100px;"></div>
+                                  <div class="office-label">DIR</div>
+                                </div>
+                                <!-- Bar 2 -->
+                                <div class="bar selected">
+                                  <div class="percent-label">28</div>
+                                  <div class="bar-shape" style="height: 200px;"></div>
+                                  <div class="office-label">ADM</div>
+                                </div>
+                                <!-- Bar 3 -->
+                                <div class="bar">
+                                  <div class="percent-label">22</div>
+                                  <div class="bar-shape" style="height: 150px;"></div>
+                                  <div class="office-label">CSR</div>
+                                </div>
+                                <!-- Bar 4 -->
+                                <div class="bar">
+                                  <div class="percent-label">16</div>
+                                  <div class="bar-shape" style="height: 120px;"></div>
+                                  <div class="office-label">BDM</div>
+                                </div>
+                                <!-- Bar 5 -->
+                                <div class="bar">
+                                  <div class="percent-label">11</div>
+                                  <div class="bar-shape" style="height: 90px;"></div>
+                                  <div class="office-label">ACC</div>
+                                </div>
+                                <!-- Bar 6 -->
+                                <div class="bar">
+                                  <div class="percent-label">4</div>
+                                  <div class="bar-shape" style="height: 50px;"></div>
+                                  <div class="office-label">PRL</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-lg-2 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <p>For Approval</p>
-                            <h2>12</h2>
-                        </div>
+    
+                    <div class="col-6">
+                        <!-- 2nd Column | Pending Account Application -->
+                        <div class="container d-flex align-items-center rounded-2 p-4 my-3" style="background-color: white; height: 361px;">
+                            <div class="row d-flex align-items-center w-100">
+                                <div class="col-5 d-flex justify-content-center">
+                                    <i class='bx bxs-user' style='color:#007bff; font-size: 280px;'></i>
+                                </div>
+                                <div class="col-7 d-flex flex-column align-items-center p-2">
+                                    <h1 style="color: #007bff; font-weight: bolder;">50</h1>
+                                    <h3>Pending User Application</h3>
+                                    <div class="row my-2">
+                                        <div class="col-6">
+                                            <div class="progress-circle" style="background: conic-gradient(#3589ff 0% 70%, #e9ecef 70% 100%);">
+                                                <div class="inner-content text-center">
+                                                    <div class="percentage">35</div>
+                                                    <div class="label">SRO</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                
+                                        <div class="col-6">
+                                            <div class="progress-circle" style="background: conic-gradient(#3589ff 0% 30%, #e9ecef 30% 100%);">
+                                                <div class="inner-content text-center">
+                                                    <div class="percentage">15</div>
+                                                    <div class="label">ACO</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>                      
+                            </div>
+                        </div>                        
                     </div>
-                    <div class="col-lg-2 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <p>Payroll</p>
-                            <h2>18</h2>
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <p>Accounting</p>
-                            <h2>29</h2>
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <p>Cashier</p>
-                            <h2>14</h2>
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <p>Budgeting</p>
-                            <h2>23</h2>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="rounded-2 p-3 mb-3" style="background-color: white; height: auto;">
-                    <p class="mb-0 fw-bold"><i class='bx bxs-megaphone' style="color: #007bff;"></i> Latest Announcements</p>
-                        <p class="announcements border border-primary rounded-2 my-2 p-2" style="background-color: #F5F7F8; border-color: #007bff;">
-                            To all users, please be advised that the system will undergo scheduled maintenance on August 10, 2024, from 12:00 AM to 4:00 AM. During this time, the system will be unavailable. Thank you for your understanding and cooperation!
-                        </p>
-                        <p class="announcements border border-primary rounded-2 my-2 p-2" style="background-color: #F5F7F8; border-color: #007bff;">
-                            This is a reminder to all departments that the Q3 Financial Reports must be submitted no later than October 25, 2024. Please ensure that all expenses, invoices, and financial statements are accurately recorded and attached.
-                        </p>
-                        <p class="announcements border border-primary rounded-2 my-2 p-2" style="background-color: #F5F7F8; border-color: #007bff;">
-                            Please be informed that the deadline for the submission of all budget requests for the upcoming fiscal year is November 15, 2024. All requests must be submitted through the system for proper tracking and documentation.
-                        </p>
                 </div>
 
-                <div class="rounded-2 p-3 mb-3" style="background-color: white; height: auto;">
-                    <p class="mb-0 fw-bold"><i class='bx bxs-info-circle' style='color:#dc3545'></i> Unacted Records</p>
-                    <div class="my-3">
-                        <div class="table-responsive table-wrapper d-flex">
-                            <table class="table mb-1">
-                                <thead>
-                                    <tr>
-                                        <th>Tracking Number</th>
-                                        <th>
-                                            Status 
-                                            <a href="?status=active&sort_by=status&order=asc"><i class='bx bxs-sort-alt'></i></a>
-                                        </th>
-                                        <th>Sender</th>
-                                        <th>Particulars</th>
-                                        <th>
-                                            Type 
-                                            <a href="?status=active&sort_by=document_type&order=asc"><i class='bx bxs-sort-alt'></i></a>
-                                        </th>
-                                        <th>Remarks</th>
-                                        <th>Updated</th>
-                                        <th>
-                                            Due In 
-                                            <a href="?status=active&sort_by=deadline&order=asc"><i class='bx bxs-sort-alt'></i></a>
-                                        </th>
-                                        <th>
-                                            Priority 
-                                            <a href="?status=active&sort_by=priority_level&order=asc"><i class='bx bxs-sort-alt'></i></a>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                
-                                <tbody id="docTableBody">
-                                    {% include 'partials/display-records.html' %}
-                                </tbody>
-                            </table>           
-                        </div>
-            
-                        <p class="d-block text-start my-0 p-2 fw-semibold table-count" id="record-count" style="color: #000000; opacity: 0.6;">
-                            Showing total of <span id="recordCount">{{ users|length|default:"0" }}</span> record(s)
-                        </p>
-                    </div>
-                </div>
-                
-                <div class="row p-2 mt-0 pt-0">
-                    <!-- Latest Activity Section -->
-                    <div class="col-lg-7 rounded-2 p-3" style="background-color: white;">
-                        <p class="mb-0 fw-bold"><i class='bx bx-stats' style='color:#007bff'></i> Latest Activity</p>
-                        <div class="table-responsive"> 
-                            <table class="table mt-3">
-                                <thead>
-                                    <tr>
-                                        <th>Timestamp</th>
-                                        <th>User Name</th>
-                                        <th>Tracking Number</th>
-                                        <th>Activity</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>2024-08-05 05:15 PM</td>
-                                        <td>Ramon D. Torres</td>
-                                        <td>1122920232-DEPT-001</td>
-                                        <td>Document Approved</td>
-                                    </tr>
-                                    <tr>
-                                        <td>2024-08-05 05:15 PM</td>
-                                        <td>Ramon D. Torres</td>
-                                        <td>1122920232-DEPT-001</td>
-                                        <td>Document Archived</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                <div class="row">
+                    <div class="col-5">
+                        <div class="container d-block rounded-2 p-4 mb-3" style="background-color: white; height: auto;">
+                            <div class="row"><h3>Archived Document Analytics</h3></div>
+                            <div class="d-flex align-items-center justify-content-center py-2">
+                                <canvas id="archivedChart" height="auto"></canvas>
+                            </div>
                         </div>
                     </div>
-                
-                    <!-- Unacted Documents Section -->
-                    <div class="col-lg-5 rounded-2 p-3" style="background-color: white;">
-                        <p class="mb-0 fw-bold"><i class='bx bx-stats' style='color:#007bff'></i> Unacted Documents</p>
-                        <div class="d-flex justify-content-center my-2">
-                            <canvas id="unactedDocumentsChart" width=auto height="200"></canvas>
+
+                    <div class="col-7">
+                        <div class="container d-block rounded-2 p-4 mb-3" style="background-color: white; height: auto;">
+                            <div class="row"><h3>Office Performance Analytics</h3></div>
+                            <div class="d-flex align-items-center justify-content-center py-2">
+                                <canvas id="multiAreaChart" height="auto"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </main>
-        </div>
-    </div>
 
     <!-- Profile Modal -->
     <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
@@ -337,6 +313,7 @@
                 }
             });
     </script>
+
     <script>
         function updateTime() {
             const now = new Date();
@@ -356,23 +333,117 @@
         setInterval(updateTime, 1000);
         updateTime();
     </script>
-    <!-- Include Chart.js for pie chart functionality -->
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script>
-        var ctx = document.getElementById('unactedDocumentsChart').getContext('2d');
-        var chart = new Chart(ctx, {
-            type: 'pie',
+        // Setup the chart
+        const ctx1 = document.getElementById('archivedChart').getContext('2d');
+        const archivedChart = new Chart(ctx1, {
+            type: 'line',
             data: {
-                labels: ['Accounting', 'Budgeting', 'Payroll'],
+                labels: ['6 Days Before', '5 Days Before', '4 Days Before', '3 Days Before', '2 Days Before', 'Yesterday', 'Today'], // Days of the week
                 datasets: [{
-                    label: 'Unacted Documents',
-                    data: [10, 6, 4], // Replace with actual data
-                    backgroundColor: ['#007bff', '#6c757d', '#28a745']
+                    label: 'Archived Documents',
+                    data: [300, 350, 340, 380, 320, 360, 480], // Sample data
+                    borderColor: '#007bff', // Line color
+                    backgroundColor: 'rgba(0, 123, 255, 0.1)', // Line fill color
+                    pointBackgroundColor: '#004da0', // Points color
+                    tension: 0.4, // Smooth curve
+                    fill: true, // Fill the area under the line
+                    pointRadius: 5 // Point size
                 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false // Hide the legend
+                    }
+                }
+            }
+        });
+    </script>
+
+    <script>
+        const ctx = document.getElementById('multiAreaChart').getContext('2d');
+        const multiAreaChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Last 3 Months', 'Last 2 Months', 'Last Month', 'Current Month'], // Time periods
+                datasets: [
+                    {
+                        label: 'Director',
+                        data: [25, 10, 15, 50], // resolved document tot/unacted+delayed tot
+                        borderColor: '#5bc0de', // Line color
+                        backgroundColor: 'rgba(91, 192, 222, 0.2)', // Fill color
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'Administrative',
+                        data: [3, 15, 8, 25], 
+                        borderColor: '#5cb85c',
+                        backgroundColor: 'rgba(92, 184, 92, 0.2)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'Cashier',
+                        data: [1, 2, 4, 10], 
+                        borderColor: '#f0ad4e',
+                        backgroundColor: 'rgba(240, 173, 78, 0.2)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'Budget',
+                        data: [0, 1, 5, 28], 
+                        borderColor: '#d9534f',
+                        backgroundColor: 'rgba(217, 83, 79, 0.2)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'Accounting',
+                        data: [7, 2, 7, 25], 
+                        borderColor: '#ff69b4', 
+                        backgroundColor: 'rgba(255, 105, 180, 0.2)', 
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'Payroll',
+                        data: [51, 1.5, 6, 20],
+                        borderColor: '#808080', 
+                        backgroundColor: 'rgba(128, 128, 128, 0.2)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true, // Show the legend
+                        position: 'bottom'
+                    }
+                }
             }
         });
     </script>
