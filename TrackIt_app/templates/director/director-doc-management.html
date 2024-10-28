@@ -185,8 +185,8 @@
                             <label for="category" class="form-label">Category</label>
                             <select class="form-select" id="category" name="category" required>
                                 <option value="">Select Category</option>
-                                <option value="regular">Regular</option>
-                                <option value="SCPF">SCPF</option>
+                                <option value="Regular">Regular</option>
+                                <option value="Trust">Trust</option>
                             </select>
                         </div>
             
@@ -207,6 +207,7 @@
                                     <span class="input-group-text">Route 1</span>
                                     <select class="form-select route-select" name="route[]" required>
                                         <option value="" selected>Select Office</option>
+                                        <option value="Director">Director</option>
                                         <option value="Accounting">Accounting</option>
                                         <option value="Budgeting">Budgeting</option>
                                         <option value="Cashier">Cashier</option>
@@ -287,6 +288,7 @@
                                     <span class="input-group-text">Route 1</span>
                                     <select class="form-select edit-route-select" name="editRoutes[]" required>
                                         <option value="" selected>Select Department</option>
+                                        <option value="Director">Director</option>
                                         <option value="Accounting">Accounting</option>
                                         <option value="Budgeting">Budgeting</option>
                                         <option value="Cashier">Cashier</option>
@@ -377,6 +379,7 @@
                     <span class="input-group-text">Route ${routeStepCount}</span>
                     <select class="form-select route-select" name="route[]" required>
                         <option value="" disabled selected>Select Office</option>
+                        <option value="Director">Director</option>
                         <option value="Accounting">Accounting</option>
                         <option value="Budgeting">Budgeting</option>
                         <option value="Cashier">Cashier</option>
@@ -450,7 +453,7 @@
                 let isValidSelection = false; // Flag to check if the current selection is valid
 
                 // Clear all options and re-add them
-                const options = ['Accounting', 'Budgeting', 'Cashier', 'Payroll'];
+                const options = ['Director', 'Accounting', 'Budgeting', 'Cashier', 'Payroll'];
                 select.innerHTML = '<option value="" disabled selected>Select Office</option>';
 
                 options.forEach(option => {
@@ -505,6 +508,7 @@
                     <span class="input-group-text">Route ${editRouteStepCount}</span>
                     <select class="form-select edit-route-select" name="editRoutes[]" required>
                         <option value="" disabled selected>Select Office</option>
+                        <option value="Director">Director</option>
                         <option value="Accounting">Accounting</option>
                         <option value="Budgeting">Budgeting</option>
                         <option value="Cashier">Cashier</option>
@@ -578,7 +582,7 @@
                 let isValidSelection = false; // Flag to check if the current selection is valid
 
                 // Clear all options and re-add them
-                const options = ['Accounting', 'Budgeting', 'Cashier', 'Payroll'];
+                const options = ['Director', 'Accounting', 'Budgeting', 'Cashier', 'Payroll'];
                 select.innerHTML = '<option value="" disabled selected>Select Office</option>';
 
                 options.forEach(option => {
