@@ -8,25 +8,25 @@
         </div>
         <ul class="nav-list">
             <li>
-                <a href="{% url 'sro_dashboard' %}?status=active" class="nav-link mb-2" id="dashboard"> 
+                <a href="{% url 'sro_dashboard' %}?status=active" class="nav-link mb-2 {% if request.resolver_match.url_name == 'sro_dashboard' %}active{% endif %}" id="dashboard"> 
                     <i class='bx bx-grid-alt nav-icon'></i>
                     <span class="nav-name">Dashboard</span>
                 </a> 
             </li>            
             <li>
-                <a href="{% url 'sro_records' 'All-Documents' '-1' %}?status=active" class="nav-link mb-2" id="records">
+                <a href="{% url 'sro_records' 'All-Documents' '-1' %}?status=active" class="nav-link mb-2 {% if request.resolver_match.url_name == 'sro_records' %}active{% endif %}" id="records">
                     <i class='bx bx-folder-open nav-icon'></i>
                     <span class="nav-name">Records</span>
                 </a>
             </li>
             <li>
-                <a href="{% url 'sro_unacted_records'%}?status=active" class="nav-link mb-2" id="unacted-docs">
+                <a href="{% url 'sro_unacted_records'%}?status=active" class="nav-link mb-2 {% if request.resolver_match.url_name == 'sro_unacted_records' %}active{% endif %}" id="unacted-docs">
                     <i class='bx bx-calendar-x nav-icon'></i>   
                     <span class="nav-name">Unacted Records</span>
                 </a>
             </li>
             <li>
-                <a href="{% url 'sro_activity_logs' 'recent' %}?status=active" class="nav-link mb-2" id="act-logs">
+                <a href="{% url 'sro_activity_logs' 'recent' %}?status=active" class="nav-link mb-2 {% if request.resolver_match.url_name == 'sro_activity_logs' %}active{% endif %}" id="act-logs">
                     <i class='bx bx-history nav-icon'></i>
                     <span class="nav-name">Activity Logs</span>
                 </a>

@@ -282,15 +282,6 @@
     <script src="{% static 'js/clear-search.js' %}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const params = new URLSearchParams(window.location.search);
-            const status = params.get('status');
-            if (status) {
-                document.querySelector('#unacted-docs').classList.add(status);
-            }
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
             const documentModal = new bootstrap.Modal(document.getElementById('viewDocumentModal'));
             const qrCodeModal = new bootstrap.Modal(document.getElementById('generateQRCode'));
         

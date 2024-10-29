@@ -85,10 +85,10 @@
                                 <label for="SenderDepartment" class="form-label">Sender Department</label>
                                 <select class="form-select" name="sender_dept" id="SenderDepartment" aria-label="SenderDepartment" required>
                                     <option value="">Select Sender Department</option>
-                                    <option value="Admin">Admin</option>
-                                    <option value="Finance">Finance</option>
-                                    <option value="Budget">Budget</option>
+                                    <option value="Accounting">Accounting</option>
+                                    <option value="Budgeting">Budgeting</option>
                                     <option value="Cashier">Cashier</option>
+                                    <option value="Payroll">Payroll</option>
                                 </select>
                             </div>
                         </div>
@@ -120,6 +120,13 @@
                             <label for="Remarks" class="form-label">Remarks</label>
                             <textarea type="text" maxlength="190" class="form-control" name="remarks"  id="Remarks" placeholder="e.g. For Immediate Approval of Cash Disbursement"></textarea>
                         </div>
+
+                        <div class="mb-3">
+                            <label for="attachments" class="form-label">Upload Attachment</label>
+                            <div class="input-group">
+                                <input class="form-control form-file" type="file" id="formFile" name="attachment">
+                            </div>
+                        </div>
         
                         <div class="d-flex justify-content-end">
                             <button type="button" class="btn btn-primary  mb-1" id="submitBtn">Confirm</button>
@@ -135,11 +142,11 @@
         <div class="modal-dialog">
             <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
                 <div class="modal-header pb-0 border-bottom-0">
-                    <h5 class="modal-title" id="confirmRecordCreationLabel">Create New Record</h5>
+                    <h5 class="modal-title" id="confirmRecordCreationLabel">Confirm Record Creation</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Are you sure you want to create this new record? Please review the information before proceeding.</p>
+                    <p>Are you sure you want to confirm this document creation? Please ensure all document details are correct before proceeding.</p>
                 </div>
                 <div class="modal-footer p-3 pt-0 border-top-0">
                     <button type="button" class="m-0 mb-2 btn btn-primary" id="confirmCreate" data-bs-toggle="modal">Confirm</button>
@@ -151,22 +158,22 @@
 
     <!-- Generate QR Code Modal -->
     <div class="modal fade" id="generateQRCode" tabindex="-1" aria-labelledby="generateQRCodeLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content rounded-4 shadow">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5 mx-auto" id="confirmRecordCreationLabel">Document QR Code</h1>
-                    <button type="button" class="btn-close ps-0 ms-0" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-dialog" style="max-width: 400px;">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0 d-flex justify-content-between align-items-center" style="font-size: 13.5px;">
+                    <h5 class="fw-bold mb-0 text-center flex-grow-1" id="confirmRecordCreationLabel">Document QR Code</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>                
                 <div class="modal-body text-center">
-                    <p class="fs-6">Scan the code to quickly access the document details or perform a specified action.</p>
-                    <p class="fs-6 fw-bold my-0" id="routesQr"></p>
+                    <p class="mb-2">Scan the code to quickly access the document details or perform a specified action.</p>
+                    <p class="fw-bold my-0" id="routesQr"></p>
                     <p class="fs-6 fw-bold my-0" id="str_routesQr" style="display:none;"></p>
                     <img id='qrCodeImage' src="" alt="Document QR Code" style="height: 218px; width: auto;">
-                    <p class="fs-6 fw-bold my-0" id="trackingNoQr"></p>
+                    <p class="fw-bold my-0" id="trackingNoQr"></p>
                 </div>
-                <div class="modal-footer d-flex flex-column align-items-center">
-                    <button type="button" class="btn btn-primary mb-2 w-50" id="printQR">Print QR Code</button>
-                    <button type="button" class="btn btn-secondary w-50" id="saveQR">Save a Copy</button>
+                <div class="modal-footer p-3 pt-0 border-top-0 d-flex flex-column align-items-center">
+                    <button type="button" class="m-0 mb-1 btn btn-primary w-100" id="printQR">Print QR Code</button>
+                    <button type="button" class="m-0 mb-2 btn btn-secondary w-100" id="saveQR">Save a Copy</button>
                 </div>                
             </div>
         </div>
@@ -191,19 +198,7 @@
     </div>
 
     <script src="{% static 'js/toggle-sidebar.js' %}"></script>  
-    <script src="{% static 'js/tabs-nav.js' %}"></script>
-    <script src="{% static 'js/records-count.js' %}"></script>
     <script src="{% static 'js/new-record.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const params = new URLSearchParams(window.location.search);
-            const status = params.get('status');
-            if (status) {
-                document.querySelector('#newRecord').classList.add(status);
-            }
-        });
-    </script>
-
 </body>
 </html>

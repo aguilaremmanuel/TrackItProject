@@ -206,16 +206,59 @@
         </div>
     </div>
 
+    <!-- Settings Modal -->
+    <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0">
+                    <h5 class="modal-title" id="settingsModalLabel">Settings</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body mt-1 pt-2">
+                    <!-- Change Password Section -->
+                    <div class="mb-4">
+                        <h6 class="fw-bold">Change Password</h6>
+                        <form id="changePasswordForm">
+                            <div class="mb-3">
+                                <label for="currentPassword" class="form-label">Current Password</label>
+                                <input type="password" class="form-control" id="currentPassword" placeholder="Enter current password">
+                            </div>
+                            <div class="mb-3">
+                                <label for="newPassword" class="form-label">New Password</label>
+                                <input type="password" class="form-control" id="newPassword" placeholder="Enter new password">
+                            </div>
+                            <div class="mb-3">
+                                <label for="confirmNewPassword" class="form-label">Confirm New Password</label>
+                                <input type="password" class="form-control" id="confirmNewPassword" placeholder="Confirm new password">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Change Password</button>
+                        </form>
+                    </div>
+
+                    <!-- Receive Emails Toggle -->
+                    <div class="mb-4">
+                        <h6 class="fw-bold">Receive Emails</h6>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="receiveEmailsToggle" checked>
+                            <label class="form-check-label" for="receiveEmailsToggle">Enable/Disable Email Notifications</label>
+                        </div>
+                    </div>
+
+                    <!-- Two-Factor Authentication Toggle -->
+                    <div>
+                        <h6 class="fw-bold">Two-Factor Authentication</h6>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="twoFactorAuthToggle">
+                            <label class="form-check-label" for="twoFactorAuthToggle">Enable/Disable Two-Factor Authentication</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'js/toggle-sidebar.js' %}"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const params = new URLSearchParams(window.location.search);
-            const status = params.get('status');
-            if (status) {
-                document.querySelector('#dashboard').classList.add(status);
-            }
-        });
-    </script>
 </body>
 </html>

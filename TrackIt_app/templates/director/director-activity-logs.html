@@ -442,14 +442,5 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'js/toggle-sidebar.js' %}"></script>
     <script src="{% static 'js/clear-search.js' %}"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const params = new URLSearchParams(window.location.search);
-            const status = params.get('status');
-            if (status) {
-                document.querySelector('#activityLogs').classList.add(status);
-            }
-        });
-    </script>
 </body>
 </html>
