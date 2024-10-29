@@ -28,7 +28,12 @@
                     <span class="nav-name">Needs Action</span>
                 </a>
             </li>
-
+            <li>
+                <a href="{% url 'director_unacted_records'%}?status=active" class="nav-link mb-2" id="overdue">
+                    <i class='bx bx-calendar-x nav-icon'></i>   
+                    <span class="nav-name">Unacted Records</span>
+                </a>
+            </li>
             <li>
                 <a href="{% url 'director_user_management' 'all-office' %}?status=active" class="nav-link mb-2 {% if request.resolver_match.url_name == 'director_user_management' %}active{% endif %}" id="userManagement">
                     <i class='bx bx-user nav-icon'></i>
@@ -44,7 +49,7 @@
             </li>
 
             <li>
-                <a href="#" class="nav-link mb-2">
+                <a href="{% url 'director_archive' %}?status=active" class="nav-link mb-2" id="archiveModule">
                     <i class='bx bx-box nav-icon'></i>
                     <span class="nav-name">Archive</span>
                 </a>

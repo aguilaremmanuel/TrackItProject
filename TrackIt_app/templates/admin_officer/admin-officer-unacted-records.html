@@ -63,7 +63,7 @@
                     <h3 class="fw-semibold m-0">Unacted Records</h3>
                     <div class="d-flex justify-content-between align-items-center" style="gap: 12px;">
                         <div class="search-container">
-                            <input type="text" id="searchInput" data-url="" class="form-search form-control shadow-sm" placeholder="Search a document">
+                            <input type="text" id="searchInput" data-url="{% url 'update_unacted_records_display' %}" class="form-search form-control shadow-sm" placeholder="Search a document">
                             <i class="fa-solid fa-search search-icon"></i>  
                             <i class="fa-solid fa-xmark clear-icon" style="display: none;"></i>
                         </div>
@@ -91,6 +91,7 @@
                                 </tr>
                             </thead>
                             <tbody id="docTableBody">
+                                <!--
                                 <tr>
                                     <td style="white-space: nowrap;">112922032-DEPT-001</td>
                                     <td>For Archiving</td>
@@ -133,6 +134,7 @@
                                         </div>
                                     </td>
                                 </tr>
+                                -->
                             </tbody>
                         </table>           
                     </div>
@@ -340,7 +342,13 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'js/toggle-sidebar.js' %}"></script>
-    <script src="{% static 'js/clear-search.js' %}"></script>  
+    <script src="{% static 'js/clear-search.js' %}"></script>
+    <script src="{% static 'js/fetch-document.js' %}"></script>
+    <script src="{% static 'js/qr-code.js' %}"></script>
+    <script src="{% static 'js/print-qr-code.js' %}"></script>
+    <script src="{% static 'js/generate-document-report.js' %}"></script>
+    <script src="{% static 'js/update-document-status.js' %}"></script>
+    <script src="{% static 'js/add-remarks.js' %}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const documentModal = new bootstrap.Modal(document.getElementById('viewDocumentModal'));

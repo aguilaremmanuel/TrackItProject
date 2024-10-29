@@ -18,6 +18,8 @@ from django.db.models import Q
 from django.utils.timezone import now
 from datetime import datetime, timedelta, date, time
 from xhtml2pdf import pisa
+
+
 #---------------
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
@@ -499,7 +501,7 @@ def system_admin_dashboard(request):
     if  user_id:
         pass
     else:
-        return redirect('system_admin_login')
+        return redirect('user_login')
     
     role = user_id.split('-')[0]
     if role != 'SYS':
@@ -514,7 +516,7 @@ def director_dashboard(request):
 
     user_id = request.session.get('user_id')
     if  not user_id:
-        return redirect('director_login')
+        return redirect('user_login')
 
     role = user_id.split('-')[0]
     if role != 'DIR':
@@ -580,7 +582,7 @@ def system_admin_user_management(request, office):
 
     user_id = request.session.get('user_id')
     if  not user_id:
-        return redirect('system_admin_login')
+        return redirect('user_login')
 
     role = user_id.split('-')[0]
     if role != 'SYS':
@@ -600,13 +602,19 @@ def director_user_management(request, office):
 
     user_id = request.session.get('user_id')
     if not user_id:
-        return redirect('director_login')
+        return redirect('user_login')
     
     role = user_id.split('-')[0]
     if role != 'DIR':
         return redirect(user_login)
 
-    return render(request, 'director/director-user-management.html', {'office': office})
+    user_name = request.session.get('user_name')
+    context = {
+        'user_name': user_name,
+        'office': office
+    }
+
+    return render(request, 'director/director-user-management.html', context)
 
 # -------------- DOC MANAGEMENT -------------------
 
@@ -615,7 +623,7 @@ def system_admin_doc_management(request):
 
     user_id = request.session.get('user_id')
     if  not user_id:
-        return redirect('system_admin_login')
+        return redirect('user_login')
 
     role = user_id.split('-')[0]
     if role != 'SYS':
@@ -647,7 +655,7 @@ def system_admin_doc_management(request):
     
     records = []
 
-    document_type_records = DocumentType.objects.all()
+    document_type_records = DocumentType.objects.filter(is_active=True)
 
     sort_by = request.GET.get('sort_by')
     order = request.GET.get('order', 'asc')
@@ -686,11 +694,14 @@ def director_doc_management(request):
 
     user_id = request.session.get('user_id')
     if not user_id:
-        return redirect('director_login')
+        return redirect('user_login')
 
     role = user_id.split('-')[0]
     if role != 'DIR':
         return redirect(user_login)
+
+    user_name = request.session.get('user_name')
+    
 
 
     if request.method == 'POST':
@@ -714,10 +725,17 @@ def director_doc_management(request):
                 document_type=new_document_type,
                 route=office
             )
+
+        DocumentManagementLogs.objects.create(
+            time_stamp = timezone.now(),
+            document_type=new_document_type,
+            activity='Document Type Created',
+            user_id=user_id
+        )
     
     records = []
 
-    document_type_records = DocumentType.objects.all()
+    document_type_records = DocumentType.objects.filter(is_active=True)
 
     sort_by = request.GET.get('sort_by')
     order = request.GET.get('order', 'asc')
@@ -744,7 +762,12 @@ def director_doc_management(request):
         record['routes'] = temp_route
         records.append(record)
 
-    return render(request, 'director/director-doc-management.html', {'records': records})
+    context = {
+        'user_name': user_name,
+        'records': records
+    }
+
+    return render(request, 'director/director-doc-management.html', context)
 
 # -------------- NEW RECORD -------------------
 
@@ -754,7 +777,7 @@ def system_admin_new_record(request):
     user_id = request.session.get('user_id')
 
     if not user_id:
-        return redirect('system_admin_login')
+        return redirect('user_login')
 
     role = user_id.split('-')[0]
     if role != 'SYS':
@@ -873,7 +896,12 @@ def director_all_records(request):
     if role != 'DIR':
         return redirect(user_login)
 
-    return render(request, 'director/director-all-records.html')
+    user_name = request.session.get('user_name')
+    context = {
+        'user_name': user_name
+    }
+
+    return render(request, 'director/director-all-records.html', context)
 
 # ----------------- RECORDS -------------------
 
@@ -982,7 +1010,6 @@ def admin_officer_needs_action(request, panel, scanned_document_no):
         'scanned_status': scanned_status,
         'document': document
     }
-
     return render(request, 'admin_officer/admin-officer-needs-action.html', context) 
 
 # DIRECTOR NEEDS ACTION
@@ -990,14 +1017,16 @@ def director_needs_action(request, scanned_document_no):
 
     user_id = request.session.get('user_id')
     if not user_id:
-        return redirect('director_login')
+        return redirect('user_login')
     
     role = user_id.split('-')[0]
     if role != 'DIR':
         return redirect(user_login)
+    
+    user_name = request.session.get('user_name')
 
     if int(scanned_document_no) < 0:
-        return render(request, 'director/director-needs-action.html')
+        return render(request, 'director/director-needs-action.html', {'user_name': user_name})
 
     document = Document.objects.get(document_no=scanned_document_no)
 
@@ -1009,6 +1038,7 @@ def director_needs_action(request, scanned_document_no):
         scanned_status = 'unauthorized'
 
     context = {
+        'user_name': user_name,
         'scanned_status': scanned_status,
         'document': document
     }
@@ -1045,7 +1075,7 @@ def director_activity_logs(request, activity_type):
 
     user_id = request.session.get('user_id')
     if not user_id:
-        return redirect('director_login')
+        return redirect('user_login')
     
     role = user_id.split('-')[0]
     if role != 'DIR':
@@ -1053,14 +1083,140 @@ def director_activity_logs(request, activity_type):
 
     user_name = request.session.get('user_name')
 
-    logs = ActivityLogs.objects.filter(user_id_id=user_id).order_by('-time_stamp')
+    if activity_type == 'doc-management':
+
+        doc_management_logs = DocumentManagementLogs.objects.filter(user_id=user_id)
+
+        records = []
+
+        routes = DocumentRoute.objects.all()
+
+        for log in doc_management_logs:
+            record = {}
+            record['time_stamp'] = log.time_stamp
+            record['document_no'] = log.document_type.document_no
+            record['document_type'] = log.document_type.document_type
+            record['category'] = log.document_type.category
+            record['priority_level'] = log.document_type.priority_level.priority_level
+
+            temp_route = []
+            for route in routes:
+                if route.document_type_id == log.document_type.document_no:
+                    temp_route.append(route.route.office_name)
+            record['routes'] = temp_route
+            record['activity'] = log.activity
+
+            records.append(record)
+
+        context = {
+            'user_name': user_name,
+            'activity_type': activity_type,
+            'records': records
+        }
+
+        return render(request, 'director/director-activity-logs.html', context)
+
+    elif activity_type == 'reports':
+
+        records = ReportManagementLogs.objects.filter(user_id=user_id)
+        context = {
+            'user_name': user_name,
+            'activity_type': activity_type,
+            'records': records
+        }
+        return render(request, 'director/director-activity-logs.html', context)
+    
+    elif activity_type == 'user-management':
+
+        records = UserManagementLogs.objects.filter(user=user_id)
+        context = {
+            'user_name': user_name,
+            'activity_type': activity_type,
+            'records': records
+        }
+        return render(request, 'director/director-activity-logs.html', context)
+    
+    elif activity_type == 'records':
+
+        records = ActivityLogs.objects.filter(user_id_id=user_id)
+        context = {
+            'user_name': user_name,
+            'activity_type': activity_type,
+            'records': records
+        }
+        return render(request, 'director/director-activity-logs.html', context)
+
+    elif activity_type == 'recent':
+
+        # Current date and time details
+        now = timezone.now()
+        today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        yesterday_start = today_start - timedelta(days=1)
+        week_start = today_start - timedelta(days=7)
+
+        # Fetch logs
+        document_logs = ActivityLogs.objects.filter(user_id_id=user_id)
+        user_management_logs = UserManagementLogs.objects.filter(user=user_id)
+        doc_management_logs = DocumentManagementLogs.objects.filter(user_id=user_id)
+        report_logs = ReportManagementLogs.objects.filter(user_id=user_id)
+
+        # Initialize lists
+        today_logs = []
+        yesterday_logs = []
+        this_week_logs = []
+
+        # Organize logs by time periods
+        for log in document_logs:
+            if log.time_stamp >= today_start:
+                today_logs.append({'type': 'document', 'log': log})
+            elif yesterday_start <= log.time_stamp < today_start:
+                yesterday_logs.append({'type': 'document', 'log': log})
+            elif week_start <= log.time_stamp < yesterday_start:
+                this_week_logs.append({'type': 'document', 'log': log})
+
+        for log in user_management_logs:
+            if log.time_stamp >= today_start:
+                today_logs.append({'type': 'user_management', 'log': log})
+            elif yesterday_start <= log.time_stamp < today_start:
+                yesterday_logs.append({'type': 'user_management', 'log': log})
+            elif week_start <= log.time_stamp < yesterday_start:
+                this_week_logs.append({'type': 'user_management', 'log': log})
+
+        for log in doc_management_logs:
+            if log.time_stamp >= today_start:
+                today_logs.append({'type': 'doc_management', 'log': log})
+            elif yesterday_start <= log.time_stamp < today_start:
+                yesterday_logs.append({'type': 'doc_management', 'log': log})
+            elif week_start <= log.time_stamp < yesterday_start:
+                this_week_logs.append({'type': 'doc_management', 'log': log})
+
+        for log in report_logs:
+            if log.time_stamp >= today_start:
+                today_logs.append({'type': 'report', 'log': log})
+            elif yesterday_start <= log.time_stamp < today_start:
+                yesterday_logs.append({'type': 'report', 'log': log})
+            elif week_start <= log.time_stamp < yesterday_start:
+                this_week_logs.append({'type': 'report', 'log': log})
+
+        # Sort the logs from latest to oldest based on time_stamp
+        today_logs.sort(key=lambda x: x['log'].time_stamp, reverse=True)
+        yesterday_logs.sort(key=lambda x: x['log'].time_stamp, reverse=True)
+        this_week_logs.sort(key=lambda x: x['log'].time_stamp, reverse=True)
+
+        # Pass organized logs to the template
+        context = {
+            'user_name': user_name,
+            'activity_type': activity_type,
+            'today_logs': today_logs,
+            'yesterday_logs': yesterday_logs,
+            'this_week_logs': this_week_logs,
+        }
+        return render(request, 'director/director-activity-logs.html', context)
 
     context = {
-        'logs': logs,
         'user_name': user_name,
         'activity_type': activity_type
     }
-
     return render(request, 'director/director-activity-logs.html', context)
 
 # SRO ACTIVITY LOGS
@@ -1134,6 +1290,23 @@ def action_officer_activity_logs(request, activity_type):
 
 # -------------- UNACTED RECORDS -------------------
 
+# DIRECTOR UNACTED RECORDS
+def director_unacted_records(request):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('user_login')
+
+    role = user_id.split('-')[0]
+    if role != 'DIR':
+        return redirect(user_login)
+    
+    user_name = request.session.get('user_name')
+    context = {
+        'user_name': user_name
+    }
+    
+    return render(request, 'director/director-unacted-records.html', context)
+
 # SRO UNACTED RECORDS
 def sro_unacted_records(request):
 
@@ -1145,7 +1318,12 @@ def sro_unacted_records(request):
     if role != 'SRO':
         return redirect(user_login)
 
-    return render(request, 'sro/sro-unacted-records.html')
+    user_name = request.session.get('user_name')
+    context = {
+        'user_name': user_name
+    }
+
+    return render(request, 'sro/sro-unacted-records.html', context)
 
 # ADMIN OFFICER UNACTED RECORDS
 def admin_officer_unacted_records(request):
@@ -1158,7 +1336,12 @@ def admin_officer_unacted_records(request):
     if role != 'ADO':
         return redirect(user_login)
 
-    return render(request, 'admin_officer/admin-officer-unacted-records.html')
+    user_name = request.session.get('user_name')
+    context = {
+        'user_name': user_name
+    }
+
+    return render(request, 'admin_officer/admin-officer-unacted-records.html', context)
 
 # ACTION OFFICER UNACTED RECORDS
 def action_officer_unacted_records(request):
@@ -1171,9 +1354,46 @@ def action_officer_unacted_records(request):
     if role != 'ACT':
         return redirect(user_login)
 
-    return render(request, 'action_officer/action-officer-unacted-records.html')
+    user_name = request.session.get('user_name')
+    context = {
+        'user_name': user_name
+    }
+
+    return render(request, 'action_officer/action-officer-unacted-records.html', context)
 
 # -------------- ARCHIVE -------------------
+# SYSTEM ADMIN ARCHIVE
+def system_admin_archive(request):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('user_login')
+
+    role = user_id.split('-')[0]
+    if role != 'SYS':
+        return redirect(user_login)
+
+    user_name = request.session.get('user_name')
+    context = {
+        'user_name': user_name
+    }
+    return render(request, 'system_admin/system-admin-archive.html', context)
+
+# DIRECTOR ARCHIVE
+def director_archive(request):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('user_login')
+
+    role = user_id.split('-')[0]
+    if role != 'DIR':
+        return redirect(user_login)
+    
+    user_name = request.session.get('user_name')
+    context = {
+        'user_name': user_name
+    }
+    
+    return render(request, 'director/director-archive.html', context)
 
 # ADMIN OFFICER ARCHIVE
 def admin_officer_archive(request):
@@ -1185,17 +1405,24 @@ def admin_officer_archive(request):
     role = user_id.split('-')[0]
     if role != 'ADO':
         return redirect(user_login)
+    
+    user_name = request.session.get('user_name')
+    context = {
+        'user_name': user_name
+    }
 
-    return render(request, 'admin_officer/admin-officer-archive.html')
+    return render(request, 'admin_officer/admin-officer-archive.html', context)
 
 # ------------------ GENERATE REPORTS ------------------
 
 # SYSTEM ADMIN GENERATE REPORTS MODULE
 def system_admin_generate_reports(request, report_type):
+    
     user_id = request.session.get('user_id')
-
     if not user_id:
-        return redirect('system_admin_login')
+        return redirect('user_login')
+    
+    user_name = request.session.get('user_name')
 
     if report_type == 'all-reports':
         reports = Reports.objects.all()
@@ -1205,6 +1432,7 @@ def system_admin_generate_reports(request, report_type):
         reports = Reports.objects.filter(report_type='Office Performance')
 
     context = {
+        'user_name': user_name,
         'report_type': report_type,
         'reports': reports
     }
@@ -1216,16 +1444,19 @@ def director_generate_reports(request, report_type):
     user_id = request.session.get('user_id')
 
     if not user_id:
-        return redirect('director_login')
+        return redirect('user_login')
+    
+    user_name = request.session.get('user_name')
 
     if report_type == 'all-reports':
-        reports = Reports.objects.all()
+        reports = Reports.objects.filter(is_active=True)
     elif report_type == 'employee-performance':
-        reports = Reports.objects.filter(report_type='Employee Performance')
+        reports = Reports.objects.filter(report_type='Employee Performance', is_active=True)
     elif report_type == 'office-performance':
-        reports = Reports.objects.filter(report_type='Office Performance')
+        reports = Reports.objects.filter(report_type='Office Performance', is_active=True)
 
     context = {
+        'user_name': user_name,
         'report_type': report_type,
         'reports': reports
     }
@@ -1350,6 +1581,11 @@ def new_password(request, uidb64, token):
 
 # SYSTEM ADMIN FUNCTION: EDIT DOCUMENT TYPE
 def edit_document_type(request):
+
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('user_login')
+
     if request.method == 'POST':
         document_no = request.POST.get('edit_document_no')
         document_type = request.POST.get('edit_document_type')
@@ -1375,6 +1611,13 @@ def edit_document_type(request):
         new_document_type.priority_level = priority_level
         new_document_type.save()
 
+        DocumentManagementLogs.objects.create(
+            time_stamp = timezone.now(),
+            document_type=new_document_type,
+            activity='Document Type Edited',
+            user_id=user_id
+        )
+
         # Adding new document routes
         for route in route_list:
             office = Office.objects.get(office_name=route)
@@ -1393,30 +1636,59 @@ def edit_document_type(request):
 
 # SYSTEM ADMIN FUNCTION: DELETE DOCUMENT TYPE
 def delete_document_type(request, document_no):
-    routes = DocumentRoute.objects.filter(document_type_id = document_no)
+
+    """routes = DocumentRoute.objects.filter(document_type_id = document_no)
     routes.delete()
     document_type = DocumentType.objects.get(document_no=document_no)
-    document_type.delete()
+    document_type.delete()"""
 
-    return redirect('system_admin_doc_management')
+    user_id = request.session.get('user_id')
+
+    if not user_id:
+        return redirect('user_login')
+
+    document_type = DocumentType.objects.get(document_no=document_no)
+    document_type.is_active = False
+    document_type.save()
+
+    DocumentManagementLogs.objects.create(
+        time_stamp = timezone.now(),
+        document_type=document_type,
+        activity='Document Type Deleted',
+        user_id=user_id
+    )
+
+    role = user_id.split('-')[0]
+    if role == 'DIR':
+        return redirect(director_doc_management)
+    else:
+        return redirect(system_admin_doc_management)
+
+    
 
 # LOADING OF DOC TYPES
 def load_document_types(request):
     category = request.GET.get('category')
 
     if category in ['Trust', 'Regular']:
-        document_types = DocumentType.objects.filter(category=category).values('document_no', 'document_type')
+        document_types = DocumentType.objects.filter(category=category, is_active=True).values('document_no', 'document_type')
         return JsonResponse(list(document_types), safe=False)
     else:
         return JsonResponse({'error': 'Invalid category'}, status=400)
 
 #USER UPDATE STATUS AND EMAILING FUNCTION
 def update_user_status(request, user_id, action, office, user_type):
+
+    loggedin_user_id = request.session.get('user_id')
+    if not loggedin_user_id:
+        return redirect('user_login')
+    
     user = User.objects.get(pk=user_id)
     login_url = request.build_absolute_uri(reverse("user_login"))
 
     # Perform action and define subject & message
     if action == 'verify':
+        activity = 'User Verified'
         user.status = 'active'
         subject = 'TrackIt: Your Account Has Been Verified'
 
@@ -1451,6 +1723,7 @@ def update_user_status(request, user_id, action, office, user_type):
         plain_message = strip_tags(html_message)
 
     elif action == 'reject':
+        activity = 'User Rejected'
         user.status = 'rejected'
         subject = 'TrackIt: Your Account Has Been Rejected'
         html_message = f"""
@@ -1475,6 +1748,7 @@ def update_user_status(request, user_id, action, office, user_type):
         plain_message = strip_tags(html_message)
 
     elif action == 'deactivate':
+        activity = 'User Deactivated'
         user.status = 'inactive'
         subject = 'TrackIt: Your Account Has Been Deactivated'
         html_message = f"""
@@ -1553,6 +1827,7 @@ def update_user_status(request, user_id, action, office, user_type):
         plain_message = strip_tags(html_message)
 
     elif action == 'archive':
+        activity = 'User Archived'
         user.status = 'archived'
         subject = 'TrackIt: Your Account Has Been Archived'
         html_message = f"""
@@ -1576,6 +1851,7 @@ def update_user_status(request, user_id, action, office, user_type):
         plain_message = strip_tags(html_message)
 
     elif action == 'reactivate':
+        activity = 'User Reactivated'
         user.status = 'active'
         subject = 'TrackIt: Your Account Has Been Reactivated'
         html_message = f"""
@@ -1606,6 +1882,13 @@ def update_user_status(request, user_id, action, office, user_type):
 
     user.save()
 
+    UserManagementLogs.objects.create(
+        time_stamp = timezone.now(),
+        employee=user,
+        activity=activity,
+        user=loggedin_user_id
+    )
+
     # Send the email using EmailMultiAlternatives
     email = EmailMultiAlternatives(
         subject=subject,
@@ -1616,10 +1899,12 @@ def update_user_status(request, user_id, action, office, user_type):
     email.attach_alternative(html_message, "text/html")
     email.send(fail_silently=False)
 
+    role = loggedin_user_id.split('-')[0]
     # Redirect based on the form source
-    if user_type == 'director':
+    if role == 'DIR':
         return redirect('director_user_management', office=office)
     else:
+        print('system admin')
         return redirect('system_admin_user_management', office=office)
 
 
@@ -1759,6 +2044,40 @@ def search_documents(documents, search_query):
 
     return documents
 
+def search_unacted_documents(unacted_logs, search_query):
+
+    unacted_logs = unacted_logs.filter(
+            Q(document_id__tracking_no__icontains=search_query) |
+            Q(document_id__sender_name__icontains=search_query) |
+            Q(document_id__subject__icontains=search_query) |
+            Q(document_id__remarks__icontains=search_query) 
+        )
+
+    for log in unacted_logs:
+
+        if search_query in log.document_id.tracking_no:
+            log.document_id.highlighted_tracking_no = log.document_id.tracking_no.replace(
+                search_query, f"<span class='highlight-search'>{search_query}</span>"
+            )
+        else:
+            log.document_id.highlighted_tracking_no = log.document_id.tracking_no
+
+        if search_query in log.document_id.sender_name:
+            log.document_id.highlighted_sender_name = log.document_id.sender_name.replace(
+                search_query, f"<span class='highlight-search'>{search_query}</span>"
+            )
+        else:
+            log.document_id.highlighted_sender_name = log.document_id.sender_name
+
+        if search_query in log.document_id.subject:
+            log.document_id.highlighted_subject = log.document_id.subject.replace(
+                search_query, f"<span class='highlight-search'>{search_query}</span>"
+            )
+        else:
+            log.document_id.highlighted_subject = log.document_id.subject
+
+    return unacted_logs
+
 def sort_documents(documents, sort_by, order, status):
     if sort_by == 'status':
         if order == 'asc':
@@ -1884,7 +2203,7 @@ def document_update_status(request, action, document_no):
     act_receiver = ''
 
     if action == 'approve':
-
+        
         routes = DocumentRoute.objects.filter(document_type_id=document.document_type_id)
 
         if document.next_route:
@@ -1915,7 +2234,6 @@ def document_update_status(request, action, document_no):
 
         days_deadline = document.document_type.priority_level.deadline
         document.ongoing_deadline = date.today() + timedelta(days=days_deadline)
-
         activity = 'Document Approved'
 
     elif action == 'route':
@@ -1992,8 +2310,10 @@ def document_update_status(request, action, document_no):
 
                 if next_route == 'DIR':
                     status = 'For DIR Approval'
+                    act_receiver = User.objects.get(status='active', role='Director').user_id
                 else:
                     status = 'For SRO Receiving'
+                    act_receiver = User.objects.get(status='active', role='SRO', office_id_id=next_route).user_id
 
             else:
                 # If it's the last route
@@ -2011,6 +2331,43 @@ def document_update_status(request, action, document_no):
     elif action == 'archive':
         status = 'Archived'
         activity = 'Document Archived'
+        
+        if document.old_document_type:
+            document_type_no = document.document_type.document_no
+            document.document_type_id = document.old_document_type
+            document.save()
+            routes = DocumentRoute.objects.filter(document_type_id=document_type_no)
+            routes.delete()
+            document_type = DocumentType.objects.get(document_no=document_type_no)
+            document_type.delete()
+
+    elif action == 'delete':
+
+        logs = ActivityLogs.objects.filter(document_id=document)
+        # Delete remarks related to each log
+        for log in logs:
+            if log.remarks_id:
+                Remarks.objects.filter(no=log.remarks_id).delete()  # Directly delete the related remark
+        # Bulk delete all logs after processing remarks
+        logs.delete()
+
+        unacted_logs = UnactedLogs.objects.filter(document_id=document)
+        unacted_logs.delete()
+
+        try:
+            document.delete()
+            data = {'success': 'Delete successful'}
+            return JsonResponse(data, status=200)  # HTTP 200 OK for successful deletion
+        except Document.DoesNotExist:
+            data = {'error': 'Document not found'}
+            return JsonResponse(data, status=404)
+
+    if document.status in ['For DIR Approval', 'For Routing', 'For SRO Receiving', 'For Resolving']:
+        unacted_log = UnactedLogs.objects.filter(status=document.status, document_id=document).first()
+        if unacted_log:
+            unacted_log.is_acted = True
+            unacted_log.date_acted = timezone.now().date()
+            unacted_log.save()   
 
     document.status = status
     document.recent_update = timezone.now()
@@ -2049,7 +2406,6 @@ def add_remarks(request, document_no, remarks_no):
     if request.method == 'POST':
         data = json.loads(request.body)
         remarks = data.get('remarksInput')
-        print("remarks is: ", remarks)
         editRemarks = Remarks.objects.get(no=remarks_no)
         editRemarks.remarks = remarks
         editRemarks.save()
@@ -2384,14 +2740,19 @@ def action_officer_update_records_display(request):
 
 def update_reports_display(request, report_type):
 
+    user_id = request.session.get('user_id')
+
+    if not user_id:
+        return redirect(user_login)
+
     search_query = request.GET.get('search', '').strip()
 
     if report_type == 'employee-performance':
-        reports = Reports.objects.filter(report_type='Employee Performance')
+        reports = Reports.objects.filter(report_type='Employee Performance', is_active=True)
     elif report_type == 'office-performance':
-        reports = Reports.objects.filter(report_type='Office Performance')
+        reports = Reports.objects.filter(report_type='Office Performance', is_active=True)
     else:
-        reports = Reports.objects.all()
+        reports = Reports.objects.filter(is_active=True)
     # Search filter
     if search_query:
         reports = reports.filter(
@@ -2412,6 +2773,55 @@ def update_reports_display(request, report_type):
     }
 
     html = render_to_string('partials/display-reports.html', context)
+    return JsonResponse({'html': html})
+
+def update_unacted_records_display(request,):
+
+    user_id = request.session.get('user_id')
+
+    if not user_id:
+        return redirect(user_login)
+
+    search_query = request.GET.get('search', '').strip()
+    sort_by = request.GET.get('sort_by')
+    order = request.GET.get('order', 'asc')
+
+    unacted_logs = UnactedLogs.objects.filter(user_id_id=user_id, is_acted=False)
+
+    if search_query:
+        unacted_logs = search_unacted_documents(unacted_logs, search_query)
+
+    context = {
+        'unacted_logs': unacted_logs,
+        'search_query': search_query,
+    }
+
+    html = render_to_string('partials/display-unacted-records.html', context)
+
+    return JsonResponse({'html': html})
+
+def update_archive_display(request, user):
+
+    search_query = request.GET.get('search', '').strip()
+    sort_by = request.GET.get('sort_by')
+    order = request.GET.get('order', 'asc')
+
+    documents = Document.objects.filter(status='archived')
+
+    if search_query:
+        documents = search_documents(documents, search_query)
+
+    """if sort_by in ['status', 'document_type', 'deadline', 'priority_level']:  
+        documents = sort_documents(documents, sort_by, order, "All Records")"""
+
+    context = {
+        'documents': documents,
+        'search_query': search_query,
+        'user': user,
+        'today': date.today() 
+    }
+
+    html = render_to_string('partials/display-records.html', context)
     return JsonResponse({'html': html})
 
 # ------------------ REPORTS -----------------------
@@ -2499,6 +2909,13 @@ def new_employee_report(request):
         )
         report.save()
 
+        ReportManagementLogs.objects.create(
+            time_stamp = timezone.now(),
+            activity='Report Generated',
+            report = report,
+            user_id=user_id
+        )
+
         data = {
             'validDates': True,
         }
@@ -2542,6 +2959,13 @@ def new_office_report(request):
             office_id_id=office_id
         )
         report.save()
+
+        ReportManagementLogs.objects.create(
+            time_stamp = timezone.now(),
+            activity='Report Generated',
+            report = report,
+            user_id=user_id
+        )
  
         data = {
             'validDates': True
@@ -2555,8 +2979,20 @@ def new_office_report(request):
 
 def delete_report(request, report_no):
 
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect(user_login)
+
     report = Reports.objects.get(report_no=report_no)
-    report.delete()
+    report.is_active = False
+    report.save()
+
+    ReportManagementLogs.objects.create(
+        time_stamp = timezone.now(),
+        activity='Report Deleted',
+        report = report,
+        user_id=user_id
+    )
 
     data = {
         'message': f'Report {report_no} has been successfully deleted.'
@@ -2602,8 +3038,17 @@ def download_performance_report(request, report_no):
 
     if report.report_type == 'Employee Performance':
 
-        acted_documents_count = 0
-        total_received_documents = 0
+        endorsed_documents_count = 0
+        action_officer_total_received_documents = 0
+        approved_documents_count = 0
+        director_total_received_documents = 0
+        sro_received_documents_count = 0
+        delayed_documents = []
+        delayed_forwarding_documents = []
+        delayed_resolving_documents = []
+        resolved_documents_count = 0
+        created_documents_count = 0
+        routed_documents_count = 0
         
         middlename = report.employee_id.middlename
 
@@ -2616,50 +3061,136 @@ def download_performance_report(request, report_no):
 
         role = report.employee_id.role
 
-        if role == 'ADM':
+        if role == 'ADO':
             position = 'Admin Officer'
-        elif role == 'DIR':
+            routed_documents_count = ActivityLogs.objects.filter(
+                activity='Document Routed',
+                time_stamp__range=[converted_start_date, converted_end_date]
+            ).count
+            created_documents_count = ActivityLogs.objects.filter(
+                activity='Document Created',
+                time_stamp__range=[converted_start_date, converted_end_date]
+            ).count
+
+        elif role == 'Director':    
             position = 'Director'
+            approved_documents_count = ActivityLogs.objects.filter(
+                activity='Document Approved',
+                time_stamp__range=[converted_start_date, converted_end_date]
+            ).count
+            director_total_received_documents = ActivityLogs.objects.filter(
+                activity='Document Created',
+                time_stamp__range=[converted_start_date, converted_end_date]
+            ).count()
+            director_total_received_documents += ActivityLogs.objects.filter(
+                activity='Document Resolved',
+                receiver=User.objects.get(status='active', role='Director').user_id,
+                time_stamp__range=[converted_start_date, converted_end_date]
+            ).count()
+
         elif role == 'SRO':
             position = 'Sub-receiving Officer'
+
+            resolved_documents_count = ActivityLogs.objects.filter(
+                activity='Document Resolved',
+                user_id = report.employee_id,
+                time_stamp__range=[converted_start_date, converted_end_date]
+            ).count()
+
+            sro_received_documents_count = ActivityLogs.objects.filter(
+                activity='Document Resolved',
+                receiver = report.employee_id_id,
+                time_stamp__range=[converted_start_date, converted_end_date]
+            ).count()
+
+            print("received docs count", sro_received_documents_count)
+
+            delayed_forwarding_documents = UnactedLogs.objects.filter(
+                user_id_id = report.employee_id_id,
+                is_acted=True,
+                status='For SRO Receiving',
+                date_acted__range=[report.start_date, report.end_date]
+            )
+
+            for docu in delayed_forwarding_documents: 
+                tracking_no_parts = docu.document_id.tracking_no.split('-', 1)
+                docu.tracking_no_first = tracking_no_parts[0]  
+                docu.tracking_no_second = tracking_no_parts[1]
+                docu.delayed_days = (docu.date_acted - docu.time_stamp).days
+
+            delayed_resolving_documents = UnactedLogs.objects.filter(
+                user_id_id = report.employee_id_id,
+                is_acted=True,
+                status='For Resolving',
+                date_acted__range=[report.start_date, report.end_date]
+            )
+
+            for docu in delayed_resolving_documents: 
+                tracking_no_parts = docu.document_id.tracking_no.split('-', 1)
+                docu.tracking_no_first = tracking_no_parts[0]  
+                docu.tracking_no_second = tracking_no_parts[1]
+                docu.delayed_days = (docu.date_acted - docu.time_stamp).days
+
         else:
             position = 'Action Officer'
 
-            acted_documents_count = ActivityLogs.objects.filter(
+            endorsed_documents_count = ActivityLogs.objects.filter(
                 activity='Document Endorsed by Action Officer', 
                 user_id_id=report.employee_id_id, 
                 time_stamp__range=[converted_start_date, converted_end_date]
             ).count()
-            total_received_documents = ActivityLogs.objects.filter(
+            action_officer_total_received_documents = ActivityLogs.objects.filter(
                 activity='Document Forwarded to Action Officer',
                 receiver = report.employee_id.user_id,
                 time_stamp__range=[converted_start_date, converted_end_date]
             ).count()
-
-            total_received_documents += ActivityLogs.objects.filter(
+            action_officer_total_received_documents += ActivityLogs.objects.filter(
                 activity='Document Reassigned Due to Inaction',
                 receiver=report.employee_id.user_id,
                 time_stamp__range=[converted_start_date, converted_end_date]
             ).count()
+        
+        if role != 'ACT':
+            delayed_documents = UnactedLogs.objects.filter(
+                user_id_id = report.employee_id_id,
+                is_acted=True,
+                date_acted__range=[report.start_date, report.end_date]
+            )
+
+            for docu in delayed_documents: 
+                tracking_no_parts = docu.document_id.tracking_no.split('-', 1)
+                docu.tracking_no_first = tracking_no_parts[0]  
+                docu.tracking_no_second = tracking_no_parts[1]
+                docu.delayed_days = (docu.date_acted - docu.time_stamp).days
 
         unacted_logs = UnactedLogs.objects.filter(
             user_id_id = report.employee_id_id,
+            is_acted=False,
             time_stamp__range=[report.start_date, report.end_date]
         )
 
         for log in unacted_logs: 
             tracking_no_parts = log.document_id.tracking_no.split('-', 1)
             log.tracking_no_first = tracking_no_parts[0]  
-            log.tracking_no_second = tracking_no_parts[1]  
-
+            log.tracking_no_second = tracking_no_parts[1]
+            
         context = {
             'reporter': reporter,
             'report': report,
             'name': name,
             'now': now(),
             'position': position,
-            'acted_documents_count': acted_documents_count,
-            'total_received_documents': total_received_documents,
+            'endorsed_documents_count': endorsed_documents_count,
+            'action_officer_total_received_documents': action_officer_total_received_documents,
+            'approved_documents_count': approved_documents_count,
+            'director_total_received_documents': director_total_received_documents,
+            'resolved_documents_count': resolved_documents_count,
+            'sro_received_documents_count': sro_received_documents_count,
+            'delayed_documents': delayed_documents,
+            'delayed_forwarding_documents': delayed_forwarding_documents,
+            'delayed_resolving_documents': delayed_resolving_documents,
+            'routed_documents_count': routed_documents_count,
+            'created_documents_count': created_documents_count,
             'unacted_logs': unacted_logs
         }
 
@@ -2677,17 +3208,12 @@ def download_performance_report(request, report_no):
 
         name = sro.firstname.title() + " " + middlename + sro.lastname
         no_of_employees = User.objects.filter(status='active', role='ACT', office_id_id=report.office_id_id).count()
-
+        print("user id: ", sro.user_id)
         received_documents_count = ActivityLogs.objects.filter(
             activity='Document Routed', 
             receiver=sro.user_id,
             time_stamp__range=[converted_start_date, converted_end_date]
             ).count()
-        
-        unacted_documents_count = UnactedLogs.objects.filter(
-            user_id__role__in=['SRO', 'ACT'],
-            time_stamp__range=[report.start_date, report.end_date]
-        ).count()
 
         resolved_documents_count = ActivityLogs.objects.filter(
             activity='Document Resolved', 
@@ -2695,6 +3221,28 @@ def download_performance_report(request, report_no):
             time_stamp__range=[converted_start_date, converted_end_date]
             ).count()
 
+        delayed_logs = UnactedLogs.objects.filter(
+            user_id__role__in=['SRO', 'ACT'],
+            is_acted=True,
+            time_stamp__range=[report.start_date, report.end_date]
+        )
+
+        for docu in delayed_logs: 
+                tracking_no_parts = docu.document_id.tracking_no.split('-', 1)
+                docu.tracking_no_first = tracking_no_parts[0]  
+                docu.tracking_no_second = tracking_no_parts[1]
+                docu.delayed_days = (docu.date_acted - docu.time_stamp).days
+
+        unacted_logs = UnactedLogs.objects.filter(
+            user_id__role__in=['SRO', 'ACT'],
+            is_acted=False,
+            time_stamp__range=[report.start_date, report.end_date]
+        )
+
+        for log in unacted_logs: 
+            tracking_no_parts = log.document_id.tracking_no.split('-', 1)
+            log.tracking_no_first = tracking_no_parts[0]  
+            log.tracking_no_second = tracking_no_parts[1]
 
         context = {
             'reporter': reporter,
@@ -2703,8 +3251,9 @@ def download_performance_report(request, report_no):
             'no_of_employees': no_of_employees,
             'report': report,
             'received_documents_count': received_documents_count,
-            'unacted_documents_count': unacted_documents_count,
-            'resolved_documents_count': resolved_documents_count
+            'resolved_documents_count': resolved_documents_count,
+            'unacted_logs': unacted_logs,
+            'delayed_logs': delayed_logs,
         }
 
         html_string = render_to_string('partials/office-performance-report.html', context)
@@ -2723,6 +3272,109 @@ def download_performance_report(request, report_no):
     return response
 
 # ------------------ ANNOUNCEMENTS -----------------------
-
 def system_admin_announcements(request):
-    return render(request, 'system_admin/system-admin-announcements.html')
+
+    user_id = request.session.get('user_id')
+    role = user_id.split('-')[0]
+
+    if not user_id:
+        return redirect('user_login')
+    
+    user_name = request.session.get('user_name')
+    context = {
+        'user_name': user_name
+    }
+
+    return render(request, 'system_admin/system-admin-announcements.html', context)
+
+import difflib
+DICTIONARY = ['prioritize', 'priority', 'urgent', 'emergency', 'urgency', 'immediately', 'immediate', 'need', 'soonest', 'asap', 'as soon as possible', 'very urgent']
+
+def highlight_words(remarks, detected_words):
+    for original_word, match in detected_words.items():
+        # Use the original word or the close match for highlighting
+        remarks = remarks.replace(original_word, f"<span style='color: red;'>{match}</span>")
+    return remarks
+
+def is_high_priority(remarks):
+    remarks_words = remarks.lower().split()
+    detected_words = {}
+
+    for word in remarks_words:
+        # Check if the word is in the dictionary or if there's a close match
+        if word in DICTIONARY:
+            detected_words[word] = word  # Exact match
+        else:
+            close_match = difflib.get_close_matches(word, DICTIONARY, n=1, cutoff=0.8)
+            if close_match:
+                detected_words[word] = close_match[0]  # Close match found
+
+    return detected_words if detected_words else None
+
+def check_remarks(request, document_no, remarks_no):
+    user_id = request.session.get('user_id')
+    role = user_id.split('-')[0]
+
+    if not user_id:
+        return redirect('user_login')
+
+    if request.method == 'POST':
+        remarks = request.POST.get('remarks')
+        detected_words = is_high_priority(remarks)
+
+        if detected_words:
+            high_priority_detected = True
+            highlighted_remarks = highlight_words(remarks, detected_words)
+            
+            document = Document.objects.get(document_no=document_no)
+            prio_level = document.document_type.priority_level.priority_level
+            if prio_level == 'very urgent':
+                high_priority_detected = False
+        else:
+            high_priority_detected = False
+            highlighted_remarks = remarks  # No highlights if no priority words
+            
+            editRemarks = Remarks.objects.get(no=remarks_no)
+            editRemarks.remarks = remarks
+            editRemarks.save()
+            
+            document = Document.objects.get(document_no=document_no)
+            document.remarks = remarks
+            document.save()
+    
+    data = {
+        'high_priority_detected': high_priority_detected,
+        'highlighted_remarks': highlighted_remarks  # Include HTML string with highlighted words
+    }
+
+    return JsonResponse(data)
+
+def change_priority_level(request, document_no, remarks_no):
+
+    document = Document.objects.get(document_no=document_no)
+    
+    new_document_type = DocumentType.objects.create(
+        document_type=document.document_type.document_type,
+        category=document.document_type.category,
+        priority_level_id=4
+    )
+
+    current_routes = DocumentRoute.objects.filter(
+        document_type=document.document_type
+    )
+
+    for route in current_routes:
+        DocumentRoute.objects.create(
+            document_type = new_document_type,
+            route = route.route
+        )
+    document.old_document_type = document.document_type.document_no
+    document.document_type = new_document_type
+    document.save()
+
+    data = {
+        'sucess': 'sucess'
+    }
+
+    return JsonResponse(data)
+

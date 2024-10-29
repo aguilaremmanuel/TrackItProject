@@ -21,6 +21,7 @@ urlpatterns = [
     path('delete-document-type/<int:document_no>/', views.delete_document_type, name='delete_document_type'),
     path('system-admin-new-record/',views.system_admin_new_record, name='system_admin_new_record'),
     path('system-admin-all-records/', views.system_admin_all_records, name='system_admin_all_records'),
+    path('system-admin-archive/', views.system_admin_archive, name='system_admin_archive'),
     path('system-admin-announcements/',views.system_admin_announcements, name='system_admin_announcements'),
     path('system-admin-generate-reports/<str:report_type>/',views.system_admin_generate_reports, name='system_admin_generate_reports'),
     path('system-admin-activity-logs/<str:activity_type>/', views.system_admin_activity_logs, name='system_admin_activity_logs'),
@@ -33,8 +34,11 @@ urlpatterns = [
     path('director-dashboard/',views.director_dashboard, name='director_dashboard'),
     path('director-all-records/',views.director_all_records, name='director_all_records'),
     path('director-needs-action/<str:scanned_document_no>/',views.director_needs_action, name='director_needs_action'),
+    path('director-unacted-records/', views.director_unacted_records, name='director_unacted_records'),
     path('director-activity-logs/<str:activity_type>/', views.director_activity_logs, name='director_activity_logs'),
+    path('update-archive-display/<str:user>', views.update_archive_display, name='update_archive_display'),
     path('director-update-needs-action-display', views.director_update_needs_action_display, name='director_update_needs_action_display'),
+    path('director-archive/', views.director_archive, name='director_archive'),
     path('director-generate-reports/<str:report_type>/',views.director_generate_reports, name='director_generate_reports'),
 
     path('admin-officer-dashboard/',views.admin_officer_dashboard, name='admin_officer_dashboard'),
@@ -72,6 +76,8 @@ urlpatterns = [
 
     path('scanned-qr-code/<int:document_no>/', views.scanning_qr_code, name='scanning_qr_code'),
 
+    path('update-unacted-records-display/', views.update_unacted_records_display, name='update_unacted_records_display'),
+
     path('generate-document-report/<int:document_no>/', views.generate_document_report, name='generate_document_report'),
     path('new-employee-report/', views.new_employee_report, name='new_employee_report'),
     path('load-target-employees/', views.load_target_employees, name='load_target_employees'),
@@ -79,4 +85,7 @@ urlpatterns = [
     path('update-reports/<str:report_type>', views.update_reports_display, name='update_reports_display'),
     path('delete-report/<int:report_no>/', views.delete_report, name='delete_report'),
     path('download-performance-report/<int:report_no>/', views.download_performance_report, name='download_performance_report'),
+
+    path('check-remarks/<int:document_no>/<int:remarks_no>/', views.check_remarks, name='check_remarks'),
+    path('change-priority-level/<int:document_no>/<int:remarks_no>/', views.change_priority_level, name='change_priority_level'),
 ]
