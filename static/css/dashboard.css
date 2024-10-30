@@ -51,6 +51,7 @@
   font-size: 14px;
   flex: 1; /* Make bars take equal width */
   max-width: 100px; /* Optional: Limit max width for each bar */
+  margin-bottom: 20px;
 }
 
 /* The percentage label above the bar */
@@ -69,7 +70,7 @@
 
 /* The office label below the bar */
 .bar .office-label {
-  margin-top: 5px;
+  margin-top: 10px;
   font-weight: bold;
   color: #9d9d9d;
 }
