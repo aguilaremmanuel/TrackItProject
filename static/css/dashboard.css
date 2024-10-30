@@ -51,7 +51,6 @@
   font-size: 14px;
   flex: 1; /* Make bars take equal width */
   max-width: 100px; /* Optional: Limit max width for each bar */
-  margin-bottom: 20px;
 }
 
 /* The percentage label above the bar */
@@ -119,4 +118,28 @@
 .progress-circle .label {
     font-size: 1em;
     color: #666;
+}
+
+ /* Box styling */
+ .clickable-box {
+  background-color: #007bff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+}
+      
+.clickable-box h5{
+    color: white;
+}
+
+ /* Hover effect */
+.clickable-box:hover {
+    background-color: #318ff4;
+    transform: scale(1.05);
+}
+
+.clickable-box:hover h5 {
+    color: black;
 }
