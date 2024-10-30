@@ -24,7 +24,6 @@ urlpatterns = [
     path('system-admin-archive/', views.system_admin_archive, name='system_admin_archive'),
     path('system-admin-announcements/',views.system_admin_announcements, name='system_admin_announcements'),
     path('system-admin-generate-reports/<str:report_type>/',views.system_admin_generate_reports, name='system_admin_generate_reports'),
-    path('system-admin-activity-logs/<str:activity_type>/', views.system_admin_activity_logs, name='system_admin_activity_logs'),
     
     path('document-update-status/<str:action>/<int:document_no>/', views.document_update_status, name='document_update_status'),
 
@@ -35,7 +34,7 @@ urlpatterns = [
     path('director-all-records/',views.director_all_records, name='director_all_records'),
     path('director-needs-action/<str:scanned_document_no>/',views.director_needs_action, name='director_needs_action'),
     path('director-unacted-records/', views.director_unacted_records, name='director_unacted_records'),
-    path('director-activity-logs/<str:activity_type>/', views.director_activity_logs, name='director_activity_logs'),
+    path('system-admin-director-activity-logs/<str:activity_type>/', views.sys_dir_activity_logs, name='sys_dir_activity_logs'),
     path('update-archive-display/<str:user>', views.update_archive_display, name='update_archive_display'),
     path('director-update-needs-action-display', views.director_update_needs_action_display, name='director_update_needs_action_display'),
     path('director-archive/', views.director_archive, name='director_archive'),

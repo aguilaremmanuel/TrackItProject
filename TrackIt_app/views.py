@@ -1047,38 +1047,15 @@ def director_needs_action(request, scanned_document_no):
 
 # -------------- ACTIVITY LOGS -------------------
 
-# SYSTEM ADMIN ACTIVITY LOGS
-def system_admin_activity_logs(request, activity_type):
-
-    user_id = request.session.get('user_id')
-    if not user_id:
-        return redirect(user_login)
-
-    role = user_id.split('-')[0]
-    if role != 'SYS':
-        return redirect(user_login)
-
-    user_name = request.session.get('user_name')
-
-    logs = ActivityLogs.objects.filter(user_id_id=user_id).order_by('-time_stamp')
-
-    context = {
-        'logs': logs,
-        'user_name': user_name,
-        'activity_type': activity_type
-    }
-
-    return render(request, 'system_admin/system-admin-activity-logs.html', context)
-
-# DIRECTOR ACTIVITY LOGS
-def director_activity_logs(request, activity_type):
+# SYSTEM ADMIN AND DIRECTOR ACTIVITY LOGS
+def sys_dir_activity_logs(request, activity_type):
 
     user_id = request.session.get('user_id')
     if not user_id:
         return redirect('user_login')
     
     role = user_id.split('-')[0]
-    if role != 'DIR':
+    if role not in ['DIR', 'SYS']:
         return redirect(user_login)
 
     user_name = request.session.get('user_name')
@@ -1109,42 +1086,46 @@ def director_activity_logs(request, activity_type):
             records.append(record)
 
         context = {
+            'role': role,
             'user_name': user_name,
             'activity_type': activity_type,
             'records': records
         }
 
-        return render(request, 'director/director-activity-logs.html', context)
+        return render(request, 'assets/sys-dir-activity-logs.html', context)
 
     elif activity_type == 'reports':
 
         records = ReportManagementLogs.objects.filter(user_id=user_id)
         context = {
+            'role': role,
             'user_name': user_name,
             'activity_type': activity_type,
             'records': records
         }
-        return render(request, 'director/director-activity-logs.html', context)
+        return render(request, 'assets/sys-dir-activity-logs.html', context)
     
     elif activity_type == 'user-management':
 
         records = UserManagementLogs.objects.filter(user=user_id)
         context = {
+            'role': role,
             'user_name': user_name,
             'activity_type': activity_type,
             'records': records
         }
-        return render(request, 'director/director-activity-logs.html', context)
+        return render(request, 'assets/sys-dir-activity-logs.html', context)
     
     elif activity_type == 'records':
 
         records = ActivityLogs.objects.filter(user_id_id=user_id)
         context = {
+            'role': role,
             'user_name': user_name,
             'activity_type': activity_type,
             'records': records
         }
-        return render(request, 'director/director-activity-logs.html', context)
+        return render(request, 'assets/sys-dir-activity-logs.html', context)
 
     elif activity_type == 'recent':
 
@@ -1153,6 +1134,7 @@ def director_activity_logs(request, activity_type):
         today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
         yesterday_start = today_start - timedelta(days=1)
         week_start = today_start - timedelta(days=7)
+        fifteen_days_start = today_start - timedelta(days=15)
 
         # Fetch logs
         document_logs = ActivityLogs.objects.filter(user_id_id=user_id)
@@ -1164,6 +1146,7 @@ def director_activity_logs(request, activity_type):
         today_logs = []
         yesterday_logs = []
         this_week_logs = []
+        last_fifteen_days_logs = []
 
         # Organize logs by time periods
         for log in document_logs:
@@ -1173,6 +1156,8 @@ def director_activity_logs(request, activity_type):
                 yesterday_logs.append({'type': 'document', 'log': log})
             elif week_start <= log.time_stamp < yesterday_start:
                 this_week_logs.append({'type': 'document', 'log': log})
+            elif fifteen_days_start <= log.time_stamp < week_start:
+                last_fifteen_days_logs.append({'type': 'document', 'log': log})
 
         for log in user_management_logs:
             if log.time_stamp >= today_start:
@@ -1181,6 +1166,8 @@ def director_activity_logs(request, activity_type):
                 yesterday_logs.append({'type': 'user_management', 'log': log})
             elif week_start <= log.time_stamp < yesterday_start:
                 this_week_logs.append({'type': 'user_management', 'log': log})
+            elif fifteen_days_start <= log.time_stamp < week_start:
+                last_fifteen_days_logs.append({'type': 'document', 'log': log})
 
         for log in doc_management_logs:
             if log.time_stamp >= today_start:
@@ -1189,6 +1176,8 @@ def director_activity_logs(request, activity_type):
                 yesterday_logs.append({'type': 'doc_management', 'log': log})
             elif week_start <= log.time_stamp < yesterday_start:
                 this_week_logs.append({'type': 'doc_management', 'log': log})
+            elif fifteen_days_start <= log.time_stamp < week_start:
+                last_fifteen_days_logs.append({'type': 'document', 'log': log})
 
         for log in report_logs:
             if log.time_stamp >= today_start:
@@ -1197,27 +1186,34 @@ def director_activity_logs(request, activity_type):
                 yesterday_logs.append({'type': 'report', 'log': log})
             elif week_start <= log.time_stamp < yesterday_start:
                 this_week_logs.append({'type': 'report', 'log': log})
+            elif fifteen_days_start <= log.time_stamp < week_start:
+                last_fifteen_days_logs.append({'type': 'document', 'log': log})
 
         # Sort the logs from latest to oldest based on time_stamp
         today_logs.sort(key=lambda x: x['log'].time_stamp, reverse=True)
         yesterday_logs.sort(key=lambda x: x['log'].time_stamp, reverse=True)
         this_week_logs.sort(key=lambda x: x['log'].time_stamp, reverse=True)
+        last_fifteen_days_logs.sort(key=lambda x: x['log'].time_stamp, reverse=True)
 
         # Pass organized logs to the template
         context = {
+            'role': role,
             'user_name': user_name,
             'activity_type': activity_type,
             'today_logs': today_logs,
             'yesterday_logs': yesterday_logs,
             'this_week_logs': this_week_logs,
+            'last_fifteen_days_logs': last_fifteen_days_logs,
         }
-        return render(request, 'director/director-activity-logs.html', context)
+        return render(request, 'assets/sys-dir-activity-logs.html', context)
+        #return render(request, 'director/director-activity-logs.html', context)
 
     context = {
+        'role': role,
         'user_name': user_name,
         'activity_type': activity_type
     }
-    return render(request, 'director/director-activity-logs.html', context)
+    return render(request, 'assets/sys-dir-activity-logs.html', context)
 
 # SRO ACTIVITY LOGS
 def sro_activity_logs(request, activity_type):
@@ -1232,10 +1228,56 @@ def sro_activity_logs(request, activity_type):
 
     user_name = request.session.get('user_name')
 
-    logs = ActivityLogs.objects.filter(user_id_id=user_id).order_by('-time_stamp')
+    if activity_type == 'all-activity':
+        records = ActivityLogs.objects.filter(user_id_id=user_id)
+        context = {
+            'user_name': user_name,
+            'activity_type': activity_type,
+            'records': records
+        }
+        return render(request, 'sro/sro-activity-logs.html', context)
+    
+    elif activity_type == 'recent':
+        
+        now = timezone.now()
+        today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        yesterday_start = today_start - timedelta(days=1)
+        week_start = today_start - timedelta(days=7)
+        fifteen_days_start = today_start - timedelta(days=15)
+
+        records = ActivityLogs.objects.filter(user_id_id=user_id)
+        today_logs = []
+        yesterday_logs = []
+        this_week_logs = []
+        last_fifteen_days_logs = []
+
+        for record in records:
+            if record.time_stamp >= today_start:
+                today_logs.append(record)
+            elif yesterday_start <= record.time_stamp < today_start:
+                yesterday_logs.append(record)
+            elif week_start <= record.time_stamp < yesterday_start:
+                this_week_logs.append(record)
+            elif fifteen_days_start <= record.time_stamp < week_start:
+                last_fifteen_days_logs.append(record)
+
+        today_logs.sort(key=lambda x: x.time_stamp, reverse=True)
+        yesterday_logs.sort(key=lambda x: x.time_stamp, reverse=True)
+        this_week_logs.sort(key=lambda x: x.time_stamp, reverse=True)
+        last_fifteen_days_logs.sort(key=lambda x: x.time_stamp, reverse=True)
+
+        context = {
+            'user_name': user_name,
+            'activity_type': activity_type,
+            'today_logs': today_logs,
+            'yesterday_logs': yesterday_logs,
+            'this_week_logs': this_week_logs,
+            'last_fifteen_days_logs': last_fifteen_days_logs
+        }
+
+        return render(request, 'sro/sro-activity-logs.html', context)
 
     context = {
-        'logs': logs,
         'user_name': user_name,
         'activity_type': activity_type
     }
@@ -1255,10 +1297,58 @@ def admin_officer_activity_logs(request, activity_type):
 
     user_name = request.session.get('user_name')
 
-    logs = ActivityLogs.objects.filter(user_id_id=user_id).order_by('-time_stamp')
+    if activity_type == 'all-activity':
+
+        records = ActivityLogs.objects.filter(user_id_id=user_id)
+        context = {
+            'user_name': user_name,
+            'activity_type': activity_type,
+            'records': records
+        }
+        return render(request, 'admin_officer/admin-officer-activity-logs.html', context)
+    
+    elif activity_type == 'recent':
+
+        now = timezone.now()
+        today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        yesterday_start = today_start - timedelta(days=1)
+        week_start = today_start - timedelta(days=7)
+        fifteen_days_start = today_start - timedelta(days=15)
+
+        records = ActivityLogs.objects.filter(user_id_id=user_id)
+        today_logs = []
+        yesterday_logs = []
+        this_week_logs = []
+        last_fifteen_days_logs = []
+
+        for record in records:
+            if record.time_stamp >= today_start:
+                today_logs.append(record)
+            elif yesterday_start <= record.time_stamp < today_start:
+                yesterday_logs.append(record)
+            elif week_start <= record.time_stamp < yesterday_start:
+                this_week_logs.append(record)
+            elif fifteen_days_start <= record.time_stamp < week_start:
+                last_fifteen_days_logs.append(record)
+
+        today_logs.sort(key=lambda x: x.time_stamp, reverse=True)
+        yesterday_logs.sort(key=lambda x: x.time_stamp, reverse=True)
+        this_week_logs.sort(key=lambda x: x.time_stamp, reverse=True)
+        last_fifteen_days_logs.sort(key=lambda x: x.time_stamp, reverse=True)
+
+        context = {
+            'user_name': user_name,
+            'activity_type': activity_type,
+            'today_logs': today_logs,
+            'yesterday_logs': yesterday_logs,
+            'this_week_logs': this_week_logs,
+            'last_fifteen_days_logs': last_fifteen_days_logs
+        }
+
+        return render(request, 'admin_officer/admin-officer-activity-logs.html', context)
+
 
     context = {
-        'logs': logs,
         'user_name': user_name,
         'activity_type': activity_type
     }
@@ -1278,10 +1368,56 @@ def action_officer_activity_logs(request, activity_type):
 
     user_name = request.session.get('user_name')
 
-    logs = ActivityLogs.objects.filter(user_id_id=user_id).order_by('-time_stamp')
+    if activity_type == 'all-activity':
+        records = ActivityLogs.objects.filter(user_id_id=user_id)
+        context = {
+            'user_name': user_name,
+            'activity_type': activity_type,
+            'records': records
+        }
+        return render(request, 'action_officer/action-officer-activity-logs.html', context)
 
+    elif activity_type == 'recent':
+
+        now = timezone.now()
+        today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        yesterday_start = today_start - timedelta(days=1)
+        week_start = today_start - timedelta(days=7)
+        fifteen_days_start = today_start - timedelta(days=15)
+
+        records = ActivityLogs.objects.filter(user_id_id=user_id)
+        today_logs = []
+        yesterday_logs = []
+        this_week_logs = []
+        last_fifteen_days_logs = []
+
+        for record in records:
+            if record.time_stamp >= today_start:
+                today_logs.append(record)
+            elif yesterday_start <= record.time_stamp < today_start:
+                yesterday_logs.append(record)
+            elif week_start <= record.time_stamp < yesterday_start:
+                this_week_logs.append(record)
+            elif fifteen_days_start <= record.time_stamp < week_start:
+                last_fifteen_days_logs.append(record)
+
+        today_logs.sort(key=lambda x: x.time_stamp, reverse=True)
+        yesterday_logs.sort(key=lambda x: x.time_stamp, reverse=True)
+        this_week_logs.sort(key=lambda x: x.time_stamp, reverse=True)
+        last_fifteen_days_logs.sort(key=lambda x: x.time_stamp, reverse=True)
+
+        context = {
+            'user_name': user_name,
+            'activity_type': activity_type,
+            'today_logs': today_logs,
+            'yesterday_logs': yesterday_logs,
+            'this_week_logs': this_week_logs,
+            'last_fifteen_days_logs': last_fifteen_days_logs
+        }
+
+        return render(request, 'action_officer/action-officer-activity-logs.html', context)
+    
     context = {
-        'logs': logs,
         'user_name': user_name,
         'activity_type': activity_type
     }

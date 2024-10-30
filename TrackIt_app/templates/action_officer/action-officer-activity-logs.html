@@ -82,116 +82,146 @@
                     </ul>
 
                     {% if activity_type == 'recent' %}
-                    <div class="activity-tab-wrapper d-flex mt-2">
-                        <div class="activity-feed w-100 ">
-                            <!-- Today's Activities -->
-                            <div class="activity-class">
-                                <h6 class="activity-label">Today</h6>
-                                <div class="activity-item d-flex justify-content-between align-items-center">
-                                    <div class="d-flex">
-                                        <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center feed-green">
-                                            <i class="fa-solid fa-thumbs-up"></i>
-                                        </div>
-                                        <p class="mb-0">
-                                            <strong class="d-block">Document Received - Endorsed for Resolution: Tracking No. 112922032-DEPT-001</strong>
-                                            The document has been endorsed and is now ready for either resolution or further routing.
-                                        </p>
-                                    </div>
-                                    <p class="text-end mb-0" style="white-space: nowrap;">2024-10-24<br>10:30 AM</p>
+                        <div class="activity-tab-wrapper d-flex mt-2">
+                            <div class="activity-feed w-100 ">
+                                <!-- Today's Activities -->
+                                <div class="activity-class">
+                                    <h6 class="activity-label">Today</h6>
+                                    {% if today_logs %}
+                                        {% for log in today_logs %}
+                                            <div class="activity-item d-flex justify-content-between align-items-center">
+                                                <div class="d-flex">
+                                                    <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center feed-green">
+                                                        <i class="fa-solid fa-thumbs-up"></i>
+                                                    </div>
+                                                    <p class="mb-0">
+                                                        <strong class="d-block">Document Endorsed for Resolution: Tracking No. {{log.document_id.tracking_no}}</strong>
+                                                        The document has been endorsed and is now ready for either resolution or further routing.
+                                                    </p>
+                                                </div>
+                                                <p class="text-end mb-0" style="white-space: nowrap;">{{log.time_stamp|date:"Y-m-d"}}<br>{{log.time_stamp|date:"h:i A"}}</p>
+                                            </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <p class="activity-label" style="opacity: 50%; padding-left: 30px;"><i>No logs for today.</i></p>
+                                    {% endif %}
                                 </div>
-                            </div>
-                    
-                            <!-- Yesterday's Activities -->
-                            <div class="activity-class">
-                                <h6 class="activity-label">Yesterday</h6>
-                                <div class="activity-item d-flex justify-content-between align-items-center">
-                                    <div class="d-flex">
-                                        <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center feed-green">
-                                            <i class="fa-solid fa-thumbs-up"></i>
-                                        </div>
-                                        <p class="mb-0">
-                                            <strong class="d-block">Document Received - Endorsed for Resolution: Tracking No. 112922032-DEPT-001</strong>
-                                            The document has been endorsed and is now ready for either resolution or further routing.
-                                        </p>
-                                    </div>
-                                    <p class="text-end mb-0" style="white-space: nowrap;">2024-10-24<br>10:30 AM</p>
+                        
+                                <!-- Yesterday's Activities -->
+                                <div class="activity-class">
+                                    <h6 class="activity-label">Yesterday</h6>
+                                    {% if yesterday_logs %}
+                                        {% for log in yesterday_logs %}
+                                            <div class="activity-item d-flex justify-content-between align-items-center">
+                                                <div class="d-flex">
+                                                    <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center feed-green">
+                                                        <i class="fa-solid fa-thumbs-up"></i>
+                                                    </div>
+                                                    <p class="mb-0">
+                                                        <strong class="d-block">Document Endorsed for Resolution: Tracking No. {{log.document_id.tracking_no}}</strong>
+                                                        The document has been endorsed and is now ready for either resolution or further routing.
+                                                    </p>
+                                                </div>
+                                                <p class="text-end mb-0" style="white-space: nowrap;">{{log.time_stamp|date:"Y-m-d"}}<br>{{log.time_stamp|date:"h:i A"}}</p>
+                                            </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <p class="activity-label" style="opacity: 50%; padding-left: 30px;"><i>No logs for today.</i></p>
+                                    {% endif %}
                                 </div>
-                            </div>
 
-                            <!-- This Week Activities -->
-                            <div class="activity-class">
-                                <h6 class="activity-label">This Week</h6>
-                                <div class="activity-item d-flex justify-content-between align-items-center">
-                                    <div class="d-flex">
-                                        <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center feed-green">
-                                            <i class="fa-solid fa-thumbs-up"></i>
-                                        </div>
-                                        <p class="mb-0">
-                                            <strong class="d-block">Document Received - Endorsed for Resolution: Tracking No. 112922032-DEPT-001</strong>
-                                            The document has been endorsed and is now ready for either resolution or further routing.
-                                        </p>
-                                    </div>
-                                    <p class="text-end mb-0" style="white-space: nowrap;">2024-10-24<br>10:30 AM</p>
+                                <!-- This Week Activities -->
+                                <div class="activity-class">
+                                    <h6 class="activity-label">This Week</h6>
+                                    {% if this_week_logs %}
+                                        {% for log in this_week_logs %}
+                                            <div class="activity-item d-flex justify-content-between align-items-center">
+                                                <div class="d-flex">
+                                                    <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center feed-green">
+                                                        <i class="fa-solid fa-thumbs-up"></i>
+                                                    </div>
+                                                    <p class="mb-0">
+                                                        <strong class="d-block">Document Endorsed for Resolution: Tracking No. {{log.document_id.tracking_no}}</strong>
+                                                        The document has been endorsed and is now ready for either resolution or further routing.
+                                                    </p>
+                                                </div>
+                                                <p class="text-end mb-0" style="white-space: nowrap;">{{log.time_stamp|date:"Y-m-d"}}<br>{{log.time_stamp|date:"h:i A"}}</p>
+                                            </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <p class="activity-label" style="opacity: 50%; padding-left: 30px;"><i>No logs for today.</i></p>
+                                    {% endif %}
                                 </div>
-                            </div>
 
-                            <!-- Last 15 Days Activities -->
-                            <div class="activity-class">
-                                <h6 class="activity-label">Last 15 Days</h6>
-                                <div class="activity-item d-flex justify-content-between align-items-center">
-                                    <div class="d-flex">
-                                        <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center feed-green">
-                                            <i class="fa-solid fa-thumbs-up"></i>
-                                        </div>
-                                        <p class="mb-0">
-                                            <strong class="d-block">Document Received - Endorsed for Resolution: Tracking No. 112922032-DEPT-001</strong>
-                                            The document has been endorsed and is now ready for either resolution or further routing.
-                                        </p>
-                                    </div>
-                                    <p class="text-end mb-0" style="white-space: nowrap;">2024-10-24<br>10:30 AM</p>
+                                <!-- Last 15 Days Activities -->
+                                <div class="activity-class">
+                                    <h6 class="activity-label">Last 15 Days</h6>
+                                    {% if last_fifteen_days_logs %}
+                                        {% for log in last_fifteen_days_logs %}
+                                            <div class="activity-item d-flex justify-content-between align-items-center">
+                                                <div class="d-flex">
+                                                    <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center feed-green">
+                                                        <i class="fa-solid fa-thumbs-up"></i>
+                                                    </div>
+                                                    <p class="mb-0">
+                                                        <strong class="d-block">Document Endorsed for Resolution: Tracking No. {{log.document_id.tracking_no}}</strong>
+                                                        The document has been endorsed and is now ready for either resolution or further routing.
+                                                    </p>
+                                                </div>
+                                                <p class="text-end mb-0" style="white-space: nowrap;">{{log.time_stamp|date:"Y-m-d"}}<br>{{log.time_stamp|date:"h:i A"}}</p>
+                                            </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <p class="activity-label" style="opacity: 50%; padding-left: 30px;"><i>No logs for today.</i></p>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
-                    </div>
                     {% endif %}
 
                     {% if activity_type == 'all-activity' %}
-                    <div class="table-tab-wrapper table-responsive d-flex mt-2">
-                        <table class="table mb-1 table-logs">
-                            <thead>
-                                <tr>
-                                    <th>Timestamp</th>
-                                    <th>Tracking Number</th>
-                                    <th>Particulars</th>
-                                    <th>Sender Name</th>
-                                    <th>Remarks</th>
-                                    <th>Activity</th>
-                                </tr>
-                            </thead>
-                            <tbody id="docTableBody">
-                                <tr>
-                                    <td style="white-space: nowrap;">2024-08-05<br>10:15 AM</td>
-                                    <td style="white-space: nowrap;">112922032-DEPT-001</td>
-                                    <td>Request for Amendment of Expense List for Cash Advance Under Special Order No. 34</td>
-                                    <td>Antonio R. Mendoza</td>
-                                    <td>This is a sample remarks</td>
-                                    <td>Document Received - Endorsed for Resolution</td>
-                                </tr>
-                                <tr>
-                                    <td style="white-space: nowrap;">2024-08-05<br>10:15 AM</td>
-                                    <td style="white-space: nowrap;">112922032-DEPT-001</td>
-                                    <td>Request for Amendment of Expense List for Cash Advance Under Special Order No. 34</td>
-                                    <td>Antonio R. Mendoza</td>
-                                    <td>This is a sample remarks</td>
-                                    <td>Document Received - Endorsed for Resolution</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                        <div class="table-tab-wrapper table-responsive d-flex mt-2">
+                            <table class="table mb-1 table-logs">
+                                <thead>
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>Tracking Number</th>
+                                        <th>Particulars</th>
+                                        <th>Sender Name</th>
+                                        <th>Remarks</th>
+                                        <th>Activity</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="docTableBody">
+                                    {% if records %}
+                                        {% for record in records %}
+                                            <tr>
+                                                <td style="white-space: nowrap;">{{ record.time_stamp|date:"Y-m-d" }}<br>{{ record.time_stamp|date:"h:i A" }}</td>
+                                                <td style="white-space: nowrap;">{{ record.document_id.tracking_no }}</td>
+                                                <td>{{ record.document_id.subject }}</td>
+                                                <td style="white-space: nowrap;">{{ record.document_id.sender_name }}</td>
+                                                <td>
+                                                    {% if record.remarks %}
+                                                        {{ record.remarks.remarks }}
+                                                    {% else %}
+                                                        {{record.document_id.remarks}}
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ record.activity }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="6" class="text-center">No data to display in table.</td>
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
 
-                    <p class="d-block text-start my-0 p-2 fw-semibold" id="record-count" style="color: #000000; opacity: 0.6;">
-                        Showing total of # activity log(s)
-                    </p>
+                        <p class="d-block text-start my-0 p-2 fw-semibold" id="record-count" style="color: #000000; opacity: 0.6;">
+                            Showing total of {{records|length}} activity log{{ records|length|pluralize:"s" }}
+                        </p>
                     {% endif %}
                 </div>
             </main>
