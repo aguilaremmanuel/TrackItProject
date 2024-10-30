@@ -8,31 +8,31 @@
         </div>
         <ul class="nav-list">
             <li>
-                <a href="{% url 'system_admin_dashboard'%}?status=active" class="nav-link mb-2" id="dashboard">
+                <a href="{% url 'system_admin_dashboard'%}?status=active" class="nav-link mb-2 {% if request.resolver_match.url_name == 'system_admin_dashboard' %}active{% endif %}" id="dashboard">
                     <i class='bx bx-grid-alt nav-icon'></i>
                     <span class="nav-name">Dashboard</span>
                 </a> 
             </li>
             <li>
-                <a href="{% url 'system_admin_user_management' 'all-office' %}?status=active" class="nav-link mb-2" id="userManagement">
+                <a href="{% url 'system_admin_user_management' 'all-office' %}?status=active" class="nav-link mb-2 {% if request.resolver_match.url_name == 'system_admin_user_management' %}active{% endif %}" id="userManagement">
                     <i class='bx bx-user nav-icon'></i>
                     <span class="nav-name">User Management</span>
                 </a>
             </li>
             <li>
-                <a href="{% url 'system_admin_doc_management' %}?status=active" class="nav-link mb-2" id="docManagement">
+                <a href="{% url 'system_admin_doc_management' %}?status=active" class="nav-link mb-2 {% if request.resolver_match.url_name == 'system_admin_doc_management' %}active{% endif %}" id="docManagement">
                     <i class='bx bx-file-blank nav-icon'></i>
                     <span class="nav-name">Doc. Management</span>
                 </a>
             </li>
             <li>
-                <a href="{% url 'system_admin_new_record' %}?status=active" class="nav-link mb-2" id="newRecord">
+                <a href="{% url 'system_admin_new_record' %}?status=active" class="nav-link mb-2 {% if request.resolver_match.url_name == 'system_admin_new_record' %}active{% endif %}" id="newRecord">
                     <i class='bx bx-folder-plus nav-icon'></i>
                     <span class="nav-name">New Record</span>
                 </a>
             </li>
             <li>
-                <a href="{% url 'system_admin_all_records' %}?status=active" class="nav-link mb-2" id="all-records">
+                <a href="{% url 'system_admin_all_records' %}?status=active" class="nav-link mb-2 {% if request.resolver_match.url_name == 'system_admin_all_records' %}active{% endif %}" id="all-records">
                     <i class='bx bx-folder-open nav-icon'></i>
                     <span class="nav-name">All Records</span>
                 </a>
@@ -50,13 +50,13 @@
                 </a>
             </li>
             <li>
-                <a href="{% url 'system_admin_announcements' %}?status=active" class="nav-link mb-2" id="announcements">
+                <a href="{% url 'system_admin_announcements' %}?status=active" class="nav-link mb-2 {% if request.resolver_match.url_name == 'system_admin_announcements' %}active{% endif %}" id="announcements">
                     <i class='bx bx-podcast nav-icon'></i>
                     <span class="nav-name">Announcements</span>
                 </a>
             </li>
             <li>
-                <a href="{% url 'system_admin_generate_reports' 'all-reports' %}?status=active" class="nav-link mb-2" id="generateReports">
+                <a href="{% url 'system_admin_generate_reports' 'all-reports' %}?status=active" class="nav-link mb-2 {% if request.resolver_match.url_name == 'system_admin_generate_reports' %}active{% endif %}" id="generateReports">
                     <i class='bx bx-bar-chart-alt-2 nav-icon'></i>
                     <span class="nav-name">Generate Reports</span>
                 </a>

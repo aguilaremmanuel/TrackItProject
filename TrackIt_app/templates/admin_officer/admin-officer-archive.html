@@ -241,16 +241,6 @@
     <script src="{% static 'js/generate-document-report.js' %}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const params = new URLSearchParams(window.location.search);
-            const status = params.get('status');
-            if (status) {
-                // Assuming you want to add the class to the element with ID 'targetElement'
-                document.querySelector('#archiveModule').classList.add(status);
-            }
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
             const documentModal = new bootstrap.Modal(document.getElementById('viewDocumentModal'));
             const qrCodeModal = new bootstrap.Modal(document.getElementById('generateQRCode'));
         
@@ -267,7 +257,5 @@
             });
         });
     </script>
-  
-
 </body>
 </html>

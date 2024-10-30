@@ -129,7 +129,7 @@
                                 <span style="color: gray; font-style: italic;">(Optional)</span>
                             </label>
                             <div class="input-group">
-                                <input class="form-control" type="file" id="formFile" name="attachment">
+                                <input class="form-control form-file" type="file" id="formFile" name="attachment">
                             </div>
                         </div>
                 
@@ -166,16 +166,6 @@
     <script src="{% static 'js/records-count.js' %}"></script>
     <script src="{% static 'js/new-record.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const params = new URLSearchParams(window.location.search);
-            const status = params.get('status');
-            if (status) {
-                // Assuming you want to add the class to the element with ID 'targetElement'
-                document.querySelector('#announcements').classList.add(status);
-            }
-        });
-    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const checkAll = document.getElementById('checkAll');
@@ -232,8 +222,5 @@
             });
         });
     </script>
-
 </body>
 </html>
-
-<!-- TEST COMMIT -->

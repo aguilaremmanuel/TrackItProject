@@ -276,13 +276,29 @@ a {
     margin-bottom: 0.27rem;
 }
 
+.form-control.form-file {
+    padding: 0.5rem 0.8rem 0.5rem 0rem;
+
+    &::file-selector-button {
+        height: 100%;
+        padding: 0.35rem 0.8rem;
+        background-color: #eff3f5;
+        color: #000000;
+        border: none;
+        border-radius: 0.25rem;
+        margin-right: 0.8rem;
+        margin-left: 0.15rem;
+        cursor: pointer;
+    }
+}
+
 .form-control, .form-select {
     font-size: 15px !important;
     padding: 0.5rem 0.8rem;
     background-color: #FFFFFF;
     color: #000000;
     border-color: #B1C1CF;
-    
+
     &::placeholder {
         color: #B1C1CF;
     }
@@ -292,6 +308,10 @@ a {
         background-color: #FFFFFF;
         box-shadow: 0 0 0 0.15rem rgba(46, 114, 234, 0.15);
     }
+}
+
+.form-select:disabled {
+    background-color: #eff3f5;
 }
 
 form select:invalid {

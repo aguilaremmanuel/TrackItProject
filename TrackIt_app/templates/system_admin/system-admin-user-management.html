@@ -106,7 +106,7 @@
                                         Email
                                         <a href="?status=active&sort_by=email&order=asc"><i class='bx bxs-sort-alt'></i></a>
                                     </th>
-                                    <th>Department</th>
+                                    <th>Office</th>
                                     <th>
                                         Role 
                                         <a href="?status=active&sort_by=role&order=asc"><i class='bx bxs-sort-alt'></i></a>
@@ -236,16 +236,6 @@
     <script src="{% static 'js/records-count.js' %}"></script>
     <script src="{% static 'js/update-user-status.js' %}"></script>
     <script src="{% static 'js/fetch-users.js' %}"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const params = new URLSearchParams(window.location.search);
-            const status = params.get('status');
-            if (status) {
-                // Assuming you want to add the class to the element with ID 'targetElement'
-                document.querySelector('#userManagement').classList.add(status);
-            }
-        });
-    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Modal handling

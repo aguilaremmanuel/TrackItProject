@@ -63,6 +63,7 @@ function bindViewButtons() {
                             <td>${activity.office}</td>
                             <td style="white-space: nowrap;">${activity.role}</td>
                             <td><i>${activity.remarks}</i></td>
+                            <td style="white-space: nowrap;"><a href="#" data-bs-toggle="modal" data-bs-target="#viewAttachmentModal" id="viewAttachmentLink">View Attachment</a></td>
                             <td>${activity.activity}</td>
                         `;
 
