@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.urls import path
 from . import views
 from .views import generate_qr_code
+from django.conf.urls.static import static
+from django.conf import settings
 
 urlpatterns = [
     path('', views.user_login, name='user_login'),
@@ -87,4 +89,12 @@ urlpatterns = [
 
     path('check-remarks/<int:document_no>/<int:remarks_no>/', views.check_remarks, name='check_remarks'),
     path('change-priority-level/<int:document_no>/<int:remarks_no>/', views.change_priority_level, name='change_priority_level'),
-]
+
+    path('edit_profile/',views.edit_profile, name='edit_profile'),
+
+    path('update-announcement/<int:id>/', views.update_announcement, name='update_announcement'),
+    path('delete-announcement/<int:id>/', views.delete_announcement, name='delete_announcement'),
+    path('announcement/<int:announcement_id>/attachment/', views.view_attachment, name='view_attachment'),
+
+
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -18,6 +18,8 @@ from django.db.models import Q
 from django.utils.timezone import now
 from datetime import datetime, timedelta, date, time
 from xhtml2pdf import pisa
+import os
+from django.shortcuts import get_object_or_404
 
 
 #---------------
@@ -509,7 +511,38 @@ def system_admin_dashboard(request):
 
     user_name = request.session.get('user_name')
 
-    return render(request, 'system_admin/system-admin-dashboard.html', {'user_name': user_name})
+    # Fetch the user's information from the database
+    user = User.objects.filter(user_id=user_id).first()
+
+    # Determine the display name logic
+    if user and any([user.firstname, user.middlename, user.lastname]):
+        full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
+        first_name = user.firstname if user.firstname else ''
+        middle_name = user.middlename if user.middlename else ''
+        last_name = user.lastname if user.lastname else ''
+    else:
+        full_name = 'None'
+        first_name = ''
+        middle_name = ''
+        last_name = ''
+    
+    # Prepare user data
+    user_data = {
+        'user_id': user.user_id if user and user.user_id else 'None',
+        'full_name': full_name,
+        'first_name': first_name,
+        'middle_name': middle_name,
+        'last_name': last_name,
+        'email': user.email if user and user.email else 'None',
+        'contact_no': user.contact_no if user and user.contact_no else 'None',
+        'role': user.role if user and user.role else 'None',
+        'profile_picture': user.profile_picture.url if user and user.profile_picture else None,
+    }
+
+    return render(request, 'system_admin/system-admin-dashboard.html', {
+        'user_name': user_name,
+        'user_data': user_data,  
+    })
 
 # DIRECTOR DASHBOARD
 def director_dashboard(request):
@@ -3409,20 +3442,80 @@ def download_performance_report(request, report_no):
 
 # ------------------ ANNOUNCEMENTS -----------------------
 def system_admin_announcements(request):
-
+    # Retrieve user ID from session
     user_id = request.session.get('user_id')
-    role = user_id.split('-')[0]
-
     if not user_id:
         return redirect('user_login')
-    
+
+    # Verify that the role prefix is 'SYS' (System Administrator)
+    role_prefix = user_id.split('-')[0]
+    if role_prefix != 'SYS':
+        return redirect('user_login')
+
+    # Retrieve the user name from session
     user_name = request.session.get('user_name')
-    context = {
-        'user_name': user_name
+
+    # Handle POST request for creating an announcement
+    if request.method == 'POST':
+        title = request.POST.get('announcementTitle')
+        description = request.POST.get('description')
+        attachment = request.FILES.get('attachment')
+        offices = request.POST.getlist('offices')  
+        all_offices = 'All' in offices
+        end_date = request.POST.get('endDate')
+
+        # Save the announcement
+        announcement = Announcement(
+            title=title,
+            description=description,
+            attachment=attachment,
+            offices=', '.join(offices),
+            all_offices=all_offices,
+            end_date=end_date
+        )
+        announcement.save()
+        return redirect('system_admin_announcements')
+
+    # Fetch all announcements to display
+    announcements = Announcement.objects.all()
+
+    # Fetch user information using session user_id
+    user = User.objects.filter(user_id=user_id).first()
+
+    # Determine the display name logic
+    if user and any([user.firstname, user.middlename, user.lastname]):
+        full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
+        first_name = user.firstname if user.firstname else ''
+        middle_name = user.middlename if user.middlename else ''
+        last_name = user.lastname if user.lastname else ''
+    else:
+        full_name = 'None'
+        first_name = 'None'
+        middle_name = 'None'
+        last_name = 'None'
+
+    # Prepare user data
+    user_data = {
+        'user_id': user.user_id if user and user.user_id else 'None',
+        'full_name': full_name,
+        'first_name': first_name,
+        'middle_name': middle_name,
+        'last_name': last_name,
+        'email': user.email if user and user.email else 'None',
+        'contact_no': user.contact_no if user and user.contact_no else 'None',
+        'role': user.role if user and user.role else 'None',
+        'profile_picture': user.profile_picture.url if user and user.profile_picture else None,
     }
 
-    return render(request, 'system_admin/system-admin-announcements.html', context)
+    # Render the template with announcements and user data
+    return render(request, 'system_admin/system-admin-announcements.html', {
+        'user_name': user_name,
+        'user_data': user_data,
+        'announcements': announcements,  # Include announcements in the context
+    })
 
+
+# ------------------ REMARKS -----------------------
 import difflib
 DICTIONARY = ['prioritize', 'priority', 'urgent', 'emergency', 'urgency', 'immediately', 'immediate', 'need', 'soonest', 'asap', 'as soon as possible', 'very urgent']
 
@@ -3514,3 +3607,95 @@ def change_priority_level(request, document_no, remarks_no):
 
     return JsonResponse(data)
 
+# ------------------ USER PROFILE -----------------------
+
+# Handle profile update
+def edit_profile(request):
+    if request.method == 'POST':
+        user_id = request.session.get('user_id')
+        user = User.objects.get(user_id=user_id)
+
+        # Update basic info
+        user.firstname = request.POST.get('firstname')
+        user.middlename = request.POST.get('middlename')
+        user.lastname = request.POST.get('lastname')
+        user.email = request.POST.get('email')
+        user.contact_no = request.POST.get('contact_no')
+
+        # Update or remove profile picture
+        if 'profile_picture' in request.FILES:
+            # Check if the user has an existing profile picture
+            if user.profile_picture and user.profile_picture.url != '/attachments/profile_pics/default_profile_pic.png':
+                # Delete the old profile picture file
+                old_picture_path = os.path.join(settings.MEDIA_ROOT, user.profile_picture.name)
+                if os.path.isfile(old_picture_path):
+                    os.remove(old_picture_path)
+
+            # Update with the new profile picture
+            user.profile_picture = request.FILES['profile_picture']
+
+
+        if request.POST.get('delete_photo'):
+            # Delete the existing profile picture if it's not the default one
+            if user.profile_picture.url != '/attachments/profile_pics/default_profile_pic.png':
+                old_picture_path = os.path.join(settings.MEDIA_ROOT, user.profile_picture.name)
+                if os.path.isfile(old_picture_path):
+                    os.remove(old_picture_path)
+
+            # Set to default picture
+            user.profile_picture = 'profile_pics/default_profile_pic.png'
+
+        # Save user info
+        user.save()
+        
+        # Redirect back to the same page where the edit was initiated
+        return redirect(request.META.get('HTTP_REFERER', '/'))
+
+    # Handle GET requests or other methods
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method.'}, status=400)
+
+# ------------------ ANNOUNCEMENTS -----------------------
+
+def update_announcement(request, id):
+    if request.method == 'POST':
+        try:
+            announcement = Announcement.objects.get(id=id)
+        except Announcement.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Announcement not found.'}, status=404)
+
+        # Accessing the title directly
+        title = announcement.title  # Directly getting the title from the database
+        form = AnnouncementForm(request.POST, request.FILES, instance=announcement)
+
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'status': 'success'})
+        else:
+            return JsonResponse({'status': 'error', 'message': form.errors}, status=400)
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method.'}, status=400)
+
+def delete_announcement(request, id):
+    if request.method == 'POST':
+        try:
+            announcement = get_object_or_404(Announcement, id=id)
+            announcement.delete()
+            return JsonResponse({'status': 'success'})
+        except Announcement.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Announcement not found.'}, status=404)
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method.'}, status=400)
+
+def view_attachment(request, announcement_id):
+    announcement = get_object_or_404(Announcement, id=announcement_id)
+
+    # Serve the converted PDF if available
+    if announcement.attachment:
+        pdf_name = os.path.splitext(announcement.attachment.name)[0] + '.pdf'
+        pdf_path = os.path.join(settings.MEDIA_ROOT, pdf_name)
+
+        if os.path.exists(pdf_path):
+            with open(pdf_path, 'rb') as f:
+                return HttpResponse(f.read(), content_type='application/pdf')
+        else:
+            return HttpResponse("PDF conversion not available.", status=404)
+    return HttpResponse("No attachment", status=404)
