@@ -76,6 +76,12 @@
                                     </label>
                                 </div>
                                 <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" value="All" id="checkDirector">
+                                    <label class="form-check-label" for="checkDirector">
+                                        Director
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
                                     <input class="form-check-input" type="checkbox" value="Admin" id="checkAdmin">
                                     <label class="form-check-label" for="checkAdmin">
                                         Admin
@@ -169,7 +175,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const checkAll = document.getElementById('checkAll');
-            const otherCheckboxes = document.querySelectorAll('#checkAdmin, #checkAccounting, #checkBudget, #checkCashier, #checkPayroll');
+            const otherCheckboxes = document.querySelectorAll('#checkDirector, #checkAdmin, #checkAccounting, #checkBudget, #checkCashier, #checkPayroll');
             const form = document.getElementById('checkboxForm');
             const checkboxError = document.getElementById('checkboxError');
             const openModalBtn = document.getElementById('openModalBtn');
