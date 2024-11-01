@@ -12512,4 +12512,72 @@ table tbody tr td.overdue {
   border-radius: 3px; /* Optional: rounded corners */
 }
 
+.view-attachment-btn {
+  background-color: transparent;
+  border: none;
+  color: rgb(46, 114, 234);
+  font-weight: bold;
+}
+
+.delete-phone-upload-btn {
+  cursor: pointer;
+}
+
+.delete-phone-upload-btn:hover {
+  color: #8B0000;
+}
+
+.file-name-phone-upload {
+  font-weight: bold;
+  color: rgb(46, 114, 234);
+}
+
+.qr-code-container {
+  position: relative;
+  width: 30%;
+  display: inline-block;
+  margin: 5px 0;
+}
+
+.qr-code-container img {
+  width: 100%;
+  height: auto;
+}
+
+.corner {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 4px solid rgb(46, 114, 234);
+  box-sizing: border-box;
+}
+
+.top-left {
+  top: -3px;
+  left: -3px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.top-right {
+  top: -3px;
+  right: -3px;
+  border-left: none;
+  border-bottom: none;
+}
+
+.bottom-left {
+  bottom: -3px;
+  left: -3px;
+  border-top: none;
+  border-right: none;
+}
+
+.bottom-right {
+  bottom: -3px;
+  right: -3px;
+  border-top: none;
+  border-left: none;
+}
+
 /*# sourceMappingURL=custom.css.map */

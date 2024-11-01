@@ -1,0 +1,232 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="{% static 'fontawesomefree/css/all.min.css' %}" rel="stylesheet" type="text/css">
+    <style>
+        body {
+            font-family: Inter, sans-serif;
+        }
+
+        .upload-box {
+            border: 2px dashed #dee2e6;
+            padding: 20px;
+            text-align: center;
+            color: #6c757d;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: border-color 0.3s;
+        }
+        .upload-box.dragover {
+            border-color: #0d6efd;
+        }
+        .file-list {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            margin-top: 10px;
+        }
+        .file-name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-grow: 1; /* Allows file name to take up available space */
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        .file-name span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 100%;
+        }
+        .file-icon {
+            color: #007bff;
+        }
+        .delete-icon {
+            color: #dc3545;
+            cursor: pointer;
+        }
+
+        .browse-btn {
+            background-color: transparent;
+            border: 2px solid rgb(20, 85, 199);
+            color: rgb(20, 85, 199);
+            padding: 5px 50px;
+            border-radius: 5px;
+            transition: background-color 0.3s, border-color 0.3s; /* Transition for better visuals */
+        }
+
+        .browse-btn:focus,
+        .browse-btn:active {
+            outline: none; /* Remove default outline */
+            background-color: transparent; /* Keep background transparent */
+            border-color: rgb(20, 85, 199); /* Keep the border color */
+            color: rgb(20, 85, 199); /* Keep the text color */
+        }
+
+        .browse-btn:hover {
+            background-color: rgba(20, 85, 199, 0.1); /* Light background on hover */
+        }
+
+
+        .powered-by {
+            margin-top: 40px;
+            text-align: center;
+            opacity: 50%; /* Low opacity for watermark effect */
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+
+        .footer-logo {
+            width: 100px; /* Adjust logo size as needed */
+        }
+        
+        /* Media queries for responsiveness */
+        @media (max-width: 768px) {
+            .upload-box {
+                padding: 15px;
+            }
+            .file-list {
+                flex-direction: row;
+                align-items: center;
+                gap: 10px;
+            }
+            .file-name span {
+                font-size: 14px;
+            }
+            .submit-button {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .upload-box p, .upload-box small {
+                font-size: 14px;
+            }
+            .file-icon {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-4" >
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title text-center">Add File</h5>
+            <form method="post" action="{% url 'upload_file_with_phone' activity_log_no %}" id="remarksForm" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="upload-box" id="uploadBox">
+                    <i class="fa-solid fa-cloud-arrow-up" style="color: rgb(20, 85, 199); font-size: 22px;"></i>
+                    <p>Upload your file here</p>
+                    <small>Files supported: PDF only</small><br>
+                    <button class="btn browse-btn mt-2" type="button" onclick="document.getElementById('fileInput').click()">Browse</button>
+                    <input type="file" name="attachment" id="fileInput" accept=".pdf" style="display: none;" onchange="handleFileUpload(event)">
+                    <p class="mt-2">Maximum size: 2MB</p>
+                </div>
+            
+                <div id="fileList"></div>
+                <input type="submit" id="submitButton" class="btn btn-primary mt-3 submit-button" style="display: none; width: 100%;" value="Upload">
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="powered-by">
+    <p>Powered by:</p>
+    <img src="{% static 'images/logo.png' %}" alt="Logo" class="footer-logo">
+</div>
+
+<script>
+    const uploadBox = document.getElementById('uploadBox');
+    const fileInput = document.getElementById('fileInput');
+    const fileList = document.getElementById('fileList');
+    const submitButton = document.getElementById('submitButton');
+
+    // Handle file selection and add to file list
+    function handleFileUpload(event) {
+        if (fileList.hasChildNodes()) {
+            alert("Please delete the existing file before uploading a new one.");
+            fileInput.value = '';  // Clear new file selection
+            return;
+        }
+        
+        const file = event.target.files[0];
+        if (file && file.type === 'application/pdf' && file.size <= 2 * 1024 * 1024) {  // Check file type and size
+            displayFile(file);
+            submitButton.style.display = 'block';  // Show submit button
+        } else {
+            alert("Only PDF files under 2MB are allowed.");
+            fileInput.value = '';  // Clear invalid file
+        }
+    }
+
+    // Display uploaded file with delete option
+    function displayFile(file) {
+        const fileItem = document.createElement('div');
+        fileItem.classList.add('file-list');
+
+        fileItem.innerHTML = `
+            <div class="file-name">
+                <i class="bi bi-file-earmark-pdf file-icon"></i>
+                <span>${file.name}</span>
+                <small class="text-muted">${(file.size / 1024).toFixed(1)} KB</small>
+            </div>
+            <i class="bi bi-trash delete-icon" onclick="removeFile()"></i>
+        `;
+
+        fileList.appendChild(fileItem);
+    }
+
+    // Remove file from file list
+    function removeFile() {
+        fileList.innerHTML = '';  // Clear file list
+        fileInput.value = '';     // Reset file input
+        submitButton.style.display = 'none';  // Hide submit button
+    }
+
+    // Drag-and-drop functionality
+    uploadBox.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadBox.classList.add('dragover');
+    });
+
+    uploadBox.addEventListener('dragleave', () => {
+        uploadBox.classList.remove('dragover');
+    });
+
+    uploadBox.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadBox.classList.remove('dragover');
+        
+        if (fileList.hasChildNodes()) {
+            alert("Please delete the existing file before uploading a new one.");
+            return;
+        }
+
+        const file = e.dataTransfer.files[0];
+        if (file && file.type === 'application/pdf' && file.size <= 2 * 1024 * 1024) {
+            fileInput.files = e.dataTransfer.files;  // Set file input files
+            handleFileUpload({ target: fileInput });  // Process dropped file
+        } else {
+            alert("Only PDF files under 2MB are allowed.");
+        }
+    });
+
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

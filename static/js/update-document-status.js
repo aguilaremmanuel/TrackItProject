@@ -37,6 +37,9 @@ document.addEventListener('DOMContentLoaded', function () {
                             .then(data => {
                                 document.getElementById('saveRemarks').setAttribute('data-remarks-no', data.remarks_no);
                                 document.getElementById('saveRemarks').setAttribute('data-document-no', documentNo);
+                                document.getElementById('saveRemarks').removeAttribute('data-activity-log-no');
+                                console.log(data.activity_log_no);
+                                document.getElementById('saveRemarks').setAttribute('data-activity-log-no', data.activity_log_no);
                             })
                             .catch(error => console.error('Error', error));
                     };

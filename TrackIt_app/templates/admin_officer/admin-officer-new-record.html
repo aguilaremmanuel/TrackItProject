@@ -67,7 +67,7 @@
                     <p class="fw-semibold pt-1" style="font-size: 18px">
                         <i class="fa-solid fa-circle-info" style="color: #2E72EA;"></i>&nbsp; Document Information
                     </p>
-                    <form method="post" action="{% url 'add_record' %}" id="recordForm">
+                    <form method="post" action="{% url 'add_record' %}" id="recordForm" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="row mb-3 g-3">
                             <div class="col-12 col-md-4">
@@ -123,7 +123,7 @@
                         <div class="mb-3">
                             <label for="attachments" class="form-label">Upload Attachment</label>
                             <div class="input-group">
-                                <input class="form-control form-file" type="file" id="formFile" name="attachment">
+                                <input class="form-control form-file" type="file" accept=".pdf" id="formFile" name="attachment">
                             </div>
                         </div>
         

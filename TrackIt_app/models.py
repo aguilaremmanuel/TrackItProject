@@ -75,6 +75,9 @@ class Remarks(models.Model):
     class Meta:
         db_table = 'tbl_remarks'
 
+def document_directory_path(instance, filename):
+    return f'document/{instance.document_id.document_no}/{filename}'
+
 class ActivityLogs(models.Model):
     no = models.BigAutoField(primary_key=True)
     time_stamp = models.DateTimeField(blank=True)
@@ -83,6 +86,7 @@ class ActivityLogs(models.Model):
     remarks = models.ForeignKey(Remarks, on_delete=models.SET_NULL, null=True, blank=True)
     user_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     receiver = models.CharField(max_length=10, blank=True, null=True)
+    file_attachment = models.FileField(upload_to=document_directory_path, null=True, blank=True)
     class Meta:
         db_table = 'tbl_activity_logs'
 

@@ -18,6 +18,7 @@ from django.db.models import Q
 from django.utils.timezone import now
 from datetime import datetime, timedelta, date, time
 from xhtml2pdf import pisa
+import os, shutil
 
 
 #---------------
@@ -819,7 +820,8 @@ def add_record(request):
         doc_type = request.POST.get('doc_type')
         subject = request.POST.get('subject')
         remarks = request.POST.get('remarks')
-        
+        file_attachment = request.FILES.get('attachment')
+
         if Document.objects.filter(tracking_no=tracking_no).exists():
 
             data = {
@@ -829,7 +831,7 @@ def add_record(request):
 
             return JsonResponse(data)
 
-        document = create_document(tracking_no, sender_name, sender_dept, doc_type, subject, remarks, user_id)
+        document = create_document(tracking_no, sender_name, sender_dept, doc_type, subject, remarks, file_attachment, user_id)
 
         routes = DocumentRoute.objects.filter(document_type=document.document_type)
         
@@ -2055,7 +2057,7 @@ def generate_user_id(role_prefix):
     return f"{role_prefix}-{new_number:04d}"
 
 # CREATE DOCUMENT (NEW RECORD MODULE)
-def create_document(tracking_no, sender_name, sender_dept, doc_type, subject, remarks, user_id):
+def create_document(tracking_no, sender_name, sender_dept, doc_type, subject, remarks, file_attachment, user_id):
 
     document_type_instance = DocumentType.objects.get(document_no=doc_type)
     
@@ -2084,7 +2086,8 @@ def create_document(tracking_no, sender_name, sender_dept, doc_type, subject, re
         activity='Document Created',
         document_id=document,
         user_id_id=user_id,
-        remarks = new_remarks
+        remarks = new_remarks,
+        file_attachment = file_attachment
     )
 
     return document
@@ -2106,6 +2109,7 @@ def generate_route_strings(routes):
 
 # GENERATE QR CODE (NEW RECORD)
 def generate_qr_code(request, document_no):
+    print("pumasok sa generate_qr_code views ")
     # Define the URL to be encoded in the QR code
     url = request.build_absolute_uri(f'/scanned-qr-code/{document_no}/')
 
@@ -2370,6 +2374,7 @@ def document_update_status(request, action, document_no):
 
         days_deadline = document.document_type.priority_level.deadline
         document.ongoing_deadline = date.today() + timedelta(days=days_deadline)
+
         activity = 'Document Approved'
 
     elif action == 'route':
@@ -2492,11 +2497,17 @@ def document_update_status(request, action, document_no):
 
         try:
             document.delete()
-            data = {'success': 'Delete successful'}
-            return JsonResponse(data, status=200)  # HTTP 200 OK for successful deletion
         except Document.DoesNotExist:
             data = {'error': 'Document not found'}
             return JsonResponse(data, status=404)
+
+        folder_path = os.path.join(settings.MEDIA_ROOT, f'document/{document_no}')
+
+        if os.path.exists(folder_path) and os.path.isdir(folder_path):
+            shutil.rmtree(folder_path)
+
+        data = {'success': 'delete success'}
+        return JsonResponse(data, status=404)
 
     if document.status in ['For DIR Approval', 'For Routing', 'For SRO Receiving', 'For Resolving']:
         unacted_log = UnactedLogs.objects.filter(status=document.status, document_id=document).first()
@@ -2526,8 +2537,10 @@ def document_update_status(request, action, document_no):
         remarks = new_remarks,
         receiver = act_receiver
     )
-
-    data = {'remarks_no': log.remarks_id}
+    data = {
+        'remarks_no': log.remarks_id,
+        'activity_log_no': log.no
+        }
     return JsonResponse(data)
 
     #approve = For Routing
@@ -2540,8 +2553,10 @@ def document_update_status(request, action, document_no):
 def add_remarks(request, document_no, remarks_no):
 
     if request.method == 'POST':
-        data = json.loads(request.body)
-        remarks = data.get('remarksInput')
+        
+        remarks = request.POST.get('remarks')
+        file_attachment = request.FILES.get('attachment')
+
         editRemarks = Remarks.objects.get(no=remarks_no)
         editRemarks.remarks = remarks
         editRemarks.save()
@@ -2549,6 +2564,13 @@ def add_remarks(request, document_no, remarks_no):
         document = Document.objects.get(document_no=document_no)
         document.remarks = remarks
         document.save()
+
+        if file_attachment:
+            activity_log = ActivityLogs.objects.get(remarks_id=remarks_no)
+            folder_path = os.path.join(settings.MEDIA_ROOT, "document", str(document_no))
+            file_attachment = handle_file_versioning(file_attachment, folder_path)
+            activity_log.file_attachment = file_attachment
+            activity_log.save()
 
         return JsonResponse({'status': 'success'})
     return JsonResponse({'error': 'Invalid request'}, status=400)
@@ -2608,6 +2630,8 @@ def fetch_document_details(request, document_no):
             else:
                 remarks = activity.remarks.remarks
 
+            file_attachment = activity.file_attachment.url if activity.file_attachment else ''
+
             log = {
                 'date': local_time.strftime('%Y-%m-%d'),
                 'time': local_time.strftime('%I:%M %p').lstrip('0'),
@@ -2616,6 +2640,7 @@ def fetch_document_details(request, document_no):
                 'office': office,
                 'role': role,
                 'remarks': remarks,
+                'file_attachment': file_attachment,
                 'activity': activity.activity
             }
             log_entries.append(log)
@@ -2726,7 +2751,7 @@ def update_all_records_display(request, user):
     sort_by = request.GET.get('sort_by')
     order = request.GET.get('order', 'asc')
 
-    documents = Document.objects.exclude(status='archived')
+    documents = Document.objects.exclude(status='archived').order_by('-recent_update')
 
     if search_query:
         documents = search_documents(documents, search_query)
@@ -2751,16 +2776,16 @@ def admin_officer_update_needs_action_display(request, panel):
     order = request.GET.get('order', 'asc')
 
     if panel == 'For-DIR-Approval':
-        documents = Document.objects.filter(status='For DIR Approval')
+        documents = Document.objects.filter(status='For DIR Approval').order_by('-recent_update')
         status = "For DIR Approval"
     elif panel == 'For-Routing':
-        documents = Document.objects.filter(status='For Routing')
+        documents = Document.objects.filter(status='For Routing').order_by('-recent_update')
         status = "For Routing"
     elif panel == 'For-Archiving':
-        documents = Document.objects.filter(status='For Archiving')
+        documents = Document.objects.filter(status='For Archiving').order_by('-recent_update')
         status = "For Archiving"
     else:
-        documents = Document.objects.filter(status__in=["For DIR Approval", "For Routing", "For Archiving"])
+        documents = Document.objects.filter(status__in=["For DIR Approval", "For Routing", "For Archiving"]).order_by('-recent_update')
         status = "ADO - All Documents"
 
     if search_query:
@@ -2785,7 +2810,7 @@ def director_update_needs_action_display(request):
     sort_by = request.GET.get('sort_by')
     order = request.GET.get('order', 'asc')
 
-    documents = Document.objects.filter(status='For DIR Approval')
+    documents = Document.objects.filter(status='For DIR Approval').order_by('-recent_update')
 
     if search_query:
         documents = search_documents(documents, search_query)
@@ -2820,13 +2845,13 @@ def sro_update_records_display(request, panel):
     order = request.GET.get('order', 'asc')
 
     if panel == 'For-ACT-Forwarding':
-        documents = Document.objects.filter(status='For SRO Receiving', next_route=office)
+        documents = Document.objects.filter(status='For SRO Receiving', next_route=office).order_by('-recent_update')
         status = 'For ACT Forwarding'
     elif panel == 'For-Resolving':
-        documents = Document.objects.filter(status='For Resolving', next_route=office)
+        documents = Document.objects.filter(status='For Resolving', next_route=office).order_by('-recent_update')
         status = 'For Resolving'
     else:
-        documents = Document.objects.filter(status__in=["For SRO Receiving", "For Resolving"], next_route=office)
+        documents = Document.objects.filter(status__in=["For SRO Receiving", "For Resolving"], next_route=office).order_by('-recent_update')
         status = 'SRO All Documents'
 
     if search_query:
@@ -2856,7 +2881,7 @@ def action_officer_update_records_display(request):
     sort_by = request.GET.get('sort_by')
     order = request.GET.get('order', 'asc')
 
-    documents = Document.objects.filter(status='For ACT Receiving', act_receiver=user_id)
+    documents = Document.objects.filter(status='For ACT Receiving', act_receiver=user_id).order_by('-recent_update')
 
     if search_query:
         documents = search_documents(documents, search_query)
@@ -3447,7 +3472,8 @@ def is_high_priority(remarks):
 
     return detected_words if detected_words else None
 
-def check_remarks(request, document_no, remarks_no):
+def check_remarks(request, document_no, activity_log_no):
+
     user_id = request.session.get('user_id')
     role = user_id.split('-')[0]
 
@@ -3456,6 +3482,9 @@ def check_remarks(request, document_no, remarks_no):
 
     if request.method == 'POST':
         remarks = request.POST.get('remarks')
+        file_attachment = request.FILES.get('attachment')
+        activity_log = ActivityLogs.objects.get(no=activity_log_no)
+
         detected_words = is_high_priority(remarks)
 
         if detected_words:
@@ -3464,53 +3493,199 @@ def check_remarks(request, document_no, remarks_no):
             
             document = Document.objects.get(document_no=document_no)
             prio_level = document.document_type.priority_level.priority_level
+
             if prio_level == 'very urgent':
+
                 high_priority_detected = False
+                document.remarks = remarks
+                document.save()
+
+                if file_attachment:
+                    folder_path = os.path.join(settings.MEDIA_ROOT, "document", str(document_no))
+                    file_attachment = handle_file_versioning(file_attachment, folder_path)
+                    activity_log.file_attachment = file_attachment
+                    activity_log.save()
+
+                new_remarks = Remarks.objects.get(no=activity_log.remarks.no)
+                new_remarks.remarks = remarks
+                new_remarks.save()
+
         else:
             high_priority_detected = False
             highlighted_remarks = remarks  # No highlights if no priority words
             
-            editRemarks = Remarks.objects.get(no=remarks_no)
+            editRemarks = Remarks.objects.get(no=activity_log.remarks.no)
             editRemarks.remarks = remarks
             editRemarks.save()
             
+            if file_attachment:
+                folder_path = os.path.join(settings.MEDIA_ROOT, "document", str(document_no))
+                file_attachment = handle_file_versioning(file_attachment, folder_path)
+                activity_log.file_attachment = file_attachment
+                activity_log.save()
+
             document = Document.objects.get(document_no=document_no)
             document.remarks = remarks
             document.save()
     
     data = {
+        'remarks': remarks,
         'high_priority_detected': high_priority_detected,
         'highlighted_remarks': highlighted_remarks  # Include HTML string with highlighted words
     }
 
     return JsonResponse(data)
 
-def change_priority_level(request, document_no, remarks_no):
+def change_priority_level(request, document_no, activity_log_no):
 
-    document = Document.objects.get(document_no=document_no)
-    
-    new_document_type = DocumentType.objects.create(
-        document_type=document.document_type.document_type,
-        category=document.document_type.category,
-        priority_level_id=4
-    )
+    if request.method == 'POST':
 
-    current_routes = DocumentRoute.objects.filter(
-        document_type=document.document_type
-    )
+        activity_log = ActivityLogs.objects.get(no=activity_log_no)
 
-    for route in current_routes:
-        DocumentRoute.objects.create(
-            document_type = new_document_type,
-            route = route.route
+        remarks = request.POST.get('remarks')
+        file_attachment = request.FILES.get('attachment')
+
+        new_remarks = Remarks.objects.get(no=activity_log.remarks.no)
+        new_remarks.remarks = remarks
+        new_remarks.save()
+
+        document = Document.objects.get(document_no=document_no)
+        
+        new_document_type = DocumentType.objects.create(
+            document_type=document.document_type.document_type,
+            category=document.document_type.category,
+            priority_level_id=4,
+            is_active = False
         )
-    document.old_document_type = document.document_type.document_no
-    document.document_type = new_document_type
-    document.save()
 
+        current_routes = DocumentRoute.objects.filter(
+            document_type=document.document_type
+        )
+
+        for route_instance in current_routes:
+            DocumentRoute.objects.create(
+                document_type = new_document_type,
+                route_id = route_instance.route_id
+            )
+
+        document.old_document_type = document.document_type.document_no
+        document.document_type = new_document_type
+        document.remarks = remarks
+        document.save()
+
+        if file_attachment:
+            folder_path = os.path.join(settings.MEDIA_ROOT, "document", str(document_no))
+            file_attachment = handle_file_versioning(file_attachment, folder_path)
+            activity_log.file_attachment = file_attachment
+            activity_log.save()
+
+        data = {
+            'sucess': 'sucess'
+        }
+        return JsonResponse(data)
+
+def handle_file_versioning(file, folder_path):
+    # Start with the original name and extension
+    original_name, extension = os.path.splitext(file.name)
+    version = 1
+    
+    # Sanitize the filename by removing spaces and any unwanted characters
+    base_name = original_name.replace(' ', '_').replace('(', '').replace(')', '')
+
+    # Generate the initial file name
+    new_file_name = f"{base_name}{extension}"
+
+    # Loop to check if the file already exists
+    while os.path.exists(os.path.join(folder_path, new_file_name)):
+        # Increment the version and create a new file name with "-v{version}"
+        version += 1
+        new_file_name = f"{base_name}-v{version}{extension}"
+
+    # Rename the file with the final versioned name
+    file.name = new_file_name
+    return file
+
+def generate_upload_file_qrcode(request, activity_log_no):
+    print("pumasok sa generate upload file qr code views")
+    user_id = request.session.get('user_id')
+    if  not user_id:
+        return redirect('user_login')
+    
+    url = request.build_absolute_uri(f'/upload-file-page/{activity_log_no}/')
+
+    # Generate the QR code
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(url)
+    qr.make(fit=True)
+    img = qr.make_image(color="black", back_color='white')
+
+    # Save to a BytesIO buffer
+    buffer = BytesIO()
+    img.save(buffer)
+    buffer.seek(0)
+
+    # Return the image as a response
+    return HttpResponse(buffer, content_type='image/png')
+
+def upload_file_page(request, activity_log_no):
+
+    user_id = request.session.get('user_id')
+    if  not user_id:
+        return redirect('user_login')
+    try:
+        activity_log = ActivityLogs.objects.get(no=activity_log_no)
+    except ActivityLogs.DoesNotExist:
+        return render(request, "upload-file-error-page.html", {'invalidUrl': True})
+
+    if user_id == activity_log.user_id_id:
+        if activity_log.file_attachment:
+            return render(request, "upload-file-error-page.html", {'fileUploaded': True})
+        else:
+            return render(request, "upload-file-page.html", {'activity_log_no':activity_log_no})
+    else:
+        return render(request, "upload-file-error-page.html", {'unauthorized': True})
+
+def upload_file_with_phone(request, activity_log_no):
+
+    if request.method == 'POST':
+        file_attachment = request.FILES.get('attachment')
+        activity_log = ActivityLogs.objects.get(no=activity_log_no)
+        folder_path = os.path.join(settings.MEDIA_ROOT, "document", str(activity_log.document_id.document_no))
+        file_attachment = handle_file_versioning(file_attachment, folder_path)
+        activity_log.file_attachment = file_attachment
+        activity_log.save()
+
+    return redirect(reverse('upload_file_page', args=[activity_log_no]))
+
+from os.path import basename
+
+def fetch_phone_upload_file(request, activity_log_no):
+
+    activity_log = ActivityLogs.objects.get(no=activity_log_no)
+
+    if activity_log.file_attachment:
+
+        filename = basename(activity_log.file_attachment.name)
+        print(filename)
+        data = {
+            'filename': filename
+        }
+        return JsonResponse(data)
+    
     data = {
-        'sucess': 'sucess'
+        'filename': False
     }
-
     return JsonResponse(data)
 
+
+def delete_phone_upload_file(request, activity_log_no):
+
+    activity_log = ActivityLogs.objects.get(no=activity_log_no)
+    activity_log.file_attachment = None
+    activity_log.save()
+    return JsonResponse({'data': 'sucess'})

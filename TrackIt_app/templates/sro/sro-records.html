@@ -335,63 +335,62 @@
                 </div>
                 <div class="modal-body">
                     <p id="actionMessage" class="mb-3"></p>
-
-                    <div class="form-group mb-3">
-                        <label for="remarksTextarea" class="form-label">Remarks</label>
-                        <textarea class="form-control" id="remarks" rows="3" placeholder="Add any additional remarks here..."></textarea>
-                    </div>
-
-                    <!-- Attachment Options -->
-                    <div class="mb-1">
-                        <label class="form-label mb-1">Upload Attachment</label>
-                        <div class="d-flex">
-                            <div class="form-check ms-2 me-3">
-                                <input class="form-check-input" type="radio" name="attachmentOption" id="directUpload" checked>
-                                <label class="form-check-label" for="directUpload">Direct Upload</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="attachmentOption" id="scanAttachmentQRCode">
-                                <label class="form-check-label" for="scanAttachmentQRCode">Scan QR Code</label>
+                    <form method="post" action="" id="remarksForm" enctype="multipart/form-data">
+                        {% csrf_token %}
+    
+                        <div class="form-group mb-3">
+                            <label for="remarksTextarea" class="form-label">Remarks</label>
+                            <textarea class="form-control" name="remarks" id="remarks" rows="3" placeholder="Add any additional remarks here..."></textarea>
+                        </div>
+                    
+                        <!-- Attachment Options -->
+                        <div class="mb-1">
+                            <label class="form-label mb-1">Upload Attachment</label>
+                            <div class="d-flex">
+                                <div class="form-check ms-2 me-3">
+                                    <input class="form-check-input" type="radio" name="attachmentOption" id="directUpload" checked>
+                                    <label class="form-check-label" for="directUpload">Direct Upload</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="attachmentOption" id="scanAttachmentQRCode">
+                                    <label class="form-check-label" for="scanAttachmentQRCode">Upload through Phone</label>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div id="option1">
-                        <input class="form-control form-file" type="file" id="attachmentFile" name="attachment">
-                    </div>
+                        <div id="option1">
+                            <input class="form-control form-file" type="file" id="attachmentFile" accept=".pdf" name="attachment">
+                        </div>
+        
+                        <div id="option2" class="d-none" >
 
-                    <div id="option2" class="d-none">
-                        <button type="button" class="btn btn-secondary w-100" data-bs-toggle="modal" data-bs-target="#scanAttachmentQRCodeModal" style="font-size: 14px;" >Show QR Code</button>
-                    </div>
+                            <div id="qrCodeSpinnerContainer" style="display: flex; justify-content: center; margin: 20px 0;">
+                                <div class="spinner-border text-primary" id="qrCodeSpinner"></div>
+                            </div>
+
+                            <div id="qrCodeUploadContainer" style="display: none; justify-content: center;">
+                                <div class="qr-code-container">
+                                    <img src="" id="uploadFileQr" alt="QR Code">
+                                    <!-- Corner borders -->
+                                    <div class="corner top-left"></div>
+                                    <div class="corner top-right"></div>
+                                    <div class="corner bottom-left"></div>
+                                    <div class="corner bottom-right"></div>
+                                </div>
+                            </div>
+                            <p style="font-size: 12px; opacity: 90%; text-align: center; padding: 0 50px;" >Scan this code with your phone to upload an attachment.</p>
+                            <p style="text-align: center; margin-top: 5px;">
+                                Uploaded File: <span id="filenamePhoneUpload">No file uploaded</span>   
+                                <span>
+                                    <i class="fa-solid fa-trash delete-phone-upload-btn" id="deletePhoneUploadFile" style="display:none; color:rgb(220, 11, 11);"></i>
+                                </span>
+                            </p>
+                        </div>
+                    </form>
                 </div>
                 <div class="modal-footer p-3 pt-0 border-top-0">
                     <button type="button" class="m-0 mt-1 mb-2 btn btn-primary w-100" id="saveRemarks">Save Changes</button>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Scan Attachment QR Code Modal -->
-    <div class="modal fade" id="scanAttachmentQRCodeModal" tabindex="-1" aria-labelledby="scanAttachmentQRCodeModalLabel" aria-hidden="true">
-        <div class="modal-dialog" style="max-width: 400px;">
-            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
-                <div class="modal-header pb-0 border-bottom-0 d-flex justify-content-between align-items-center" style="font-size: 13.5px;">
-                    <button type="button" class="btn-close" style="visibility: hidden;"></button>
-                    <h5 class="modal-title" id="scanAttachmentQRCodeModalLabel">Scan QR Code</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body text-center d-flex justify-content-center align-items-center flex-column">
-                    <!-- Dito lalagay generated Attachment QR Code -->
-                    <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script> 
-                    <dotlottie-player src="{% static 'gif/qr-scanning.json' %}" background="transparent" speed="1" 
-                        style="width: 230px; height: 230px;" loop autoplay>
-                    </dotlottie-player>
-                    <!----------------------------------------------->
-
-                    <p class="mb-2 mt-3">You may now scan the QR code to upload via mobile. Ensure your attachment is uploaded before saving changes.</p>                </p>
-                </div>
-                <div class="modal-footer p-0 border-top-0 d-flex flex-column align-items-center">
-                </div>                
             </div>
         </div>
     </div>
@@ -691,8 +690,10 @@
             const qrCodeModal = new bootstrap.Modal(document.getElementById('generateQRCode'));
             const forwardModal = new bootstrap.Modal(document.getElementById('forwardDocumentModal'));
             const resolveModal = new bootstrap.Modal(document.getElementById('resolveDocumentModal'));
-            const remarksModal = new bootstrap.Modal(document.getElementById('addRemarksAttachmentModal'));
-            const attachmentQRModal = new bootstrap.Modal(document.getElementById('scanAttachmentQRCodeModal'));
+            const remarksModal = new bootstrap.Modal(document.getElementById('addRemarksAttachmentModal'),{
+                backdrop: 'static',
+                keyboard: false
+            });
             const actionMessage = document.getElementById('actionMessage');
     
             let isQRCodeSelected = false;
@@ -737,26 +738,12 @@
                     }
                 });
             });
-    
-            // Handle saving remarks and attachment
-            document.getElementById('saveRemarks').addEventListener('click', function () {
-                const remarks = document.getElementById('remarks').value;
-                // Logic to handle remarks and attachments can be added here
-    
-                // Show QR Code Modal if the QR code option is selected
-                if (isQRCodeSelected) {
-                    remarksModal.hide();
-                    attachmentQRModal.show(); // Show QR Code modal
-                } else {
-                    remarksModal.hide(); // Just hide remarks modal if not scanning QR
-                }
+
+            document.getElementById('saveRemarks').addEventListener('click', function() {
+                clearRemarksAttachmentModal();
+                remarksModal.hide();
             });
-    
-            // Show Add Remarks and Attachment modal again after Attachment QR Code modal is closed
-            document.getElementById('scanAttachmentQRCodeModal').addEventListener('hide.bs.modal', function () {
-                remarksModal.show();
-                isQRCodeSelected = false;
-            });
+         
         });
     </script>
 </body>
