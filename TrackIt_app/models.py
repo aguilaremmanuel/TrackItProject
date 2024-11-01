@@ -141,11 +141,12 @@ class UserManagementLogs(models.Model):
 class Announcement(models.Model):
     title = models.TextField(max_length=100)
     description = models.TextField()
-    attachment = models.FileField(upload_to='', blank=True, null=True)
+    attachment = models.FileField(upload_to='', blank=True, null=True, default='default_attachment.pdf')
     created_at = models.DateTimeField(auto_now_add=True)
     offices = models.CharField(max_length=255, null=True)
     all_offices = models.BooleanField(default=False)
     end_date = models.DateField(null=True, blank=True) #
+    created_by = models.CharField(max_length=50)
 
     class Meta:
         db_table = 'tbl_announcement'

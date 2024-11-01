@@ -39,6 +39,7 @@ urlpatterns = [
     path('system-admin-director-activity-logs/<str:activity_type>/', views.sys_dir_activity_logs, name='sys_dir_activity_logs'),
     path('update-archive-display/<str:user>', views.update_archive_display, name='update_archive_display'),
     path('director-update-needs-action-display', views.director_update_needs_action_display, name='director_update_needs_action_display'),
+    path('director-announcements/',views.director_announcements, name='director_announcements'),
     path('director-archive/', views.director_archive, name='director_archive'),
     path('director-generate-reports/<str:report_type>/',views.director_generate_reports, name='director_generate_reports'),
 

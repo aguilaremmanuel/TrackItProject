@@ -244,189 +244,6 @@ def user_signup(request):
         form = UserSignupForm()
 
     return render(request, "user-signup.html", {'form': form})
-"""
-# SYSTEM ADMIN LOGIN
-def system_admin_login(request):
-
-    user_id = request.session.get('user_id')
-    if  user_id:
-        role = user_id.split('-')[0]
-        if role == 'ADO':
-            return redirect(admin_officer_dashboard)
-        elif role == 'SRO':
-            return redirect(sro_dashboard)
-        elif role == 'ACT':
-            return redirect(action_officer_dashboard)
-        elif role == 'DIR':
-            return redirect(director_dashboard)
-        elif role == 'SYS':
-            return redirect(system_admin_dashboard)
-    else:
-        pass
-
-    # Default credentials
-    default_user_id = 'SYS-0001'
-    default_password = 'SysAdmin@2024'
-
-    if request.method == 'POST':
-        form = SystemAdminLoginForm(request.POST)
-        if form.is_valid():
-            user_id = form.cleaned_data['user_id']
-            password = form.cleaned_data['password']
-            
-            # Check if the provided credentials match the default credentials
-            if user_id == default_user_id and password == default_password:
-                # Ensure the default user exists and is active
-                user_instance, created = User.objects.get_or_create(
-                    user_id=default_user_id,
-                    defaults={'password': default_password, 'role': 'System Admin', 'status': 'active'}
-                )
-
-                if created:
-                    print(f"Default user {default_user_id} was created and set to active.")
-                else:
-                    # Update status if user already exists but not active
-                    if user_instance.status != 'active':
-                        user_instance.status = 'active'
-                        user_instance.save()
-                        print(f"Default user {default_user_id} status was updated to active.")
-
-                # Store the credentials in session to keep the user logged in
-                request.session['user_id'] = default_user_id
-                request.session['user_name'] = user_instance.firstname.title() + " " + user_instance.lastname.title()
-
-                # Redirect to the system admin dashboard
-                return redirect(f"{reverse('system_admin_dashboard')}?status=active")
-            else:
-                messages.error(request, "Invalid credentials.")
-    else:
-        form = SystemAdminLoginForm()
-
-    return render(request, "system_admin/system-admin-login.html", {'form': form})
-
-# DIRECTOR LOGIN
-def director_login(request):
-
-    user_id = request.session.get('user_id')
-    if  user_id:
-        role = user_id.split('-')[0]
-        if role == 'ADO':
-            return redirect(admin_officer_dashboard)
-        elif role == 'SRO':
-            return redirect(sro_dashboard)
-        elif role == 'ACT':
-            return redirect(action_officer_dashboard)
-        elif role == 'DIR':
-            return redirect(director_dashboard)
-        elif role == 'SYS':
-            return redirect(system_admin_dashboard)
-    else:
-        pass
-
-    # Default credentials
-    default_user_id = 'DIR-0001'
-    default_password = 'Director@2024'
-
-    if request.method == 'POST':
-        form = DirectorLoginForm(request.POST)
-        if form.is_valid():
-            user_id = form.cleaned_data['user_id']
-            password = form.cleaned_data['password']
-            
-            # Check if the provided credentials match the default credentials
-            if user_id == default_user_id and password == default_password:
-                # Ensure the default user exists and is active
-                user_instance, created = User.objects.get_or_create(
-                    user_id=default_user_id,
-                    defaults={'password': default_password, 'role': 'Director', 'status': 'active'}
-                )   
-
-                if created:
-                    print(f"Default user {default_user_id} was created and set to active.")
-                else:
-                    # Update status if user already exists but is not active
-                    if user_instance.status != 'active':
-                        user_instance.status = 'active'
-                        user_instance.save()
-                        print(f"Default user {default_user_id} status was updated to active.")
-
-                # Store the credentials in session to keep the user logged in
-                request.session['user_id'] = default_user_id
-                request.session['user_name'] = user_instance.firstname.title() + " " + user_instance.lastname.title()
-
-                # Redirect to the director's dashboard
-                return redirect(f"{reverse('director_dashboard')}?status=active")
-            else:
-                messages.error(request, "Invalid credentials.")
-    else:
-        form = DirectorLoginForm()
-
-    return render(request, "director-login.html", {'form': form})
-
-# USER LOGIN
-def user_login(request):
-
-    user_id = request.session.get('user_id')
-    if  user_id:
-        role = user_id.split('-')[0]
-        if role == 'ADO':
-            return redirect(admin_officer_dashboard)
-        elif role == 'SRO':
-            return redirect(sro_dashboard)
-        elif role == 'ACT':
-            return redirect(action_officer_dashboard)
-        elif role == 'DIR':
-            return redirect(director_dashboard)
-        elif role == 'SYS':
-            return redirect(system_admin_dashboard)
-    else:
-        pass
-
-    if request.method == 'POST':
-
-        user_id = request.POST['user_id']
-        password = request.POST['password']
-
-        # Fetch user by user_id and password (plain-text password comparison)
-        try:
-            user = User.objects.get(user_id=user_id, password=password)  # Directly comparing passwords
-        except User.DoesNotExist:
-            messages.error(request, "Invalid credentials.")
-            return redirect('user_login')
-
-        # Check user status
-        if user.status == 'for verification':
-            messages.error(request, "Your account is pending for verification. Please wait for approval.")
-            return redirect('user_login')
-        elif user.status == 'inactive':
-            messages.error(request, "Your account is inactive. Please contact the administrator to reactivate.")
-            return redirect('user_login')
-        elif user.status == 'archived':
-            messages.error(request, "Your account has been deleted and cannot be accessed.")
-            return redirect('user_login')
-
-        user.last_login = timezone.now()
-        user.save()
-
-        request.session['user_id'] = user_id
-        request.session['user_name'] = user.firstname.title() + " " + user.lastname.title()
-
-        role = user_id.split('-')[0]
-
-        # Redirect based on user role
-        if role == 'ADO':  # Admin Officer
-            return redirect(f"{reverse('admin_officer_dashboard')}?status=active")
-        elif role == 'SRO':  # Sub-Receiving Officer
-            return redirect(f"{reverse('sro_dashboard')}?status=active")
-        elif role == 'ACT':  # Action Officer
-            return redirect(f"{reverse('action_officer_dashboard')}?status=active")
-        else:
-            # In case the role is not recognized
-            messages.error(request, "Invalid role. Please contact the administrator.")
-            return redirect('user_login')
-
-    return render(request, "user-login.html")
-"""
 
 # USER LOGIN
 def user_login(request):
@@ -548,17 +365,52 @@ def system_admin_dashboard(request):
 def director_dashboard(request):
 
     user_id = request.session.get('user_id')
-    if  not user_id:
+    if not user_id:
         return redirect('user_login')
 
     role = user_id.split('-')[0]
     if role != 'DIR':
-        return redirect(user_login)
+        return redirect('user_login')
 
     user_name = request.session.get('user_name')
 
+    # Fetch the user's information from the database
+    user = User.objects.filter(user_id=user_id).first()
+
+    # Determine the display name logic
+    if user and any([user.firstname, user.middlename, user.lastname]):
+        full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
+        first_name = user.firstname if user.firstname else ''
+        middle_name = user.middlename if user.middlename else ''
+        last_name = user.lastname if user.lastname else ''
+    else:
+        full_name = 'None'
+        first_name = ''
+        middle_name = ''
+        last_name = ''
+
+    # Prepare user data
+    user_data = {
+        'user_id': user.user_id if user and user.user_id else 'None',
+        'full_name': full_name,
+        'first_name': first_name,
+        'middle_name': middle_name,
+        'last_name': last_name,
+        'email': user.email if user and user.email else 'None',
+        'contact_no': user.contact_no if user and user.contact_no else 'None',
+        'role': user.role if user and user.role else 'None',
+        'profile_picture': user.profile_picture.url if user and user.profile_picture else None,
+    }
+
+    # Fetch the announcements based on either condition
+    announcements = Announcement.objects.filter(
+        Q(all_offices=True) | Q(offices__icontains='Director')
+    )
+
     context = {
-        'user_name': user_name
+        'user_name': user_name,
+        'user_data': user_data,
+        'announcements': announcements,  # Add announcements to context
     }
 
     return render(request, 'director/director-dashboard.html', context)
@@ -612,23 +464,54 @@ def action_officer_dashboard(request):
 
 # SYSTEM ADMIN USER MANAGEMENT MODULE
 def system_admin_user_management(request, office):
-
     user_id = request.session.get('user_id')
-    if  not user_id:
+    if not user_id:
         return redirect('user_login')
 
     role = user_id.split('-')[0]
     if role != 'SYS':
-        return redirect(user_login)
+        return redirect('user_login')
 
     user_name = request.session.get('user_name')
 
-    context = {
-        'office': office,
-        'user_name': user_name
+    # Fetch the user's information from the database
+    user = User.objects.filter(user_id=user_id).first()
+
+    # Determine the display name logic
+    if user and any([user.firstname, user.middlename, user.lastname]):
+        full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
+        first_name = user.firstname if user.firstname else ''
+        middle_name = user.middlename if user.middlename else ''
+        last_name = user.lastname if user.lastname else ''
+    else:
+        full_name = 'None'
+        first_name = ''
+        middle_name = ''
+        last_name = ''
+
+    # Prepare user data
+    user_data = {
+        'user_id': user.user_id if user and user.user_id else 'None',
+        'full_name': full_name,
+        'first_name': first_name,
+        'middle_name': middle_name,
+        'last_name': last_name,
+        'email': user.email if user and user.email else 'None',
+        'contact_no': user.contact_no if user and user.contact_no else 'None',
+        'role': user.role if user and user.role else 'None',
+        'profile_picture': user.profile_picture.url if user and user.profile_picture else None,
     }
 
+    # Define the context with all needed data
+    context = {
+        'office': office,
+        'user_name': user_name,
+        'user_data': user_data,
+    }
+
+    # Render the system admin user management page
     return render(request, 'system_admin/system-admin-user-management.html', context)
+
 
 # DIRECTOR USER MANAGEMENT MODULE
 def director_user_management(request, office):
@@ -642,9 +525,40 @@ def director_user_management(request, office):
         return redirect(user_login)
 
     user_name = request.session.get('user_name')
+
+    # Fetch the user's information from the database
+    user = User.objects.filter(user_id=user_id).first()
+
+    # Determine the display name logic
+    if user and any([user.firstname, user.middlename, user.lastname]):
+        full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
+        first_name = user.firstname if user.firstname else ''
+        middle_name = user.middlename if user.middlename else ''
+        last_name = user.lastname if user.lastname else ''
+    else:
+        full_name = 'None'
+        first_name = ''
+        middle_name = ''
+        last_name = ''
+    
+    # Prepare user data
+    user_data = {
+        'user_id': user.user_id if user and user.user_id else 'None',
+        'full_name': full_name,
+        'first_name': first_name,
+        'middle_name': middle_name,
+        'last_name': last_name,
+        'email': user.email if user and user.email else 'None',
+        'contact_no': user.contact_no if user and user.contact_no else 'None',
+        'role': user.role if user and user.role else 'None',
+        'profile_picture': user.profile_picture.url if user and user.profile_picture else None,
+    }
+
+
     context = {
         'user_name': user_name,
-        'office': office
+        'office': office,
+        'user_data': user_data,  
     }
 
     return render(request, 'director/director-user-management.html', context)
@@ -663,6 +577,34 @@ def system_admin_doc_management(request):
         return redirect(user_login)
 
     user_name = request.session.get('user_name')
+
+    # Fetch the user's information from the database
+    user = User.objects.filter(user_id=user_id).first()
+
+    # Determine the display name logic
+    if user and any([user.firstname, user.middlename, user.lastname]):
+        full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
+        first_name = user.firstname if user.firstname else ''
+        middle_name = user.middlename if user.middlename else ''
+        last_name = user.lastname if user.lastname else ''
+    else:
+        full_name = 'None'
+        first_name = ''
+        middle_name = ''
+        last_name = ''
+    
+    # Prepare user data
+    user_data = {
+        'user_id': user.user_id if user and user.user_id else 'None',
+        'full_name': full_name,
+        'first_name': first_name,
+        'middle_name': middle_name,
+        'last_name': last_name,
+        'email': user.email if user and user.email else 'None',
+        'contact_no': user.contact_no if user and user.contact_no else 'None',
+        'role': user.role if user and user.role else 'None',
+        'profile_picture': user.profile_picture.url if user and user.profile_picture else None,
+    }
 
     if request.method == 'POST':
         
@@ -717,28 +659,53 @@ def system_admin_doc_management(request):
 
     context = {
         'records': records,
-        'user_name': user_name
+        'user_name': user_name,
+        'user_data': user_data, 
     }
 
     return render(request, 'system_admin/system-admin-doc-management.html', context)
 
 # SYSTEM ADMIN DOC MANAGEMENT
 def director_doc_management(request):
-
     user_id = request.session.get('user_id')
     if not user_id:
         return redirect('user_login')
 
     role = user_id.split('-')[0]
     if role != 'DIR':
-        return redirect(user_login)
+        return redirect('user_login')
 
     user_name = request.session.get('user_name')
-    
 
+    # Fetch the user's information from the database
+    user = User.objects.filter(user_id=user_id).first()
+
+    # Determine the display name logic
+    if user and any([user.firstname, user.middlename, user.lastname]):
+        full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
+        first_name = user.firstname if user.firstname else ''
+        middle_name = user.middlename if user.middlename else ''
+        last_name = user.lastname if user.lastname else ''
+    else:
+        full_name = 'None'
+        first_name = ''
+        middle_name = ''
+        last_name = ''
+
+    # Prepare user data
+    user_data = {
+        'user_id': user.user_id if user and user.user_id else 'None',
+        'full_name': full_name,
+        'first_name': first_name,
+        'middle_name': middle_name,
+        'last_name': last_name,
+        'email': user.email if user and user.email else 'None',
+        'contact_no': user.contact_no if user and user.contact_no else 'None',
+        'role': user.role if user and user.role else 'None',
+        'profile_picture': user.profile_picture.url if user and user.profile_picture else None,
+    }
 
     if request.method == 'POST':
-        
         document_type = request.POST.get('document_type')
         category = request.POST.get('category')
         priority_level_str = request.POST.get('priority_level')
@@ -753,27 +720,26 @@ def director_doc_management(request):
         )
 
         for route in route_list:
-            office = Office.objects.get(office_name=route)  # Fetch the Office instance
+            office = Office.objects.get(office_name=route)
             DocumentRoute.objects.create(
                 document_type=new_document_type,
                 route=office
             )
 
         DocumentManagementLogs.objects.create(
-            time_stamp = timezone.now(),
+            time_stamp=timezone.now(),
             document_type=new_document_type,
             activity='Document Type Created',
             user_id=user_id
         )
-    
-    records = []
 
+    records = []
     document_type_records = DocumentType.objects.filter(is_active=True)
 
     sort_by = request.GET.get('sort_by')
     order = request.GET.get('order', 'asc')
 
-    if sort_by in ['document_type', 'category', 'priority_level_id', 'email']:  # Only allow sorting by valid fields
+    if sort_by in ['document_type', 'category', 'priority_level_id', 'email']:
         if order == 'asc':
             document_type_records = document_type_records.order_by(sort_by)
         else:
@@ -782,25 +748,23 @@ def director_doc_management(request):
     routes = DocumentRoute.objects.all()
 
     for document_type_record in document_type_records:
-        record = {}
-        record['document_no'] = document_type_record.document_no
-        record['document_type'] = document_type_record.document_type
-        record['category'] = document_type_record.category
-        record['priority_level'] = document_type_record.priority_level.priority_level
-
-        temp_route = []
-        for route in routes:
-            if route.document_type_id == document_type_record.document_no:
-                temp_route.append(route.route.office_name)
-        record['routes'] = temp_route
+        record = {
+            'document_no': document_type_record.document_no,
+            'document_type': document_type_record.document_type,
+            'category': document_type_record.category,
+            'priority_level': document_type_record.priority_level.priority_level,
+            'routes': [route.route.office_name for route in routes if route.document_type_id == document_type_record.document_no]
+        }
         records.append(record)
 
     context = {
         'user_name': user_name,
+        'user_data': user_data,
         'records': records
     }
 
     return render(request, 'director/director-doc-management.html', context)
+
 
 # -------------- NEW RECORD -------------------
 
@@ -818,7 +782,38 @@ def system_admin_new_record(request):
 
     user_name = request.session.get('user_name')
 
-    return render(request, 'system_admin/system-admin-new-record.html', {'user_name': user_name})
+    # Fetch the user's information from the database
+    user = User.objects.filter(user_id=user_id).first()
+
+    # Determine the display name logic
+    if user and any([user.firstname, user.middlename, user.lastname]):
+        full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
+        first_name = user.firstname if user.firstname else ''
+        middle_name = user.middlename if user.middlename else ''
+        last_name = user.lastname if user.lastname else ''
+    else:
+        full_name = 'None'
+        first_name = ''
+        middle_name = ''
+        last_name = ''
+    
+    # Prepare user data
+    user_data = {
+        'user_id': user.user_id if user and user.user_id else 'None',
+        'full_name': full_name,
+        'first_name': first_name,
+        'middle_name': middle_name,
+        'last_name': last_name,
+        'email': user.email if user and user.email else 'None',
+        'contact_no': user.contact_no if user and user.contact_no else 'None',
+        'role': user.role if user and user.role else 'None',
+        'profile_picture': user.profile_picture.url if user and user.profile_picture else None,
+    }
+
+    return render(request, 'system_admin/system-admin-new-record.html', {
+        'user_name': user_name,
+        'user_data': user_data, 
+    })
 
 # ADMIN OFFICER NEW RECORD
 def admin_officer_new_record(request):
@@ -901,7 +896,38 @@ def system_admin_all_records(request):
 
     user_name = request.session.get('user_name')
 
-    return render(request, 'system_admin/system-admin-all-records.html', {'user_name': user_name})
+    # Fetch the user's information from the database
+    user = User.objects.filter(user_id=user_id).first()
+
+    # Determine the display name logic
+    if user and any([user.firstname, user.middlename, user.lastname]):
+        full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
+        first_name = user.firstname if user.firstname else ''
+        middle_name = user.middlename if user.middlename else ''
+        last_name = user.lastname if user.lastname else ''
+    else:
+        full_name = 'None'
+        first_name = ''
+        middle_name = ''
+        last_name = ''
+    
+    # Prepare user data
+    user_data = {
+        'user_id': user.user_id if user and user.user_id else 'None',
+        'full_name': full_name,
+        'first_name': first_name,
+        'middle_name': middle_name,
+        'last_name': last_name,
+        'email': user.email if user and user.email else 'None',
+        'contact_no': user.contact_no if user and user.contact_no else 'None',
+        'role': user.role if user and user.role else 'None',
+        'profile_picture': user.profile_picture.url if user and user.profile_picture else None,
+    }
+
+    return render(request, 'system_admin/system-admin-all-records.html', {
+        'user_name': user_name,
+        'user_data': user_data, 
+    })
 
 # ADMIN OFFICER ALL RECORDS
 def admin_officer_all_records(request):
@@ -930,8 +956,38 @@ def director_all_records(request):
         return redirect(user_login)
 
     user_name = request.session.get('user_name')
+
+    # Fetch the user's information from the database
+    user = User.objects.filter(user_id=user_id).first()
+
+    # Determine the display name logic
+    if user and any([user.firstname, user.middlename, user.lastname]):
+        full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
+        first_name = user.firstname if user.firstname else ''
+        middle_name = user.middlename if user.middlename else ''
+        last_name = user.lastname if user.lastname else ''
+    else:
+        full_name = 'None'
+        first_name = ''
+        middle_name = ''
+        last_name = ''
+    
+    # Prepare user data
+    user_data = {
+        'user_id': user.user_id if user and user.user_id else 'None',
+        'full_name': full_name,
+        'first_name': first_name,
+        'middle_name': middle_name,
+        'last_name': last_name,
+        'email': user.email if user and user.email else 'None',
+        'contact_no': user.contact_no if user and user.contact_no else 'None',
+        'role': user.role if user and user.role else 'None',
+        'profile_picture': user.profile_picture.url if user and user.profile_picture else None,
+    }
+
     context = {
-        'user_name': user_name
+        'user_name': user_name,
+        'user_data': user_data,  
     }
 
     return render(request, 'director/director-all-records.html', context)
@@ -1054,12 +1110,40 @@ def director_needs_action(request, scanned_document_no):
     
     role = user_id.split('-')[0]
     if role != 'DIR':
-        return redirect(user_login)
+        return redirect('user_login')
     
     user_name = request.session.get('user_name')
 
+    # Fetch the user's information from the database
+    user = User.objects.filter(user_id=user_id).first()
+
+    # Determine the display name logic
+    if user and any([user.firstname, user.middlename, user.lastname]):
+        full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
+        first_name = user.firstname if user.firstname else ''
+        middle_name = user.middlename if user.middlename else ''
+        last_name = user.lastname if user.lastname else ''
+    else:
+        full_name = 'None'
+        first_name = ''
+        middle_name = ''
+        last_name = ''
+
+    # Prepare user data
+    user_data = {
+        'user_id': user.user_id if user and user.user_id else 'None',
+        'full_name': full_name,
+        'first_name': first_name,
+        'middle_name': middle_name,
+        'last_name': last_name,
+        'email': user.email if user and user.email else 'None',
+        'contact_no': user.contact_no if user and user.contact_no else 'None',
+        'role': user.role if user and user.role else 'None',
+        'profile_picture': user.profile_picture.url if user and user.profile_picture else None,
+    }
+
     if int(scanned_document_no) < 0:
-        return render(request, 'director/director-needs-action.html', {'user_name': user_name})
+        return render(request, 'director/director-needs-action.html', {'user_name': user_name, 'user_data': user_data})
 
     document = Document.objects.get(document_no=scanned_document_no)
 
@@ -1072,11 +1156,13 @@ def director_needs_action(request, scanned_document_no):
 
     context = {
         'user_name': user_name,
+        'user_data': user_data,  # Add user data to context
         'scanned_status': scanned_status,
         'document': document
     }
 
     return render(request, 'director/director-needs-action.html', context)
+
 
 # -------------- ACTIVITY LOGS -------------------
 
@@ -1089,149 +1175,137 @@ def sys_dir_activity_logs(request, activity_type):
     
     role = user_id.split('-')[0]
     if role not in ['DIR', 'SYS']:
-        return redirect(user_login)
+        return redirect('user_login')
 
     user_name = request.session.get('user_name')
 
+    # Fetch the user's information from the database
+    user = User.objects.filter(user_id=user_id).first()
+
+    # Determine the display name logic
+    if user and any([user.firstname, user.middlename, user.lastname]):
+        full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
+        first_name = user.firstname if user.firstname else ''
+        middle_name = user.middlename if user.middlename else ''
+        last_name = user.lastname if user.lastname else ''
+    else:
+        full_name = 'None'
+        first_name = ''
+        middle_name = ''
+        last_name = ''
+
+    # Prepare user data
+    user_data = {
+        'user_id': user.user_id if user and user.user_id else 'None',
+        'full_name': full_name,
+        'first_name': first_name,
+        'middle_name': middle_name,
+        'last_name': last_name,
+        'email': user.email if user and user.email else 'None',
+        'contact_no': user.contact_no if user and user.contact_no else 'None',
+        'role': user.role if user and user.role else 'None',
+        'profile_picture': user.profile_picture.url if user and user.profile_picture else None,
+    }
+
+    # Activity log conditionals
     if activity_type == 'doc-management':
-
         doc_management_logs = DocumentManagementLogs.objects.filter(user_id=user_id)
-
         records = []
-
         routes = DocumentRoute.objects.all()
 
         for log in doc_management_logs:
-            record = {}
-            record['time_stamp'] = log.time_stamp
-            record['document_no'] = log.document_type.document_no
-            record['document_type'] = log.document_type.document_type
-            record['category'] = log.document_type.category
-            record['priority_level'] = log.document_type.priority_level.priority_level
-
-            temp_route = []
-            for route in routes:
-                if route.document_type_id == log.document_type.document_no:
-                    temp_route.append(route.route.office_name)
-            record['routes'] = temp_route
-            record['activity'] = log.activity
-
+            record = {
+                'time_stamp': log.time_stamp,
+                'document_no': log.document_type.document_no,
+                'document_type': log.document_type.document_type,
+                'category': log.document_type.category,
+                'priority_level': log.document_type.priority_level.priority_level,
+                'routes': [route.route.office_name for route in routes if route.document_type_id == log.document_type.document_no],
+                'activity': log.activity
+            }
             records.append(record)
 
         context = {
             'role': role,
             'user_name': user_name,
+            'user_data': user_data,
             'activity_type': activity_type,
             'records': records
         }
-
         return render(request, 'assets/sys-dir-activity-logs.html', context)
 
     elif activity_type == 'reports':
-
         records = ReportManagementLogs.objects.filter(user_id=user_id)
         context = {
             'role': role,
             'user_name': user_name,
+            'user_data': user_data,
             'activity_type': activity_type,
             'records': records
         }
         return render(request, 'assets/sys-dir-activity-logs.html', context)
     
     elif activity_type == 'user-management':
-
         records = UserManagementLogs.objects.filter(user=user_id)
         context = {
             'role': role,
             'user_name': user_name,
+            'user_data': user_data,
             'activity_type': activity_type,
             'records': records
         }
         return render(request, 'assets/sys-dir-activity-logs.html', context)
     
     elif activity_type == 'records':
-
         records = ActivityLogs.objects.filter(user_id_id=user_id)
         context = {
             'role': role,
             'user_name': user_name,
+            'user_data': user_data,
             'activity_type': activity_type,
             'records': records
         }
         return render(request, 'assets/sys-dir-activity-logs.html', context)
 
     elif activity_type == 'recent':
-
-        # Current date and time details
         now = timezone.now()
         today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
         yesterday_start = today_start - timedelta(days=1)
         week_start = today_start - timedelta(days=7)
         fifteen_days_start = today_start - timedelta(days=15)
 
-        # Fetch logs
         document_logs = ActivityLogs.objects.filter(user_id_id=user_id)
         user_management_logs = UserManagementLogs.objects.filter(user=user_id)
         doc_management_logs = DocumentManagementLogs.objects.filter(user_id=user_id)
         report_logs = ReportManagementLogs.objects.filter(user_id=user_id)
 
-        # Initialize lists
-        today_logs = []
-        yesterday_logs = []
-        this_week_logs = []
-        last_fifteen_days_logs = []
+        today_logs, yesterday_logs, this_week_logs, last_fifteen_days_logs = [], [], [], []
 
-        # Organize logs by time periods
-        for log in document_logs:
-            if log.time_stamp >= today_start:
-                today_logs.append({'type': 'document', 'log': log})
-            elif yesterday_start <= log.time_stamp < today_start:
-                yesterday_logs.append({'type': 'document', 'log': log})
-            elif week_start <= log.time_stamp < yesterday_start:
-                this_week_logs.append({'type': 'document', 'log': log})
-            elif fifteen_days_start <= log.time_stamp < week_start:
-                last_fifteen_days_logs.append({'type': 'document', 'log': log})
+        def categorize_logs(logs, type_name):
+            for log in logs:
+                if log.time_stamp >= today_start:
+                    today_logs.append({'type': type_name, 'log': log})
+                elif yesterday_start <= log.time_stamp < today_start:
+                    yesterday_logs.append({'type': type_name, 'log': log})
+                elif week_start <= log.time_stamp < yesterday_start:
+                    this_week_logs.append({'type': type_name, 'log': log})
+                elif fifteen_days_start <= log.time_stamp < week_start:
+                    last_fifteen_days_logs.append({'type': type_name, 'log': log})
 
-        for log in user_management_logs:
-            if log.time_stamp >= today_start:
-                today_logs.append({'type': 'user_management', 'log': log})
-            elif yesterday_start <= log.time_stamp < today_start:
-                yesterday_logs.append({'type': 'user_management', 'log': log})
-            elif week_start <= log.time_stamp < yesterday_start:
-                this_week_logs.append({'type': 'user_management', 'log': log})
-            elif fifteen_days_start <= log.time_stamp < week_start:
-                last_fifteen_days_logs.append({'type': 'document', 'log': log})
+        categorize_logs(document_logs, 'document')
+        categorize_logs(user_management_logs, 'user_management')
+        categorize_logs(doc_management_logs, 'doc_management')
+        categorize_logs(report_logs, 'report')
 
-        for log in doc_management_logs:
-            if log.time_stamp >= today_start:
-                today_logs.append({'type': 'doc_management', 'log': log})
-            elif yesterday_start <= log.time_stamp < today_start:
-                yesterday_logs.append({'type': 'doc_management', 'log': log})
-            elif week_start <= log.time_stamp < yesterday_start:
-                this_week_logs.append({'type': 'doc_management', 'log': log})
-            elif fifteen_days_start <= log.time_stamp < week_start:
-                last_fifteen_days_logs.append({'type': 'document', 'log': log})
-
-        for log in report_logs:
-            if log.time_stamp >= today_start:
-                today_logs.append({'type': 'report', 'log': log})
-            elif yesterday_start <= log.time_stamp < today_start:
-                yesterday_logs.append({'type': 'report', 'log': log})
-            elif week_start <= log.time_stamp < yesterday_start:
-                this_week_logs.append({'type': 'report', 'log': log})
-            elif fifteen_days_start <= log.time_stamp < week_start:
-                last_fifteen_days_logs.append({'type': 'document', 'log': log})
-
-        # Sort the logs from latest to oldest based on time_stamp
         today_logs.sort(key=lambda x: x['log'].time_stamp, reverse=True)
         yesterday_logs.sort(key=lambda x: x['log'].time_stamp, reverse=True)
         this_week_logs.sort(key=lambda x: x['log'].time_stamp, reverse=True)
         last_fifteen_days_logs.sort(key=lambda x: x['log'].time_stamp, reverse=True)
 
-        # Pass organized logs to the template
         context = {
             'role': role,
             'user_name': user_name,
+            'user_data': user_data,
             'activity_type': activity_type,
             'today_logs': today_logs,
             'yesterday_logs': yesterday_logs,
@@ -1239,14 +1313,16 @@ def sys_dir_activity_logs(request, activity_type):
             'last_fifteen_days_logs': last_fifteen_days_logs,
         }
         return render(request, 'assets/sys-dir-activity-logs.html', context)
-        #return render(request, 'director/director-activity-logs.html', context)
 
+    # Default context if no specific activity_type matches
     context = {
         'role': role,
         'user_name': user_name,
+        'user_data': user_data,
         'activity_type': activity_type
     }
     return render(request, 'assets/sys-dir-activity-logs.html', context)
+
 
 # SRO ACTIVITY LOGS
 def sro_activity_logs(request, activity_type):
@@ -1467,11 +1543,42 @@ def director_unacted_records(request):
 
     role = user_id.split('-')[0]
     if role != 'DIR':
-        return redirect(user_login)
+        return redirect('user_login')
     
     user_name = request.session.get('user_name')
+
+    # Fetch the user's information from the database
+    user = User.objects.filter(user_id=user_id).first()
+
+    # Determine the display name logic
+    if user and any([user.firstname, user.middlename, user.lastname]):
+        full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
+        first_name = user.firstname if user.firstname else ''
+        middle_name = user.middlename if user.middlename else ''
+        last_name = user.lastname if user.lastname else ''
+    else:
+        full_name = 'None'
+        first_name = ''
+        middle_name = ''
+        last_name = ''
+
+    # Prepare user data
+    user_data = {
+        'user_id': user.user_id if user and user.user_id else 'None',
+        'full_name': full_name,
+        'first_name': first_name,
+        'middle_name': middle_name,
+        'last_name': last_name,
+        'email': user.email if user and user.email else 'None',
+        'contact_no': user.contact_no if user and user.contact_no else 'None',
+        'role': user.role if user and user.role else 'None',
+        'profile_picture': user.profile_picture.url if user and user.profile_picture else None,
+    }
+
+    # Add user data to context
     context = {
-        'user_name': user_name
+        'user_name': user_name,
+        'user_data': user_data
     }
     
     return render(request, 'director/director-unacted-records.html', context)
@@ -1542,8 +1649,39 @@ def system_admin_archive(request):
         return redirect(user_login)
 
     user_name = request.session.get('user_name')
+
+    # Fetch the user's information from the database
+    user = User.objects.filter(user_id=user_id).first()
+
+    # Determine the display name logic
+    if user and any([user.firstname, user.middlename, user.lastname]):
+        full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
+        first_name = user.firstname if user.firstname else ''
+        middle_name = user.middlename if user.middlename else ''
+        last_name = user.lastname if user.lastname else ''
+    else:
+        full_name = 'None'
+        first_name = ''
+        middle_name = ''
+        last_name = ''
+
+    # Prepare user data
+    user_data = {
+        'user_id': user.user_id if user and user.user_id else 'None',
+        'full_name': full_name,
+        'first_name': first_name,
+        'middle_name': middle_name,
+        'last_name': last_name,
+        'email': user.email if user and user.email else 'None',
+        'contact_no': user.contact_no if user and user.contact_no else 'None',
+        'role': user.role if user and user.role else 'None',
+        'profile_picture': user.profile_picture.url if user and user.profile_picture else None,
+    }
+
+
     context = {
-        'user_name': user_name
+        'user_name': user_name,
+        'user_data': user_data,
     }
     return render(request, 'system_admin/system-admin-archive.html', context)
 
@@ -1558,8 +1696,38 @@ def director_archive(request):
         return redirect(user_login)
     
     user_name = request.session.get('user_name')
+
+    # Fetch the user's information from the database
+    user = User.objects.filter(user_id=user_id).first()
+
+    # Determine the display name logic
+    if user and any([user.firstname, user.middlename, user.lastname]):
+        full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
+        first_name = user.firstname if user.firstname else ''
+        middle_name = user.middlename if user.middlename else ''
+        last_name = user.lastname if user.lastname else ''
+    else:
+        full_name = 'None'
+        first_name = ''
+        middle_name = ''
+        last_name = ''
+
+    # Prepare user data
+    user_data = {
+        'user_id': user.user_id if user and user.user_id else 'None',
+        'full_name': full_name,
+        'first_name': first_name,
+        'middle_name': middle_name,
+        'last_name': last_name,
+        'email': user.email if user and user.email else 'None',
+        'contact_no': user.contact_no if user and user.contact_no else 'None',
+        'role': user.role if user and user.role else 'None',
+        'profile_picture': user.profile_picture.url if user and user.profile_picture else None,
+    }
+
     context = {
-        'user_name': user_name
+        'user_name': user_name,
+        'user_data': user_data,
     }
     
     return render(request, 'director/director-archive.html', context)
@@ -1585,13 +1753,41 @@ def admin_officer_archive(request):
 # ------------------ GENERATE REPORTS ------------------
 
 # SYSTEM ADMIN GENERATE REPORTS MODULE
-def system_admin_generate_reports(request, report_type):
+def system_admin_generate_reports(request, report_type):    
     
     user_id = request.session.get('user_id')
     if not user_id:
         return redirect('user_login')
     
     user_name = request.session.get('user_name')
+
+    # Fetch the user's information from the database
+    user = User.objects.filter(user_id=user_id).first()
+
+    # Determine the display name logic
+    if user and any([user.firstname, user.middlename, user.lastname]):
+        full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
+        first_name = user.firstname if user.firstname else ''
+        middle_name = user.middlename if user.middlename else ''
+        last_name = user.lastname if user.lastname else ''
+    else:
+        full_name = 'None'
+        first_name = ''
+        middle_name = ''
+        last_name = ''
+
+    # Prepare user data
+    user_data = {
+        'user_id': user.user_id if user and user.user_id else 'None',
+        'full_name': full_name,
+        'first_name': first_name,
+        'middle_name': middle_name,
+        'last_name': last_name,
+        'email': user.email if user and user.email else 'None',
+        'contact_no': user.contact_no if user and user.contact_no else 'None',
+        'role': user.role if user and user.role else 'None',
+        'profile_picture': user.profile_picture.url if user and user.profile_picture else None,
+    }
 
     if report_type == 'all-reports':
         reports = Reports.objects.all()
@@ -1603,7 +1799,8 @@ def system_admin_generate_reports(request, report_type):
     context = {
         'user_name': user_name,
         'report_type': report_type,
-        'reports': reports
+        'reports': reports,
+        'user_data': user_data,
     }
 
     return render(request, 'system_admin/system-admin-generate-reports.html', context)
@@ -1617,6 +1814,34 @@ def director_generate_reports(request, report_type):
     
     user_name = request.session.get('user_name')
 
+    # Fetch the user's information from the database
+    user = User.objects.filter(user_id=user_id).first()
+
+    # Determine the display name logic
+    if user and any([user.firstname, user.middlename, user.lastname]):
+        full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
+        first_name = user.firstname if user.firstname else ''
+        middle_name = user.middlename if user.middlename else ''
+        last_name = user.lastname if user.lastname else ''
+    else:
+        full_name = 'None'
+        first_name = ''
+        middle_name = ''
+        last_name = ''
+
+    # Prepare user data
+    user_data = {
+        'user_id': user.user_id if user and user.user_id else 'None',
+        'full_name': full_name,
+        'first_name': first_name,
+        'middle_name': middle_name,
+        'last_name': last_name,
+        'email': user.email if user and user.email else 'None',
+        'contact_no': user.contact_no if user and user.contact_no else 'None',
+        'role': user.role if user and user.role else 'None',
+        'profile_picture': user.profile_picture.url if user and user.profile_picture else None,
+    }
+
     if report_type == 'all-reports':
         reports = Reports.objects.filter(is_active=True)
     elif report_type == 'employee-performance':
@@ -1626,6 +1851,7 @@ def director_generate_reports(request, report_type):
 
     context = {
         'user_name': user_name,
+        'user_data': user_data,
         'report_type': report_type,
         'reports': reports
     }
@@ -1832,8 +2058,6 @@ def delete_document_type(request, document_no):
         return redirect(director_doc_management)
     else:
         return redirect(system_admin_doc_management)
-
-    
 
 # LOADING OF DOC TYPES
 def load_document_types(request):
@@ -3464,6 +3688,10 @@ def system_admin_announcements(request):
         all_offices = 'All' in offices
         end_date = request.POST.get('endDate')
 
+        # If no attachment is provided, set it to the default attachment
+        if not attachment:
+            attachment = 'default_attachment.pdf'  # Ensure this file exists or handle its absence
+
         # Save the announcement
         announcement = Announcement(
             title=title,
@@ -3471,13 +3699,14 @@ def system_admin_announcements(request):
             attachment=attachment,
             offices=', '.join(offices),
             all_offices=all_offices,
-            end_date=end_date
+            end_date=end_date,
+            created_by=user_id  # Assuming this field exists in the model
         )
         announcement.save()
         return redirect('system_admin_announcements')
 
-    # Fetch all announcements to display
-    announcements = Announcement.objects.all()
+    # Fetch only the announcements created by the logged-in system administrator
+    announcements = Announcement.objects.filter(created_by=user_id)
 
     # Fetch user information using session user_id
     user = User.objects.filter(user_id=user_id).first()
@@ -3485,9 +3714,9 @@ def system_admin_announcements(request):
     # Determine the display name logic
     if user and any([user.firstname, user.middlename, user.lastname]):
         full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
-        first_name = user.firstname if user.firstname else ''
-        middle_name = user.middlename if user.middlename else ''
-        last_name = user.lastname if user.lastname else ''
+        first_name = user.firstname or 'None'
+        middle_name = user.middlename or 'None'
+        last_name = user.lastname or 'None'
     else:
         full_name = 'None'
         first_name = 'None'
@@ -3509,6 +3738,83 @@ def system_admin_announcements(request):
 
     # Render the template with announcements and user data
     return render(request, 'system_admin/system-admin-announcements.html', {
+        'user_name': user_name,
+        'user_data': user_data,
+        'announcements': announcements,  # Include announcements in the context
+    })
+
+def director_announcements(request):
+    # Retrieve user ID from session
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('user_login')
+
+    role_prefix = user_id.split('-')[0]
+    if role_prefix != 'DIR':
+        return redirect('user_login')
+
+    # Retrieve the user name from session
+    user_name = request.session.get('user_name')
+
+    # Handle POST request for creating an announcement
+    if request.method == 'POST':
+        title = request.POST.get('announcementTitle')
+        description = request.POST.get('description')
+        attachment = request.FILES.get('attachment')
+        offices = request.POST.getlist('offices')  
+        all_offices = 'All' in offices
+        end_date = request.POST.get('endDate')
+
+        # If no attachment is provided, set it to the default attachment
+        if not attachment:
+            attachment = 'default_attachment.pdf'  # Ensure this file exists or handle its absence
+
+        # Save the announcement
+        announcement = Announcement(
+            title=title,
+            description=description,
+            attachment=attachment,
+            offices=', '.join(offices),
+            all_offices=all_offices,
+            end_date=end_date,
+            created_by=user_id  # Assuming this field exists in the model
+        )
+        announcement.save()
+        return redirect('director_announcements')
+
+    # Fetch only the announcements created by the logged-in director
+    announcements = Announcement.objects.filter(created_by=user_id)
+
+    # Fetch user information using session user_id
+    user = User.objects.filter(user_id=user_id).first()
+
+    # Determine the display name logic
+    if user and any([user.firstname, user.middlename, user.lastname]):
+        full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
+        first_name = user.firstname or 'None'
+        middle_name = user.middlename or 'None'
+        last_name = user.lastname or 'None'
+    else:
+        full_name = 'None'
+        first_name = 'None'
+        middle_name = 'None'
+        last_name = 'None'
+
+    # Prepare user data
+    user_data = {
+        'user_id': user.user_id if user and user.user_id else 'None',
+        'full_name': full_name,
+        'first_name': first_name,
+        'middle_name': middle_name,
+        'last_name': last_name,
+        'email': user.email if user and user.email else 'None',
+        'contact_no': user.contact_no if user and user.contact_no else 'None',
+        'role': user.role if user and user.role else 'None',
+        'profile_picture': user.profile_picture.url if user and user.profile_picture else None,
+    }
+
+    # Render the template with announcements and user data
+    return render(request, 'director/director-announcements.html', {
         'user_name': user_name,
         'user_data': user_data,
         'announcements': announcements,  # Include announcements in the context
