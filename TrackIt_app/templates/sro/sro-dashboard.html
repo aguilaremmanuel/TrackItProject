@@ -15,6 +15,32 @@
     <link href="{% static 'fontawesomefree/css/all.min.css' %}" rel="stylesheet" type="text/css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <title>Dashboard</title>
+
+    <style>
+        /* Box styling */
+        .clickable-box {
+          background-color: #007bff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: background-color 0.3s, transform 0.3s;
+        }
+        
+        .clickable-box h5{
+            color: white;
+        }
+
+        /* Hover effect */
+        .clickable-box:hover {
+            background-color: #318ff4;
+            transform: scale(1.05);
+        }
+
+        .clickable-box:hover h5 {
+            color: black;
+        }
+      </style>
 </head>
 
 <body>
@@ -72,113 +98,150 @@
                 <div class="row py-2">
                     <!-- 1st Column | Total Records -->
                     <div class="col-5">
+                        <div class="rounded-2 p-3 my-3" style="background-color: #007bff; color:white; height: auto;">
+                            <p class="fs-4 p-0 m-0 fw-bold"><i class='bx bxs-wink-smile'></i>&nbsp;Welcome, Sub-Receiving Officer!</p>
+                            <p class="p-0 m-0">See latest updates here</p>
+                            <div class="py-2 w-25">
+                                <select class="form-select" id="inputGroupSelect" style="font-size: 12px !important; background-color: #007bff; color: white;">
+                                    <option selected>Today</option>
+                                    <option value="1">This Month</option>
+                                    <option value="2">This Year</option>
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="container d-block rounded-2 p-3 my-3" style="background-color: white; height: auto;">
                             <div class="row">
                                 <div class="col-7 d-flex align-items-center">
-                                  <h3><span class="fw-bolder my-3 px-2 rounded-2" style="background-color: #007bff; color:white;">95</span>&nbsp;Total Records</h3>
+                                    <h4><span class="fw-bolder my-3 px-2 rounded-2" style="background-color: #007bff; color:white;">95</span>&nbsp;Total Records</h4>
                                 </div>
-                                <div class="col-5 p-2">
-                                  <select class="form-select" id="inputGroupSelect">
-                                    <option selected>Very Urgent</option>
-                                    <option value="1">Urgent</option>
-                                    <option value="2">Normal</option>
-                                    <option value="3">For Pref. Action</option>
-                                  </select>
-                                </div>                      
-                              </div>
-                          
-                              <div class="chart-container my-2">
+                                <div class="col-5 p-2 d-flex justify-content-end">
+                                    <select class="form-select w-75" id="inputGroupPrio" style="font-size: 12px !important;">
+                                        <option selected>Very Urgent</option>
+                                        <option value="1">Urgent</option>
+                                        <option value="2">Normal</option>
+                                        <option value="3">For Pref. Action</option>
+                                    </select>
+                                </div> 
+                            </div>
+                                    
+                            <div class="chart-container my-2">
                                 <!-- Bar 1 -->
                                 <div class="bar">
-                                    <div class="percent-label">14</div>
-                                    <div class="bar-shape" style="height: 100px;"></div>
-                                  <div class="office-label">For ACO</div>
+                                <div class="percent-label">14</div>
+                                <div class="bar-shape" style="height: 100px;"></div>
+                                <div class="office-label">For ACO</div>
                                 </div>
                                 <!-- Bar 2 -->
                                 <div class="bar selected">
-                                  <div class="percent-label">28</div>
-                                  <div class="bar-shape" style="height: 200px;"></div>
-                                  <div class="office-label">For Routing</div>
+                                <div class="percent-label">28</div>
+                                <div class="bar-shape" style="height: 200px;"></div>
+                                <div class="office-label">For Routing</div>
                                 </div>
                                 <!-- Bar 3 -->
                                 <div class="bar">
-                                  <div class="percent-label">22</div>
-                                  <div class="bar-shape" style="height: 150px;"></div>
-                                  <div class="office-label">For Resolving</div>
+                                <div class="percent-label">22</div>
+                                <div class="bar-shape" style="height: 150px;"></div>
+                                <div class="office-label">For Resolving</div>
                                 </div>
                             </div>
                         </div>
+
+                        <!-- [ANALYTICS] Pie Chart -->
+                        <div class="rounded-2 p-3 my-3" style="background-color: white; height:300px;">
+                            <div class="row">
+                                <div class="col-8">
+                                    <h4 class="mb-0 fw-bold d-flex align-items-center">
+                                        <i class='bx bxs-user-check' style="color: #007bff;"></i>&nbsp;Performance
+                                    </h4>
+                                </div>
+                                <div class="col-4">
+                                    <select class="form-select" id="inputGroupPerformance" style="font-size: 12px !important;">
+                                        <option selected>SRO</option>
+                                        <option value="1">Office</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="canvas-container my-2 d-flex align-items-center">
+                                <canvas id="performanceChart" width="200" height="200"></canvas>
+                            </div>
+                            <p class="text-center fw-bold text-success">Congratulations, you have a good performance!</p>
+                            <!-- <p class="text-center fw-bold text-warning">Your performance is currently going slow.</p> -->
+                            <!-- <p class="text-center fw-bold text-danger">You need to address your current performance</p> -->
+                        </div>
+                        
+                        
+
+
                     </div>
     
                     <div class="col-7">
-                        <!-- 2nd Column | Pending Account Application -->
-                        <div class="container d-flex align-items-center rounded-2 p-4 my-3" style="background-color: white; height: 361px;">
-                            <div class="row d-flex align-items-center w-100">
-                                <div class="col-5 d-flex justify-content-center">
-                                    <i class='bx bxs-user' style='color:#007bff; font-size: 280px;'></i>
-                                </div>
-                                <div class="col-7 d-flex flex-column align-items-center p-2">
-                                    <h1 style="color: #007bff; font-weight: bolder;">50</h1>
-                                    <p class="fs-5 fw-bold">Pending User Application</p>
-                                    <div class="row my-2">
-                                        <div class="col-6">
-                                            <div class="progress-circle" style="background: conic-gradient(#3589ff 0% 70%, #e9ecef 70% 100%);">
-                                                <div class="inner-content text-center">
-                                                    <div class="percentage">35</div>
-                                                    <div class="label">SRO</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                
-                                        <div class="col-6">
-                                            <div class="progress-circle" style="background: conic-gradient(#3589ff 0% 30%, #e9ecef 30% 100%);">
-                                                <div class="inner-content text-center">
-                                                    <div class="percentage">15</div>
-                                                    <div class="label">ACO</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>                      
+                        <!-- 2nd Column | Announcements -->
+                        <div class="rounded-2 p-3 my-3" style="background-color: white; height: auto;">
+                            <h4 class="mb-0 fw-bold d-flex align-items-center"><i class='bx bxs-megaphone' style="color: #007bff;"></i>&nbsp;Latest Announcements</h4>
+                            <!-- Announcements -->
+                            <div class="container d-block px-2 pt-3" style="max-height: 250px; overflow-y: auto;">
+                                <p class="announcements border border-danger rounded-2 my-2 p-2" style="background-color: #F5F7F8;">
+                                    To all users, please be advised that the system will undergo scheduled maintenance on August 10, 2024, from 12:00 AM to 4:00 AM. During this time, the system will be unavailable. Thank you for your understanding and cooperation!
+                                </p>
+                                <p class="announcements border border-primary rounded-2 my-2 p-2" style="background-color: #F5F7F8;">
+                                    This is a reminder to all departments that the Q3 Financial Reports must be submitted no later than October 25, 2024. Please ensure that all expenses, invoices, and financial statements are accurately recorded and attached.
+                                </p>
+                                <p class="announcements border border-warning rounded-2 my-2 p-2" style="background-color: #F5F7F8;">
+                                    Please be informed that the deadline for the submission of all budget requests for the upcoming fiscal year is November 15, 2024. All requests must be submitted through the system for proper tracking and documentation.
+                                </p>
+                                <p class="announcements border border-warning rounded-2 my-2 p-2" style="background-color: #F5F7F8;">
+                                    Please be informed that the deadline for the submission of all budget requests for the upcoming fiscal year is November 15, 2024. All requests must be submitted through the system for proper tracking and documentation.
+                                </p>
                             </div>
-                        </div>                        
+                        </div>
+
+                        <div class="row px-3 my-3 d-flex justify-content-center">
+                            <div class="col-4 ps-0 mt-0 rounded-2">
+                                <div class="clickable-box rounded-2 p-3" onclick="window.location.href='{% url 'sro_records' 'All-Documents' '-1' %}?status=active'">
+                                    <h5 class="text-center mb-0"><i class='bx bxs-file-find'></i>&nbsp;View<br>All Records</h5>
+                                </div>
+                            </div>
+
+                            <div class="col-4 mt-0 rounded-2">
+                                <div class="clickable-box rounded-2 p-3" onclick="window.location.href='{% url 'sro_unacted_records' %}?status=active'">
+                                    <h5 class="text-center mb-0"><i class='bx bxs-message-error'></i>&nbsp;Unacted<br>Documents</h5>
+                                </div>                                                            
+                            </div>
+
+                            <div class="col-4 pe-0 mt-0 rounded-2">
+                                <div class="clickable-box rounded-2 p-3" onclick="window.location.href='{% url 'sro_activity_logs' 'recent' %}?status=active'">
+                                    <h5 class="text-center mb-0"><i class='bx bxs-timer'></i>&nbsp;Recent<br>Activities</h5>
+                                </div>
+                            </div>
+
+                            <!-- [ANALYTICS] Line Graph -->
+                            <div class="container d-block rounded-2 p-3 my-3" style="background-color: white; height: auto;">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <h4 class="mb-0 fw-bold d-flex align-items-center"><i class='bx bxs-trophy' style="color: #007bff;"></i>&nbsp;Employee Performance</h4>
+                                    </div>
+                                    
+                                    <div class="col-4">
+                                        <select class="form-select" id="inputPerformanceOption" style="font-size: 12px !important;">
+                                            <option selected>Top Employees</option>
+                                            <option value="1">Underperforming</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-center py-2">
+                                    <canvas id="multiAreaChart" height="auto"></canvas>
+                                </div>
+                            </div>
+
+                        </div>
+
                     </div>
                 </div>
-
-
-
-
-
-
-
-
-
-
-
-
             </main>
         </div>
     </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     <!-- Profile Modal -->
     <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
@@ -404,7 +467,9 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="{% static 'js/toggle-sidebar.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{% static 'js/toggle-pass.js' %}"></script>
     <script>
         function updateTime() {
@@ -424,6 +489,97 @@
 
         setInterval(updateTime, 1000);
         updateTime();
+    </script>
+
+    <!-- [ANALYTICS] Line Graph JavaScript -->
+    <script>
+        const ctx = document.getElementById('multiAreaChart').getContext('2d');
+        const multiAreaChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Last 3 Months', 'Last 2 Months', 'Last Month', 'Current Month'], // Time periods
+                datasets: [
+                    {
+                        label: 'ACO-0001',
+                        data: [25, 10, 15, 50], // resolved document tot/unacted+delayed tot
+                        borderColor: '#5bc0de', // Line color
+                        backgroundColor: 'rgba(91, 192, 222, 0.2)', // Fill color
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'ACO-0002',
+                        data: [3, 15, 8, 25], 
+                        borderColor: '#5cb85c',
+                        backgroundColor: 'rgba(92, 184, 92, 0.2)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'ACO-0003',
+                        data: [1, 2, 4, 10], 
+                        borderColor: '#f0ad4e',
+                        backgroundColor: 'rgba(240, 173, 78, 0.2)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'ACO-0004',
+                        data: [5, 20, 9, 26], 
+                        borderColor: '#003366',
+                        backgroundColor: 'rgba(0, 51, 102, 0.2)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'ACO-0005',
+                        data: [5, 7, 20, 10], 
+                        borderColor: '#008080',
+                        backgroundColor: 'rgba(0, 128, 128, 0.2)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true, // Show the legend
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    </script>
+
+    <!-- [ANALYTICS] Pie Chart JavaScript -->
+    <script>
+        var ctx1 = document.getElementById('performanceChart').getContext('2d');
+        var chart = new Chart(ctx1, {
+            type: 'pie',
+            data: {
+                labels: ['Resolved', 'Pending', 'Delayed', 'Unacted'],
+                datasets: [{
+                    label: 'Document',
+                    data: [10, 6, 4, 2], // Replace with actual data
+                    backgroundColor: ['#4DA8DA', '#4169E1',  '#003366', '#008080']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+            }
+        });
     </script>
 </body>
 </html>

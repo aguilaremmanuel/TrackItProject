@@ -161,6 +161,20 @@ class DirectorLoginForm(forms.Form):
         widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Enter Password', 'id': 'password'})
     )
 
+class AnnouncementForm(forms.ModelForm):
+    class Meta:
+        model = Announcement
+        fields = ['title', 'description', 'attachment','end_date'] #
+        widgets = {
+            'title': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
+            'description': forms.Textarea(attrs={'class': 'form-control'}),
+            'end_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),  # 
+        }
+
+class EditProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['firstname', 'middlename', 'lastname', 'email', 'contact_no', 'profile_picture']
 
 
 

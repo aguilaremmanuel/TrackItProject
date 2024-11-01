@@ -27,12 +27,19 @@
                 <button class="toggle-sidebar" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
                 <div class="header-right">
                     <button class="toggle-notification" id="notification" title="Notifications"><i class="fa-solid fa-bell"></i></button>
+                    <!---->
                     <div class="dropdown">
-                        <button class="profile m-0" type="button" id="profileDropdown" data-bs-toggle="dropdown" title="Account Menu">
-                            <div class="profile-pic placeholder"></div>
+                        <button class="profile m-0" type="button" id="profileDropdown" data-bs-toggle="dropdown">
+                            <div class="profile-pic placeholder">
+                                <img src="{{ user_data.profile_picture }}" 
+                                     alt="{{ user_data.full_name }}'s Profile Picture" 
+                                     id="profilePicture" 
+                                     class="profile-modal-pic" 
+                                     style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;">
+                            </div>                                                                                
                             <div class="profile-info">
-                                <span class="profile-name">{{ user_name }}</span>
-                                <span class="profile-role">System Administrator</span>
+                                <span class="profile-name">{{ user_data.full_name }}</span>
+                                <span class="profile-role">{{ user_data.role }}</span>
                             </div>
                         </button>
                         <ul class="drop-profile dropdown-menu" aria-labelledby="profileDropdown">
@@ -56,6 +63,7 @@
                             </li>
                         </ul>
                     </div>
+                    <!---->
                 </div>
             </header>
             
@@ -74,7 +82,7 @@
                     <!-- 1st Column | Total Records -->
                     <div class="col-6">
                         <div class="rounded-2 p-3 my-3" style="background-color: #007bff; color:white; height: auto;">
-                            <p class="fs-4 p-0 m-0 fw-bold"><i class='bx bxs-wink-smile'></i>&nbsp;Welcome, System Admin!</p>
+                            <p class="fs-4 p-0 m-0 fw-bold d-flex align-items-center"><i class='bx bxs-wink-smile'></i>&nbsp;Welcome, System Admin!</p>
                             <p class="p-0 m-0">See latest updates here</p>
                             <div class="py-2 w-25">
                                 <select class="form-select" id="inputGroupSelect" style="font-size: 12px !important; background-color: #007bff; color: white;">
@@ -91,7 +99,7 @@
                                   <h3><span class="fw-bolder my-3 px-2 rounded-2" style="background-color: #007bff; color:white;">95</span>&nbsp;Total Records</h3>
                                 </div>
                                 <div class="col-5 p-2 d-flex justify-content-end">
-                                    <select class="form-select w-75" id="inputGroupSelect" style="font-size: 12px !important;">
+                                    <select class="form-select w-75" id="inputGroupPrio" style="font-size: 12px !important;">
                                         <option selected>Very Urgent</option>
                                         <option value="1">Urgent</option>
                                         <option value="2">Normal</option>
@@ -140,13 +148,33 @@
                             </div>
                         </div>
 
-                        <div class="container d-block rounded-2 p-3 mb-3" style="background-color: white; height: auto;">
-                            <div class="row"><h4 class="mb-0 fw-bold"><i class='bx bx-line-chart' style="color: #007bff;"></i>&nbsp;Archived Documents</h4></div>
-                            <div class="d-flex align-items-center justify-content-center py-2">
-                                <canvas id="archivedChart" height="auto"></canvas>
+                        <div class="rounded-2 p-3 my-3" style="background-color: white; height:auto;">
+                            <div class="row">
+                                <div class="col-8">
+                                    <h4 class="mb-0 fw-bold d-flex align-items-center">
+                                        <i class='bx bx-desktop' style="color: #007bff;"></i>&nbsp;Office Performance
+                                    </h4>
+                                </div>
+                                <div class="col-4">
+                                    <select class="form-select" id="inputGroupPerformance" style="font-size: 12px !important;">
+                                        <option selected>All</option>
+                                        <option value="1">Director</option>
+                                        <option value="2">Administrative</option>
+                                        <option value="3">Accounting</option>
+                                        <option value="4">Cashier</option>
+                                        <option value="5">Budget</option>
+                                        <option value="6">Payroll</option>
+                                    </select>
+                                </div>
                             </div>
+                            
+                            <div class="canvas-container py-4 d-flex align-items-center">
+                                <canvas id="performanceChart" width="200" height="200"></canvas>
+                            </div>
+                            <p class="text-center fw-bold text-success">Congratulations, you have a good performance!</p>
+                            <!-- <p class="text-center fw-bold text-warning">Your performance is currently going slow.</p> -->
+                            <!-- <p class="text-center fw-bold text-danger">You need to address your current performance</p> -->
                         </div>
-
                     </div>
     
                     <div class="col-6">
@@ -154,7 +182,7 @@
                         <div class="container d-flex align-items-center justify-content-center rounded-2 p-3 my-3" style="background-color: white; height: 361px;">
                             <div class="row d-flex align-items-center w-100">
                                 <div class="col-5 py-0 d-flex justify-content-center align-items-center">
-                                    <i class="bx bxs-user" style="color: #007bff; font-size: calc(15vw + 15px); max-width: 100%; max-height: 100%;"></i>
+                                    <i class="bx bxs-user-account" style="color: #007bff; font-size: calc(13vw + 15px); max-width: 100%; max-height: 100%;"></i>
                                 </div>                             
                                 <div class="col-7 d-flex flex-column align-items-center p-2">
                                     <h1 style="color: #007bff; font-weight: bolder;">50</h1>
@@ -202,12 +230,16 @@
                             </div>
                         </div>
                         
-                        <div class="container d-block rounded-2 p-3 mb-3" style="background-color: white; height: auto;">
-                            <div class="row"><h4 class="mb-0 fw-bold"><i class='bx bx-stats' style="color: #007bff;"></i>&nbsp;Office Performance</h4></div>
-                            <div class="d-flex align-items-center justify-content-center py-2">
-                                <canvas id="multiAreaChart" height="auto"></canvas>
+                        <div class="container d-block rounded-2 p-3 mb-3" style="background-color: white; height: 415px;">
+                            <div class="row pb-2">
+                                <h4 class="mb-0 fw-bold d-flex align-items-center">
+                                    <i class='bx bx-stats' style="color: #007bff;"></i>&nbsp;Document Status
+                                </h4>
                             </div>
-                        </div>
+                            <div class="d-flex align-items-center justify-content-center" style="height: 100%;">
+                                <canvas class="px-4 pb-5" id="multiAreaChart" style="width: 100%; height: 100%; max-width: 100%; max-height: 100%;"></canvas>
+                            </div>
+                        </div>                        
                     </div>
                 </div>
 
@@ -222,15 +254,17 @@
 
                 <div class="cover modal-body py-3 pb-0" style="padding-left: 32px; padding-right: 32px;">
                     <div class="text-center">
-                        <img src="https://fastly.picsum.photos/id/383/100/100.jpg?hmac=USPHQV9hy_FwDO_SsbRJ0DWcFpqtQrIo-IrwjaRuFJs" 
-                             alt="Profile Picture" id="profilePicture" class="profile-modal-pic">
+                        <img src="{{ user_data.profile_picture }}" 
+                             alt="{{ user_data.full_name }}'s Profile Picture" 
+                             id="profilePicture" 
+                             class="profile-modal-pic">
                     </div>
-                </div>
+                </div>                
 
                 <div class="modal-body pt-1" style="padding-left: 32px; padding-right: 32px;">
                     <div class="mb-3">
-                        <h4 id="fullName" class="text-center my-1 p-0">First Middle Last</h4>
-                        <p id="role" class="text-center p-0">System Administrator</p>
+                        <h4 id="fullName" class="text-center my-1 p-0">{{ user_data.full_name }}</h4>
+                        <p id="role" class="text-center p-0">{{ user_data.role }}</p>
                     </div>
 
                     <div class="row mb-3 g-3">
@@ -240,7 +274,7 @@
                             </p>
                         </div>
                         <div class="col text-end">
-                            <p id="userIDValue">SYS-0000</p>
+                            <p id="userIDValue">{{ user_data.user_id }}</p>
                         </div>
                     </div>
 
@@ -251,7 +285,7 @@
                             </p>
                         </div>
                         <div class="col text-end">
-                            <p id="employeeEmail">emailaddress@gmail.com</p>
+                            <p id="employeeEmail">{{ user_data.email }}</p>
                         </div>
                     </div>
                 
@@ -262,7 +296,7 @@
                             </p>
                         </div>
                         <div class="col text-end">
-                            <p id="employeeContact">09123456789</p>
+                            <p id="employeeContact">{{ user_data.contact_no }}</p>
                         </div>
                     </div>
 
@@ -284,45 +318,133 @@
                 <div class="modal-body">
                     <div class="d-flex align-items-center justify-content-center mb-3">
                         <div class="me-3">
-                            <img src="https://fastly.picsum.photos/id/383/100/100.jpg?hmac=USPHQV9hy_FwDO_SsbRJ0DWcFpqtQrIo-IrwjaRuFJs" 
-                                 alt="Profile Picture" id="profilePicture" class="profile-modal-pic" style="width: 115px; height: 115px;">
+                            <img src="{{ user_data.profile_picture }}" 
+                                alt="Profile Picture" id="editProfilePicture" class="profile-modal-pic" style="width: 115px; height: 115px;">
                         </div>
                         <div>
                             <div class="mb-2">
-                                <button type="button" class="btn btn-primary me-2">Change Photo</button>
-                                <button type="button" class="btn btn-secondary">Delete Photo</button>
+                                <input type="file" id="changePhotoInput" style="display:none;" accept="image/*">
+                                <button type="button" class="btn btn-primary me-2" onclick="document.getElementById('changePhotoInput').click()">Change Photo</button>
+                                <button type="button" class="btn btn-secondary" id="deletePhotoButton">Delete Photo</button>
                             </div>
                             <p class="mt-2 text-muted"><small>Upload PNG or JPG. (max 300 x 300px)</small></p>
                         </div>
                     </div>
 
-                    <form id="editProfileForm" method="post" action="">
+                    <form id="editProfileForm" method="post" action="{% url 'edit_profile' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
                         <div class="mb-3">
-                            <label for="firstName" class="form-label">First Name</label>
-                            <input type="text" class="form-control" id="editFirstName" placeholder="Enter First Name" required>
+                            <label for="editFirstName" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="editFirstName" name="firstname" value="{{ user_data.first_name }}" required>
                         </div>
 
                         <div class="mb-3">
-                            <label for="middleName" class="form-label">Middle Name</label>
-                            <input type="text" class="form-control" id="editMiddleName" placeholder="Enter Middle Name" required>
+                            <label for="editMiddleName" class="form-label">Middle Name (optional)</label>
+                            <input type="text" class="form-control" id="editMiddleName" name="middlename" value="{{ user_data.middle_name }}" >
                         </div>
 
                         <div class="mb-3">
-                            <label for="lastName" class="form-label">Last Name</label>
-                            <input type="text" class="form-control" id="editLastName" placeholder="Enter Last Name" required>
+                            <label for="editLastName" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="editLastName" name="lastname" value="{{ user_data.last_name }}" required>
                         </div>
-
+                        
+                        <!--
                         <div class="mb-3">
                             <label for="editEmailAddress" class="form-label">Email Address</label>
-                            <input type="email" class="form-control" id="editEmailAddress" placeholder="Enter Email Address" name="email_address" required>
+                            <input type="email" class="form-control" id="editEmailAddress" name="email" value="{{ user_data.email }}">
                         </div>
+                        -->
 
                         <div class="mb-3">
                             <label for="editContactNumber" class="form-label">Contact Number</label>
-                            <input type="text" class="form-control" id="editContactNumber" placeholder="Enter Contact Number" name="contact_number" required>
+                            <input type="text" class="form-control" id="editContactNumber" name="contact_no" value="{{ user_data.contact_no }}">
                         </div>
 
-                        <button type="button" class="w-100 mt-1 mb-2 btn btn-primary" data-bs-toggle="modal" data-bs-target="#profileModal">Save Changes</button>
+                        <input type="file" id="profilePictureInput" name="profile_picture" style="display:none;">
+                        <button type="submit" class="w-100 mt-1 mb-2 btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0">
+                    <h5 class="modal-title" id="settingsModalLabel">Account Settings</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body mt-1 pt-2">
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Account Password</label>
+                        <p class="mb-2">If you wish to change your password, please click the button below.</p>
+                        <button type="button" class="btn btn-secondary w-100" data-bs-toggle="modal" data-bs-target="#changePasswordModal" style="font-size: 14px;" >Set New Password</button>
+                    </div>
+
+                    <div class="mb-2">
+                        <label for="receiveEmails" class="form-label">Receive Emails</label>
+                        <div class="row">
+                            <div class="col">
+                                <p class="mb-2">Choose whether to receive updates and notifications via email.</p>
+                            </div>
+                            <div class="col-auto">
+                                <div class="form-check form-switch mt-2">
+                                    <input class="form-check-input" type="checkbox" id="receiveEmails" role="switch" style="transform: scale(1.25);">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-1">
+                        <label for="twoFactorAuth" class="form-label">Two-Factor Authentication</label>
+                        <div class="row">
+                            <div class="col">
+                                <p class="mb-2">Choose whether to enable two-factor authentication for added security.</p>
+                            </div>
+                            <div class="col-auto">
+                                <div class="form-check form-switch mt-2">
+                                    <input class="form-check-input" type="checkbox" id="twoFactorAuth" role="switch" style="transform: scale(1.25);">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0">
+                    <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-3">Your password must contain at least 8 characters with a special character and an uppercase letter.</p>
+
+                    <form>
+                        <div class="mb-3">
+                            <label for="currentPassword" class="form-label">Current Password</label>
+                            <input type="password" name="current_password" class="form-control" id="password" placeholder="Enter Current Password" required>
+                            <i class="fa-regular fa-eye toggle-pass" id="togglePassword"></i>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newPassword" class="form-label">New Password</label>
+                            <input type="password" name="new_password" class="form-control" id="password2" placeholder="Enter New Password" required>
+                            <i class="fa-regular fa-eye toggle-pass" id="togglePassword2"></i>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmNewPassword" class="form-label">Confirm New Password</label>
+                            <input type="password" name="confirm_new_password" class="form-control" id="password3" placeholder="Confirm New Password" required>
+                            <i class="fa-regular fa-eye toggle-pass" id="togglePassword3"></i>
+                        </div>
+
+						<button type="submit" class="w-100 mt-1 mb-2 btn btn-primary">Create New Password</button>
                     </form>
                 </div>
             </div>
@@ -414,6 +536,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'js/toggle-sidebar.js' %}"></script>
+    <script src="{% static 'js/update-profile.js' %}"></script>
     <script src="{% static 'js/toggle-pass.js' %}"></script>
     <script>
         function updateTime() {
@@ -437,39 +560,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <script>
-        // Setup the chart
-        const ctx1 = document.getElementById('archivedChart').getContext('2d');
-        const archivedChart = new Chart(ctx1, {
-            type: 'line',
-            data: {
-                labels: ['6 Days Before', '5 Days Before', '4 Days Before', '3 Days Before', '2 Days Before', 'Yesterday', 'Today'], // Days of the week
-                datasets: [{
-                    label: 'Archived Documents',
-                    data: [300, 350, 340, 380, 320, 360, 480], // Sample data
-                    borderColor: '#007bff', // Line color
-                    backgroundColor: 'rgba(0, 123, 255, 0.1)', // Line fill color
-                    pointBackgroundColor: '#004da0', // Points color
-                    tension: 0.4, // Smooth curve
-                    fill: true, // Fill the area under the line
-                    pointRadius: 5 // Point size
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: false
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: false // Hide the legend
-                    }
-                }
-            }
-        });
-    </script>
-
+    <!-- [ANALYTICS] Line Graph for Document Status -->
     <script>
         const ctx = document.getElementById('multiAreaChart').getContext('2d');
         const multiAreaChart = new Chart(ctx, {
@@ -477,56 +568,38 @@
             data: {
                 labels: ['Last 3 Months', 'Last 2 Months', 'Last Month', 'Current Month'], // Time periods
                 datasets: [
-                    {
-                        label: 'Director',
+                {
+                        label: 'Resolved',
                         data: [25, 10, 15, 50], // resolved document tot/unacted+delayed tot
-                        borderColor: '#5bc0de', // Line color
-                        backgroundColor: 'rgba(91, 192, 222, 0.2)', // Fill color
+                        borderColor: '#4DA8DA', // Line color
+                        backgroundColor: 'rgba(77, 168, 218, 0.2)', // Fill color
                         tension: 0.4,
                         fill: true,
                         pointRadius: 0
                     },
                     {
-                        label: 'Administrative',
+                        label: 'Pending',
                         data: [3, 15, 8, 25], 
-                        borderColor: '#5cb85c',
-                        backgroundColor: 'rgba(92, 184, 92, 0.2)',
+                        borderColor: '#4169E1',
+                        backgroundColor: 'rgba(65, 105, 225, 0.2)',
                         tension: 0.4,
                         fill: true,
                         pointRadius: 0
                     },
                     {
-                        label: 'Cashier',
+                        label: 'Delayed',
+                        data: [5, 20, 9, 26], 
+                        borderColor: '#003366',
+                        backgroundColor: 'rgba(0, 51, 102, 0.2)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'Unacted',
                         data: [1, 2, 4, 10], 
-                        borderColor: '#f0ad4e',
-                        backgroundColor: 'rgba(240, 173, 78, 0.2)',
-                        tension: 0.4,
-                        fill: true,
-                        pointRadius: 0
-                    },
-                    {
-                        label: 'Budget',
-                        data: [0, 1, 5, 28], 
-                        borderColor: '#d9534f',
-                        backgroundColor: 'rgba(217, 83, 79, 0.2)',
-                        tension: 0.4,
-                        fill: true,
-                        pointRadius: 0
-                    },
-                    {
-                        label: 'Accounting',
-                        data: [7, 2, 7, 25], 
-                        borderColor: '#ff69b4', 
-                        backgroundColor: 'rgba(255, 105, 180, 0.2)', 
-                        tension: 0.4,
-                        fill: true,
-                        pointRadius: 0
-                    },
-                    {
-                        label: 'Payroll',
-                        data: [51, 1.5, 6, 20],
-                        borderColor: '#808080', 
-                        backgroundColor: 'rgba(128, 128, 128, 0.2)',
+                        borderColor: '#008080',
+                        backgroundColor: 'rgba(0, 128, 128, 0.2)',
                         tension: 0.4,
                         fill: true,
                         pointRadius: 0
@@ -545,6 +618,26 @@
                         position: 'bottom'
                     }
                 }
+            }
+        });
+    </script>
+
+    <!-- [ANALYTICS] Pie Chart JavaScript -->
+    <script>
+        var ctx1 = document.getElementById('performanceChart').getContext('2d');
+        var chart = new Chart(ctx1, {
+            type: 'pie',
+            data: {
+                labels: ['Resolved', 'Pending', 'Delayed', 'Unacted'],
+                datasets: [{
+                    label: 'Document',
+                    data: [10, 6, 4, 2], // Replace with actual data
+                    backgroundColor: ['#4DA8DA', '#4169E1',  '#003366', '#008080']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
             }
         });
     </script>
