@@ -23,7 +23,6 @@ def is_valid_password(password):
 class UserSignupForm(forms.ModelForm):
     OFFICE_CHOICES = [
         ('', 'Select Office'),
-        ('ADM', 'Administrative'),
         ('ACC', 'Accounting'),
         ('BMD', 'Budgeting'),
         ('CSR', 'Cashier'),
@@ -40,7 +39,6 @@ class UserSignupForm(forms.ModelForm):
 
     ROLE_CHOICES = [
         ('', 'Select Role'),
-        ('ADO', 'Admin Officer'),
         ('ACT', 'Action Officer'),
         ('SRO', 'Sub-Receiving Officer'),
     ]

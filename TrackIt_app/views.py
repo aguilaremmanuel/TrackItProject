@@ -419,16 +419,55 @@ def director_dashboard(request):
 def admin_officer_dashboard(request):
 
     user_id = request.session.get('user_id')
-    if  not user_id:
+    if not user_id:
         return redirect('user_login')
 
     role = user_id.split('-')[0]
     if role != 'ADO':
-        return redirect(user_login)
+        return redirect('user_login')
 
     user_name = request.session.get('user_name')
 
-    return render(request, 'admin_officer/admin-officer-dashboard.html', {'user_name': user_name})
+    # Fetch the user's information from the database
+    user = User.objects.filter(user_id=user_id).first()
+
+    # Determine the display name logic
+    if user and any([user.firstname, user.middlename, user.lastname]):
+        full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
+        first_name = user.firstname if user.firstname else ''
+        middle_name = user.middlename if user.middlename else ''
+        last_name = user.lastname if user.lastname else ''
+    else:
+        full_name = 'None'
+        first_name = ''
+        middle_name = ''
+        last_name = ''
+
+    # Prepare user data
+    user_data = {
+        'user_id': user.user_id if user and user.user_id else 'None',
+        'full_name': full_name,
+        'first_name': first_name,
+        'middle_name': middle_name,
+        'last_name': last_name,
+        'email': user.email if user and user.email else 'None',
+        'contact_no': user.contact_no if user and user.contact_no else 'None',
+        'role': user.role if user and user.role else 'None',
+        'profile_picture': user.profile_picture.url if user and user.profile_picture else None,
+    }
+
+    # Fetch the announcements based on either condition
+    announcements = Announcement.objects.filter(
+        Q(all_offices=True) | Q(offices__icontains='Admin')
+    )
+
+    context = {
+        'user_name': user_name,
+        'user_data': user_data,
+        'announcements': announcements,  # Add announcements to context
+    }
+
+    return render(request, 'admin_officer/admin-officer-dashboard.html', context)
 
 # SRO DASHBOARD
 def sro_dashboard(request):
@@ -443,7 +482,52 @@ def sro_dashboard(request):
 
     user_name = request.session.get('user_name')
 
-    return render(request, 'sro/sro-dashboard.html', {'user_name': user_name})
+    # Fetch the user's information from the database
+    user = User.objects.filter(user_id=user_id).first()
+
+    # Determine the display name logic
+    if user and any([user.firstname, user.middlename, user.lastname]):
+        full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
+        first_name = user.firstname if user.firstname else ''
+        middle_name = user.middlename if user.middlename else ''
+        last_name = user.lastname if user.lastname else ''
+    else:
+        full_name = 'None'
+        first_name = ''
+        middle_name = ''
+        last_name = ''
+
+    # Prepare user data
+    user_data = {
+        'user_id': user.user_id if user and user.user_id else 'None',
+        'full_name': full_name,
+        'first_name': first_name,
+        'middle_name': middle_name,
+        'last_name': last_name,
+        'email': user.email if user and user.email else 'None',
+        'contact_no': user.contact_no if user and user.contact_no else 'None',
+        'role': user.role if user and user.role else 'None',
+        'profile_picture': user.profile_picture.url if user and user.profile_picture else None,
+    }
+
+    # Fetch the user's office name
+    if user.office_id is None:
+        raise Http404("User does not belong to any office.")
+    
+    office_name = user.office_id.office_name
+
+    # Fetch the announcements based on either condition
+    announcements = Announcement.objects.filter(
+        Q(all_offices=True) | Q(offices__icontains=office_name)
+    )
+
+    context = {
+        'user_name': user_name,
+        'user_data': user_data,
+        'announcements': announcements
+    }
+
+    return render(request, 'sro/sro-dashboard.html', context)
 
 # ACTION OFFICER DASHBOARD
 def action_officer_dashboard(request):
@@ -458,7 +542,52 @@ def action_officer_dashboard(request):
     
     user_name = request.session.get('user_name')
 
-    return render(request, 'action_officer/action-officer-dashboard.html', {'user_name': user_name})
+    # Fetch the user's information from the database
+    user = User.objects.filter(user_id=user_id).first()
+
+    # Determine the display name logic
+    if user and any([user.firstname, user.middlename, user.lastname]):
+        full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
+        first_name = user.firstname if user.firstname else ''
+        middle_name = user.middlename if user.middlename else ''
+        last_name = user.lastname if user.lastname else ''
+    else:
+        full_name = 'None'
+        first_name = ''
+        middle_name = ''
+        last_name = ''
+
+    # Prepare user data
+    user_data = {
+        'user_id': user.user_id if user and user.user_id else 'None',
+        'full_name': full_name,
+        'first_name': first_name,
+        'middle_name': middle_name,
+        'last_name': last_name,
+        'email': user.email if user and user.email else 'None',
+        'contact_no': user.contact_no if user and user.contact_no else 'None',
+        'role': user.role if user and user.role else 'None',
+        'profile_picture': user.profile_picture.url if user and user.profile_picture else None,
+    }
+
+    # Fetch the user's office name
+    if user.office_id is None:
+        raise Http404("User does not belong to any office.")
+    
+    office_name = user.office_id.office_name
+
+    # Fetch the announcements based on either condition
+    announcements = Announcement.objects.filter(
+        Q(all_offices=True) | Q(offices__icontains=office_name)
+    )
+
+    context = {
+        'user_name': user_name,
+        'user_data': user_data,
+        'announcements': announcements
+    }
+
+    return render(request, 'action_officer/action-officer-dashboard.html', context)
 
 # -------------- USER MANAGEMENT -------------------
 
@@ -829,7 +958,38 @@ def admin_officer_new_record(request):
 
     user_name = request.session.get('user_name')
 
-    return render(request, 'admin_officer/admin-officer-new-record.html', {'user_name': user_name})
+    # Fetch the user's information from the database
+    user = User.objects.filter(user_id=user_id).first()
+
+    # Determine the display name logic
+    if user and any([user.firstname, user.middlename, user.lastname]):
+        full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
+        first_name = user.firstname if user.firstname else ''
+        middle_name = user.middlename if user.middlename else ''
+        last_name = user.lastname if user.lastname else ''
+    else:
+        full_name = 'None'
+        first_name = ''
+        middle_name = ''
+        last_name = ''
+    
+    # Prepare user data
+    user_data = {
+        'user_id': user.user_id if user and user.user_id else 'None',
+        'full_name': full_name,
+        'first_name': first_name,
+        'middle_name': middle_name,
+        'last_name': last_name,
+        'email': user.email if user and user.email else 'None',
+        'contact_no': user.contact_no if user and user.contact_no else 'None',
+        'role': user.role if user and user.role else 'None',
+        'profile_picture': user.profile_picture.url if user and user.profile_picture else None,
+    }
+
+    return render(request, 'admin_officer/admin-officer-new-record.html', {
+        'user_name': user_name,
+        'user_data': user_data,
+    })
 
 def add_record(request):
 
@@ -942,7 +1102,35 @@ def admin_officer_all_records(request):
 
     user_name = request.session.get('user_name')
 
-    return render(request, 'admin_officer/admin-officer-all-records.html', {'user_name': user_name})
+    # Fetch the user's information from the database
+    user = User.objects.filter(user_id=user_id).first()
+
+    # Determine the display name logic
+    if user and any([user.firstname, user.middlename, user.lastname]):
+        full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
+        first_name = user.firstname if user.firstname else ''
+        middle_name = user.middlename if user.middlename else ''
+        last_name = user.lastname if user.lastname else ''
+    else:
+        full_name = 'None'
+        first_name = ''
+        middle_name = ''
+        last_name = ''
+    
+    # Prepare user data
+    user_data = {
+        'user_id': user.user_id if user and user.user_id else 'None',
+        'full_name': full_name,
+        'first_name': first_name,
+        'middle_name': middle_name,
+        'last_name': last_name,
+        'email': user.email if user and user.email else 'None',
+        'contact_no': user.contact_no if user and user.contact_no else 'None',
+        'role': user.role if user and user.role else 'None',
+        'profile_picture': user.profile_picture.url if user and user.profile_picture else None,
+    }
+
+    return render(request, 'admin_officer/admin-officer-all-records.html', {'user_name': user_name, 'user_data': user_data})
 
 # DIRECTOR ALL RECORDS
 def director_all_records(request):
@@ -1007,8 +1195,36 @@ def sro_records(request, panel, scanned_document_no):
 
     user_name = request.session.get('user_name')
 
+    # Fetch the user's information from the database
+    user = User.objects.filter(user_id=user_id).first()
+
+    # Determine the display name logic
+    if user and any([user.firstname, user.middlename, user.lastname]):
+        full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
+        first_name = user.firstname if user.firstname else ''
+        middle_name = user.middlename if user.middlename else ''
+        last_name = user.lastname if user.lastname else ''
+    else:
+        full_name = 'None'
+        first_name = ''
+        middle_name = ''
+        last_name = ''
+    
+    # Prepare user data
+    user_data = {
+        'user_id': user.user_id if user and user.user_id else 'None',
+        'full_name': full_name,
+        'first_name': first_name,
+        'middle_name': middle_name,
+        'last_name': last_name,
+        'email': user.email if user and user.email else 'None',
+        'contact_no': user.contact_no if user and user.contact_no else 'None',
+        'role': user.role if user and user.role else 'None',
+        'profile_picture': user.profile_picture.url if user and user.profile_picture else None,
+    }
+
     if int(scanned_document_no) < 0:
-        return render(request, 'sro/sro-records.html', {'panel': panel, 'user_name': user_name})
+        return render(request, 'sro/sro-records.html', {'panel': panel, 'user_name': user_name, 'user_data': user_data,})
     
     user = User.objects.get(user_id=user_id)
     office = user.office_id_id
@@ -1026,7 +1242,8 @@ def sro_records(request, panel, scanned_document_no):
         'user_name': user_name,
         'panel': panel,
         'scanned_status': scanned_status,
-        'document': document
+        'document': document,
+        'user_data': user_data,
     }
 
     return render(request, 'sro/sro-records.html', context)
@@ -1044,8 +1261,36 @@ def action_officer_records(request, scanned_document_no):
 
     user_name = request.session.get('user_name')
 
+    # Fetch the user's information from the database
+    user = User.objects.filter(user_id=user_id).first()
+
+    # Determine the display name logic
+    if user and any([user.firstname, user.middlename, user.lastname]):
+        full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
+        first_name = user.firstname if user.firstname else ''
+        middle_name = user.middlename if user.middlename else ''
+        last_name = user.lastname if user.lastname else ''
+    else:
+        full_name = 'None'
+        first_name = ''
+        middle_name = ''
+        last_name = ''
+    
+    # Prepare user data
+    user_data = {
+        'user_id': user.user_id if user and user.user_id else 'None',
+        'full_name': full_name,
+        'first_name': first_name,
+        'middle_name': middle_name,
+        'last_name': last_name,
+        'email': user.email if user and user.email else 'None',
+        'contact_no': user.contact_no if user and user.contact_no else 'None',
+        'role': user.role if user and user.role else 'None',
+        'profile_picture': user.profile_picture.url if user and user.profile_picture else None,
+    }
+
     if int(scanned_document_no) < 0:
-        return render(request, 'action_officer/action-officer-records.html', {'user_name': user_name})
+        return render(request, 'action_officer/action-officer-records.html', {'user_name': user_name, 'user_data': user_data})
 
     user = User.objects.get(user_id=user_id)
 
@@ -1060,6 +1305,7 @@ def action_officer_records(request, scanned_document_no):
 
     context = {
         'user_name': user_name,
+        'user_data': user_data,
         'scanned_status': scanned_status,
         'document': document
     }
@@ -1077,12 +1323,44 @@ def admin_officer_needs_action(request, panel, scanned_document_no):
 
     role = user_id.split('-')[0]
     if role != 'ADO':
-        return redirect(user_login)
+        return redirect('user_login')
 
     user_name = request.session.get('user_name')
 
+    # Fetch the user's information from the database
+    user = User.objects.filter(user_id=user_id).first()
+
+    # Determine the display name logic
+    if user and any([user.firstname, user.middlename, user.lastname]):
+        full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
+        first_name = user.firstname if user.firstname else ''
+        middle_name = user.middlename if user.middlename else ''
+        last_name = user.lastname if user.lastname else ''
+    else:
+        full_name = 'None'
+        first_name = ''
+        middle_name = ''
+        last_name = ''
+
+    # Prepare user data
+    user_data = {
+        'user_id': user.user_id if user and user.user_id else 'None',
+        'full_name': full_name,
+        'first_name': first_name,
+        'middle_name': middle_name,
+        'last_name': last_name,
+        'email': user.email if user and user.email else 'None',
+        'contact_no': user.contact_no if user and user.contact_no else 'None',
+        'role': user.role if user and user.role else 'None',
+        'profile_picture': user.profile_picture.url if user and user.profile_picture else None,
+    }
+
     if int(scanned_document_no) < 0:
-        return render(request, 'admin_officer/admin-officer-needs-action.html', {'panel': panel, 'user_name': user_name})    
+        return render(request, 'admin_officer/admin-officer-needs-action.html', {
+            'panel': panel,
+            'user_name': user_name,
+            'user_data': user_data
+        })
 
     document = Document.objects.get(document_no=scanned_document_no)
 
@@ -1092,14 +1370,15 @@ def admin_officer_needs_action(request, panel, scanned_document_no):
         scanned_status = 'authorized'
     else:
         scanned_status = 'unauthorized'
-    
+
     context = {
         'user_name': user_name,
         'panel': panel,
         'scanned_status': scanned_status,
-        'document': document
+        'document': document,
+        'user_data': user_data
     }
-    return render(request, 'admin_officer/admin-officer-needs-action.html', context) 
+    return render(request, 'admin_officer/admin-officer-needs-action.html', context)
 
 # DIRECTOR NEEDS ACTION
 def director_needs_action(request, scanned_document_no):
@@ -1323,7 +1602,6 @@ def sys_dir_activity_logs(request, activity_type):
     }
     return render(request, 'assets/sys-dir-activity-logs.html', context)
 
-
 # SRO ACTIVITY LOGS
 def sro_activity_logs(request, activity_type):
 
@@ -1337,10 +1615,39 @@ def sro_activity_logs(request, activity_type):
 
     user_name = request.session.get('user_name')
 
+    # Fetch the user's information from the database
+    user = User.objects.filter(user_id=user_id).first()
+
+    # Determine the display name logic
+    if user and any([user.firstname, user.middlename, user.lastname]):
+        full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
+        first_name = user.firstname if user.firstname else ''
+        middle_name = user.middlename if user.middlename else ''
+        last_name = user.lastname if user.lastname else ''
+    else:
+        full_name = 'None'
+        first_name = ''
+        middle_name = ''
+        last_name = ''
+    
+    # Prepare user data
+    user_data = {
+        'user_id': user.user_id if user and user.user_id else 'None',
+        'full_name': full_name,
+        'first_name': first_name,
+        'middle_name': middle_name,
+        'last_name': last_name,
+        'email': user.email if user and user.email else 'None',
+        'contact_no': user.contact_no if user and user.contact_no else 'None',
+        'role': user.role if user and user.role else 'None',
+        'profile_picture': user.profile_picture.url if user and user.profile_picture else None,
+    }
+
     if activity_type == 'all-activity':
         records = ActivityLogs.objects.filter(user_id_id=user_id)
         context = {
             'user_name': user_name,
+            'user_data': user_data,
             'activity_type': activity_type,
             'records': records
         }
@@ -1377,6 +1684,7 @@ def sro_activity_logs(request, activity_type):
 
         context = {
             'user_name': user_name,
+            'user_data': user_data,
             'activity_type': activity_type,
             'today_logs': today_logs,
             'yesterday_logs': yesterday_logs,
@@ -1388,6 +1696,7 @@ def sro_activity_logs(request, activity_type):
 
     context = {
         'user_name': user_name,
+        'user_data': user_data,
         'activity_type': activity_type
     }
 
@@ -1402,22 +1711,49 @@ def admin_officer_activity_logs(request, activity_type):
     
     role = user_id.split('-')[0]
     if role != 'ADO':
-        return redirect(user_login)
+        return redirect('user_login')
 
     user_name = request.session.get('user_name')
 
-    if activity_type == 'all-activity':
+    # Fetch the user's information from the database
+    user = User.objects.filter(user_id=user_id).first()
 
+    # Determine the display name logic
+    if user and any([user.firstname, user.middlename, user.lastname]):
+        full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
+        first_name = user.firstname if user.firstname else ''
+        middle_name = user.middlename if user.middlename else ''
+        last_name = user.lastname if user.lastname else ''
+    else:
+        full_name = 'None'
+        first_name = ''
+        middle_name = ''
+        last_name = ''
+
+    # Prepare user data
+    user_data = {
+        'user_id': user.user_id if user and user.user_id else 'None',
+        'full_name': full_name,
+        'first_name': first_name,
+        'middle_name': middle_name,
+        'last_name': last_name,
+        'email': user.email if user and user.email else 'None',
+        'contact_no': user.contact_no if user and user.contact_no else 'None',
+        'role': user.role if user and user.role else 'None',
+        'profile_picture': user.profile_picture.url if user and user.profile_picture else None,
+    }
+
+    if activity_type == 'all-activity':
         records = ActivityLogs.objects.filter(user_id_id=user_id)
         context = {
             'user_name': user_name,
             'activity_type': activity_type,
-            'records': records
+            'records': records,
+            'user_data': user_data
         }
         return render(request, 'admin_officer/admin-officer-activity-logs.html', context)
     
     elif activity_type == 'recent':
-
         now = timezone.now()
         today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
         yesterday_start = today_start - timedelta(days=1)
@@ -1451,15 +1787,16 @@ def admin_officer_activity_logs(request, activity_type):
             'today_logs': today_logs,
             'yesterday_logs': yesterday_logs,
             'this_week_logs': this_week_logs,
-            'last_fifteen_days_logs': last_fifteen_days_logs
+            'last_fifteen_days_logs': last_fifteen_days_logs,
+            'user_data': user_data
         }
 
         return render(request, 'admin_officer/admin-officer-activity-logs.html', context)
 
-
     context = {
         'user_name': user_name,
-        'activity_type': activity_type
+        'activity_type': activity_type,
+        'user_data': user_data
     }
 
     return render(request, 'admin_officer/admin-officer-activity-logs.html', context)
@@ -1477,10 +1814,39 @@ def action_officer_activity_logs(request, activity_type):
 
     user_name = request.session.get('user_name')
 
+    # Fetch the user's information from the database
+    user = User.objects.filter(user_id=user_id).first()
+
+    # Determine the display name logic
+    if user and any([user.firstname, user.middlename, user.lastname]):
+        full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
+        first_name = user.firstname if user.firstname else ''
+        middle_name = user.middlename if user.middlename else ''
+        last_name = user.lastname if user.lastname else ''
+    else:
+        full_name = 'None'
+        first_name = ''
+        middle_name = ''
+        last_name = ''
+    
+    # Prepare user data
+    user_data = {
+        'user_id': user.user_id if user and user.user_id else 'None',
+        'full_name': full_name,
+        'first_name': first_name,
+        'middle_name': middle_name,
+        'last_name': last_name,
+        'email': user.email if user and user.email else 'None',
+        'contact_no': user.contact_no if user and user.contact_no else 'None',
+        'role': user.role if user and user.role else 'None',
+        'profile_picture': user.profile_picture.url if user and user.profile_picture else None,
+    }
+
     if activity_type == 'all-activity':
         records = ActivityLogs.objects.filter(user_id_id=user_id)
         context = {
             'user_name': user_name,
+            'user_data': user_data,
             'activity_type': activity_type,
             'records': records
         }
@@ -1517,6 +1883,7 @@ def action_officer_activity_logs(request, activity_type):
 
         context = {
             'user_name': user_name,
+            'user_data': user_data,
             'activity_type': activity_type,
             'today_logs': today_logs,
             'yesterday_logs': yesterday_logs,
@@ -1528,6 +1895,7 @@ def action_officer_activity_logs(request, activity_type):
     
     context = {
         'user_name': user_name,
+        'user_data': user_data,
         'activity_type': activity_type
     }
 
@@ -1595,8 +1963,38 @@ def sro_unacted_records(request):
         return redirect(user_login)
 
     user_name = request.session.get('user_name')
+
+    # Fetch the user's information from the database
+    user = User.objects.filter(user_id=user_id).first()
+
+    # Determine the display name logic
+    if user and any([user.firstname, user.middlename, user.lastname]):
+        full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
+        first_name = user.firstname if user.firstname else ''
+        middle_name = user.middlename if user.middlename else ''
+        last_name = user.lastname if user.lastname else ''
+    else:
+        full_name = 'None'
+        first_name = ''
+        middle_name = ''
+        last_name = ''
+
+    # Prepare user data
+    user_data = {
+        'user_id': user.user_id if user and user.user_id else 'None',
+        'full_name': full_name,
+        'first_name': first_name,
+        'middle_name': middle_name,
+        'last_name': last_name,
+        'email': user.email if user and user.email else 'None',
+        'contact_no': user.contact_no if user and user.contact_no else 'None',
+        'role': user.role if user and user.role else 'None',
+        'profile_picture': user.profile_picture.url if user and user.profile_picture else None,
+    }
+
     context = {
-        'user_name': user_name
+        'user_name': user_name,
+        'user_data': user_data
     }
 
     return render(request, 'sro/sro-unacted-records.html', context)
@@ -1613,8 +2011,38 @@ def admin_officer_unacted_records(request):
         return redirect(user_login)
 
     user_name = request.session.get('user_name')
+
+    # Fetch the user's information from the database
+    user = User.objects.filter(user_id=user_id).first()
+
+    # Determine the display name logic
+    if user and any([user.firstname, user.middlename, user.lastname]):
+        full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
+        first_name = user.firstname if user.firstname else ''
+        middle_name = user.middlename if user.middlename else ''
+        last_name = user.lastname if user.lastname else ''
+    else:
+        full_name = 'None'
+        first_name = ''
+        middle_name = ''
+        last_name = ''
+    
+    # Prepare user data
+    user_data = {
+        'user_id': user.user_id if user and user.user_id else 'None',
+        'full_name': full_name,
+        'first_name': first_name,
+        'middle_name': middle_name,
+        'last_name': last_name,
+        'email': user.email if user and user.email else 'None',
+        'contact_no': user.contact_no if user and user.contact_no else 'None',
+        'role': user.role if user and user.role else 'None',
+        'profile_picture': user.profile_picture.url if user and user.profile_picture else None,
+    }
+
     context = {
-        'user_name': user_name
+        'user_name': user_name,
+        'user_data': user_data, 
     }
 
     return render(request, 'admin_officer/admin-officer-unacted-records.html', context)
@@ -1631,8 +2059,38 @@ def action_officer_unacted_records(request):
         return redirect(user_login)
 
     user_name = request.session.get('user_name')
+
+    # Fetch the user's information from the database
+    user = User.objects.filter(user_id=user_id).first()
+
+    # Determine the display name logic
+    if user and any([user.firstname, user.middlename, user.lastname]):
+        full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
+        first_name = user.firstname if user.firstname else ''
+        middle_name = user.middlename if user.middlename else ''
+        last_name = user.lastname if user.lastname else ''
+    else:
+        full_name = 'None'
+        first_name = ''
+        middle_name = ''
+        last_name = ''
+
+    # Prepare user data
+    user_data = {
+        'user_id': user.user_id if user and user.user_id else 'None',
+        'full_name': full_name,
+        'first_name': first_name,
+        'middle_name': middle_name,
+        'last_name': last_name,
+        'email': user.email if user and user.email else 'None',
+        'contact_no': user.contact_no if user and user.contact_no else 'None',
+        'role': user.role if user and user.role else 'None',
+        'profile_picture': user.profile_picture.url if user and user.profile_picture else None,
+    }
+
     context = {
-        'user_name': user_name
+        'user_name': user_name,
+        'user_data': user_data
     }
 
     return render(request, 'action_officer/action-officer-unacted-records.html', context)
@@ -1744,8 +2202,38 @@ def admin_officer_archive(request):
         return redirect(user_login)
     
     user_name = request.session.get('user_name')
+
+    # Fetch the user's information from the database
+    user = User.objects.filter(user_id=user_id).first()
+
+    # Determine the display name logic
+    if user and any([user.firstname, user.middlename, user.lastname]):
+        full_name = ' '.join(filter(None, [user.firstname, user.middlename, user.lastname]))
+        first_name = user.firstname if user.firstname else ''
+        middle_name = user.middlename if user.middlename else ''
+        last_name = user.lastname if user.lastname else ''
+    else:
+        full_name = 'None'
+        first_name = ''
+        middle_name = ''
+        last_name = ''
+    
+    # Prepare user data
+    user_data = {
+        'user_id': user.user_id if user and user.user_id else 'None',
+        'full_name': full_name,
+        'first_name': first_name,
+        'middle_name': middle_name,
+        'last_name': last_name,
+        'email': user.email if user and user.email else 'None',
+        'contact_no': user.contact_no if user and user.contact_no else 'None',
+        'role': user.role if user and user.role else 'None',
+        'profile_picture': user.profile_picture.url if user and user.profile_picture else None,
+    }
+
     context = {
-        'user_name': user_name
+        'user_name': user_name,
+        'user_data': user_data, 
     }
 
     return render(request, 'admin_officer/admin-officer-archive.html', context)
