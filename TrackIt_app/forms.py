@@ -23,7 +23,6 @@ def is_valid_password(password):
 class UserSignupForm(forms.ModelForm):
     OFFICE_CHOICES = [
         ('', 'Select Office'),
-        ('ADM', 'Administrative'),
         ('ACC', 'Accounting'),
         ('BMD', 'Budgeting'),
         ('CSR', 'Cashier'),
@@ -40,7 +39,6 @@ class UserSignupForm(forms.ModelForm):
 
     ROLE_CHOICES = [
         ('', 'Select Role'),
-        ('ADO', 'Admin Officer'),
         ('ACT', 'Action Officer'),
         ('SRO', 'Sub-Receiving Officer'),
     ]
@@ -161,6 +159,20 @@ class DirectorLoginForm(forms.Form):
         widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Enter Password', 'id': 'password'})
     )
 
+class AnnouncementForm(forms.ModelForm):
+    class Meta:
+        model = Announcement
+        fields = ['title', 'description', 'attachment','end_date'] #
+        widgets = {
+            'title': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
+            'description': forms.Textarea(attrs={'class': 'form-control'}),
+            'end_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),  # 
+        }
+
+class EditProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['firstname', 'middlename', 'lastname', 'email', 'contact_no', 'profile_picture']
 
 
 

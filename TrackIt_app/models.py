@@ -12,7 +12,7 @@ class User(models.Model):
     lastname = models.CharField(max_length=45)
     firstname = models.CharField(max_length=45)
     middlename = models.CharField(max_length=45, null = True)
-    email = models.EmailField(max_length=45)
+    email = models.EmailField(max_length=45, null = True)
     def get_email_field_name(self):
         return 'email' 
     contact_no = models.CharField(max_length=11)
@@ -26,6 +26,7 @@ class User(models.Model):
     last_login = models.DateTimeField(null=True, blank=True)
     receive_recent = models.BooleanField(default=False)
     max_load_per_day = models.IntegerField(default=5)
+    profile_picture = models.ImageField(upload_to='profile_pics/',null=True, default='profile_pics/default_profile_pic.png')
     class Meta:
         db_table = 'tbl_user'
 
@@ -142,5 +143,19 @@ class UserManagementLogs(models.Model):
     user = models.CharField(max_length=10, blank=True, null=True)
     class Meta:
         db_table = 'tbl_user_management_logs'
+
+class Announcement(models.Model):
+    title = models.TextField(max_length=100)
+    description = models.TextField()
+    attachment = models.FileField(upload_to='', blank=True, null=True, default='default_attachment.pdf')
+    created_at = models.DateTimeField(auto_now_add=True)
+    offices = models.CharField(max_length=255, null=True)
+    all_offices = models.BooleanField(default=False)
+    end_date = models.DateField(null=True, blank=True) #
+    created_by = models.CharField(max_length=50)
+
+    class Meta:
+        db_table = 'tbl_announcement'
+
 
 

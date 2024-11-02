@@ -26,12 +26,19 @@
                 <button class="toggle-sidebar" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
                 <div class="header-right">
                     <button class="toggle-notification" id="notification" title="Notifications"><i class="fa-solid fa-bell"></i></button>
+                    <!---->
                     <div class="dropdown">
-                        <button class="profile m-0" type="button" id="profileDropdown" data-bs-toggle="dropdown" title="Account Menu">
-                            <div class="profile-pic placeholder"></div>
+                        <button class="profile m-0" type="button" id="profileDropdown" data-bs-toggle="dropdown">
+                            <div class="profile-pic placeholder">
+                                <img src="{{ user_data.profile_picture }}" 
+                                     alt="{{ user_data.full_name }}'s Profile Picture" 
+                                     id="profilePicture" 
+                                     class="profile-modal-pic" 
+                                     style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;">
+                            </div>                                                                                
                             <div class="profile-info">
-                                <span class="profile-name">{{ user_name }}</span>
-                                <span class="profile-role">Admin Officer</span>
+                                <span class="profile-name">{{ user_data.full_name }}</span>
+                                <span class="profile-role">{{ user_data.role }} (Admin Officer)</span>
                             </div>
                         </button>
                         <ul class="drop-profile dropdown-menu" aria-labelledby="profileDropdown">
@@ -55,6 +62,7 @@
                             </li>
                         </ul>
                     </div>
+                    <!---->
                 </div>
             </header>
             
@@ -196,6 +204,133 @@
         </div>
     </div>
 
+    <!-- Profile Modal -->
+    <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-0 pb-2 bg-white shadow">
+                <div class="title-cover modal-header pb-1 pt-4 border-bottom-0" style="padding-left: 32px; padding-right: 32px;">
+                    <h5 class="modal-title" id="departmentReportModalLabel">Your Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="cover modal-body py-3 pb-0" style="padding-left: 32px; padding-right: 32px;">
+                    <div class="text-center">
+                        <img src="{{ user_data.profile_picture }}" 
+                             alt="{{ user_data.full_name }}'s Profile Picture" 
+                             id="profilePicture" 
+                             class="profile-modal-pic">
+                    </div>
+                </div>                
+
+                <div class="modal-body pt-1" style="padding-left: 32px; padding-right: 32px;">
+                    <div class="mb-3">
+                        <h4 id="fullName" class="text-center my-1 p-0">{{ user_data.full_name }}</h4>
+                        <p id="role" class="text-center p-0">{{ user_data.role }}</p>
+                    </div>
+
+                    <div class="row mb-3 g-3">
+                        <div class="col text-start">
+                            <p id="userIDLabel" class="d-flex align-items-center gap-2">
+                                <i class="fa-solid fa-circle-user profile-icon"></i><strong>User ID</strong>
+                            </p>
+                        </div>
+                        <div class="col text-end">
+                            <p id="userIDValue">{{ user_data.user_id }}</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3 g-3">
+                        <div class="col text-start">
+                            <p id="emailAddress" class="d-flex align-items-center gap-2">
+                                <i class="fa-solid fa-envelope profile-icon"></i><strong>Email Address</strong>
+                            </p>
+                        </div>
+                        <div class="col text-end">
+                            <p id="employeeEmail">{{ user_data.email }}</p>
+                        </div>
+                    </div>
+                
+                    <div class="row mb-3 g-3">
+                        <div class="col text-start">
+                            <p id="contactNumber" class="d-flex align-items-center gap-2">
+                                <i class="fa-solid fa-phone profile-icon"></i><strong>Contact Number</strong>
+                            </p>
+                        </div>
+                        <div class="col text-end">
+                            <p id="employeeContact">{{ user_data.contact_no }}</p>
+                        </div>
+                    </div>
+
+                    <button type="button" class="w-100 mt-1 mb-2 btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit Profile</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0">
+                    <h5 class="modal-title" id="departmentReportModalLabel">Edit Profile Information</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="d-flex align-items-center justify-content-center mb-3">
+                        <div class="me-3">
+                            <img src="{{ user_data.profile_picture }}" 
+                                alt="Profile Picture" id="editProfilePicture" class="profile-modal-pic" style="width: 115px; height: 115px;">
+                        </div>
+                        <div>
+                            <div class="mb-2">
+                                <input type="file" id="changePhotoInput" style="display:none;" accept="image/*">
+                                <button type="button" class="btn btn-primary me-2" onclick="document.getElementById('changePhotoInput').click()">Change Photo</button>
+                                <button type="button" class="btn btn-secondary" id="deletePhotoButton">Delete Photo</button>
+                            </div>
+                            <p class="mt-2 text-muted"><small>Upload PNG or JPG. (max 300 x 300px)</small></p>
+                        </div>
+                    </div>
+
+                    <form id="editProfileForm" method="post" action="{% url 'edit_profile' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="editFirstName" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="editFirstName" name="firstname" value="{{ user_data.first_name }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="editMiddleName" class="form-label">Middle Name (optional)</label>
+                            <input type="text" class="form-control" id="editMiddleName" name="middlename" value="{{ user_data.middle_name }}" >
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="editLastName" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="editLastName" name="lastname" value="{{ user_data.last_name }}" required>
+                        </div>
+                        
+                        <!--
+                        <div class="mb-3">
+                            <label for="editEmailAddress" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="editEmailAddress" name="email" value="{{ user_data.email }}">
+                        </div>
+                        -->
+
+                        <div class="mb-3">
+                            <label for="editContactNumber" class="form-label">Contact Number</label>
+                            <input type="text" class="form-control" id="editContactNumber" name="contact_no" value="{{ user_data.contact_no }}">
+                        </div>
+
+                        <input type="file" id="profilePictureInput" name="profile_picture" style="display:none;">
+                        <button type="submit" class="w-100 mt-1 mb-2 btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+        
+        
+    <script src="{% static 'js/update-profile.js' %}"></script>
     <script src="{% static 'js/toggle-sidebar.js' %}"></script>  
     <script src="{% static 'js/new-record.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

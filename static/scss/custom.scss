@@ -51,16 +51,6 @@ a {
 }
 
 // BUTTONS
-.btn-check:checked + .btn,
-:not(.btn-check) + .btn:active,
-.btn:first-child:active,
-.btn.active,
-.btn.show {
-    color: #ffffff !important;
-    background-color: darken($primary, 12%) !important;
-    border-color: darken($primary, 12%);
-}
-
 .btn-light {
     &:hover {
         background-color: #e2e6ea;
@@ -97,6 +87,39 @@ a {
         background-color: darken($primary, 15%) !important;
         color: #FFFFFF !important;
         box-shadow: none !important; 
+    }
+
+    .btn-check:checked + &,
+    :not(.btn-check) + &:active,
+    &:first-child:active,
+    &.active,
+    &.show {
+        color: #ffffff !important;
+        background-color: darken($primary, 12%) !important;
+        border-color: darken($primary, 12%) !important;
+    }
+}
+
+.btn-secondary {
+    background-color: #FFFFFF;
+    font-size: 15px;
+    color: $primary;
+    border: 1px solid $primary;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+
+    &:hover {
+        background-color: #eaf0fb !important;  
+        color: darken($primary, 10%);    
+        border-color: darken($primary, 10%);
+        box-shadow: none;
+    }
+    
+    &:active {
+        background-color: #eaf0fb !important;  
+        color: darken($primary, 15%) !important;
+        border-color: darken($primary, 15%) !important;
+        box-shadow: none !important;
     }
 }
 
@@ -157,28 +180,6 @@ a {
             color: #FFFFFF;
             border: none;
         }
-    }
-}
-
-.btn-secondary {
-    background-color: #FFFFFF;
-    font-size: 15px;
-    color: $primary;
-    border: 1px solid $primary;
-    font-weight: 500;
-    padding: 0.5rem 1rem;
-
-    &:hover {
-        background-color: #d9e3f5;  
-        color: $primary;    
-        border: 1px solid $primary;     
-    }
-
-    &:active {
-        background-color: #c4d4f0 !important;
-        color: $primary !important;
-        box-shadow: none !important;
-        border: 1px solid #c4d4f0 !important;   
     }
 }
 
@@ -401,6 +402,19 @@ input:focus::-webkit-datetime-edit {
 
 .input-group select option:first-child {
     color: #B1C1CF; 
+}
+
+.toggle-pass {
+    float: right;
+    margin-left: -27.5px;
+    margin-top: -27px;
+    right: 12px;
+    position: relative;
+    z-index: 2;
+    cursor: pointer;
+    width: 1.25em;
+    text-align: center;
+    line-height: 1;
 }
 
 // TABS

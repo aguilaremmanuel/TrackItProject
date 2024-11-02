@@ -137,3 +137,9 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'trackit.dts@gmail.com'
 EMAIL_HOST_PASSWORD = 'efrj hjer rkjw ejmf'
 DEFAULT_FROM_EMAIL = 'trackit.dts@gmail.com'
+
+
+try:
+    from .local_settings import *
+except ImportError:
+    pass

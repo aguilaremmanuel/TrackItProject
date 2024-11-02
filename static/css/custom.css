@@ -11880,16 +11880,6 @@ a:hover {
   text-decoration: none;
 }
 
-.btn-check:checked + .btn,
-:not(.btn-check) + .btn:active,
-.btn:first-child:active,
-.btn.active,
-.btn.show {
-  color: #ffffff !important;
-  background-color: #1455c7 !important;
-  border-color: #1455c7;
-}
-
 .btn-light:hover {
   background-color: #e2e6ea;
   color: #000;
@@ -11920,6 +11910,32 @@ a:hover {
 .btn-primary:active {
   background-color: #134fb9 !important;
   color: #FFFFFF !important;
+  box-shadow: none !important;
+}
+.btn-check:checked + .btn-primary, :not(.btn-check) + .btn-primary:active, .btn-primary:first-child:active, .btn-primary.active, .btn-primary.show {
+  color: #ffffff !important;
+  background-color: #1455c7 !important;
+  border-color: #1455c7 !important;
+}
+
+.btn-secondary {
+  background-color: #FFFFFF;
+  font-size: 15px;
+  color: #2E72EA;
+  border: 1px solid #2E72EA;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+}
+.btn-secondary:hover {
+  background-color: #eaf0fb !important;
+  color: #1559d0;
+  border-color: #1559d0;
+  box-shadow: none;
+}
+.btn-secondary:active {
+  background-color: #eaf0fb !important;
+  color: #134fb9 !important;
+  border-color: #134fb9 !important;
   box-shadow: none !important;
 }
 
@@ -11972,26 +11988,6 @@ a:hover {
   box-shadow: none !important;
   color: #FFFFFF;
   border: none;
-}
-
-.btn-secondary {
-  background-color: #FFFFFF;
-  font-size: 15px;
-  color: #2E72EA;
-  border: 1px solid #2E72EA;
-  font-weight: 500;
-  padding: 0.5rem 1rem;
-}
-.btn-secondary:hover {
-  background-color: #d9e3f5;
-  color: #2E72EA;
-  border: 1px solid #2E72EA;
-}
-.btn-secondary:active {
-  background-color: #c4d4f0 !important;
-  color: #2E72EA !important;
-  box-shadow: none !important;
-  border: 1px solid #c4d4f0 !important;
 }
 
 .btn-profile {
@@ -12200,6 +12196,19 @@ input:focus::-webkit-datetime-edit {
 
 .input-group select option:first-child {
   color: #B1C1CF;
+}
+
+.toggle-pass {
+  float: right;
+  margin-left: -27.5px;
+  margin-top: -27px;
+  right: 12px;
+  position: relative;
+  z-index: 2;
+  cursor: pointer;
+  width: 1.25em;
+  text-align: center;
+  line-height: 1;
 }
 
 .custom-tabs {

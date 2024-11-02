@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.urls import path
 from . import views
 from .views import generate_qr_code
+from django.conf.urls.static import static
+from django.conf import settings
 
 urlpatterns = [
     path('', views.user_login, name='user_login'),
@@ -37,6 +39,7 @@ urlpatterns = [
     path('system-admin-director-activity-logs/<str:activity_type>/', views.sys_dir_activity_logs, name='sys_dir_activity_logs'),
     path('update-archive-display/<str:user>', views.update_archive_display, name='update_archive_display'),
     path('director-update-needs-action-display', views.director_update_needs_action_display, name='director_update_needs_action_display'),
+    path('director-announcements/',views.director_announcements, name='director_announcements'),
     path('director-archive/', views.director_archive, name='director_archive'),
     path('director-generate-reports/<str:report_type>/',views.director_generate_reports, name='director_generate_reports'),
 
@@ -94,4 +97,12 @@ urlpatterns = [
 
     path('fetch-phone-upload-file/<int:activity_log_no>/', views.fetch_phone_upload_file, name='fetch_phone_upload_file'),
     path('delete-phone-upload-file/<int:activity_log_no>/', views.delete_phone_upload_file, name='delete_phone_upload_file'),
-]
+
+    path('edit_profile/',views.edit_profile, name='edit_profile'),
+
+    path('update-announcement/<int:id>/', views.update_announcement, name='update_announcement'),
+    path('delete-announcement/<int:id>/', views.delete_announcement, name='delete_announcement'),
+    path('announcement/<int:announcement_id>/attachment/', views.view_attachment, name='view_attachment'),
+
+
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
