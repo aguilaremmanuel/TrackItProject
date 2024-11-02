@@ -120,7 +120,7 @@ def user_signup(request):
                 user = form.save(commit=False)
                 role_prefix = form.cleaned_data['role']
                 user.user_id = generate_user_id(role_prefix)
-                user.verified_date = timezone.now()
+                user.registered_date = timezone.now()
                 user.save()
 
                 # Get user email
@@ -644,7 +644,8 @@ def system_admin_doc_management(request):
         new_document_type = DocumentType.objects.create(
             document_type=document_type,
             category=category,
-            priority_level=priority_level
+            priority_level=priority_level,
+            last_update=timezone.now()
         )
 
         for route in route_list:
@@ -653,10 +654,17 @@ def system_admin_doc_management(request):
                 document_type=new_document_type,
                 route=office
             )
+
+        DocumentManagementLogs.objects.create(
+            time_stamp = timezone.now(),
+            document_type=new_document_type,
+            activity='Document Type Created',
+            user_id=user_id
+        )
     
     records = []
 
-    document_type_records = DocumentType.objects.filter(is_active=True)
+    document_type_records = DocumentType.objects.filter(is_active=True).order_by('-last_update')
 
     sort_by = request.GET.get('sort_by')
     order = request.GET.get('order', 'asc')
@@ -703,8 +711,6 @@ def director_doc_management(request):
 
     user_name = request.session.get('user_name')
     
-
-
     if request.method == 'POST':
         
         document_type = request.POST.get('document_type')
@@ -717,7 +723,8 @@ def director_doc_management(request):
         new_document_type = DocumentType.objects.create(
             document_type=document_type,
             category=category,
-            priority_level=priority_level
+            priority_level=priority_level,
+            last_update=timezone.now()
         )
 
         for route in route_list:
@@ -736,7 +743,7 @@ def director_doc_management(request):
     
     records = []
 
-    document_type_records = DocumentType.objects.filter(is_active=True)
+    document_type_records = DocumentType.objects.filter(is_active=True).order_by('-last_update')
 
     sort_by = request.GET.get('sort_by')
     order = request.GET.get('order', 'asc')
@@ -1747,6 +1754,7 @@ def edit_document_type(request):
         new_document_type.document_type = document_type
         new_document_type.category = category
         new_document_type.priority_level = priority_level
+        new_document_type.last_update = timezone.now()
         new_document_type.save()
 
         DocumentManagementLogs.objects.create(
@@ -2060,7 +2068,9 @@ def generate_user_id(role_prefix):
 def create_document(tracking_no, sender_name, sender_dept, doc_type, subject, remarks, file_attachment, user_id):
 
     document_type_instance = DocumentType.objects.get(document_no=doc_type)
-    
+    document_type_instance.used_count += 1
+    document_type_instance.save()
+
     days_deadline = document_type_instance.priority_level.deadline
     ongoing_deadline = date.today() + timedelta(days=days_deadline)
 
@@ -2657,22 +2667,22 @@ def update_user_display(request, office):
     search_query = request.GET.get('search', '').strip()
 
     if office == 'all-office':
-        users = User.objects.exclude(status='archived')
+        users = User.objects.exclude(status='archived').order_by('-registered_date')
     elif office == 'administrative':
         office_instance  = Office.objects.get(office_id='ADM')
-        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
+        users = User.objects.filter(office_id=office_instance).exclude(status='archived').order_by('-registered_date')
     elif office == 'accounting':
         office_instance  = Office.objects.get(office_id='ACC')
-        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
+        users = User.objects.filter(office_id=office_instance).exclude(status='archived').order_by('-registered_date')
     elif office == 'budgeting':
         office_instance  = Office.objects.get(office_id='BMD')
-        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
+        users = User.objects.filter(office_id=office_instance).exclude(status='archived').order_by('-registered_date')
     elif office == 'cashier':
         office_instance  = Office.objects.get(office_id='CSR')
-        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
+        users = User.objects.filter(office_id=office_instance).exclude(status='archived').order_by('-registered_date')
     elif office == 'payroll':
         office_instance  = Office.objects.get(office_id='PRL')
-        users = User.objects.filter(office_id=office_instance).exclude(status='archived')
+        users = User.objects.filter(office_id=office_instance).exclude(status='archived').order_by('-registered_date')
     else:
         users = User.objects.none()
 
@@ -2751,6 +2761,7 @@ def update_all_records_display(request, user):
     sort_by = request.GET.get('sort_by')
     order = request.GET.get('order', 'asc')
 
+    most_priority_doc_type = DocumentType.objects.filter(priority_level__priority_level='very urgent').order_by('-used_count').first()
     documents = Document.objects.exclude(status='archived').order_by('-recent_update')
 
     if search_query:
@@ -2761,6 +2772,7 @@ def update_all_records_display(request, user):
 
     context = {
         'documents': documents,
+        'most_priority_doc_type': most_priority_doc_type,
         'search_query': search_query,
         'user': user,
         'today': date.today() 
@@ -2810,6 +2822,7 @@ def director_update_needs_action_display(request):
     sort_by = request.GET.get('sort_by')
     order = request.GET.get('order', 'asc')
 
+    most_priority_doc_type = DocumentType.objects.filter(priority_level__priority_level='very urgent').order_by('-used_count').first()
     documents = Document.objects.filter(status='For DIR Approval').order_by('-recent_update')
 
     if search_query:
@@ -2820,6 +2833,7 @@ def director_update_needs_action_display(request):
 
     context = {
         'documents': documents,
+        'most_priority_doc_type': most_priority_doc_type,
         'search_query': search_query,
         'user': 'DIR',
         'today': date.today()

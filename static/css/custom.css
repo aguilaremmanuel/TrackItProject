@@ -12580,4 +12580,8 @@ table tbody tr td.overdue {
   border-left: none;
 }
 
+tbody tr.highlight-priority td {
+  background-color: #f7b7c5 !important;
+}
+
 /*# sourceMappingURL=custom.css.map */

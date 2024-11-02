@@ -42,6 +42,8 @@ class DocumentType(models.Model):
     category = models.CharField(max_length=7)
     priority_level = models.ForeignKey(PriorityLevel, on_delete=models.CASCADE, null=True, blank=True)
     is_active = models.BooleanField(default=True)
+    used_count = models.IntegerField(default=0)
+    last_update = models.DateTimeField(null=True, blank=True)
     class Meta:
         db_table = 'tbl_document_type'
 
