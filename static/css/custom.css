@@ -11939,6 +11939,24 @@ a:hover {
   box-shadow: none !important;
 }
 
+.btn-danger {
+  background-color: #EA2E2E;
+  font-size: 15px;
+  color: #FFFFFF;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+}
+.btn-danger:hover {
+  background-color: #d01515;
+  color: #FFFFFF;
+  border-color: #d01515;
+}
+.btn-danger:active {
+  background-color: #b91313 !important;
+  color: #FFFFFF !important;
+  box-shadow: none !important;
+}
+
 .btn-green, .btn-red, .btn-blue {
   display: flex;
   align-items: center;
@@ -12007,6 +12025,11 @@ a:hover {
 .badge-yellow {
   background-color: #FFC107;
   color: #FFFFFF;
+}
+
+.badge-gray {
+  background-color: #d4dbe1;
+  color: #000000;
 }
 
 .badge-orange {
@@ -12401,12 +12424,16 @@ table tbody tr td.overdue {
   gap: 9px;
 }
 
-.drop-profile {
-  margin-top: 17.5px !important;
+.modal-lg {
+  max-width: 950px;
 }
 
-.drop-report {
-  margin-top: 5px !important;
+.drop-profile {
+  margin-top: 15px !important;
+}
+
+.drop-notif {
+  margin-top: 14.2px !important;
 }
 
 .dropdown-menu {
@@ -12425,7 +12452,7 @@ table tbody tr td.overdue {
   padding: 8.45px 11.5px;
   max-height: 37.85px;
   border-radius: 6px;
-  color: #000;
+  color: #000000;
 }
 .dropdown-menu .dropdown-item:hover {
   background-color: #eff3f5;
@@ -12462,6 +12489,7 @@ table tbody tr td.overdue {
   object-fit: cover;
   border: 7px solid #fff;
   border-radius: 50%;
+  cursor: pointer;
 }
 
 .profile-icon {
@@ -12471,8 +12499,8 @@ table tbody tr td.overdue {
   cursor: pointer;
 }
 
-.drop-filter {
-  margin-top: 5px !important;
+.drop-filter, .drop-report {
+  margin-top: 2.5px !important;
   padding: 15px 21px 21px 21px;
 }
 
