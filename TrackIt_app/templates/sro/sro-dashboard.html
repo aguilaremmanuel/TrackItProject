@@ -74,23 +74,37 @@
                     </div>
                 </div>
 
+                <div class="row">
+                    <div class="col-12">
+                        <div class="rounded-2 p-3 mt-3" style="background-color: #007bff; color:white; height: auto;">
+                            <div class="row p-2">
+                                <div class="col-9 d-flex align-items-center">
+                                    <p class="fs-3 p-0 m-0 fw-bolder d-flex align-items-center"><i class='bx bxs-wink-smile'></i>&nbsp;Welcome, Sub-Receiving Officer!</p>
+                                    <!-- <p class="fs-6 p-0 m-0 fw-bold">Office - ACO</p> -->
+                                </div>
+                                <div class="col-3">
+                                    <div class="row d-flex align-items-center">
+                                        <div class="col-6 text-end p-0 m-0">
+                                            <p class="p-0 m-0">See latest updates &nbsp;</p>
+                                        </div>
+                                        <div class="col-6 p-0">
+                                            <select class="form-select fw-bold" id="inputGroupSelect" style="font-size: 14px !important; background-color: #007bff; color: white; border-color: white;">
+                                                <option selected>Today</option>
+                                                <option value="1">This Month</option>
+                                                <option value="2">This Year</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- 1st Row - Total Documents and Pending Account Approval -->
                 <div class="row py-2">
                     <!-- 1st Column | Total Records -->
                     <div class="col-5">
-                        <div class="rounded-2 p-3 my-3" style="background-color: #007bff; color:white; height: auto;">
-                            <p class="fs-4 p-0 m-0 fw-bold"><i class='bx bxs-wink-smile'></i>&nbsp;Welcome, Sub-Receiving Officer!</p>
-                            <p class="fs-6 p-0 m-0 fw-bold">Office - SRO</p>
-                            <p class="p-0 m-0">See latest updates here</p>
-                            <div class="py-2 w-25">
-                                <select class="form-select" id="inputGroupSelect" style="font-size: 12px !important; background-color: #007bff; color: white;">
-                                    <option selected>Today</option>
-                                    <option value="1">This Month</option>
-                                    <option value="2">This Year</option>
-                                </select>
-                            </div>
-                        </div>
-
                         <div class="container d-block rounded-2 p-3 my-3" style="background-color: white; height: auto;">
                             <div class="row">
                                 <div class="col-7 d-flex align-items-center">
@@ -129,7 +143,7 @@
                         </div>
 
                         <!-- [ANALYTICS] Pie Chart -->
-                        <div class="rounded-2 p-3 my-3" style="background-color: white; height:300px;">
+                        <div class="rounded-2 p-3 my-3" style="background-color: white; height:466px;">
                             <div class="row">
                                 <div class="col-8">
                                     <h4 class="mb-0 fw-bold d-flex align-items-center">
@@ -143,11 +157,10 @@
                                     </select>
                                 </div>
                             </div>
-
-                            <div class="canvas-container my-2 d-flex align-items-center">
-                                <canvas id="performanceChart" width="200" height="200"></canvas>
+                            <div class="canvas-container d-flex flex-grow-1 align-items-center justify-content-center p-4">
+                                <canvas id="performanceChart" style="width: 400; height: 400;"></canvas>
                             </div>
-                            <p class="text-center fw-bold text-success">Congratulations, you have a good performance!</p>
+                            <p class="text-center fw-bold text-success pt-2">Congratulations, you have a good performance!</p>
                             <!-- <p class="text-center fw-bold text-warning">Your performance is currently going slow.</p> -->
                             <!-- <p class="text-center fw-bold text-danger">You need to address your current performance</p> -->
                         </div>

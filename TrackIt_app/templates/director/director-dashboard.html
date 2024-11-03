@@ -73,22 +73,37 @@
                     </div>
                 </div>
 
+                <div class="row">
+                    <div class="col-12">
+                        <div class="rounded-2 p-3 mt-3" style="background-color: #007bff; color:white; height: auto;">
+                            <div class="row p-2">
+                                <div class="col-9 d-flex align-items-center">
+                                    <p class="fs-3 p-0 m-0 fw-bolder d-flex align-items-center"><i class='bx bxs-wink-smile'></i>&nbsp;Welcome, Director!</p>
+                                    <!-- <p class="fs-6 p-0 m-0 fw-bold">Office - ACO</p> -->
+                                </div>
+                                <div class="col-3">
+                                    <div class="row d-flex align-items-center">
+                                        <div class="col-6 text-end p-0 m-0">
+                                            <p class="p-0 m-0">See latest updates &nbsp;</p>
+                                        </div>
+                                        <div class="col-6 p-0">
+                                            <select class="form-select fw-bold" id="inputGroupSelect" style="font-size: 14px !important; background-color: #007bff; color: white; border-color: white;">
+                                                <option selected>Today</option>
+                                                <option value="1">This Month</option>
+                                                <option value="2">This Year</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- 1st Row - Total Documents and Pending Account Approval -->
                 <div class="row py-2">
                     <!-- 1st Column | Total Records -->
                     <div class="col-6">
-                        <div class="rounded-2 p-3 my-3" style="background-color: #007bff; color:white; height: auto;">
-                            <p class="fs-4 p-0 m-0 fw-bold"><i class='bx bxs-wink-smile'></i>&nbsp;Welcome, Director!</p>
-                            <p class="p-0 m-0">See latest updates here</p>
-                            <div class="py-2 w-25">
-                                <select class="form-select" id="inputGroupSelect" style="font-size: 12px !important; background-color: #007bff; color: white;">
-                                    <option selected>Today</option>
-                                    <option value="1">This Month</option>
-                                    <option value="2">This Year</option>
-                                </select>
-                            </div>
-                        </div>
-
                         <div class="container d-block rounded-2 p-3 my-3" style="background-color: white; height: auto;">
                             <div class="row">
                                 <h4><span class="fw-bolder my-3 px-2 rounded-2" style="background-color: #007bff; color:white;">95</span>&nbsp;Total Records</h4>
@@ -176,12 +191,34 @@
                                   </tr>
                                 </thead>
                             </table>
-                            <div style="max-height: 144px; overflow-y: auto;">
+                            <div style="max-height: 302px; overflow-y: auto;">
                                 <table class="table table-sm table-hover" style="table-layout: fixed; width: 100%;">
                                     <tbody>
                                       <tr>
                                         <td style="width: 30%;">130976437-DEPT-0</th>
                                         <td><span class="badge badge-red rounded-pill fw-semibold">VERY URGENT</span></td>   
+                                        <td style="width: 35%;">                    
+                                            <button type="button" class="btn btn-sm btn-blue viewDocumentBtn" data-document-no="{{ document.document_no }}" 
+                                                data-bs-toggle="modal" data-bs-target="#viewDocumentModal"
+                                                data-bs-toggle="tooltip" title="View Document Details">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </button>
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td style="width: 30%;">120976437-DEPT-0</th>
+                                        <td><span class="badge badge-orange rounded-pill fw-semibold">URGENT</span></td>
+                                        <td style="width: 35%;">                    
+                                            <button type="button" class="btn btn-sm btn-blue viewDocumentBtn" data-document-no="{{ document.document_no }}" 
+                                                data-bs-toggle="modal" data-bs-target="#viewDocumentModal"
+                                                data-bs-toggle="tooltip" title="View Document Details">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </button>
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td style="width: 30%;">120976437-DEPT-0</th>
+                                        <td><span class="badge badge-orange rounded-pill fw-semibold">URGENT</span></td>
                                         <td style="width: 35%;">                    
                                             <button type="button" class="btn btn-sm btn-blue viewDocumentBtn" data-document-no="{{ document.document_no }}" 
                                                 data-bs-toggle="modal" data-bs-target="#viewDocumentModal"
