@@ -76,164 +76,297 @@
                     </div>
                 </div>
 
-                <div class="row g-2 my-2">
-                    <div class="col-lg-2 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <p>Total Records</p>
-                            <h2>123</h2>
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <p>For Approval</p>
-                            <h2>12</h2>
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <p>Payroll</p>
-                            <h2>18</h2>
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <p>Accounting</p>
-                            <h2>29</h2>
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <p>Cashier</p>
-                            <h2>14</h2>
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-md-4 col-sm-6 mb-2">
-                        <div class="card">
-                            <p>Budgeting</p>
-                            <h2>23</h2>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- LATEST ANNOUNCEMENT -->
-                <div class="rounded-2 p-3 mb-3" style="background-color: white; height: auto;">
-                    <p class="mb-0 fw-bold"><i class='bx bxs-megaphone' style="color: #007bff;"></i> Latest Announcements</p>
-
-                    <div class="announcements-container">
-                        {% for announcement in announcements %}
-                        <div class="d-flex justify-content-between align-items-center border border-primary rounded-2 my-2 p-3" style="background-color: #F5F7F8; border-color: #007bff; border-radius: 10px;" data-id="{{ announcement.id }}">
-                            <div>
-                                <h5 class="mb-1 fw-bold title" style="color: #5BC0EB;">{{ announcement.title }}</h5>
-                                <p></p>
-                                <p class="mb-0 description">{{ announcement.description }}</p>
-                                <p></p>
-                                <p class="mb-0 text-muted" style="font-size: 0.9em;">
-                                    <i class='bx bx-calendar' style="color: #007bff;"></i>
-                                    <span class="dateCreated">Date Created: {{ announcement.created_at|date:"F j, Y" }}</span>
-                                </p>
-                                <p></p>
-                                <!-- End Date -->
-                                <p class="mb-0 text-muted" style="font-size: 0.9em;">
-                                    <i class='bx bx-calendar-exclamation' style="color: #ff0000;"></i>
-                                    <span class="dateEnd">End Date: {{ announcement.end_date|date:"F j, Y" }}</span>
-                                </p>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                {% if announcement.attachment %}
-                                <button type="button" class="preview btn btn-sm btn-blue me-2" onclick="viewFile('{{ announcement.attachment.name }}')" title="View File">
-                                    <i class="fa-solid fa-eye"></i>
-                                </button>
-                                {% endif %}
+                <!-- 1st Row - Total Documents and Pending Account Approval -->
+                <div class="row py-2">
+                    <!-- 1st Column | Total Records -->
+                    <div class="col-6">
+                        <div class="rounded-2 p-3 my-3" style="background-color: #007bff; color:white; height: auto;">
+                            <p class="fs-4 p-0 m-0 fw-bold"><i class='bx bxs-wink-smile'></i>&nbsp;Welcome, Director!</p>
+                            <p class="p-0 m-0">See latest updates here</p>
+                            <div class="py-2 w-25">
+                                <select class="form-select" id="inputGroupSelect" style="font-size: 12px !important; background-color: #007bff; color: white;">
+                                    <option selected>Today</option>
+                                    <option value="1">This Month</option>
+                                    <option value="2">This Year</option>
+                                </select>
                             </div>
                         </div>
-                        {% endfor %}
-                    </div>
-                </div>
 
-
-
-                <div class="rounded-2 p-3 mb-3" style="background-color: white; height: auto;">
-                    <p class="mb-0 fw-bold"><i class='bx bxs-info-circle' style='color:#dc3545'></i> Unacted Records</p>
-                    <div class="my-3">
-                        <div class="table-responsive table-wrapper d-flex">
-                            <table class="table mb-1">
-                                <thead>
-                                    <tr>
-                                        <th>Tracking Number</th>
-                                        <th>
-                                            Status 
-                                            <a href="?status=active&sort_by=status&order=asc"><i class='bx bxs-sort-alt'></i></a>
-                                        </th>
-                                        <th>Sender</th>
-                                        <th>Particulars</th>
-                                        <th>
-                                            Type 
-                                            <a href="?status=active&sort_by=document_type&order=asc"><i class='bx bxs-sort-alt'></i></a>
-                                        </th>
-                                        <th>Remarks</th>
-                                        <th>Updated</th>
-                                        <th>
-                                            Due In 
-                                            <a href="?status=active&sort_by=deadline&order=asc"><i class='bx bxs-sort-alt'></i></a>
-                                        </th>
-                                        <th>
-                                            Priority 
-                                            <a href="?status=active&sort_by=priority_level&order=asc"><i class='bx bxs-sort-alt'></i></a>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                
-                                <tbody id="docTableBody">
-                                    {% include 'partials/display-records.html' %}
-                                </tbody>
-                            </table>           
+                        <div class="container d-block rounded-2 p-3 my-3" style="background-color: white; height: auto;">
+                            <div class="row">
+                                <h4><span class="fw-bolder my-3 px-2 rounded-2" style="background-color: #007bff; color:white;">95</span>&nbsp;Total Records</h4>
+                            </div>
+                                    
+                            <div class="chart-container my-2">
+                                <!-- Bar 1 -->
+                                <div class="bar">
+                                    <div class="percent-label">14</div>
+                                    <div class="bar-shape" style="height: 100px;"></div>
+                                    <div class="office-label">DIR</div>
+                                  </div>
+                                  <!-- Bar 2 -->
+                                  <div class="bar selected">
+                                    <div class="percent-label">28</div>
+                                    <div class="bar-shape" style="height: 200px;"></div>
+                                    <div class="office-label">ADM</div>
+                                  </div>
+                                  <!-- Bar 3 -->
+                                  <div class="bar">
+                                    <div class="percent-label">22</div>
+                                    <div class="bar-shape" style="height: 150px;"></div>
+                                    <div class="office-label">CSR</div>
+                                  </div>
+                                  <!-- Bar 4 -->
+                                  <div class="bar">
+                                    <div class="percent-label">16</div>
+                                    <div class="bar-shape" style="height: 120px;"></div>
+                                    <div class="office-label">BDM</div>
+                                  </div>
+                                  <!-- Bar 5 -->
+                                  <div class="bar">
+                                    <div class="percent-label">11</div>
+                                    <div class="bar-shape" style="height: 90px;"></div>
+                                    <div class="office-label">ACC</div>
+                                  </div>
+                                  <!-- Bar 6 -->
+                                  <div class="bar">
+                                    <div class="percent-label">4</div>
+                                    <div class="bar-shape" style="height: 50px;"></div>
+                                    <div class="office-label">PRL</div>
+                                  </div>
+                            </div>
                         </div>
-            
-                        <p class="d-block text-start my-0 p-2 fw-semibold table-count" id="record-count" style="color: #000000; opacity: 0.6;">
-                            Showing total of <span id="recordCount">{{ users|length|default:"0" }}</span> record(s)
-                        </p>
-                    </div>
-                </div>
-                
-                 <div class="row p-2 mt-0 pt-0">
-                    <div class="col-lg-7 rounded-2 p-3" style="background-color: white;">
-                        <p class="mb-0 fw-bold"><i class='bx bx-stats' style='color:#007bff'></i> Latest Activity</p>
-                        <div class="table-responsive"> 
-                            <table class="table mt-3">
+
+                        <!-- [ANALYTICS] Donut Chart - Performance -->
+                        <div class="rounded-2 p-3 my-3" style="background-color: white; height: auto;">
+                            <div class="row">
+                                <div class="col-8">
+                                    <h4 class="mb-0 fw-bold d-flex align-items-center">
+                                        <i class='bx bxs-user-check' style="color: #007bff;"></i>&nbsp;Performance
+                                    </h4>
+                                </div>
+                                <div class="col-4">
+                                    <select class="form-select" id="inputGroupPerformance" style="font-size: 12px !important;">
+                                        <option selected>DIR</option>
+                                        <option value="1">Administrative</option>
+                                        <option value="2">Accounting</option>
+                                        <option value="3">Budget</option>
+                                        <option value="4">Cashier</option>
+                                        <option value="5">Payroll</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="canvas-container my-2 d-flex align-items-center justify-content-center" style="height: 100%;">
+                                <canvas id="myDonutChart"></canvas>
+                            </div>
+                            <p class="text-center fw-bold text-success pt-1 mb-0">Congratulations, you have a good performance!</p>
+                            <!-- <p class="text-center fw-bold text-warning pt-1 mb-0">Your performance is currently going slow.</p> -->
+                            <!-- <p class="text-center fw-bold text-danger pt-1 mb-0">You need to address your current performance</p> -->
+                        </div>
+
+                        <div class="rounded-2 p-3 my-3" style="background-color: white;">
+                            <h4 class="mb-0 fw-bold d-flex align-items-center"><i class='bx bx-list-check' style="color: #007bff;"></i>&nbsp;For Approval</h4>
+                            <table class="table table-sm my-1" style="table-layout: fixed; width: 100%;">
                                 <thead>
-                                    <tr>
-                                        <th>Timestamp</th>
-                                        <th>User Name</th>
-                                        <th>Tracking Number</th>
-                                        <th>Activity</th>
-                                    </tr>
+                                  <tr>
+                                    <th scope="col" style="width: 30%;">Tracking Number</th>
+                                    <th>
+                                        Priority 
+                                        <a href="?status=active&sort_by=priority_level&order=asc"><i class='bx bxs-sort-alt'></i></a>
+                                    </th>
+                                    <th scope="col" style="width: 35%;">Action</th>
+                                  </tr>
                                 </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>2024-08-05 05:15 PM</td>
-                                        <td>Ramon D. Torres</td>
-                                        <td>1122920232-DEPT-001</td>
-                                        <td>Document Approved</td>
-                                    </tr>
-                                    <tr>
-                                        <td>2024-08-05 05:15 PM</td>
-                                        <td>Ramon D. Torres</td>
-                                        <td>1122920232-DEPT-001</td>
-                                        <td>Document Archived</td>
-                                    </tr>
-                                </tbody>
                             </table>
+                            <div style="max-height: 144px; overflow-y: auto;">
+                                <table class="table table-sm table-hover" style="table-layout: fixed; width: 100%;">
+                                    <tbody>
+                                      <tr>
+                                        <td style="width: 30%;">130976437-DEPT-0</th>
+                                        <td><span class="badge badge-red rounded-pill fw-semibold">VERY URGENT</span></td>   
+                                        <td style="width: 35%;">                    
+                                            <button type="button" class="btn btn-sm btn-blue viewDocumentBtn" data-document-no="{{ document.document_no }}" 
+                                                data-bs-toggle="modal" data-bs-target="#viewDocumentModal"
+                                                data-bs-toggle="tooltip" title="View Document Details">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </button>
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td style="width: 30%;">120976437-DEPT-0</th>
+                                        <td><span class="badge badge-orange rounded-pill fw-semibold">URGENT</span></td>
+                                        <td style="width: 35%;">                    
+                                            <button type="button" class="btn btn-sm btn-blue viewDocumentBtn" data-document-no="{{ document.document_no }}" 
+                                                data-bs-toggle="modal" data-bs-target="#viewDocumentModal"
+                                                data-bs-toggle="tooltip" title="View Document Details">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </button>
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td style="width: 30%;">120977007-DEPT-0</th>
+                                        <td><span class="badge badge-yellow rounded-pill fw-semibold">FOR PREF. ACTION</span></td>
+                                        <td style="width: 35%;">                    
+                                            <button type="button" class="btn btn-sm btn-blue viewDocumentBtn" data-document-no="{{ document.document_no }}" 
+                                                data-bs-toggle="modal" data-bs-target="#viewDocumentModal"
+                                                data-bs-toggle="tooltip" title="View Document Details">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </button>
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td style="width: 30%;">128126437-DEPT-0</th>
+                                        <td><span class="badge badge-green rounded-pill fw-semibold">NORMAL</span></td>
+                                        <td style="width: 35%;">                    
+                                            <button type="button" class="btn btn-sm btn-blue viewDocumentBtn" data-document-no="{{ document.document_no }}" 
+                                                data-bs-toggle="modal" data-bs-target="#viewDocumentModal"
+                                                data-bs-toggle="tooltip" title="View Document Details">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </button>
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td style="width: 30%;">200976437-DEPT-0</th>
+                                        <td><span class="badge badge-orange rounded-pill fw-semibold">URGENT</span></td>
+                                        <td style="width: 35%;">                    
+                                            <button type="button" class="btn btn-sm btn-blue viewDocumentBtn" data-document-no="{{ document.document_no }}" 
+                                                data-bs-toggle="modal" data-bs-target="#viewDocumentModal"
+                                                data-bs-toggle="tooltip" title="View Document Details">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </button>
+                                        </td>
+                                      </tr>
+                                      <!-- Add more rows as needed -->
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
-                
-                    
-                    <div class="col-lg-5 rounded-2 p-3" style="background-color: white;">
-                        <p class="mb-0 fw-bold"><i class='bx bx-stats' style='color:#007bff'></i> Unacted Documents</p>
-                        <div class="d-flex justify-content-center my-2">
-                            <canvas id="unactedDocumentsChart" width=auto height="200"></canvas>
+    
+                    <div class="col-6">
+                        <!-- [ANALYTICS] Pie Chart Document Status -->
+                        <div class="rounded-2 p-3 my-3" style="background-color: white; height:auto;">
+                            <div class="row">
+                                <div class="col-8">
+                                    <h4 class="mb-2 fw-bold d-flex align-items-center">
+                                        <i class='bx bxs-hourglass' style="color: #007bff;"></i>&nbsp;Document Status
+                                    </h4>
+                                </div>
+                                <div class="col-4">
+                                    <select class="form-select" id="inputGroupPerformance" style="font-size: 12px !important;">
+                                        <option selected>For DIR Approval</option>
+                                        <option value="1">For Routing</option>
+                                        <option value="2">For SRO Receiving</option>
+                                        <option value="3">For ACT Receiving</option>
+                                        <option value="4">For Resolving</option>
+                                        <option value="5">For Archiving</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="canvas-container d-flex align-items-center">
+                                <canvas id="docStatusChart"></canvas>
+                            </div>
                         </div>
+                          
+                        <!-- 2nd Column | Announcements -->
+                        <div class="rounded-2 p-3 my-3" style="background-color: white; height: auto;">
+                            <h4 class="mb-0 fw-bold d-flex align-items-center"><i class='bx bxs-megaphone' style="color: #007bff;"></i>&nbsp;Latest Announcements</h4>
+                            <!-- Announcements -->
+                            <div class="container d-block px-2 pt-3" style="max-height: 250px; overflow-y: auto;">
+                                <p class="announcements border border-danger rounded-2 my-2 p-2" style="background-color: #F5F7F8;">
+                                    To all users, please be advised that the system will undergo scheduled maintenance on August 10, 2024, from 12:00 AM to 4:00 AM. During this time, the system will be unavailable. Thank you for your understanding and cooperation!
+                                </p>
+                                <p class="announcements border border-primary rounded-2 my-2 p-2" style="background-color: #F5F7F8;">
+                                    This is a reminder to all departments that the Q3 Financial Reports must be submitted no later than October 25, 2024. Please ensure that all expenses, invoices, and financial statements are accurately recorded and attached.
+                                </p>
+                                <p class="announcements border border-warning rounded-2 my-2 p-2" style="background-color: #F5F7F8;">
+                                    Please be informed that the deadline for the submission of all budget requests for the upcoming fiscal year is November 15, 2024. All requests must be submitted through the system for proper tracking and documentation.
+                                </p>
+                                <p class="announcements border border-warning rounded-2 my-2 p-2" style="background-color: #F5F7F8;">
+                                    Please be informed that the deadline for the submission of all budget requests for the upcoming fiscal year is November 15, 2024. All requests must be submitted through the system for proper tracking and documentation.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="row px-3 my-3 d-flex justify-content-center">
+                            <div class="col-4 ps-0 mt-0 rounded-2">
+                                <div class="clickable-box rounded-2 p-3" onclick="window.location.href='{% url 'director_generate_reports' 'all-reports' %}?status=active'">
+                                    <h5 class="text-center mb-0"><i class='bx bxs-report'></i>&nbsp;Generate<br>Report</h5>
+                                </div>
+                            </div>
+
+                            <div class="col-4 mt-0 rounded-2">
+                                <div class="clickable-box rounded-2 p-3" onclick="window.location.href='{% url 'director_unacted_records'%}?status=active'">
+                                    <h5 class="text-center mb-0"><i class='bx bxs-message-error'></i>&nbsp;Unacted<br>Documents</h5>
+                                </div>                                                            
+                            </div>
+
+                            <div class="col-4 pe-0 mt-0 rounded-2">
+                                <div class="clickable-box rounded-2 p-3" onclick="window.location.href='{% url 'director_announcements' %}?status=active'">
+                                    <h5 class="text-center mb-0"><i class='bx bxs-megaphone'></i>&nbsp;Post<br>Announcements</h5>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- [ANALYTICS] Line Graph -->
+                        <div class="container d-block rounded-2 p-3 my-3" style="background-color: white; height: auto;">
+                            <div class="row">
+                                <div class="col-8">
+                                    <h4 class="mb-0 fw-bold d-flex align-items-center"><i class='bx bxs-trophy' style="color: #007bff;"></i>&nbsp;Employee Performance</h4>
+                                    <div id="selectedFilters" class="mt-2"></div>
+                                </div>
+                                
+                                <div class="col-4 d-flex justify-content-end">
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                          Select Filters
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="filterDropdown">
+                                          <div class="dropdown-header">Office</div>
+                                            <div class="form-check">
+                                                <input type="radio" class="form-check-input" id="option_all" name="group1" value="All Offices" checked>
+                                                <label class="form-check-label" for="option_all">All Offices</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="radio" class="form-check-input" id="option_accounting" name="group1" value="Accounting">
+                                                <label class="form-check-label" for="option_accounting">Accounting</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="radio" class="form-check-input" id="option_budget" name="group1" value="Budget">
+                                                <label class="form-check-label" for="option_budget">Budget</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="radio" class="form-check-input" id="option_cashier" name="group1" value="Cashier">
+                                                <label class="form-check-label" for="option_cashier">Cashier</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="radio" class="form-check-input" id="option_payroll" name="group1" value="Payroll">
+                                                <label class="form-check-label" for="option_payroll">Payroll</label>
+                                            </div>
+                                          <div class="dropdown-header">Performance Type</div>
+                                            <div class="form-check">
+                                                <input type="radio" class="form-check-input" id="option_top_employees" name="group2" value="Top-Employees" checked>
+                                                <label class="form-check-label" for="option_top_employees">Top Employees</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="radio" class="form-check-input" id="option_underperforming" name="group2" value="Underperforming">
+                                                <label class="form-check-label" for="option_underperforming">Underperforming</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center justify-content-center py-2">
+                                <canvas id="multiAreaChart" height="auto"></canvas>
+                            </div>
+                        </div>
+
+
                     </div>
-                </div> 
+                </div>
             </main>
         </div>
     </div>
@@ -404,23 +537,146 @@
     </script>
     <!-- Include Chart.js for pie chart functionality -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- [ANALYTICS] Pie Chart JavaScript - Document Status-->
     <script>
-        var ctx = document.getElementById('unactedDocumentsChart').getContext('2d');
-        var chart = new Chart(ctx, {
+        var ctx1 = document.getElementById('docStatusChart').getContext('2d');
+        var chart = new Chart(ctx1, {
             type: 'pie',
             data: {
-                labels: ['Accounting', 'Budgeting', 'Payroll'],
+                labels: ['Very Urgent', 'Urgent', 'Normal', 'For Pref. Action'],
                 datasets: [{
-                    label: 'Unacted Documents',
-                    data: [10, 6, 4], // Replace with actual data
-                    backgroundColor: ['#007bff', '#6c757d', '#28a745']
+                    label: 'Document', // This label will be removed from display by hiding the title
+                    data: [10, 6, 4, 2], // Replace with actual data
+                    backgroundColor: ['#EA2E2E', '#FF7E07', '#22a03f', '#FFC107']
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom'
+                    },
+                    title: {
+                        display: false // Set to false to remove the chart title
+                    }
+                }
             }
         });
     </script>
+
+    <!-- [DROPDOWN] Employee Performance -->
+    <script>
+        const selectedFiltersDiv = document.getElementById('selectedFilters');
+
+        const radioButtons = document.querySelectorAll('.form-check-input');
+
+        radioButtons.forEach(radio => {
+        radio.addEventListener('change', updateSelectedFilters);
+        });
+
+        // Initial update to display the default selected option
+        updateSelectedFilters();
+
+        function updateSelectedFilters() {
+        const selectedGroup1 = document.querySelector('input[name="group1"]:checked');
+        const selectedGroup2 = document.querySelector('input[name="group2"]:checked');
+
+        const selectedValues = [];
+        if (selectedGroup1) {
+            selectedValues.push(selectedGroup1.value);
+        }
+        if (selectedGroup2) {
+            selectedValues.push(selectedGroup2.value);
+        }
+
+        selectedFiltersDiv.innerHTML = selectedValues.length ? '<b>Filter by:</b> ' + selectedValues.join(', ') : 'No filters selected';
+        }
+    </script>
+
+    <!-- [ANALYTICS] Line Graph JavaScript -->
+    <script>
+        const ctx = document.getElementById('multiAreaChart').getContext('2d');
+        const multiAreaChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['ACO-0001', 'DIR-0001', 'ADM-0001', 'SRO-0002', 'ACO-0005'], // Time periods
+                datasets: [
+                    {
+                        data: [25, 10, 15, 50, 30], // resolved document tot/unacted+delayed tot
+                        borderColor: '#007bff', // Line color
+                        backgroundColor: 'rgba(0, 123, 255, 0.1)', // Fill color
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#004da0', // Points color
+                        tension: 0.4, // Smooth curve
+                        fill: true, // Fill the area under the line
+                        pointRadius: 5 // Point size
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false, // Show the legend
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    </script>
+
+    <script>
+        const ctx3 = document.getElementById('myDonutChart').getContext('2d');
+        const myDonutChart = new Chart(ctx3, {
+            type: 'doughnut',
+            data: {
+                labels: ['Unacted', 'Pending', 'Delayed', 'Resolved'],
+                datasets: [{
+                    label: '# of Votes',
+                    data: [12, 19, 3, 5],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,  // This will allow the canvas to fill its container
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return tooltipItem.label + ': ' + tooltipItem.raw;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+    </script>
+    
 </body>
 </html>

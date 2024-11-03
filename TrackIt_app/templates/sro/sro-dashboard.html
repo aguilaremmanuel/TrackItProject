@@ -15,32 +15,6 @@
     <link href="{% static 'fontawesomefree/css/all.min.css' %}" rel="stylesheet" type="text/css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <title>Dashboard</title>
-
-    <style>
-        /* Box styling */
-        .clickable-box {
-          background-color: #007bff;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          transition: background-color 0.3s, transform 0.3s;
-        }
-        
-        .clickable-box h5{
-            color: white;
-        }
-
-        /* Hover effect */
-        .clickable-box:hover {
-            background-color: #318ff4;
-            transform: scale(1.05);
-        }
-
-        .clickable-box:hover h5 {
-            color: black;
-        }
-      </style>
 </head>
 
 <body>
@@ -100,6 +74,7 @@
                     <div class="col-5">
                         <div class="rounded-2 p-3 my-3" style="background-color: #007bff; color:white; height: auto;">
                             <p class="fs-4 p-0 m-0 fw-bold"><i class='bx bxs-wink-smile'></i>&nbsp;Welcome, Sub-Receiving Officer!</p>
+                            <p class="fs-6 p-0 m-0 fw-bold">Office - SRO</p>
                             <p class="p-0 m-0">See latest updates here</p>
                             <div class="py-2 w-25">
                                 <select class="form-select" id="inputGroupSelect" style="font-size: 12px !important; background-color: #007bff; color: white;">
@@ -181,7 +156,7 @@
                         <div class="rounded-2 p-3 my-3" style="background-color: white; height: auto;">
                             <h4 class="mb-0 fw-bold d-flex align-items-center"><i class='bx bxs-megaphone' style="color: #007bff;"></i>&nbsp;Latest Announcements</h4>
                             <!-- Announcements -->
-                            <div class="container d-block px-2 pt-3" style="max-height: 250px; overflow-y: auto;">
+                            <div class="container d-block px-2 pt-3" style="max-height: 270px; overflow-y: auto;">
                                 <p class="announcements border border-danger rounded-2 my-2 p-2" style="background-color: #F5F7F8;">
                                     To all users, please be advised that the system will undergo scheduled maintenance on August 10, 2024, from 12:00 AM to 4:00 AM. During this time, the system will be unavailable. Thank you for your understanding and cooperation!
                                 </p>
@@ -422,64 +397,31 @@
         const multiAreaChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ['Last 3 Months', 'Last 2 Months', 'Last Month', 'Current Month'], // Time periods
+                labels: ['ACO-0001', 'ACO-0002', 'ACO-0003', 'ACO-1002', 'ACO-0005'], // Time periods
                 datasets: [
                     {
-                        label: 'ACO-0001',
-                        data: [25, 10, 15, 50], // resolved document tot/unacted+delayed tot
-                        borderColor: '#5bc0de', // Line color
-                        backgroundColor: 'rgba(91, 192, 222, 0.2)', // Fill color
+                        data: [25, 10, 15, 50, 30], // resolved document tot/unacted+delayed tot
+                        borderColor: '#007bff', // Line color
+                        backgroundColor: 'rgba(0, 123, 255, 0.1)', // Fill color
                         tension: 0.4,
                         fill: true,
-                        pointRadius: 0
-                    },
-                    {
-                        label: 'ACO-0002',
-                        data: [3, 15, 8, 25], 
-                        borderColor: '#5cb85c',
-                        backgroundColor: 'rgba(92, 184, 92, 0.2)',
-                        tension: 0.4,
-                        fill: true,
-                        pointRadius: 0
-                    },
-                    {
-                        label: 'ACO-0003',
-                        data: [1, 2, 4, 10], 
-                        borderColor: '#f0ad4e',
-                        backgroundColor: 'rgba(240, 173, 78, 0.2)',
-                        tension: 0.4,
-                        fill: true,
-                        pointRadius: 0
-                    },
-                    {
-                        label: 'ACO-0004',
-                        data: [5, 20, 9, 26], 
-                        borderColor: '#003366',
-                        backgroundColor: 'rgba(0, 51, 102, 0.2)',
-                        tension: 0.4,
-                        fill: true,
-                        pointRadius: 0
-                    },
-                    {
-                        label: 'ACO-0005',
-                        data: [5, 7, 20, 10], 
-                        borderColor: '#008080',
-                        backgroundColor: 'rgba(0, 128, 128, 0.2)',
-                        tension: 0.4,
-                        fill: true,
-                        pointRadius: 0
+                        pointBackgroundColor: '#004da0', // Points color
+                        tension: 0.4, // Smooth curve
+                        fill: true, // Fill the area under the line
+                        pointRadius: 5 // Point size
                     }
                 ]
             },
             options: {
                 scales: {
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        max: 100
                     }
                 },
                 plugins: {
                     legend: {
-                        display: true, // Show the legend
+                        display: false, // Show the legend
                         position: 'bottom'
                     }
                 }

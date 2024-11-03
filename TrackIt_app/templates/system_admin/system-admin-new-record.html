@@ -16,6 +16,14 @@
 	<link href="{% static 'fontawesomefree/css/all.min.css' %}" rel="stylesheet" type="text/css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <title>New Record</title>
+
+    <style>
+        /* Optional styling */
+        .input-container {
+            display: none; /* Hidden by default */
+            margin-top: 10px;
+        }
+    </style>
 </head>
 
 <body>
@@ -91,16 +99,24 @@
         
                             <div class="col-12 col-md-4">
                                 <label for="SenderDepartment" class="form-label">Sender Department</label>
-                                <select class="form-select" name="sender_dept" id="SenderDepartment" aria-label="SenderDepartment" required>
-                                    <option value="">Select Sender Department</option>
+                                <select class="form-select" name="sender_dept" id="SenderDepartment" aria-label="SenderDepartment" onchange="toggleInput()" required>
+                                    <option value="" disabled selected hidden>Select Sender Department</option>
                                     <option value="Accounting">Accounting</option>
                                     <option value="Budgeting">Budgeting</option>
                                     <option value="Cashier">Cashier</option>
                                     <option value="Payroll">Payroll</option>
+                                    <option value="others">Others</option>
                                 </select>
                             </div>
                         </div>
-        
+
+                        <div class="row">
+                            <div class="col-4 input-container mt-0 mb-3 ms-auto" id="inputContainer">
+                                <label for="otherInput" class="form-label">Please specify:</label>
+                                <input type="text" maxlength="20" class="form-control" id="otherInput" placeholder="Enter Sender Dept.">
+                            </div>
+                        </div>                        
+                            
                         <div class="row mb-3 g-3">
                             <div class="col-12 col-md-6">
                                 <label for="DocumentCategory" class="form-label">Select Document Category</label>
@@ -334,5 +350,18 @@
     <script src="{% static 'js/toggle-sidebar.js' %}"></script>  
     <script src="{% static 'js/new-record.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function toggleInput() {
+            const selectElement = document.getElementById('SenderDepartment'); // Use the correct id
+            const inputContainer = document.getElementById('inputContainer');
+            if (selectElement.value === 'others') { // Check for the correct value
+                inputContainer.style.display = 'block';
+            } else {
+                inputContainer.style.display = 'none';
+            }
+        }
+    </script>
+    
 </body>
 </html>
