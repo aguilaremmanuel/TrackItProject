@@ -1,3 +1,5 @@
+/*
+
 // JavaScript to update profile picture preview and ensure file is correctly linked
 document.getElementById('changePhotoInput').addEventListener('change', function(event) {
     const file = event.target.files[0];
@@ -30,3 +32,4 @@ document.getElementById('deletePhotoButton').addEventListener('click', function(
         document.getElementById('editProfileForm').appendChild(deleteInput);
     }
 });
+*/

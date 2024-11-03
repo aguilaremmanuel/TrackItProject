@@ -1,5 +1,4 @@
 async function getFileUploadQRCodeURL(activityLogNo) {
-    console.log("wla remar");
     try {
         const response = await fetch(`/generate-upload-file-qrcode/${activityLogNo}/`);
         if (response.ok) {

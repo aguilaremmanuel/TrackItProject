@@ -12496,6 +12496,7 @@ table tbody tr td.overdue {
   font-size: 1rem;
   width: 1.2rem;
   text-align: center;
+  cursor: pointer;
 }
 
 .drop-filter, .drop-report {

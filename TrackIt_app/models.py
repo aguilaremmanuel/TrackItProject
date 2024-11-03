@@ -26,7 +26,7 @@ class User(models.Model):
     last_login = models.DateTimeField(null=True, blank=True)
     receive_recent = models.BooleanField(default=False)
     max_load_per_day = models.IntegerField(default=5)
-    profile_picture = models.ImageField(upload_to='profile_pics/',null=True, default='profile_pics/default_profile_pic.png')
+    profile_picture = models.ImageField(upload_to='profile_pics/', null=True)
     class Meta:
         db_table = 'tbl_user'
 

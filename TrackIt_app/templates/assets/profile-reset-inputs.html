@@ -1,0 +1,22 @@
+{% load static %}   
+<script>
+    document.getElementById('clostEditProfileModalBtn').addEventListener('click', function() {
+        document.getElementById('editProfilePicture').src = "{% if user_profile.profile_picture %}/media/{{ user_profile.profile_picture }}{% else %}{% static 'images/default_profile_picture.png' %}{% endif %}";
+        document.getElementById('editFirstName').value = "{{user_profile.firstname}}";
+        document.getElementById('editMiddleName').value = "{{user_profile.middlename}}";
+        document.getElementById('editLastName').value = "{{user_profile.lastname}}";
+        document.getElementById('editContactNumber').value = "{{user_profile.contact_no}}";
+        document.getElementById('tempDeleteProfile').value = "no";
+    });
+
+    function deletePhoto() {
+        const changePhotoInput = document.getElementById('changePhotoInput');
+        const editProfilePicture = document.getElementById('editProfilePicture');
+        const tempDeleteProfile = document.getElementById('tempDeleteProfile');
+        
+        changePhotoInput.value = "";
+        tempDeleteProfile.value = "yes";
+        
+        editProfilePicture.src = "{% static 'images/default_profile_picture.png' %}";
+    }
+</script>
