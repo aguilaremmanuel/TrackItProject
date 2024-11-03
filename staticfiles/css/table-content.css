@@ -1,0 +1,43 @@
+body {
+    font-size: 14px !important;
+}
+
+.block-container {
+    font-size: 14px !important;
+}
+
+.form-label {
+    font-size: 14px !important;
+}
+
+.form-control, .form-select {
+    font-size: 14px !important;
+}
+
+.title-container .btn-primary {
+    font-size: 14px;
+    max-height: 37.85;
+    padding: 7.63px 11.2px;
+}
+
+.drop-notif {
+    width: 400px;
+    padding: 18px 21px 21px 21px;
+    font-size: 14px;
+}
+
+.notif-tabs {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-bottom: 2px solid rgba(177, 193, 207, 0.4);
+}
+
+.notif-tabs .tab-link {
+    padding: 0.7rem 1rem;
+}
+
+.notif-label {
+    margin-bottom: 0;
+    padding: 8px 8px;
+}
