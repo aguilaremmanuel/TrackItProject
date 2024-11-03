@@ -306,18 +306,19 @@
         <div class="modal-dialog">
             <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
                 <div class="modal-header pb-0 border-bottom-0">
-                    <h5 class="modal-title" id="confirmUrgentDocModalLabel"><i class="fa-solid fa-triangle-exclamation" style="color:rgb(211, 211, 3)"></i> High Priority Document Detected</h5>
+                    <h5 class="modal-title" id="confirmUrgentDocModalLabel">
+                        <i class="fa-solid fa-triangle-exclamation" style="color: #EA2E2E;"></i> &nbsp;High Priority Document Detected
+                    </h5>
                 </div>
-                <div class="modal-body">
-                    <p>This document appears high priority based on your remarks. Would you like to tag this document as <span style="color:rgb(227, 7, 7); font-weight: bold;">Very Urgent</span> now? If not, please modify your remarks.</p>
-                </div>
-                <div class="modal-body">
-                    <p>Remarks:</p>
-                    <i><p id="remarksDisplay"></p></i>
+                <div class="modal-body pb-2">
+                    <p class="mb-2">This document appears high priority based on your remarks. Would you like to tag this document as 
+                        <span style="color: #EA2E2E; font-weight: bold;">Very Urgent</span> now? If not, please modify your remarks.</p>
+                    <p class="mb-1 pt-1 fw-semibold">Remarks:</p>
+                    <p class="fst-italic" id="remarksDisplay"></p>
                 </div>
                 <div class="modal-footer p-3 pt-0 border-top-0">
                     <button type="button" id="cancelChangePrioLevelBtn" class="m-0 my-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" id="confirmChangePrioLevelBtn" class="m-0 my-2 btn btn-warning">Confirm</button>
+                    <button type="button" id="confirmChangePrioLevelBtn" class="m-0 my-2 btn btn-primary">Confirm</button>
                 </div>
             </div>
         </div>

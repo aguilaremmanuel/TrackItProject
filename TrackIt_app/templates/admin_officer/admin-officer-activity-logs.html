@@ -39,7 +39,7 @@
                             </div>                                                                                
                             <div class="profile-info">
                                 <span class="profile-name">{{ user_data.full_name }}</span>
-                                <span class="profile-role">{{ user_data.role }} (Admin Officer)</span>
+                                <span class="profile-role">{{ user_data.role }}</span>
                             </div>
                         </button>
                         <ul class="drop-profile dropdown-menu" aria-labelledby="profileDropdown">
@@ -294,7 +294,7 @@
                                         {% endfor %}
                                     {% else %}
                                         <tr>
-                                            <td colspan="6" class="text-center">No data to display in table.</td>
+                                            <td colspan="6" class="text-center table-empty">No data to display in table.</td>
                                         </tr>
                                     {% endif %}
                                 </tbody>

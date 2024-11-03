@@ -38,7 +38,7 @@
                             </div>                                                                                
                             <div class="profile-info">
                                 <span class="profile-name">{{ user_data.full_name }}</span>
-                                <span class="profile-role">{{ user_data.role }} (Admin Officer)</span>
+                                <span class="profile-role">{{ user_data.role }}</span>
                             </div>
                         </button>
                         <ul class="drop-profile dropdown-menu" aria-labelledby="profileDropdown">
@@ -118,7 +118,7 @@
                     </div>
         
                     <p class="d-block text-start my-0 p-2 fw-semibold" id="record-count" style="color: #000000; opacity: 0.6;">
-                        Showing total of <span id="recordCount">{{ users|length|default:"0" }}</span> record(s)
+                        Showing total of <span id="recordCount">{{ users|length|default:"0" }}</span> archived record(s)
                     </p>
                 </div>
             </main>
