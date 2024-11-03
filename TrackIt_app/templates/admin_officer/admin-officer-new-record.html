@@ -161,21 +161,34 @@
         
                             <div class="col-12 col-md-4">
                                 <label for="SenderDepartment" class="form-label">Sender Department</label>
-                                <select class="form-select" name="sender_dept" id="SenderDepartment" aria-label="SenderDepartment" onchange="toggleInput()" required>
+                                <select class="form-select custom-select" name="sender_dept" id="SenderDepartment" aria-label="SenderDepartment" onchange="toggleInput()" required>
                                     <option value="" disabled selected hidden>Select Sender Department</option>
-                                    <option value="Accounting">Accounting</option>
-                                    <option value="Budgeting">Budgeting</option>
-                                    <option value="Cashier">Cashier</option>
-                                    <option value="Payroll">Payroll</option>
+                                    <option value="AMO">Assets Management Office</option>
+                                    <option value="ENGR">Engineering Office</option>
+                                    <option value="FIN">Finance Office</option>
+                                    <option value="GGAO">General Government Administration Office</option>
+                                    <option value="HRMO">Human Resource Management Office</option>
+                                    <option value="LEGAL">Legal Office</option>
+                                    <option value="LEGIS">Legislative Office</option>
+                                    <option value="MMPO">Malacañang Motor Pool Office</option>
+                                    <option value="MRO">Malacañang Records Office</option>
+                                    <option value="ICTO">Information and Communications Technology Office</option>
+                                    <option value="ODESFA">Office of the Deputy Executive Secretary for Finance and Administration</option>
+                                    <option value="ODESGA">Office of the Deputy Executive Secretary for General Administration</option>
+                                    <option value="ODESLA">Office of the Deputy Executive Secretary for Legal Affairs</option>
+                                    <option value="OSDES">Office of the Senior Deputy Executive Secretary</option>
+                                    <option value="OES">Office of the Executive Secretary</option>
+                                    <option value="OP-PROPER">Office of the President Proper</option>
+                                    <option value="SARO">Strategic Action and Response Office</option>
                                     <option value="others">Others</option>
                                 </select>
                             </div>
                         </div>
 
                         <div class="row">
-                            <div class="col-4 input-container mt-0 mb-3 ms-auto" id="inputContainer">
-                                <label for="otherInput" class="form-label">Please specify:</label>
-                                <input type="text" maxlength="20" class="form-control" id="otherInput" placeholder="Enter Sender Dept.">
+                            <div class="col-12 input-container mt-0 mb-3 ms-auto" id="inputContainer">
+                                <label for="otherInput" class="form-label">Please Specify:</label>
+                                <input type="text" maxlength="20" class="form-control" id="otherInput" placeholder="Enter Sender Department">
                             </div>
                         </div>
         
