@@ -1,0 +1,54 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload a File</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="{% static 'fontawesomefree/css/all.min.css' %}" rel="stylesheet" type="text/css">
+    <style>
+        body {
+            font-family: Inter, sans-serif;
+        }
+
+        .powered-by {
+            margin-top: 40px;
+            text-align: center;
+            opacity: 50%; /* Low opacity for watermark effect */
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+
+        .footer-logo {
+            width: 100px; /* Adjust logo size as needed */
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container mt-4" >
+    {% if unauthorized %}
+        <p style="text-align: center; padding: 30px; font-size: 12px;">Sorry, you don't have access to this page. For more information, please contact the administrator at <span style="color: rgb(20, 85, 199);">trackit@gmail.com</span>.</p>
+    {% endif %}
+
+    {% if invalidUrl %}
+        <p style="text-align: center; padding: 30px; font-size: 12px;">Invalid URL. Please check the link and try again, or contact support if the issue persists. <span style="color: rgb(20, 85, 199);">trackit@gmail.com</span>.</p>
+    {% endif %}
+
+    {% if fileUploaded %}
+        <p style="text-align: center; padding: 30px; font-size: 12px;">A file is already attached for this action, please contact support if the issue persists. <span style="color: rgb(20, 85, 199);">trackit@gmail.com</span>.</p>
+    {% endif %}
+
+</div>
+
+<div class="powered-by">
+    <p>Powered by:</p>
+    <img src="{% static 'images/logo.png' %}" alt="Logo" class="footer-logo">
+</div>
+
+</body>
+</html>

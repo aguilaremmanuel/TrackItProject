@@ -26,7 +26,7 @@ class User(models.Model):
     last_login = models.DateTimeField(null=True, blank=True)
     receive_recent = models.BooleanField(default=False)
     max_load_per_day = models.IntegerField(default=5)
-    profile_picture = models.ImageField(upload_to='profile_pics/',null=True, default='profile_pics/default_profile_pic.png')
+    profile_picture = models.ImageField(upload_to='profile_pics/', null=True)
     class Meta:
         db_table = 'tbl_user'
 
@@ -43,6 +43,8 @@ class DocumentType(models.Model):
     category = models.CharField(max_length=7)
     priority_level = models.ForeignKey(PriorityLevel, on_delete=models.CASCADE, null=True, blank=True)
     is_active = models.BooleanField(default=True)
+    used_count = models.IntegerField(default=0)
+    last_update = models.DateTimeField(null=True, blank=True)
     class Meta:
         db_table = 'tbl_document_type'
 
@@ -76,6 +78,9 @@ class Remarks(models.Model):
     class Meta:
         db_table = 'tbl_remarks'
 
+def document_directory_path(instance, filename):
+    return f'document/{instance.document_id.document_no}/{filename}'
+
 class ActivityLogs(models.Model):
     no = models.BigAutoField(primary_key=True)
     time_stamp = models.DateTimeField(blank=True)
@@ -84,6 +89,7 @@ class ActivityLogs(models.Model):
     remarks = models.ForeignKey(Remarks, on_delete=models.SET_NULL, null=True, blank=True)
     user_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     receiver = models.CharField(max_length=10, blank=True, null=True)
+    file_attachment = models.FileField(upload_to=document_directory_path, null=True, blank=True)
     class Meta:
         db_table = 'tbl_activity_logs'
 

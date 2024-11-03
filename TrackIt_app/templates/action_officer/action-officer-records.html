@@ -27,12 +27,18 @@
                 <button class="toggle-sidebar" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
                 <div class="header-right">
                     <button class="toggle-notification" id="notification" title="Notifications"><i class="fa-solid fa-bell"></i></button>
+                    <!---->
                     <div class="dropdown">
-                        <button class="profile m-0" type="button" id="profileDropdown" data-bs-toggle="dropdown" title="Account Menu">
-                            <div class="profile-pic placeholder"></div>
+                        <button class="profile m-0" type="button" id="profileDropdown" data-bs-toggle="dropdown">
+                            <div class="profile-pic">
+                                <img src="{% if user_profile.profile_picture %}/media/{{ user_profile.profile_picture }}{% else %}{% static 'images/default_profile_picture.png' %}{% endif %}"
+                                     id="profilePicture" 
+                                     class="profile-modal-pic" 
+                                     style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;">
+                            </div>                                                                                
                             <div class="profile-info">
-                                <span class="profile-name">{{ user_name }}</span>
-                                <span class="profile-role">Action Officer</span>
+                                <span class="profile-name">{{ user_profile.firstname }} {{user_profile.lastname}}</span>
+                                <span class="profile-role">{{ user_profile.role }}</span>
                             </div>
                         </button>
                         <ul class="drop-profile dropdown-menu" aria-labelledby="profileDropdown">
@@ -56,6 +62,7 @@
                             </li>
                         </ul>
                     </div>
+                    <!---->
                 </div>
             </header>
             
@@ -304,63 +311,62 @@
                 </div>
                 <div class="modal-body">
                     <p id="actionMessage" class="mb-3"></p>
-
-                    <div class="form-group mb-3">
-                        <label for="remarksTextarea" class="form-label">Remarks</label>
-                        <textarea class="form-control" id="remarks" rows="3" placeholder="Add any additional remarks here..."></textarea>
-                    </div>
-
-                    <!-- Attachment Options -->
-                    <div class="mb-1">
-                        <label class="form-label mb-1">Upload Attachment</label>
-                        <div class="d-flex">
-                            <div class="form-check ms-2 me-3">
-                                <input class="form-check-input" type="radio" name="attachmentOption" id="directUpload" checked>
-                                <label class="form-check-label" for="directUpload">Direct Upload</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="attachmentOption" id="scanAttachmentQRCode">
-                                <label class="form-check-label" for="scanAttachmentQRCode">Scan QR Code</label>
+                    <form method="post" action="" id="remarksForm" enctype="multipart/form-data">
+                        {% csrf_token %}
+    
+                        <div class="form-group mb-3">
+                            <label for="remarksTextarea" class="form-label">Remarks</label>
+                            <textarea class="form-control" name="remarks" id="remarks" rows="3" placeholder="Add any additional remarks here..."></textarea>
+                        </div>
+                    
+                        <!-- Attachment Options -->
+                        <div class="mb-1">
+                            <label class="form-label mb-1">Upload Attachment</label>
+                            <div class="d-flex">
+                                <div class="form-check ms-2 me-3">
+                                    <input class="form-check-input" type="radio" name="attachmentOption" id="directUpload" checked>
+                                    <label class="form-check-label" for="directUpload">Direct Upload</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="attachmentOption" id="scanAttachmentQRCode">
+                                    <label class="form-check-label" for="scanAttachmentQRCode">Upload through Phone</label>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div id="option1">
-                        <input class="form-control form-file" type="file" id="attachmentFile" name="attachment">
-                    </div>
+                        <div id="option1">
+                            <input class="form-control form-file" type="file" id="attachmentFile" accept=".pdf" name="attachment">
+                        </div>
+        
+                        <div id="option2" class="d-none" >
 
-                    <div id="option2" class="d-none">
-                        <button type="button" class="btn btn-secondary w-100" data-bs-toggle="modal" data-bs-target="#scanAttachmentQRCodeModal" style="font-size: 14px;" >Show QR Code</button>
-                    </div>
+                            <div id="qrCodeSpinnerContainer" style="display: flex; justify-content: center; margin: 20px 0;">
+                                <div class="spinner-border text-primary" id="qrCodeSpinner"></div>
+                            </div>
+
+                            <div id="qrCodeUploadContainer" style="display: none; justify-content: center;">
+                                <div class="qr-code-container">
+                                    <img src="" id="uploadFileQr" alt="QR Code">
+                                    <!-- Corner borders -->
+                                    <div class="corner top-left"></div>
+                                    <div class="corner top-right"></div>
+                                    <div class="corner bottom-left"></div>
+                                    <div class="corner bottom-right"></div>
+                                </div>
+                            </div>
+                            <p style="font-size: 12px; opacity: 90%; text-align: center; padding: 0 50px;" >Scan this code with your phone to upload an attachment.</p>
+                            <p style="text-align: center; margin-top: 5px;">
+                                Uploaded File: <span id="filenamePhoneUpload">No file uploaded</span>   
+                                <span>
+                                    <i class="fa-solid fa-trash delete-phone-upload-btn" id="deletePhoneUploadFile" style="display:none; color:rgb(220, 11, 11);"></i>
+                                </span>
+                            </p>
+                        </div>
+                    </form>
                 </div>
                 <div class="modal-footer p-3 pt-0 border-top-0">
                     <button type="button" class="m-0 mt-1 mb-2 btn btn-primary w-100" id="saveRemarks">Save Changes</button>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Scan Attachment QR Code Modal -->
-    <div class="modal fade" id="scanAttachmentQRCodeModal" tabindex="-1" aria-labelledby="scanAttachmentQRCodeModalLabel" aria-hidden="true">
-        <div class="modal-dialog" style="max-width: 400px;">
-            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
-                <div class="modal-header pb-0 border-bottom-0 d-flex justify-content-between align-items-center" style="font-size: 13.5px;">
-                    <button type="button" class="btn-close" style="visibility: hidden;"></button>
-                    <h5 class="modal-title" id="scanAttachmentQRCodeModalLabel">Scan QR Code</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body text-center d-flex justify-content-center align-items-center flex-column">
-                    <!-- Dito lalagay generated Attachment QR Code -->
-                    <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script> 
-                    <dotlottie-player src="{% static 'gif/qr-scanning.json' %}" background="transparent" speed="1" 
-                        style="width: 230px; height: 230px;" loop autoplay>
-                    </dotlottie-player>
-                    <!----------------------------------------------->
-
-                    <p class="mb-2 mt-3">You may now scan the QR code to upload via mobile. Ensure your attachment is uploaded before saving changes.</p>                </p>
-                </div>
-                <div class="modal-footer p-0 border-top-0 d-flex flex-column align-items-center">
-                </div>                
             </div>
         </div>
     </div>
@@ -395,6 +401,118 @@
         </div>
     </div>
 
+    <!-- Profile Modal -->
+    <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-0 pb-2 bg-white shadow">
+                <div class="title-cover modal-header pb-1 pt-4 border-bottom-0" style="padding-left: 32px; padding-right: 32px;">
+                    <h5 class="modal-title" id="departmentReportModalLabel">Your Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="cover modal-body py-3 pb-0" style="padding-left: 32px; padding-right: 32px;">
+                    <div class="text-center">
+                        <img src="{% if user_profile.profile_picture %}/media/{{ user_profile.profile_picture }}{% else %}{% static 'images/default_profile_picture.png' %}{% endif %}" 
+                             id="profilePicture" 
+                             class="profile-modal-pic">
+                    </div>
+                </div>                
+
+                <div class="modal-body pt-1" style="padding-left: 32px; padding-right: 32px;">
+                    <div class="mb-3">
+                        <h4 id="fullName" class="text-center my-1 p-0">{{ user_profile.firstname }} {% if user_profile.middlename %}{{user_profile.middlename|slice:":1"}}.{%endif%} {{user_profile.lastname}}</h4>
+                        <p id="role" class="text-center p-0">{{ user_profile.role }}</p>
+                    </div>
+
+                    <div class="row mb-3 g-3">
+                        <div class="col text-start">
+                            <p id="userIDLabel" class="d-flex align-items-center gap-2">
+                                <i class="fa-solid fa-circle-user profile-icon"></i><strong>User ID</strong>
+                            </p>
+                        </div>
+                        <div class="col text-end">
+                            <p id="userIDValue">{{ user_profile.user_id }}</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3 g-3">
+                        <div class="col text-start">
+                            <p id="emailAddress" class="d-flex align-items-center gap-2">
+                                <i class="fa-solid fa-envelope profile-icon"></i><strong>Email Address</strong>
+                            </p>
+                        </div>
+                        <div class="col text-end">
+                            <p id="employeeEmail">{{ user_profile.email }}</p>
+                        </div>
+                    </div>
+                
+                    <div class="row mb-3 g-3">
+                        <div class="col text-start">
+                            <p id="contactNumber" class="d-flex align-items-center gap-2">
+                                <i class="fa-solid fa-phone profile-icon"></i><strong>Contact Number</strong>
+                            </p>
+                        </div>
+                        <div class="col text-end">
+                            <p id="employeeContact">{{ user_profile.contact_no }}</p>
+                        </div>
+                    </div>
+
+                    <button type="button" class="w-100 mt-1 mb-2 btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit Profile</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0">
+                    <h5 class="modal-title" id="departmentReportModalLabel">Edit Profile Information</h5>
+                    <button type="button" id="clostEditProfileModalBtn" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <form id="editProfileForm" method="post" action="" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="d-flex align-items-center justify-content-center mb-3">
+                            <div class="me-3">
+                                <img src="{% if user_profile.profile_picture %}/media/{{ user_profile.profile_picture }}{% else %}{% static 'images/default_profile_picture.png' %}{% endif %}" 
+                                    alt="Profile Picture" id="editProfilePicture" class="profile-modal-pic" style="width: 115px; height: 115px;">
+                            </div>
+                            <div>
+                                <div class="mb-2">
+                                    <input type="file" name="new_profile_photo" id="changePhotoInput" style="display:none;" accept="image/*" value="{% if user_profile.profile_picture %}/media/{{ user_profile.profile_picture }}{% endif %}" onchange="previewImage(event)">
+                                    <button type="button" class="btn btn-primary me-2" onclick="document.getElementById('changePhotoInput').click()">Change Photo</button>
+                                    <button type="button" class="btn btn-secondary" id="deletePhotoButton" onclick="deletePhoto()">Delete Photo</button>
+                                </div>
+                                <p class="mt-2 text-muted"><small>Upload PNG or JPG. (max 300 x 300px)</small></p>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editFirstName" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="editFirstName" name="new_firstname" value="{{ user_profile.firstname }}" maxlength="40" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editMiddleName" class="form-label">Middle Name (optional)</label>
+                            <input type="text" class="form-control" id="editMiddleName" name="new_middlename" value="{{ user_profile.middlename }}" maxlength="40">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editLastName" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="editLastName" name="new_lastname" value="{{ user_profile.lastname }}" maxlength="40" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editContactNumber" class="form-label">Contact Number</label>
+                            <input type="text" class="form-control" id="editContactNumber" name="new_contact_no" value="{{ user_profile.contact_no }}" maxlength="11" required>
+                        </div>
+                        <input type="hidden" name="temp_delete_profile" id="tempDeleteProfile" value="no">
+                    </form>
+                    <button type="button" id="saveEditProfileBtn" class="w-100 mt-1 mb-2 btn btn-primary">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+        
     {% if scanned_status == 'authorized' %}
 
         <!-- Select Document Action - Endorse Modal -->
@@ -551,14 +669,18 @@
     <script src="{% static 'js/add-remarks.js' %}"></script>
     <script src="{% static 'js/generate-document-report.js' %}"></script>
     <script src="{% static 'js/filter-dropdown.js' %}"></script>
+    <script src="{% static 'js/profile.js' %}"></script>
+    {% include "assets/profile-reset-inputs.html" %}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Initialize all modals
             const documentModal = new bootstrap.Modal(document.getElementById('viewDocumentModal'));
             const qrCodeModal = new bootstrap.Modal(document.getElementById('generateQRCode'));
             const endorseModal = new bootstrap.Modal(document.getElementById('endorseDocumentModal'));
-            const remarksModal = new bootstrap.Modal(document.getElementById('addRemarksAttachmentModal'));
-            const attachmentQRModal = new bootstrap.Modal(document.getElementById('scanAttachmentQRCodeModal'));
+            const remarksModal = new bootstrap.Modal(document.getElementById('addRemarksAttachmentModal'),{
+                backdrop: 'static',
+                keyboard: false
+            });
             const actionMessage = document.getElementById('actionMessage');
 
             let isQRCodeSelected = false;
@@ -597,25 +719,11 @@
                 });
             });
 
-            // Handle saving remarks and attachment
-            document.getElementById('saveRemarks').addEventListener('click', function () {
-                const remarks = document.getElementById('remarks').value;
-                // Logic to handle remarks and attachments can be added here
-
-                // Show QR Code Modal if the QR code option is selected
-                if (isQRCodeSelected) {
-                    remarksModal.hide();
-                    attachmentQRModal.show(); // Show QR Code modal
-                } else {
-                    remarksModal.hide(); // Just hide remarks modal if not scanning QR
-                }
+            document.getElementById('saveRemarks').addEventListener('click', function() {
+                clearRemarksAttachmentModal();
+                remarksModal.hide();
             });
-
-            // Show Add Remarks and Attachment modal again after Attachment QR Code modal is closed
-            document.getElementById('scanAttachmentQRCodeModal').addEventListener('hide.bs.modal', function () {
-                remarksModal.show();
-                isQRCodeSelected = false;
-            });
+            
         });
     </script>
 </body>

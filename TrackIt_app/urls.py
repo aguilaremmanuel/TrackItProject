@@ -88,10 +88,17 @@ urlpatterns = [
     path('delete-report/<int:report_no>/', views.delete_report, name='delete_report'),
     path('download-performance-report/<int:report_no>/', views.download_performance_report, name='download_performance_report'),
 
-    path('check-remarks/<int:document_no>/<int:remarks_no>/', views.check_remarks, name='check_remarks'),
-    path('change-priority-level/<int:document_no>/<int:remarks_no>/', views.change_priority_level, name='change_priority_level'),
+    path('check-remarks/<int:document_no>/<int:activity_log_no>/', views.check_remarks, name='check_remarks'),
+    path('change-priority-level/<int:document_no>/<int:activity_log_no>/', views.change_priority_level, name='change_priority_level'),
 
-    path('edit_profile/',views.edit_profile, name='edit_profile'),
+    path('generate-upload-file-qrcode/<int:activity_log_no>/', views.generate_upload_file_qrcode, name='generate_upload_file_qrcode'),
+    path('upload-file-page/<int:activity_log_no>/', views.upload_file_page, name='upload_file_page'),
+    path('upload-file-with-phone/<int:activity_log_no>', views.upload_file_with_phone, name='upload_file_with_phone'),
+
+    path('fetch-phone-upload-file/<int:activity_log_no>/', views.fetch_phone_upload_file, name='fetch_phone_upload_file'),
+    path('delete-phone-upload-file/<int:activity_log_no>/', views.delete_phone_upload_file, name='delete_phone_upload_file'),
+
+    path('edit-profile/',views.edit_profile, name='edit_profile'),
 
     path('update-announcement/<int:id>/', views.update_announcement, name='update_announcement'),
     path('delete-announcement/<int:id>/', views.delete_announcement, name='delete_announcement'),

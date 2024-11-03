@@ -2,8 +2,7 @@
 {% load tz %}
 {% if documents %}
     {% for document in documents %}
-
-        <tr>
+        <tr class="{% if user == 'DIR' %}{% if document.document_type.document_no == most_priority_doc_type.document_no %}highlight-priority{% endif %}{% endif %}">
             <td style="white-space: nowrap;">
                 {% if search_query %}
                     {{ document.highlighted_tracking_no|safe }}

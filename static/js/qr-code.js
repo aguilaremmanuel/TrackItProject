@@ -1,5 +1,4 @@
 async function getQRCodeURL(documentNo) {
-
     try {
         const response = await fetch(`/generate-qrcode/${documentNo}/`);
         if (response.ok) {
@@ -30,6 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     documentQRCodeLink.addEventListener('click', async function () {
         documentNo = documentQRCodeLink.getAttribute('data-document-no');
+        console.log("emns" + documentNo);
         let url = await getQRCodeURL(documentNo);
         if(url) {
             document.getElementById('qrCodeImage').src = url;
