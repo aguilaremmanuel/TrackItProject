@@ -98,7 +98,7 @@ urlpatterns = [
     path('fetch-phone-upload-file/<int:activity_log_no>/', views.fetch_phone_upload_file, name='fetch_phone_upload_file'),
     path('delete-phone-upload-file/<int:activity_log_no>/', views.delete_phone_upload_file, name='delete_phone_upload_file'),
 
-    path('edit_profile/',views.edit_profile, name='edit_profile'),
+    path('edit-profile/',views.edit_profile, name='edit_profile'),
 
     path('update-announcement/<int:id>/', views.update_announcement, name='update_announcement'),
     path('delete-announcement/<int:id>/', views.delete_announcement, name='delete_announcement'),
