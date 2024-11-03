@@ -40,40 +40,54 @@
                                     <a class="tab-link">Unread</a>
                                 </li>
                             </ul>
-                            <h6 class="notif-label mt-2">New</h6>
-                            <!-- Notification Item 1 -->
-                            <div class="dropdown-item d-flex align-items-center">
-                                <img src="{% static 'images/default-profile.png' %}" alt="Profile Picture" class="rounded-circle me-2" style="width: 40px; height: 40px;">
-                                <div>
-                                    <strong>John Doe</strong> has commented on your post.
-                                    <small class="text-muted d-block">Just now</small>
+                            <!-- Scrollable -->
+                            <div class="notif-wrapper">
+                                <h6 class="notif-label mt-2">New</h6>
+                                <div class="dropdown-item d-flex">
+                                    <img src="{% static 'images/default-profile.png' %}" alt="Profile Picture" class="rounded-circle mt-1" style="width: 40px; height: 40px;">
+                                    <div class="text-wrap text-break" style="max-width: 320px;">
+                                        <p class="mb-1"><strong>John Doe</strong> approved the document you created (TN. 123123123-DEPT-01). It's now ready for routing.</p>
+                                        <small class="d-block"><span class="unread-notif"><i class='bx bxs-circle' style="font-size: 10px;"></i>&nbsp; Just Now</span></small>
+                                    </div>
+                                </div>
+                                <div class="dropdown-item d-flex">
+                                    <img src="{% static 'images/default-profile.png' %}" alt="Profile Picture" class="rounded-circle mt-1" style="width: 40px; height: 40px;">
+                                    <div class="text-wrap text-break" style="max-width: 320px;">
+                                        <p class="mb-1"><strong>John Doe</strong> approved the document you created (TN. 123123123-DEPT-01). It's now ready for routing.</p>
+                                        <small class="d-block"><span class="unread-notif"><i class='bx bxs-circle' style="font-size: 10px;"></i>&nbsp; 2h</span></small>
+                                    </div>
+                                </div>
+
+                                <h6 class="notif-label">Earlier</h6>
+                                <div class="dropdown-item d-flex">
+                                    <img src="{% static 'images/default-profile.png' %}" alt="Profile Picture" class="rounded-circle mt-1" style="width: 40px; height: 40px;">
+                                    <div class="text-wrap text-break" style="max-width: 320px;">
+                                        <p class="mb-1"><strong>John Doe</strong> approved the document you created (TN. 123123123-DEPT-01). It's now ready for routing.</p>
+                                        <small class="d-block"><span class="text-muted">1d</span></small>
+                                    </div>
+                                </div>
+                                <div class="dropdown-item d-flex">
+                                    <img src="{% static 'images/default-profile.png' %}" alt="Profile Picture" class="rounded-circle mt-1" style="width: 40px; height: 40px;">
+                                    <div class="text-wrap text-break" style="max-width: 320px;">
+                                        <p class="mb-1"><strong>John Doe</strong> approved the document you created (TN. 123123123-DEPT-01). It's now ready for routing.</p>
+                                        <small class="d-block"><span class="text-muted">1d</span></small>
+                                    </div>
+                                </div>
+                                <div class="dropdown-item d-flex">
+                                    <img src="{% static 'images/default-profile.png' %}" alt="Profile Picture" class="rounded-circle mt-1" style="width: 40px; height: 40px;">
+                                    <div class="text-wrap text-break" style="max-width: 320px;">
+                                        <p class="mb-1"><strong>John Doe</strong> approved the document you created (TN. 123123123-DEPT-01). It's now ready for routing.</p>
+                                        <small class="d-block"><span class="text-muted">2d</span></small>
+                                    </div>
+                                </div>
+                                <div class="dropdown-item d-flex">
+                                    <img src="{% static 'images/default-profile.png' %}" alt="Profile Picture" class="rounded-circle mt-1" style="width: 40px; height: 40px;">
+                                    <div class="text-wrap text-break" style="max-width: 320px;">
+                                        <p class="mb-1"><strong>John Doe</strong> approved the document you created (TN. 123123123-DEPT-01). It's now ready for routing.</p>
+                                        <small class="d-block"><span class="text-muted">2d</span></small>
+                                    </div>
                                 </div>
                             </div>
-                            <!-- Notification Item 2 -->
-                            <div class="dropdown-item d-flex align-items-center">
-                                <img src="{% static 'images/default-profile.png' %}" alt="Profile Picture" class="rounded-circle me-2" style="width: 40px; height: 40px;">
-                                <div>
-                                    <strong>Jane Smith</strong> liked your photo.
-                                    <small class="text-muted d-block">5 minutes ago</small>
-                                </div>
-                            </div>                            
-                            <h6 class="notif-label">Earlier</h6>
-                            <!-- Notification Item 1 -->
-                            <div class="dropdown-item d-flex align-items-center">
-                                <img src="{% static 'images/default-profile.png' %}" alt="Profile Picture" class="rounded-circle me-2" style="width: 40px; height: 40px;">
-                                <div>
-                                    <strong>John Doe</strong> has commented on your post.
-                                    <small class="text-muted d-block">Just now</small>
-                                </div>
-                            </div>
-                            <!-- Notification Item 2 -->
-                            <div class="dropdown-item d-flex align-items-center">
-                                <img src="{% static 'images/default-profile.png' %}" alt="Profile Picture" class="rounded-circle me-2" style="width: 40px; height: 40px;">
-                                <div>
-                                    <strong>Jane Smith</strong> liked your photo.
-                                    <small class="text-muted d-block">5 minutes ago</small>
-                                </div>
-                            </div>  
                         </div>
                     </div>
                     <!---->

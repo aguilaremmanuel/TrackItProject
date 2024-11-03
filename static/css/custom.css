@@ -12425,7 +12425,7 @@ table tbody tr td.overdue {
 }
 
 .modal-lg {
-  max-width: 950px;
+  max-width: 1000px;
 }
 
 .drop-profile {
@@ -12442,7 +12442,8 @@ table tbody tr td.overdue {
   border: none;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-.dropdown-menu .dropdown-item {
+
+.drop-profile .dropdown-item {
   display: grid;
   grid-template-columns: min-content 1fr;
   align-items: center;
@@ -12454,12 +12455,8 @@ table tbody tr td.overdue {
   border-radius: 6px;
   color: #000000;
 }
-.dropdown-menu .dropdown-item:hover {
+.drop-profile .dropdown-item:hover {
   background-color: #eff3f5;
-}
-
-.dropdown-item:hover .drop-icon {
-  color: #909aa5;
 }
 
 .drop-icon {
@@ -12468,9 +12465,58 @@ table tbody tr td.overdue {
   width: 1.35rem;
 }
 
+.dropdown-item:hover .drop-icon {
+  color: #909aa5;
+}
+
 .drop-name {
   font-size: 13.5px;
   color: #000000;
+}
+
+.notif-tabs {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-bottom: 2px solid rgba(177, 193, 207, 0.4);
+}
+
+.notif-tabs .tab-link {
+  padding: 0.7rem 1rem;
+}
+
+.notif-label {
+  margin-bottom: 0;
+  padding: 8px 8px 8px 0px;
+}
+
+.drop-notif {
+  width: 400px;
+  padding: 18px 21px 21px 21px;
+  font-size: 14px;
+}
+
+.drop-notif .dropdown-item {
+  display: grid;
+  grid-template-columns: min-content 1fr;
+  gap: 0.8rem;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 9px 10px;
+  border-radius: 6px;
+  color: #000000;
+}
+.drop-notif .dropdown-item:hover {
+  background-color: #eff3f5;
+}
+
+.unread-notif {
+  color: #2E72EA !important;
+}
+
+.notif-wrapper {
+  max-height: calc(100vh - 200px) !important;
+  overflow-y: auto;
 }
 
 .title-cover {
@@ -12496,7 +12542,6 @@ table tbody tr td.overdue {
   font-size: 1rem;
   width: 1.2rem;
   text-align: center;
-  cursor: pointer;
 }
 
 .drop-filter, .drop-report {
