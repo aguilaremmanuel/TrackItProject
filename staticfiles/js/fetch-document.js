@@ -62,11 +62,25 @@ function bindViewButtons() {
                             <td>${activity.name}</td>
                             <td>${activity.office}</td>
                             <td style="white-space: nowrap;">${activity.role}</td>
-                            <td><i>${activity.remarks}</i></td>
-                            <td>${activity.activity}</td>
                         `;
 
+                        if(activity.remarks) {
+                            row.innerHTML += `<td><i>${activity.remarks}</i></td>`;
+                        } else {
+                            row.innerHTML += '<td style="opacity: 40%;">-no remarks-</td>';
+                        }
+
+                        if (activity.file_attachment) {
+                            const fileName = activity.file_attachment.split('/').pop();
+                            row.innerHTML += `<td style="white-space: nowrap;"><button class="view-attachment-btn" id="viewAttachmentLink" data-filepath="${activity.file_attachment}" data-bs-toggle="modal" data-bs-target="#viewAttachmentModal">${fileName}</button></td>`;
+                        } else {
+                            // Add an empty <td> if no file_attachment to maintain table structure
+                            row.innerHTML += `<td style="opacity: 40%;">-no attachment-</td>`;
+                        }
+                        row.innerHTML += `<td>${activity.activity}</td>`;
                         activitiesTableBody.appendChild(row);
+
+                        bindViewAttachmentButton();
                     });
                     
                     document.getElementById('documentTitleLink').setAttribute('data-document-no', documentNo);
@@ -111,6 +125,25 @@ function scanningQRCode() {
             bootstrapModalInstance.hide();
         }, doneTypingInterval); 
     });
+}
+
+function bindViewAttachmentButton() {
+    const viewAttachmentButtons = document.querySelectorAll('.view-attachment-btn');
+
+    if(viewAttachmentButtons) {
+        viewAttachmentButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const rawfilepath = this.getAttribute('data-filepath')
+                const filepath = rawfilepath + "?v=" + new Date().getTime();
+                const fileURL = `${window.location.origin}${filepath}`; 
+                // Set iframe source to display the PDF
+                document.getElementById('pdfFrame').src = fileURL;
+                // Update the attachment name in the modal
+                const fileName = rawfilepath.split('/').pop();
+                document.getElementById('attachmentName').textContent = fileName;
+            });
+        });
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
