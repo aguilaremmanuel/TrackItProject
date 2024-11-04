@@ -112,7 +112,7 @@
                                                             <i class="fa-solid fa-route"></i>
                                                         </div>
                                                         <p class="mb-0">
-                                                            <strong class="d-block">Document Routed: Tracking No. {{log.document_id.tracking_no}}</strong>
+                                                            <strong class="d-block">Document Routed to {{log.receiver_id.office_id.office_name}} Office: Tracking No. {{log.document_id.tracking_no}}</strong>
                                                             The document has been routed to the assigned recipient for further processing.
                                                         </p>
                                                     {% elif log.activity == 'Document Archived' %}

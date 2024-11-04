@@ -95,15 +95,15 @@ def pass_unacted_document(document, user):
             activity = 'Document Reassigned Due to Inaction',
             document_id = document,
             user_id = user,
-            receiver = document.act_receiver
+            receiver_id_id = document.act_receiver
         )
 
     else:
         officers_performance_levels = {}
         for officer in officers:
             fifteen_days_ago = timezone.now() - timedelta(days=15)
-            received_document_count = ActivityLogs.objects.filter(activity='Document Forwarded to Action Officer', receiver=officer.user_id, time_stamp__gte=fifteen_days_ago).count()
-            acted_documents = ActivityLogs.objects.filter(activity='Document Endorsed by Action Officer', receiver=officer.user_id, time_stamp__gte=fifteen_days_ago)
+            received_document_count = ActivityLogs.objects.filter(activity='Document Forwarded to Action Officer', receiver_id=officer, time_stamp__gte=fifteen_days_ago).count()
+            acted_documents = ActivityLogs.objects.filter(activity='Document Endorsed by Action Officer', receiver_id=officer, time_stamp__gte=fifteen_days_ago)
            
             if received_document_count > 0:
                 average_acted_document = (acted_documents.count() / received_document_count) * 100
@@ -137,7 +137,7 @@ def pass_unacted_document(document, user):
             activity = 'Document Reassigned Due to Inaction',
             document_id = document,
             user_id = user,
-            receiver = document.act_receiver
+            receiver_id_id = document.act_receiver
         )
 
 def calculate_average_response_time(acted_documents, officer):
@@ -147,7 +147,7 @@ def calculate_average_response_time(acted_documents, officer):
     for document in acted_documents:
 
         time_acted = document.time_stamp
-        log = ActivityLogs.objects.get(activity='Document Forwarded to Action Officer', document_id=document.document_id, receiver=officer.user_id)
+        log = ActivityLogs.objects.get(activity='Document Forwarded to Action Officer', document_id=document.document_id, receiver_id=officer)
         time_received = log.time_stamp
 
         time_taken = (time_acted - time_received).days

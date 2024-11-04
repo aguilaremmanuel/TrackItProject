@@ -294,7 +294,7 @@
                     <p>Are you sure you want to endorse this document for resolution? Once endorsed, the document will be ready for either resolution or further routing.</p>
                 </div>
                 <div class="modal-footer p-3 pt-0 border-top-0">
-                    <button type="button" class="m-0 my-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" id="cancelEndorseBtn" class="m-0 my-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="button" class="m-0 my-2 btn btn-primary" data-user="ACT" id="confirmEndorse">Confirm</button>
                 </div>
             </div>
@@ -577,12 +577,13 @@
                 selectEndorseModalCloseBtn.addEventListener('click', function() {
                     refreshURL();
                 });
-
+                
                 // when cancel endorse, show the select endorse modal again
                 const cancelEndorseBtn = document.getElementById('cancelEndorseBtn');
                 cancelEndorseBtn.addEventListener('click', function() {
                     selectEndorseModal.show();
                 });
+                
 
                 // When save remarks refresh the URL
                 const saveRemarks = document.getElementById('saveRemarks');

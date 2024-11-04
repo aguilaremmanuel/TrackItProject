@@ -65,7 +65,6 @@
                     <!---->
                 </div>
             </header>
-            
             <main class="main-content">
                 <div class="title-container d-flex justify-content-between align-items-center">
                     <h3 class="fw-semibold m-0">Activity Logs</h3>
@@ -87,11 +86,9 @@
                             <a class="tab-link {% if activity_type == 'all-activity' %}active{% endif %}" href="{% url 'sro_activity_logs' 'all-activity' %}?status=active">All Activity</a>
                         </li>
                     </ul>
-
                     {% if activity_type == 'recent' %}
                         <div class="activity-tab-wrapper d-flex mt-2">
                             <div class="activity-feed w-100 ">
-
                                 <!-- Today's Activities -->
                                 <div class="activity-class">
                                     <h6 class="activity-label">Today</h6>
@@ -104,7 +101,7 @@
                                                                 <i class="fa-solid fa-share"></i>
                                                             </div>
                                                             <p class="mb-0">
-                                                                <strong class="d-block">Document Received - Forwarded to ACT: Tracking No. {{log.document_id.tracking_no}}</strong>
+                                                                <strong class="d-block">Document Forwarded to ACT: Tracking No.: {{log.document_id.tracking_no}}, Received by: {{log.receiver_id.firstname}} {{log.receiver_id.lastname}}</strong>
                                                                 The document has been forwarded to the assigned recipient for further processing.
                                                             </p>
                                                         {% elif log.activity == 'Document Resolved' %}
@@ -112,7 +109,7 @@
                                                                 <i class="fa-solid fa-flag"></i>
                                                             </div>
                                                             <p class="mb-0">
-                                                                <strong class="d-block">Document Resolved: Tracking No. {{log.document_id.tracking_no}}</strong>
+                                                                <strong class="d-block">Document Resolved {% if log.receiver_id %}and forwarded to {{log.receiver_id.office_id.office_name}} Office.{% else %}and for archiving.{% endif %}: Tracking No. {{log.document_id.tracking_no}}</strong>
                                                                 The document has been resolved.
                                                             </p>
                                                         {% endif %}
@@ -137,7 +134,7 @@
                                                                 <i class="fa-solid fa-share"></i>
                                                             </div>
                                                             <p class="mb-0">
-                                                                <strong class="d-block">Document Received - Forwarded to ACT: Tracking No. {{log.document_id.tracking_no}}</strong>
+                                                                <strong class="d-block">Document Forwarded to ACT: Tracking No.: {{log.document_id.tracking_no}}, Received by: {{log.receiver_id.firstname}} {{log.receiver_id.lastname}}</strong>
                                                                 The document has been forwarded to the assigned recipient for further processing.
                                                             </p>
                                                         {% elif log.activity == 'Document Resolved' %}
@@ -145,7 +142,7 @@
                                                                 <i class="fa-solid fa-flag"></i>
                                                             </div>
                                                             <p class="mb-0">
-                                                                <strong class="d-block">Document Resolved: Tracking No. {{log.document_id.tracking_no}}</strong>
+                                                                <strong class="d-block">Document Resolved {% if log.receiver_id %}and forwarded to {{log.receiver_id.office_id.office_name}} Office.{% else %}and for archiving.{% endif %}: Tracking No. {{log.document_id.tracking_no}}</strong>
                                                                 The document has been resolved.
                                                             </p>
                                                         {% endif %}
@@ -170,7 +167,7 @@
                                                             <i class="fa-solid fa-share"></i>
                                                         </div>
                                                         <p class="mb-0">
-                                                            <strong class="d-block">Document Received - Forwarded to ACT: Tracking No. {{log.document_id.tracking_no}}</strong>
+                                                            <strong class="d-block">Document Forwarded to ACT: Tracking No.: {{log.document_id.tracking_no}}, Received by: {{log.receiver_id.firstname}} {{log.receiver_id.lastname}}</strong>
                                                             The document has been forwarded to the assigned recipient for further processing.
                                                         </p>
                                                     {% elif log.activity == 'Document Resolved' %}
@@ -178,7 +175,7 @@
                                                             <i class="fa-solid fa-flag"></i>
                                                         </div>
                                                         <p class="mb-0">
-                                                            <strong class="d-block">Document Resolved: Tracking No. {{log.document_id.tracking_no}}</strong>
+                                                            <strong class="d-block">Document Resolved {% if log.receiver_id %}and forwarded to {{log.receiver_id.office_id.office_name}} Office.{% else %}and for archiving.{% endif %}: Tracking No. {{log.document_id.tracking_no}}</strong>
                                                             The document has been resolved.
                                                         </p>
                                                     {% endif %}
@@ -203,7 +200,7 @@
                                                             <i class="fa-solid fa-share"></i>
                                                         </div>
                                                         <p class="mb-0">
-                                                            <strong class="d-block">Document Received - Forwarded to ACT: Tracking No. {{log.document_id.tracking_no}}</strong>
+                                                            <strong class="d-block">Document Forwarded to ACT: Tracking No.: {{log.document_id.tracking_no}}, Received by: {{log.receiver_id.firstname}} {{log.receiver_id.lastname}}</strong>
                                                             The document has been forwarded to the assigned recipient for further processing.
                                                         </p>
                                                     {% elif log.activity == 'Document Resolved' %}
@@ -211,7 +208,7 @@
                                                             <i class="fa-solid fa-flag"></i>
                                                         </div>
                                                         <p class="mb-0">
-                                                            <strong class="d-block">Document Resolved: Tracking No. {{log.document_id.tracking_no}}</strong>
+                                                            <strong class="d-block">Document Resolved {% if log.receiver_id %}and forwarded to {{log.receiver_id.office_id.office_name}} Office.{% else %}and for archiving.{% endif %}: Tracking No. {{log.document_id.tracking_no}}</strong>
                                                             The document has been resolved.
                                                         </p>
                                                     {% endif %}

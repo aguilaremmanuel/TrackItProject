@@ -2491,7 +2491,7 @@ def document_update_status(request, action, document_no):
         document_id=document,
         user_id_id=user_id,
         remarks = new_remarks,
-        receiver = act_receiver
+        receiver_id_id = act_receiver if act_receiver else None
     )
     data = {
         'remarks_no': log.remarks_id,
@@ -3205,7 +3205,7 @@ def download_performance_report(request, report_no):
             ).count()
             director_total_received_documents += ActivityLogs.objects.filter(
                 activity='Document Resolved',
-                receiver=User.objects.get(status='active', role='Director').user_id,
+                receiver_id=User.objects.get(status='active', role='Director'),
                 time_stamp__range=[converted_start_date, converted_end_date]
             ).count()
 
@@ -3220,7 +3220,7 @@ def download_performance_report(request, report_no):
 
             sro_received_documents_count = ActivityLogs.objects.filter(
                 activity='Document Resolved',
-                receiver = report.employee_id_id,
+                receiver_id = report.employee_id,
                 time_stamp__range=[converted_start_date, converted_end_date]
             ).count()
 
@@ -3262,12 +3262,12 @@ def download_performance_report(request, report_no):
             ).count()
             action_officer_total_received_documents = ActivityLogs.objects.filter(
                 activity='Document Forwarded to Action Officer',
-                receiver = report.employee_id.user_id,
+                receiver_id = report.employee_id,
                 time_stamp__range=[converted_start_date, converted_end_date]
             ).count()
             action_officer_total_received_documents += ActivityLogs.objects.filter(
                 activity='Document Reassigned Due to Inaction',
-                receiver=report.employee_id.user_id,
+                receiver_id=report.employee_id,
                 time_stamp__range=[converted_start_date, converted_end_date]
             ).count()
         
@@ -3332,7 +3332,7 @@ def download_performance_report(request, report_no):
         print("user id: ", sro.user_id)
         received_documents_count = ActivityLogs.objects.filter(
             activity='Document Routed', 
-            receiver=sro.user_id,
+            receiver_id=sro,
             time_stamp__range=[converted_start_date, converted_end_date]
             ).count()
 

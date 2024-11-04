@@ -87,8 +87,8 @@ class ActivityLogs(models.Model):
     activity = models.CharField(max_length=50)
     document_id = models.ForeignKey(Document, on_delete=models.SET_NULL, null=True, blank=True)
     remarks = models.ForeignKey(Remarks, on_delete=models.SET_NULL, null=True, blank=True)
-    user_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    receiver = models.CharField(max_length=10, blank=True, null=True)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='activity_logs_actor')
+    receiver_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='activity_logs_receiver')
     file_attachment = models.FileField(upload_to=document_directory_path, null=True, blank=True)
     class Meta:
         db_table = 'tbl_activity_logs'
