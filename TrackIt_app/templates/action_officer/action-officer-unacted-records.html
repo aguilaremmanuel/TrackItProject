@@ -187,6 +187,39 @@
         </div>
     </div>
 
+    <!-- Scan QR Code Modal -->
+    <div class="modal fade" id="scanQRCodeModal" tabindex="-1" aria-labelledby="addRemarksModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="max-width: 400px;">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0 d-flex justify-content-between align-items-center" style="font-size: 13.5px;">
+                    <button type="button" class="btn-close" style="visibility: hidden;"></button>
+                    <h5 class="modal-title" id="confirmRecordCreationLabel">Scan QR Code</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center d-flex justify-content-center align-items-center flex-column">
+                    <!-- Load the DotLottie Player component -->
+				    <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
+
+                    <!-- Embed the Lottie Animation -->
+                    <dotlottie-player 
+                        src="{% static 'gif/qr-scanning.json' %}" 
+                        background="transparent" 
+                        speed="1" 
+                        style="width: 250px; height: 250" 
+                        direction="1" 
+                        playMode="normal" 
+                        loop
+                        autoplay>
+                    </dotlottie-player>	
+                    <p class="mb-2" style="font-size: 14px;">You may now scan the QR code. For optimal scanning, keep the code in focus and avoid any obstructions.</p>
+                </div>
+                <div class="modal-footer p-3 pt-0 border-top-0 d-flex flex-column align-items-center">
+                    <input type="text" id="scannedQrURL" autocomplete="off" style="opacity: 0; position: absolute; pointer-events: none;">
+                </div>                
+            </div>
+        </div>
+    </div>
+
     <!-- Profile Modal -->
     <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
         <div class="modal-dialog">
