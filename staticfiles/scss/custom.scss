@@ -336,6 +336,13 @@ a {
     }
 }
 
+.custom-select {
+    padding-right: 2.2rem;
+    text-overflow: clip; 
+    overflow: hidden;
+    white-space: nowrap;
+}
+
 .form-select:disabled {
     background-color: #eff3f5;
 }
@@ -643,7 +650,7 @@ table tbody tr td.overdue {
 }
 
 .modal-lg {
-    max-width: 950px;
+    max-width: 1000px;
 }
 
 // DROPDOWNS
@@ -660,27 +667,23 @@ table tbody tr td.overdue {
     padding: 9px;
     border: none;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    
-    .dropdown-item {
-        display: grid;
-        grid-template-columns: min-content 1fr;
-        align-items: center;   
-        gap: 1rem;
-        font-size: 14px;
-        font-weight: 600;
-        padding: 8.45px 11.5px;
-        max-height: 37.85px;
-        border-radius: 6px;
-        color: #000000;
-        
-        &:hover {
-            background-color: #eff3f5;
-        }
-    }
 }
 
-.dropdown-item:hover .drop-icon {
-    color: #909aa5; 
+.drop-profile .dropdown-item {
+    display: grid;
+    grid-template-columns: min-content 1fr;
+    align-items: center;   
+    gap: 1rem;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 8.45px 11.5px;
+    max-height: 37.85px;
+    border-radius: 6px;
+    color: #000000;
+    
+    &:hover {
+        background-color: #eff3f5;
+    }
 }
 
 .drop-icon {
@@ -689,13 +692,61 @@ table tbody tr td.overdue {
     width: 1.35rem;
 }
 
+.dropdown-item:hover .drop-icon {
+    color: #909aa5; 
+}
+
 .drop-name {
     font-size: 13.5px;
     color: #000000;
 }
 
 // NOTIFICATIONS
+.notif-tabs {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-bottom: 2px solid rgba(177, 193, 207, 0.4);
+}
 
+.notif-tabs .tab-link {
+    padding: 0.7rem 1rem;
+}
+
+.notif-label {
+    margin-bottom: 0;
+    padding: 8px 8px 8px 0px;
+}
+
+.drop-notif {
+    width: 400px;
+    padding: 18px 21px 21px 21px;
+    font-size: 14px;
+}
+
+.drop-notif .dropdown-item {
+    display: grid;
+    grid-template-columns: min-content 1fr;
+    gap: 0.8rem;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 9px 10px;
+    border-radius: 6px;
+    color: #000000;
+    
+    &:hover {
+        background-color: #eff3f5;
+    }
+}
+
+.unread-notif {
+    color: #2E72EA !important;
+}
+
+.notif-wrapper {
+    max-height: calc(100vh - 200px) !important;
+    overflow-y: auto;
+}
 
 // PROFILE
 .title-cover {
