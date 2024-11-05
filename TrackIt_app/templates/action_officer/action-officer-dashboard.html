@@ -509,7 +509,8 @@
                         backgroundColor: 'rgba(77, 168, 218, 0.2)', // Fill color
                         tension: 0.4,
                         fill: true,
-                        pointRadius: 0
+                        pointRadius: 3,
+                        pointBackgroundColor: '#4DA8DA'
                     },
                     {
                         label: 'Pending',
@@ -518,16 +519,8 @@
                         backgroundColor: 'rgba(65, 105, 225, 0.2)',
                         tension: 0.4,
                         fill: true,
-                        pointRadius: 0
-                    },
-                    {
-                        label: 'Delayed',
-                        data: [5, 20, 9, 26], 
-                        borderColor: '#003366',
-                        backgroundColor: 'rgba(0, 51, 102, 0.2)',
-                        tension: 0.4,
-                        fill: true,
-                        pointRadius: 0
+                        pointRadius: 3,
+                        pointBackgroundColor: '#4169E1'
                     },
                     {
                         label: 'Unacted',
@@ -536,7 +529,8 @@
                         backgroundColor: 'rgba(0, 128, 128, 0.2)',
                         tension: 0.4,
                         fill: true,
-                        pointRadius: 0
+                        pointRadius: 3,
+                        pointBackgroundColor: '#008080'
                     }
                 ]
             },
@@ -562,11 +556,11 @@
         var chart = new Chart(ctx1, {
             type: 'pie',
             data: {
-                labels: ['Resolved', 'Pending', 'Delayed', 'Unacted'],
+                labels: ['Resolved', 'Pending', 'Unacted'],
                 datasets: [{
                     label: 'Document',
-                    data: [10, 6, 4, 2], // Replace with actual data
-                    backgroundColor: ['#4DA8DA', '#4169E1',  '#003366', '#008080']
+                    data: [10, 6, 2], // Replace with actual data
+                    backgroundColor: ['#4DA8DA', '#4169E1', '#008080']
                 }]
             },
             options: {
