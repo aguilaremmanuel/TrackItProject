@@ -124,20 +124,40 @@ a {
 }
 
 .btn-danger {
-    background-color: #EA2E2E;
+    background-color: #EA2E2E !important;
     font-size: 15px;
-    color: #FFFFFF;
+    color: #FFFFFF !important;
     font-weight: 500;
     padding: 0.5rem 1rem;
 
     &:hover {
-        background-color: darken(#EA2E2E, 10%);
-        color: #FFFFFF;
-        border-color: darken(#EA2E2E, 10%);
+        background-color: darken(#EA2E2E, 10%) !important;
+        color: #FFFFFF !important;
+        border-color: darken(#EA2E2E, 10%) !important;
     }
 
     &:active {
         background-color: darken(#EA2E2E, 15%) !important;
+        color: #FFFFFF !important;
+        box-shadow: none !important; 
+    }
+}
+
+.btn-success {
+    background-color: #28A745 !important;
+    font-size: 15px;
+    color: #FFFFFF !important;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+
+    &:hover {
+        background-color: darken(#28A745, 10%) !important;
+        color: #FFFFFF !important;
+        border-color: darken(#28A745, 10%) !important;
+    }
+
+    &:active {
+        background-color: darken(#28A745, 15%) !important;
         color: #FFFFFF !important;
         box-shadow: none !important; 
     }
@@ -525,6 +545,16 @@ thead {
     overflow-y: auto;
 }
 
+.tracker-wrapper {
+    max-height: calc(100vh - 270px) !important;
+    overflow-y: auto;
+}
+
+.tracker-action-wrapper {
+    max-height: calc(100vh - 318px) !important;
+    overflow-y: auto;
+}
+
 .table th {
     background-color: #ffffff !important;
     box-shadow: inset 0 -1.7px 0 rgba(177, 193, 207, 0.4);
@@ -658,6 +688,10 @@ table tbody tr td.overdue {
     margin-top: 15px !important;
 }
 
+.drop-report {
+    margin-top: 2.5px !important;
+}
+
 .drop-notif {
     margin-top: 14.2px !important;
 }
@@ -670,6 +704,23 @@ table tbody tr td.overdue {
 }
 
 .drop-profile .dropdown-item {
+    display: grid;
+    grid-template-columns: min-content 1fr;
+    align-items: center;   
+    gap: 1rem;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 8.45px 11.5px;
+    max-height: 37.85px;
+    border-radius: 6px;
+    color: #000000;
+    
+    &:hover {
+        background-color: #eff3f5;
+    }
+}
+
+.drop-report .dropdown-item {
     display: grid;
     grid-template-columns: min-content 1fr;
     align-items: center;   
@@ -775,7 +826,7 @@ table tbody tr td.overdue {
 }
 
 // FILTER
-.drop-filter, .drop-report {
+.drop-filter {
     margin-top: 2.5px !important;
     padding: 15px 21px 21px 21px;
 }
