@@ -70,6 +70,7 @@ class Document(models.Model):
     ongoing_deadline = models.DateField(null=True, blank=True)
     old_document_type = models.IntegerField(null=True, blank=True)
     is_rejected = models.BooleanField(default=False)
+    doc_rec_created_date = models.DateTimeField(auto_now_add=True, null=True, blank=True) 
     class Meta:
         db_table = 'tbl_document'
 

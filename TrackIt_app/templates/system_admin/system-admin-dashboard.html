@@ -103,20 +103,22 @@
                     <div class="col-12">
                         <div class="rounded-2 p-3 mt-3" style="background-color: #007bff; color:white; height: auto;">
                             <div class="row p-2">
-                                <div class="col-6 d-flex align-items-center">
-                                    <p class="fs-3 p-0 m-0 fw-bolder d-flex align-items-center"><i class='bx bxs-wink-smile'></i>&nbsp;Welcome, System Admin!</p>
-                                    <!-- <p class="fs-6 p-0 m-0 fw-bold">Office - ACO</p> -->
+                                <!-- Filtering Section -->
+                                <div class="col-9 d-flex align-items-center">
+                                    <p class="fs-4 p-0 m-0 fw-bold d-flex align-items-center">
+                                        <i class='bx bxs-wink-smile'></i>&nbsp;Welcome, {{ user_profile.firstname }}!
+                                    </p>
                                 </div>
-                                <div class="col-6">
+                                <div class="col-3">
                                     <div class="row d-flex align-items-center">
-                                        <div class="col-9 text-end p-0 m-0 pe-3">
-                                            <p class="p-0 m-0">See latest updates</p>
+                                        <div class="col-6 text-end p-0 m-0">
+                                            <p class="p-0 m-0">See latest updates &nbsp;</p>
                                         </div>
-                                        <div class="col-3 p-0 pe-3">
+                                        <div class="col-6 p-0">
                                             <select class="form-select fw-bold" id="inputGroupSelect" style="font-size: 14px !important; background-color: #007bff; color: white; border-color: white;">
-                                                <option selected value="today">Today</option>
-                                                <option value="month">This Month</option>
-                                                <option value="year">This Year</option>
+                                                <option value="today" {% if filter_option == 'today' %}selected{% endif %}>Today</option>
+                                                <option value="1" {% if filter_option == '1' %}selected{% endif %}>This Month</option>
+                                                <option value="2" {% if filter_option == '2' %}selected{% endif %}>This Year</option>
                                             </select>
                                         </div>
                                     </div>
@@ -130,50 +132,26 @@
                 <div class="row py-2">
                     <!-- 1st Column | Total Records -->
                     <div class="col-6">
-                        <div class="container d-block rounded-2 p-3 my-3" style="background-color: white; height: auto;">
+                        <!-- Total Records -->
+                        <div class="container d-block rounded-2 p-3 my-3" style="background-color: white; height: 363px;">
                             <div class="row">
-                                <h3><span class="fw-bolder my-3 px-2 rounded-2" style="background-color: #007bff; color:white;">95</span>&nbsp;Total Records</h3>                   
-                            </div>
-                          
-                            <div class="chart-container my-2">
-                                <!-- Bar 1 -->
-                                <div class="bar">
-                                    <div id="directorTotalRecords" class="percent-label">14</div>
-                                    <div class="bar-shape" style="height: 100px;"></div>
-                                    <div class="office-label">DIR</div>
-                                </div>
-                                <!-- Bar 2 -->
-                                <div class="bar selected">
-                                    <div class="percent-label">28</div>
-                                    <div class="bar-shape" style="height: 200px;"></div>
-                                    <div class="office-label">ADM</div>
-                                </div>
-                                <!-- Bar 3 -->
-                                <div class="bar">
-                                    <div class="percent-label">22</div>
-                                    <div class="bar-shape" style="height: 150px;"></div>
-                                    <div class="office-label">CSR</div>
-                                </div>
-                                <!-- Bar 4 -->
-                                <div class="bar">
-                                    <div class="percent-label">16</div>
-                                    <div class="bar-shape" style="height: 120px;"></div>
-                                    <div class="office-label">BDM</div>
-                                </div>
-                                <!-- Bar 5 -->
-                                <div class="bar">
-                                    <div class="percent-label">11</div>
-                                    <div class="bar-shape" style="height: 90px;"></div>
-                                    <div class="office-label">ACC</div>
-                                </div>
-                                <!-- Bar 6 -->
-                                <div class="bar">
-                                    <div class="percent-label">4</div>
-                                    <div class="bar-shape" style="height: 50px;"></div>
-                                    <div class="office-label">PRL</div>
+                                <div class="col-7 d-flex align-items-center">
+                                    <h3>
+                                        <span class="fw-bolder my-3 px-2 rounded-2" style="background-color: #007bff; color:white;">{{ total_records }}</span>&nbsp;Total Records
+                                    </h3>
                                 </div>
                             </div>
-                        </div>
+                            <div class="chart-container my-2" style="display: flex; justify-content: space-around;">
+                                {% for dept in department_counts %}
+                                <div class="bar {% if dept.sender_department == highlighted_department %}selected{% endif %}"
+                                     style="width: {{ bar_width }}%;">
+                                    <div class="percent-label">{{ dept.count }}</div>
+                                    <div class="bar-shape" style="height: {{ dept.scaled_height }}px; min-height: 50px;"></div>
+                                    <div class="office-label" style="font-size: {{ font_size }}px;">{{ dept.sender_department }}</div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>    
 
                         <div class="rounded-2 p-3 my-3" style="background-color: white; height:auto;">
                             <div class="row">
@@ -213,34 +191,40 @@
                                 </h4>
                             </div>
                             <div class="row my-2 d-flex align-items-center justify-content-center">
+                                <!-- Pending Count -->
                                 <div class="col-4 d-flex align-items-center justify-content-center">
-                                    <div class="progress-circle" style="background: conic-gradient(#3589ff 0% 70%, #e9ecef 70% 100%);">
+                                    <div class="progress-circle" 
+                                        style="background: {% if pending_user_count > 0 %} conic-gradient(#3589ff 0% {{ pending_percentage }}%, #e9ecef {{ pending_percentage }}% 100%) {% else %} #e9ecef {% endif %};">
                                         <div class="inner-content text-center">
-                                            <div class="percentage">35</div>
+                                            <div class="percentage">{{ pending_user_count|default:"0" }}</div>
                                             <div class="label">Pending</div>
                                         </div>
                                     </div>
                                 </div>
-                        
+
+                                <!-- Active Count -->
                                 <div class="col-4 d-flex align-items-center justify-content-center">
-                                    <div class="progress-circle" style="background: conic-gradient(#3589ff 0% 30%, #e9ecef 30% 100%);">
+                                    <div class="progress-circle" 
+                                        style="background: {% if active_user_count > 0 %} conic-gradient(#3589ff 0% {{ active_percentage }}%, #e9ecef {{ active_percentage }}% 100%) {% else %} #e9ecef {% endif %};">
                                         <div class="inner-content text-center">
-                                            <div class="percentage">15</div>
+                                            <div class="percentage">{{ active_user_count|default:"0" }}</div>
                                             <div class="label">Active</div>
                                         </div>
                                     </div>
                                 </div>
 
+                                <!-- Inactive Count -->
                                 <div class="col-4 d-flex align-items-center justify-content-center">
-                                    <div class="progress-circle" style="background: conic-gradient(#3589ff 0% 30%, #e9ecef 30% 100%);">
+                                    <div class="progress-circle" 
+                                        style="background: {% if inactive_user_count > 0 %} conic-gradient(#3589ff 0% {{ inactive_percentage }}%, #e9ecef {{ inactive_percentage }}% 100%) {% else %} #e9ecef {% endif %};">
                                         <div class="inner-content text-center">
-                                            <div class="percentage">15</div>
+                                            <div class="percentage">{{ inactive_user_count|default:"0" }}</div>
                                             <div class="label">Inactive</div>
                                         </div>
                                     </div>
                                 </div>
                             </div>                               
-                        </div>       
+                        </div>   
 
                         <div class="row px-3 my-3 d-flex justify-content-center">
                             <div class="col-4 ps-0 mt-0 rounded-2">
@@ -262,7 +246,8 @@
                             </div>
                         </div>
                         
-                        <div class="container d-block rounded-2 p-3 mb-3" style="background-color: white; height: 373px;">
+                        <!-- Document Status Chart -->
+                        <div class="container d-block rounded-2 p-3 mb-3" style="background-color: white; height: 425px;">
                             <div class="row pb-2">
                                 <h4 class="mb-0 fw-bold d-flex align-items-center">
                                     <i class='bx bx-stats' style="color: #007bff;"></i>&nbsp;Document Status
@@ -271,7 +256,7 @@
                             <div class="d-flex align-items-center justify-content-center" style="height: 100%;">
                                 <canvas class="px-4 pb-5" id="multiAreaChart" style="width: 100%; height: 100%; max-width: 100%; max-height: 100%;"></canvas>
                             </div>
-                        </div>                        
+                        </div>                         
                     </div>
                 </div>
 
@@ -496,50 +481,55 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-
-
+    <!-- Line Graph Script -->
     <script>
         const ctx = document.getElementById('multiAreaChart').getContext('2d');
+        const chartData = {{ chart_data|safe }};
+        
         const multiAreaChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ['Last 3 Months', 'Last 2 Months', 'Last Month', 'Current Month'], // Time periods
+                labels: chartData.labels,
                 datasets: [
-                {
+                    {
                         label: 'Resolved',
-                        data: [25, 10, 15, 50], // resolved document tot/unacted+delayed tot
-                        borderColor: '#4DA8DA', // Line color
-                        backgroundColor: 'rgba(77, 168, 218, 0.2)', // Fill color
+                        data: chartData.resolved_data,
+                        borderColor: '#4DA8DA',
+                        backgroundColor: 'rgba(77, 168, 218, 0.2)',
+                        pointBackgroundColor: '#4DA8DA',
+                        pointRadius: 4,
                         tension: 0.4,
-                        fill: true,
-                        pointRadius: 0
+                        fill: true
                     },
                     {
                         label: 'Pending',
-                        data: [3, 15, 8, 25], 
+                        data: chartData.pending_data,
                         borderColor: '#4169E1',
                         backgroundColor: 'rgba(65, 105, 225, 0.2)',
+                        pointBackgroundColor: '#4169E1',
+                        pointRadius: 4,
                         tension: 0.4,
-                        fill: true,
-                        pointRadius: 0
+                        fill: true
                     },
                     {
                         label: 'Delayed',
-                        data: [5, 20, 9, 26], 
+                        data: chartData.delayed_data,
                         borderColor: '#003366',
                         backgroundColor: 'rgba(0, 51, 102, 0.2)',
+                        pointBackgroundColor: '#003366',
+                        pointRadius: 4,
                         tension: 0.4,
-                        fill: true,
-                        pointRadius: 0
+                        fill: true
                     },
                     {
                         label: 'Unacted',
-                        data: [1, 2, 4, 10], 
+                        data: chartData.unacted_data,
                         borderColor: '#008080',
                         backgroundColor: 'rgba(0, 128, 128, 0.2)',
+                        pointBackgroundColor: '#008080',
+                        pointRadius: 4,
                         tension: 0.4,
-                        fill: true,
-                        pointRadius: 0
+                        fill: true
                     }
                 ]
             },
@@ -551,13 +541,13 @@
                 },
                 plugins: {
                     legend: {
-                        display: true, // Show the legend
+                        display: true,
                         position: 'bottom'
                     }
                 }
             }
         });
-    </script>
+    </script> 
 
     <!-- [ANALYTICS] Pie Chart JavaScript -->
     <script>
@@ -576,6 +566,14 @@
                 responsive: true,
                 maintainAspectRatio: false,
             }
+        });
+    </script>
+
+    <!-- JS for Filtering -->
+    <script>
+        document.getElementById('inputGroupSelect').addEventListener('change', function() {
+            const selectedFilter = this.value;
+            window.location.href = `?filter=${selectedFilter}`;
         });
     </script>
 </body>

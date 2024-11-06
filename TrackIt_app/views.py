@@ -20,6 +20,8 @@ from datetime import datetime, timedelta, date, time
 from xhtml2pdf import pisa
 import os, shutil
 from django.shortcuts import get_object_or_404
+from django.db.models import Count
+
 
 
 #---------------
@@ -354,8 +356,140 @@ def system_admin_dashboard(request):
     if role != 'SYS':
         return redirect(user_login)
 
+    # Global time filter (for general dashboard sections)-------------------------------------------
+    filter_option = request.GET.get('filter', 'today')
+
+    # Get the current time and date with timezone awareness
+    now = timezone.now()
+
+    # Determine date range for department filtering
+    if filter_option == '1':  # This Month
+        start_date = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    elif filter_option == '2':  # This Year
+        start_date = now.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+    else:  # Default to Today
+        start_date = now.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    # Set the end date to now
+    end_date = now
+
+    # Total Records --------------------------------------------------------------------------------
+    department_counts = (
+        Document.objects
+        .filter(activitylogs__time_stamp__gte=start_date)  # Match date range in ActivityLogs
+        .exclude(activitylogs__activity='Document Archived')  # Exclude archived
+        .values('sender_department')  # Group by sender_department
+        .annotate(count=Count('document_no'))  # Count occurrences per department
+        .order_by('-count')
+    )
+    
+    total_records = department_counts.aggregate(total=Count('document_no'))['total'] or 0
+
+    # Scaling and highlighting logic for chart
+    max_count = max(dept['count'] for dept in department_counts) if department_counts else 1
+    scaling_factor = 200 / max_count
+    for dept in department_counts:
+        dept['scaled_height'] = dept['count'] * scaling_factor
+
+    highlighted_department = max(department_counts, key=lambda x: x['count'], default=None)
+    font_size = max(8, 15 - len(department_counts))  # Minimum font size of 8
+    bar_width = 100 / len(department_counts) if department_counts else 100
+
+    # User Application------------------------------------------------------------------------------------------------------
+    if filter_option in ['1', '2']:  # Apply filtering only for Month and Year
+        pending_user_count = User.objects.filter(status='for verification', registered_date__gte=start_date).count()
+    else:  # Always show all applications when 'Today' is selected
+        pending_user_count = User.objects.filter(status='for verification').count()
+        
+    active_user_count = User.objects.filter(status='active').count()
+    inactive_user_count = User.objects.filter(status='inactive').count()
+    
+    total_account = pending_user_count + active_user_count + inactive_user_count
+    pending_percentage = (pending_user_count / total_account * 100) if total_account else 0
+    active_percentage = (active_user_count / total_account * 100) if total_account else 0
+    inactive_percentage = (inactive_user_count / total_account * 100) if total_account else 0
+
+    # Document Statuses------------------------------------------------------------------------------------------------------
+    if filter_option == 'today':
+        periods = [
+            ("Last 3 Days", now - timedelta(days=3)),
+            ("Last 2 Days", now - timedelta(days=2)),
+            ("Last Day", now - timedelta(days=1)),
+            ("Current Day", now.replace(hour=0, minute=0, second=0, microsecond=0)),
+        ]
+    elif filter_option == '1':  # This Month
+        periods = [
+            ("Last 3 Months", now.replace(day=1) - timedelta(days=90)),
+            ("Last 2 Months", now.replace(day=1) - timedelta(days=60)),
+            ("Last Month", now.replace(day=1) - timedelta(days=30)),
+            ("Current Month", now.replace(day=1)),
+        ]
+    elif filter_option == '2':  # This Year
+        periods = [
+            ("Last 3 Years", now.replace(month=1, day=1) - timedelta(days=3*365)),
+            ("Last 2 Years", now.replace(month=1, day=1) - timedelta(days=2*365)),
+            ("Last Year", now.replace(month=1, day=1) - timedelta(days=365)),
+            ("Current Year", now.replace(month=1, day=1)),
+        ]
+    else:
+        periods = []
+
+    resolved_data, pending_data, delayed_data, unacted_data = [], [], [], []
+
+    # Calculate document status counts per period
+    for period_name, start_date in periods:  # Remove the `reversed()` call
+
+        end_date = start_date + timedelta(days=1) if filter_option == 'today' else \
+            (start_date.replace(day=1) + timedelta(days=31)).replace(day=1) if filter_option == '1' else \
+            start_date.replace(month=1, day=1) + timedelta(days=365)
+
+        resolved_count = Document.objects.filter(
+            status='For Archiving', doc_rec_created_date__gte=start_date, doc_rec_created_date__lt=end_date
+        ).count()
+
+        pending_count = Document.objects.filter(
+            doc_rec_created_date__gte=start_date, doc_rec_created_date__lt=end_date
+        ).exclude(status='Archived').count()
+
+        delayed_count = UnactedLogs.objects.filter(
+            is_acted=True, time_stamp__gte=start_date, time_stamp__lt=end_date
+        ).values('document_id').distinct().count()  # Unique document count for 'delayed'
+
+        unacted_count = UnactedLogs.objects.filter(
+            is_acted=False, time_stamp__gte=start_date, time_stamp__lt=end_date
+        ).values('document_id').distinct().count()  # Unique document count for 'unacted'
+
+        resolved_data.append(resolved_count)
+        pending_data.append(pending_count)
+        delayed_data.append(delayed_count)
+        unacted_data.append(unacted_count)
+
+
+    # Pass data to the template
+    chart_data = {
+        'labels': [name for name, _ in periods],
+        'resolved_data': resolved_data,
+        'pending_data': pending_data,
+        'delayed_data': delayed_data,
+        'unacted_data': unacted_data,
+    }
+
     return render(request, 'system_admin/system-admin-dashboard.html', {
-        'user_profile': user_profile
+        'user_profile': user_profile,
+        'filter_option': filter_option,
+        'pending_user_count': pending_user_count,
+        'active_user_count': active_user_count,
+        'inactive_user_count': inactive_user_count,
+        'total_account': total_account,
+        'pending_percentage': pending_percentage,
+        'active_percentage': active_percentage,
+        'inactive_percentage': inactive_percentage,
+        'department_counts': department_counts,
+        'highlighted_department': highlighted_department['sender_department'] if highlighted_department else None,
+        'total_records': total_records,
+        'font_size': font_size,
+        'bar_width': bar_width,
+        'chart_data': chart_data,
     })
 
 # DIRECTOR DASHBOARD
