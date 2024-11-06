@@ -599,8 +599,17 @@
                     trackDocumentModal.show();
                 });
 
-                document.getElementById('addRemarksAttachmentModal').addEventListener('hide.bs.modal', function () {
+                document.getElementById('confirmChangePrioLevelBtn').addEventListener('click', function() {
                     refreshURL();
+                });
+
+                document.getElementById('saveRemarks').addEventListener('click', function() {
+                    setTimeout(() => {
+                        const isModalOpen = document.querySelector('.modal.show'); 
+                        if (!isModalOpen) { 
+                            refreshURL();
+                        }
+                    }, 300);
                 });
 
             });

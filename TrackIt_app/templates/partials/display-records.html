@@ -26,39 +26,44 @@
                 {% endif %}
             </td>
             <td>{{ document.document_type.category|capfirst }}</td>
-            <td>
-                {% if document.remarks|length > 28 %}
-                    {{ document.remarks|slice:":28" }}&hellip;
-                {% else %}
-                    {{ document.remarks}}
-                {% endif %}
-            </td>
+            {% if document.status != 'Archived' %}
+                <td>
+                    {% if document.remarks|length > 28 %}
+                        {{ document.remarks|slice:":28" }}&hellip;
+                    {% else %}
+                        {{ document.remarks}}
+                    {% endif %}
+                </td>
+            {% endif %}
             <td style="white-space: nowrap;">
                 {{ document.recent_update|date:"Y-m-d" }} <br>
                 {{ document.recent_update|timezone:"Asia/Manila"|date:"h:i A" }} 
             </td>
-            <td>
-                {% with remaining_days=document.ongoing_deadline|date_diff:today %}
-                    {% if remaining_days > 0 %}
-                        {{ remaining_days }} day{% if remaining_days > 1 %}s{% endif %}
-                    {% elif remaining_days == 0 %}
-                        Due today
-                    {% else %}
-                        Overdue
-                    {% endif %}
-                {% endwith %}
-            </td>
+            {% if document.status != 'Archived' %}
+                <td>
+                    {% with remaining_days=document.ongoing_deadline|date_diff:today %}
+                        {% if remaining_days > 0 %}
+                            {{ remaining_days }} day{% if remaining_days > 1 %}s{% endif %}
+                        {% elif remaining_days == 0 %}
+                            Due today
+                        {% else %}
+                            Overdue
+                        {% endif %}
+                    {% endwith %}
+                </td>
 
-            {% if document.document_type.priority_level.priority_level == "for pref. action" %}
-                <td><span class="badge badge-gray rounded-pill fw-semibold">FOR PREF. ACTION</span></td>
-            {% elif document.document_type.priority_level.priority_level == "normal" %}
-                <td><span class="badge badge-green rounded-pill fw-semibold">NORMAL</span></td>
-            {% elif document.document_type.priority_level.priority_level == "urgent" %}
-                <td><span class="badge badge-yellow rounded-pill fw-semibold">URGENT</span></td>
-            {% elif document.document_type.priority_level.priority_level == "very urgent" %}
-                <td><span class="badge badge-red rounded-pill fw-semibold">VERY URGENT</span></td>   
+                {% if document.document_type.priority_level.priority_level == "for pref. action" %}
+                    <td><span class="badge badge-gray rounded-pill fw-semibold">FOR PREF. ACTION</span></td>
+                {% elif document.document_type.priority_level.priority_level == "normal" %}
+                    <td><span class="badge badge-green rounded-pill fw-semibold">NORMAL</span></td>
+                {% elif document.document_type.priority_level.priority_level == "urgent" %}
+                    <td><span class="badge badge-yellow rounded-pill fw-semibold">URGENT</span></td>
+                {% elif document.document_type.priority_level.priority_level == "very urgent" %}
+                    <td><span class="badge badge-red rounded-pill fw-semibold">VERY URGENT</span></td>   
+                {% endif %}
+
             {% endif %}
-
+            
             <td>
                 <div class="table-action">
 

@@ -464,7 +464,6 @@ def system_admin_dashboard(request):
         delayed_data.append(delayed_count)
         unacted_data.append(unacted_count)
 
-
     # Pass data to the template
     chart_data = {
         'labels': [name for name, _ in periods],
@@ -892,6 +891,10 @@ def add_record(request):
                 new_remarks = Remarks.objects.create(
                     remarks=remarks
                 )
+
+                if file_attachment:
+                    folder_path = os.path.join(settings.MEDIA_ROOT, "document", str(document.document_no))
+                    file_attachment = handle_file_versioning(file_attachment, folder_path)
 
                 ActivityLogs.objects.create(
                     time_stamp=timezone.now(),
@@ -3683,6 +3686,7 @@ def check_remarks(request, document_no, activity_log_no):
         return redirect('user_login')
 
     if request.method == 'POST':
+
         remarks = request.POST.get('remarks')
         file_attachment = request.FILES.get('attachment')
         activity_log = ActivityLogs.objects.get(no=activity_log_no)

@@ -447,14 +447,16 @@
                 documentCategorySelect.dispatchEvent(new Event('change'));
                 
                 const documentTypeSelect = document.getElementById('DocumentType');
-                const selectedType = "{{ document.document_type.document_no }}";
-
+                const selectedType = "{{document.document_type.document_no}}";
+                console.log("selected type: " + selectedType);
                 const pollOptions = setInterval(() => {
-                    if (documentTypeSelect.options.length > 1) { // Assuming there's a default option
+                    if (documentTypeSelect.options.length > 1) { 
                         clearInterval(pollOptions);
                         Array.from(documentTypeSelect.options).forEach(option => {
+                            console.log("Checking option:", option.value);
                             if (option.value === selectedType) {
                                 option.selected = true;
+                                console.log("nagequal");
                             }
                         });
                     }
