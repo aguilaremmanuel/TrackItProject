@@ -644,22 +644,55 @@
                 });
             </script>
 
+        {% elif document_details.status == 'Rejected' %}
+            
+            <!-- Modal for Rejected Document -->
+            <div class="modal fade" id="rejectedAlertDocModal" tabindex="-1" aria-labelledby="rejectedDocLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content rounded-4 shadow px-3 pb-3">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="rejectedDocModalLabel" style="color: red;">Document Rejected.</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="fs-6">This document has been rejected by the Director. You may re-upload it. Check <strong>"Needs Action"</strong> for more details.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                function refreshURL() {
+                    setTimeout(function() {
+                        window.location.href = "/admin-officer-needs-action/all-documents/-1/?status=active";
+                    }, 500);
+                }
+    
+                document.addEventListener('DOMContentLoaded', function () {
+    
+                    const rejectedAlertDocModal = new bootstrap.Modal(document.getElementById('rejectedAlertDocModal'));
+                    rejectedAlertDocModal.show();
+    
+                    document.getElementById('rejectedAlertDocModal').addEventListener('hide.bs.modal', function() {
+                        refreshURL();
+                    });
+    
+                });
+            </script>
+
         {% endif %}
     
     {% elif scanned_status == 'unauthorized' %}
         <!-- Modal for Unauthorized Document -->
         <div class="modal fade" id="unauthorizedDocModal" tabindex="-1" aria-labelledby="unauthorizedDocLabel" aria-hidden="true">
             <div class="modal-dialog">
-                <div class="modal-content rounded-4 shadow">
+                <div class="modal-content rounded-4 shadow px-3 pb-3">
                     <div class="modal-header">
                         <h1 class="modal-title fs-5" id="unauthorizedDocModalLabel" style="color: red;">Failed to Scan Document.</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <p class="fs-6">You are unauthorized to update this document with Tracking Number: <strong><span id="scannedTrackingNo">{{ document_details.tracking_no }}</span></strong>.</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
@@ -691,16 +724,13 @@
         <!-- Modal for Documet Not Found -->
         <div class="modal fade" id="documentNotFoundDocModal" tabindex="-1" aria-labelledby="documentNotFoundDocDocLabel" aria-hidden="true">
             <div class="modal-dialog">
-                <div class="modal-content rounded-4 shadow">
+                <div class="modal-content rounded-4 shadow px-3 pb-3">
                     <div class="modal-header">
                         <h1 class="modal-title fs-5" id="documentNotFoundDocLabel" style="color: red;">Document Not Found.</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <p class="fs-6">The document you're trying to access does not exist or may have been deleted.</span></p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>

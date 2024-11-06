@@ -318,7 +318,6 @@
             <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
                 <div class="modal-header pb-0 border-bottom-0">
                     <h5 class="modal-title" id="approveDocumentModalLabel">Approve Document</h5>
-                    <button type="button" class="btn-close" id="approveModalCloseBtn" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <p>Are you sure you want to approve this document? Once approved, the document will be ready for routing and further action.</p>
@@ -337,12 +336,12 @@
             <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
                 <div class="modal-header pb-0 border-bottom-0">
                     <h5 class="modal-title" id="rejectDocumentModalLabel">Reject Document</h5>
+                    <button type="button" id="rejectModalCloseBtn" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <p>Are you sure you want to reject this document? Once rejected, the document will be sent back to the Admin Officer.</p>
                 </div>
                 <div class="modal-footer p-3 pt-0 border-top-0">
-                    <button type="button" id="cancelRejectBtn" class="m-0 my-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="button" class="m-0 my-2 btn btn-danger" data-user="DIR" id="confirmReject">Confirm</button>
                 </div>
             </div>
