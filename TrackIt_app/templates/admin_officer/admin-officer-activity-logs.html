@@ -123,6 +123,14 @@
                                                             <strong class="d-block">Document Archived: Tracking No. {{log.document_id.tracking_no}}</strong>
                                                             The document has been moved to storage and will no longer appear in active workflows.
                                                         </p>
+                                                    {% elif log.activity == 'Document Reupload' %}
+                                                        <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center feed-green">
+                                                            <i class="fa-solid fa-repeat"></i>
+                                                        </div>
+                                                        <p class="mb-0">
+                                                            <strong class="d-block">Document Re-upload: Tracking No. {{log.document_id.tracking_no}}</strong>
+                                                            The document has been reupload and now for approval of Director.
+                                                        </p>
                                                     {% endif %}
                                                 </div>
                                                 <p class="text-end mb-0" style="white-space: nowrap;">{{log.time_stamp|date:"Y-m-d"}}<br>{{log.time_stamp|date:"h:i A"}}</p>
@@ -163,6 +171,14 @@
                                                         <p class="mb-0">
                                                             <strong class="d-block">Document Archived: Tracking No. {{log.document_id.tracking_no}}</strong>
                                                             The document has been moved to storage and will no longer appear in active workflows.
+                                                        </p>
+                                                    {% elif log.activity == 'Document Reupload' %}
+                                                        <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center feed-green">
+                                                            <i class="fa-solid fa-repeat"></i>
+                                                        </div>
+                                                        <p class="mb-0">
+                                                            <strong class="d-block">Document Re-upload: Tracking No. {{log.document_id.tracking_no}}</strong>
+                                                            The document has been reupload and now for approval of Director.
                                                         </p>
                                                     {% endif %}
                                                 </div>
@@ -205,6 +221,14 @@
                                                             <strong class="d-block">Document Archived: Tracking No. {{log.document_id.tracking_no}}</strong>
                                                             The document has been moved to storage and will no longer appear in active workflows.
                                                         </p>
+                                                    {% elif log.activity == 'Document Reupload' %}
+                                                        <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center feed-green">
+                                                            <i class="fa-solid fa-repeat"></i>
+                                                        </div>
+                                                        <p class="mb-0">
+                                                            <strong class="d-block">Document Re-upload: Tracking No. {{log.document_id.tracking_no}}</strong>
+                                                            The document has been reupload and now for approval of Director.
+                                                        </p>
                                                     {% endif %}
                                                 </div>
                                                 <p class="text-end mb-0" style="white-space: nowrap;">{{log.time_stamp|date:"Y-m-d"}}<br>{{log.time_stamp|date:"h:i A"}}</p>
@@ -245,6 +269,14 @@
                                                         <p class="mb-0">
                                                             <strong class="d-block">Document Archived: Tracking No. {{log.document_id.tracking_no}}</strong>
                                                             The document has been moved to storage and will no longer appear in active workflows.
+                                                        </p>
+                                                    {% elif log.activity == 'Document Reupload' %}
+                                                        <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center feed-green">
+                                                            <i class="fa-solid fa-repeat"></i>
+                                                        </div>
+                                                        <p class="mb-0">
+                                                            <strong class="d-block">Document Re-upload: Tracking No. {{log.document_id.tracking_no}}</strong>
+                                                            The document has been reupload and now for approval of Director.
                                                         </p>
                                                     {% endif %}
                                                 </div>

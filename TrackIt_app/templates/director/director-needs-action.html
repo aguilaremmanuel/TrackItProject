@@ -304,7 +304,7 @@
             <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
                 <div class="modal-header pb-0 border-bottom-0">
                     <h5 class="modal-title" id="rejectDocumentModalLabel">Reject Document</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" id="rejectModalCloseBtn" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <p>Are you sure you want to reject this document? Once rejected, the document will be sent back to the Admin Officer.</p>
@@ -595,7 +595,7 @@
                     trackDocumentModal.show();
                 });
 
-                document.getElementById('cancelRejectBtn').addEventListener('click', function() {
+                document.getElementById('rejectModalCloseBtn').addEventListener('click', function() {
                     trackDocumentModal.show();
                 });
 

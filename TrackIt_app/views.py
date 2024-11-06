@@ -741,40 +741,82 @@ def add_record(request):
         remarks = request.POST.get('remarks')
         file_attachment = request.FILES.get('attachment')
 
-        if Document.objects.filter(tracking_no=tracking_no).exists():
+        try:
+            document = Document.objects.get(tracking_no=tracking_no)
 
-            try:
-                existing_document = Document.objects.get(tracking_no=tracking_no, status='Rejected')
-                if existing_document.is_rejected:
-                    existing_document.status = 'Archived'
-                    existing_document.save()
-            except Document.DoesNotExist:
+            if document.is_rejected:
+
+                document.sender_name = sender_name
+                document.status = 'For DIR Approval'
+                document.sender_department = sender_dept
+                document.document_type_id = doc_type
+                document.subject = subject
+                document.remarks = remarks
+                document.is_rejected = False
+                document.save()
+
+                new_remarks = Remarks.objects.create(
+                    remarks=remarks
+                )
+
+                ActivityLogs.objects.create(
+                    time_stamp=timezone.now(),
+                    activity='Document Reupload',
+                    document_id=document,
+                    user_id_id=user_id,
+                    remarks = new_remarks,
+                    file_attachment = file_attachment
+                )
+
+                routes = DocumentRoute.objects.filter(document_type=document.document_type)
+        
+                str_routes, str_routes_titles = generate_route_strings(routes)
+                qr_code_url = request.build_absolute_uri(f'/generate-qrcode/{document.document_no}/')
+                str_tracking_no = tracking_no
+                document_no = document.document_no
+
+                data = {
+                    'str_routes': str_routes,
+                    'str_routes_titles': str_routes_titles,
+                    'qr_code_url': qr_code_url,
+                    'str_tracking_no': str_tracking_no,
+                    'document_no': document_no,
+                    'recordExists': False
+                }
+                
+                # Return a JSON response indicating success
+                return JsonResponse(data)
+
+            else: 
+
                 data = {
                     'trackingNo': tracking_no,
                     'recordExists': True
                 }
+
                 return JsonResponse(data)
 
-        document = create_document(tracking_no, sender_name, sender_dept, doc_type, subject, remarks, file_attachment, user_id)
+        except Document.DoesNotExist:
 
-        routes = DocumentRoute.objects.filter(document_type=document.document_type)
-        
-        str_routes, str_routes_titles = generate_route_strings(routes)
-        qr_code_url = request.build_absolute_uri(f'/generate-qrcode/{document.document_no}/')
-        str_tracking_no = tracking_no
-        document_no = document.document_no
+            document = create_document(tracking_no, sender_name, sender_dept, doc_type, subject, remarks, file_attachment, user_id)
 
-        data = {
-            'str_routes': str_routes,
-            'str_routes_titles': str_routes_titles,
-            'qr_code_url': qr_code_url,
-            'str_tracking_no': str_tracking_no,
-            'document_no': document_no,
-            'recordExists': False
-        }
-        
-        # Return a JSON response indicating success
-        return JsonResponse(data)
+            routes = DocumentRoute.objects.filter(document_type=document.document_type)
+            
+            str_routes, str_routes_titles = generate_route_strings(routes)
+            qr_code_url = request.build_absolute_uri(f'/generate-qrcode/{document.document_no}/')
+            str_tracking_no = tracking_no
+            document_no = document.document_no
+
+            data = {
+                'str_routes': str_routes,
+                'str_routes_titles': str_routes_titles,
+                'qr_code_url': qr_code_url,
+                'str_tracking_no': str_tracking_no,
+                'document_no': document_no,
+                'recordExists': False
+            }
+            
+            return JsonResponse(data)
     
     if role == 'ADO':
         return redirect(admin_officer_new_record)
@@ -962,7 +1004,7 @@ def admin_officer_needs_action(request, panel, scanned_document_no):
 
         return render(request, 'admin_officer/admin-officer-needs-action.html', context)
 
-    if document.status in ["For Routing", "For Archiving"]:
+    if document.status in ["For Routing", "For Archiving", "Rejected"]:
         scanned_status = 'authorized'
     else:
         scanned_status = 'unauthorized'
@@ -4096,4 +4138,70 @@ def get_time_span(time_span):
         start_date = now.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
         end_date = start_date.replace(year=start_date.year + 1)
         return start_date, end_date
-    
+
+def generate_document_status_report(request, time_span, document_status):
+
+    user_profile = request.session.get('user_profile', None)
+    user_name = user_profile.get('firstname') + ' ' + user_profile.get('lastname')
+
+    start_date, end_date = get_time_span(time_span)
+
+    if document_status == 'all-documents':
+
+        documents = Document.objects.filter(
+            status__in = ['For DIR Approval', 'For Routing', 'For SRO Receiving', 'For ACT Receiving', 'For Resolving', 'For Archiving'],
+            recent_update__gte=start_date, 
+            recent_update__lt=end_date,
+        )
+
+        for_dir_approval = documents.filter(status='For DIR Approval')
+        for_routing = documents.filter(status='For Routing')
+        for_sro_receiving = documents.filter(status='For SRO Receiving')
+        for_act_receiving = documents.filter(status='For ACT Receiving')
+        for_resolving = documents.filter(status='For Resolving')
+        for_archiving = documents.filter(status='For Archiving')
+
+        context = {
+            'document_status': document_status,
+            'now': now(),
+            'today': date.today(),
+            'for_dir_approval': for_dir_approval,
+            'for_routing': for_routing,
+            'for_sro_receiving': for_sro_receiving,
+            'for_act_receiving': for_act_receiving,
+            'for_resolving': for_resolving,
+            'for_archiving': for_archiving,
+            'user_name': user_name
+        }
+
+        html_string = render_to_string('partials/document-status-report.html', context)
+
+    else:
+
+        documents = Document.objects.filter(
+            status = document_status,
+            recent_update__gte=start_date, 
+            recent_update__lt=end_date,
+        )
+
+        context = {
+            'document_status': document_status,
+            'now': now(),
+            'today': date.today(),
+            'documents': documents,
+            'user_name': user_name
+        }
+
+        html_string = render_to_string('partials/document-status-report.html', context)
+        
+
+    pdf_file = BytesIO()
+    pisa_status = pisa.CreatePDF(html_string, dest=pdf_file)
+
+    if pisa_status.err:
+        return HttpResponse('We had some errors <pre>' + html_string + '</pre>')
+    pdf_file.seek(0)
+    response = HttpResponse(pdf_file.getvalue(), content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename="Document-Status-Report.pdf"'
+
+    return response

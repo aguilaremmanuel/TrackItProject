@@ -108,6 +108,6 @@ urlpatterns = [
     path('director-document-status/<str:time_span>/<str:document_status>/', views.director_document_status, name='director_document_status'),
     path('director-office-performance/<str:time_span>/<str:target_office>/', views.director_office_performance, name='director_office_performance'),
     path('director-employee-performance/<str:time_span>/<str:target_report_type>/<str:target_office>/', views.director_employee_performance, name='director_employee_performance'),
-
+    path('generate-document-status-report/<str:time_span>/<str:document_status>/', views.generate_document_status_report, name='generate_document_status_report'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

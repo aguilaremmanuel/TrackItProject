@@ -1,0 +1,381 @@
+{% load tz %}
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Employee Performance Report</title>
+    <style>
+
+        @page {
+            margin: 40pt 60pt;
+        }
+
+        body, html {
+            font-family: Helvetica, sans-serif;
+            font-size: 8.8pt;
+            box-sizing: border-box;
+        }
+
+        table, th, td {
+            border-collapse: collapse;
+        }
+
+        .logs-table {
+            border: 1px solid black;
+            width: 100%;
+            border-spacing: 0;  /* No gap between cells */
+            table-layout: fixed;
+            box-sizing: content-box;
+        }
+
+        thead {
+            font-weight: bold;
+        }
+
+        .logs-table td {
+            padding: 5px;
+            text-align: left; /* Align text to the left */
+            vertical-align: top; /* Align text to the top */
+            white-space: normal;
+        }
+        
+    </style>
+</head>
+
+    <body>
+
+        <p style="text-align: center; font-size: 12pt; font-weight: 700;">DOCUMENT STATUS REPORT</p>
+
+        {% if document_status == 'all-documents' %}
+            <p style="margin-top: 25pt;"><b>For Director Approval Documents:</b></p>
+            <table class="logs-table">
+                <thead>
+                    <tr>
+                        <td style="width: 7%;">No</td>
+                        <td style="width: 15%;">Tracking <br> No.</td>
+                        <td style="width: 32%;">Subject</td>
+                        <td style="width: 17%;">Type</td>
+                        <td style="width: 15%;">Priority <br> Level</td>
+                        <td style="width: 14%;">Due <br> In</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if for_dir_approval %}
+                        {% for document in for_dir_approval %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ document.tracking_no|split_tracking_no|safe  }}</td>
+                                <td>{{ document.subject }}</td>
+                                <td>{{ document.document_type.document_type }}</td>
+                                <td>{{ document.document_type.priority_level.priority_level|title}}</td>
+                                <td>{% with remaining_days=document.ongoing_deadline|date_diff:today %}
+                                        {% if remaining_days > 0 %}
+                                            {{ remaining_days }} day{% if remaining_days > 1 %}s{% endif %}
+                                        {% elif remaining_days == 0 %}
+                                            Due today
+                                        {% else %}
+                                            Overdue
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+
+            <p style="margin-top: 25pt;"><b>For Routing Documents:</b></p>
+            <table class="logs-table">
+                <thead>
+                    <tr>
+                        <td style="width: 7%;">No</td>
+                        <td style="width: 15%;">Tracking <br> No.</td>
+                        <td style="width: 32%;">Subject</td>
+                        <td style="width: 17%;">Type</td>
+                        <td style="width: 15%;">Priority <br> Level</td>
+                        <td style="width: 14%;">Due <br> In</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if for_routing %}
+                        {% for document in for_routing %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ document.tracking_no|split_tracking_no|safe  }}</td>
+                                <td>{{ document.subject }}</td>
+                                <td>{{ document.document_type.document_type }}</td>
+                                <td>{{ document.document_type.priority_level.priority_level|title}}</td>
+                                <td>{% with remaining_days=document.ongoing_deadline|date_diff:today %}
+                                        {% if remaining_days > 0 %}
+                                            {{ remaining_days }} day{% if remaining_days > 1 %}s{% endif %}
+                                        {% elif remaining_days == 0 %}
+                                            Due today
+                                        {% else %}
+                                            Overdue
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+
+            <p style="margin-top: 25pt;"><b>For SRO Receiving Documents:</b></p>
+            <table class="logs-table">
+                <thead>
+                    <tr>
+                        <td style="width: 7%;">No</td>
+                        <td style="width: 15%;">Tracking <br> No.</td>
+                        <td style="width: 32%;">Subject</td>
+                        <td style="width: 17%;">Type</td>
+                        <td style="width: 15%;">Priority <br> Level</td>
+                        <td style="width: 14%;">Due <br> In</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if for_sro_receiving %}
+                        {% for document in for_sro_receiving %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ document.tracking_no|split_tracking_no|safe  }}</td>
+                                <td>{{ document.subject }}</td>
+                                <td>{{ document.document_type.document_type }}</td>
+                                <td>{{ document.document_type.priority_level.priority_level|title}}</td>
+                                <td>{% with remaining_days=document.ongoing_deadline|date_diff:today %}
+                                        {% if remaining_days > 0 %}
+                                            {{ remaining_days }} day{% if remaining_days > 1 %}s{% endif %}
+                                        {% elif remaining_days == 0 %}
+                                            Due today
+                                        {% else %}
+                                            Overdue
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+
+            <p style="margin-top: 25pt;"><b>For ACT Receiving Documents:</b></p>
+            <table class="logs-table">
+                <thead>
+                    <tr>
+                        <td style="width: 7%;">No</td>
+                        <td style="width: 15%;">Tracking <br> No.</td>
+                        <td style="width: 32%;">Subject</td>
+                        <td style="width: 17%;">Type</td>
+                        <td style="width: 15%;">Priority <br> Level</td>
+                        <td style="width: 14%;">Due <br> In</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if for_act_receiving %}
+                        {% for document in for_act_receiving %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ document.tracking_no|split_tracking_no|safe  }}</td>
+                                <td>{{ document.subject }}</td>
+                                <td>{{ document.document_type.document_type }}</td>
+                                <td>{{ document.document_type.priority_level.priority_level|title}}</td>
+                                <td>{% with remaining_days=document.ongoing_deadline|date_diff:today %}
+                                        {% if remaining_days > 0 %}
+                                            {{ remaining_days }} day{% if remaining_days > 1 %}s{% endif %}
+                                        {% elif remaining_days == 0 %}
+                                            Due today
+                                        {% else %}
+                                            Overdue
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+
+            <p style="margin-top: 25pt;"><b>For Resolving Documents:</b></p>
+            <table class="logs-table">
+                <thead>
+                    <tr>
+                        <td style="width: 7%;">No</td>
+                        <td style="width: 15%;">Tracking <br> No.</td>
+                        <td style="width: 32%;">Subject</td>
+                        <td style="width: 17%;">Type</td>
+                        <td style="width: 15%;">Priority <br> Level</td>
+                        <td style="width: 14%;">Due <br> In</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if for_resolving %}
+                        {% for document in for_resolving %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ document.tracking_no|split_tracking_no|safe  }}</td>
+                                <td>{{ document.subject }}</td>
+                                <td>{{ document.document_type.document_type }}</td>
+                                <td>{{ document.document_type.priority_level.priority_level|title}}</td>
+                                <td>{% with remaining_days=document.ongoing_deadline|date_diff:today %}
+                                        {% if remaining_days > 0 %}
+                                            {{ remaining_days }} day{% if remaining_days > 1 %}s{% endif %}
+                                        {% elif remaining_days == 0 %}
+                                            Due today
+                                        {% else %}
+                                            Overdue
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+
+            <p style="margin-top: 25pt;"><b>For Archiving Documents:</b></p>
+            <table class="logs-table">
+                <thead>
+                    <tr>
+                        <td style="width: 7%;">No</td>
+                        <td style="width: 15%;">Tracking <br> No.</td>
+                        <td style="width: 32%;">Subject</td>
+                        <td style="width: 17%;">Type</td>
+                        <td style="width: 15%;">Priority <br> Level</td>
+                        <td style="width: 14%;">Due <br> In</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if for_archiving %}
+                        {% for document in for_archiving %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ document.tracking_no|split_tracking_no|safe  }}</td>
+                                <td>{{ document.subject }}</td>
+                                <td>{{ document.document_type.document_type }}</td>
+                                <td>{{ document.document_type.priority_level.priority_level|title}}</td>
+                                <td>{% with remaining_days=document.ongoing_deadline|date_diff:today %}
+                                        {% if remaining_days > 0 %}
+                                            {{ remaining_days }} day{% if remaining_days > 1 %}s{% endif %}
+                                        {% elif remaining_days == 0 %}
+                                            Due today
+                                        {% else %}
+                                            Overdue
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        
+        {% else %}
+
+        <p style="margin-top: 25pt;"><b>{{document_status}} Documents:</b></p>
+            <table class="logs-table">
+                <thead>
+                    <tr>
+                        <td style="width: 7%;">No</td>
+                        <td style="width: 15%;">Tracking <br> No.</td>
+                        <td style="width: 32%;">Subject</td>
+                        <td style="width: 17%;">Type</td>
+                        <td style="width: 15%;">Priority <br> Level</td>
+                        <td style="width: 14%;">Due <br> In</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if documents %}
+                        {% for document in documents %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ document.tracking_no|split_tracking_no|safe  }}</td>
+                                <td>{{ document.subject }}</td>
+                                <td>{{ document.document_type.document_type }}</td>
+                                <td>{{ document.document_type.priority_level.priority_level|title}}</td>
+                                <td>{% with remaining_days=document.ongoing_deadline|date_diff:today %}
+                                        {% if remaining_days > 0 %}
+                                            {{ remaining_days }} day{% if remaining_days > 1 %}s{% endif %}
+                                        {% elif remaining_days == 0 %}
+                                            Due today
+                                        {% else %}
+                                            Overdue
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                            <td><i>No Data</i></td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+
+        {% endif %}
+
+        <p style="margin-top: 80pt;"><b> Date of Report:</b>{{now|date:"m/d/Y"}}</p>
+        <p><b>Report generated by: </b>{{ user_name }}</p>
+        
+    </body>
+</html>
