@@ -160,7 +160,7 @@
         
                             </tbody>                    
                         </table>
-                    </div>            
+                    </div>        
                 </div>
             </main>
         </div>
@@ -191,7 +191,7 @@
                         <div class="mb-3">
                             <label for="category" class="form-label">Category</label>
                             <select class="form-select" id="category" name="category" required>
-                                <option value="">Select Category</option>
+                                <option value="" selected disabled hidden>Select Category</option>
                                 <option value="Regular">Regular</option>
                                 <option value="Trust">Trust</option>
                             </select>
@@ -213,7 +213,7 @@
                                 <div class="input-group m-0 route-step">
                                     <span class="input-group-text">Route 1</span>
                                     <select class="form-select route-select" name="route[]" required>
-                                        <option value="" selected>Select Office</option>
+                                        <option value="" selected disabled hidden>Select Office</option>
                                         <option value="Director">Director</option>
                                         <option value="Accounting">Accounting</option>
                                         <option value="Budgeting">Budgeting</option>
@@ -229,7 +229,7 @@
                         <div class="mb-3">
                             <label for="priorityLevel"  class="form-label">Priority Level</label>
                             <select class="form-select" id="priorityLevel" name="priority_level" required>
-                                <option value="">Select Priority Level</option>
+                                <option value="" selected disabled hidden>Select Priority Level</option>
                                 <option value="normal">Normal</option>
                                 <option value="urgent">Urgent</option>
                                 <option value="very urgent">Very Urgent</option>
@@ -272,7 +272,7 @@
                         <div class="mb-3">
                             <label for="editCategory" class="form-label">Category</label>
                             <select class="form-select" name="edit_category" id="editCategory" required>
-                                <option value="">Select Category</option>
+                                <option value="" selected disabled hidden>Select Category</option>
                                 <option value="Regular">Regular</option>
                                 <option value="Trust">Trust</option>
                             </select>
@@ -294,7 +294,7 @@
                                 <div class="input-group m-0 editroute-step">
                                     <span class="input-group-text">Route 1</span>
                                     <select class="form-select edit-route-select" name="editRoutes[]" required>
-                                        <option value="" selected>Select Department</option>
+                                        <option value="" selected disabled hidden>Select Department</option>
                                         <option value="Director">Director</option>
                                         <option value="Accounting">Accounting</option>
                                         <option value="Budgeting">Budgeting</option>
@@ -310,7 +310,7 @@
                         <div class="mb-3">
                             <label for="editPriorityLevel" class="form-label">Priority Level</label>
                             <select class="form-select" name="edit_priority_level" id="editPriorityLevel" required>
-                                <option value="">Select Priority Level</option>
+                                <option value="" selected disabled hidden>Select Priority Level</option>
                                 <option value="Normal">Normal</option>
                                 <option value="Urgent">Urgent</option>
                                 <option value="Very Urgent">Very Urgent</option>
@@ -338,7 +338,7 @@
                     <p class="m-0">Are you sure you want to delete this document type? This action cannot be undone.</p>
                 </div>
                 <div class="modal-footer p-3 pt-0 border-top-0">
-                    <button type="button" class="m-0 my-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="m-0 my-2 btn btn-light" data-bs-dismiss="modal">Cancel</button>
                     <button type="button" class="m-0 my-2 btn btn-danger" id="confirmDelete">Delete</button>
                 </div>
             </div>
@@ -490,7 +490,7 @@
                 newRouteStep.innerHTML = `
                     <span class="input-group-text">Route ${routeStepCount}</span>
                     <select class="form-select route-select" name="route[]" required>
-                        <option value="" disabled selected>Select Office</option>
+                        <option value="" disabled selected hidden>Select Office</option>
                         <option value="Director">Director</option>
                         <option value="Accounting">Accounting</option>
                         <option value="Budgeting">Budgeting</option>
@@ -566,7 +566,7 @@
 
                 // Clear all options and re-add them
                 const options = ['Director', 'Accounting', 'Budgeting', 'Cashier', 'Payroll'];
-                select.innerHTML = '<option value="" disabled selected>Select Office</option>';
+                select.innerHTML = '<option value="" disabled selected hidden>Select Office</option>';
 
                 options.forEach(option => {
                     if (index === 0 || option !== previousSelected) {
@@ -619,7 +619,7 @@
                 newRouteStep.innerHTML = `
                     <span class="input-group-text">Route ${editRouteStepCount}</span>
                     <select class="form-select edit-route-select" name="editRoutes[]" required>
-                        <option value="" disabled selected>Select Office</option>
+                        <option value="" disabled selected hidden>Select Office</option>
                         <option value="Director">Director</option>
                         <option value="Accounting">Accounting</option>
                         <option value="Budgeting">Budgeting</option>
@@ -695,7 +695,7 @@
 
                 // Clear all options and re-add them
                 const options = ['Director', 'Accounting', 'Budgeting', 'Cashier', 'Payroll'];
-                select.innerHTML = '<option value="" disabled selected>Select Office</option>';
+                select.innerHTML = '<option value="" disabled selected hidden>Select Office</option>';
 
                 options.forEach(option => {
                     if (index === 0 || option !== editPreviousSelected) {

@@ -122,24 +122,23 @@
 
  /* Box styling */
  .clickable-box {
-  background-color: #007bff;
+  background-color: #2E72EA;
+  border-color: #2E72EA;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background-color 0.3s, transform 0.3s;
+  transition: background-color 0.1s, transform 0.1s;
 }
       
 .clickable-box h5{
-    color: white;
+  color: #FFFFFF;
 }
 
  /* Hover effect */
 .clickable-box:hover {
-    background-color: #318ff4;
-    transform: scale(1.05);
-}
-
-.clickable-box:hover h5 {
-    color: black;
+    background-color: #007bff;
+    border-color: #007bff; 
+    color: #FFFFFF;
+    transform: scale(1.025);
 }
