@@ -685,13 +685,19 @@
         <!-- Modal for Unauthorized Document -->
         <div class="modal fade" id="unauthorizedDocModal" tabindex="-1" aria-labelledby="unauthorizedDocLabel" aria-hidden="true">
             <div class="modal-dialog">
-                <div class="modal-content rounded-4 shadow px-3 pb-3">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="unauthorizedDocModalLabel" style="color: red;">Failed to Scan Document.</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                    <div class="modal-header pb-0 border-bottom-0">
+                        <h5 class="modal-title" id="unauthorizedDocModalLabel">
+                            <i class="fa-solid fa-triangle-exclamation" style="color: #EA2E2E;"></i> &nbsp;Failed to Scan Document
+                        </h5>
+                        <button type="button" id="unauthorizedDocModalCloseBtn" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body">
-                        <p class="fs-6">You are unauthorized to update this document with Tracking Number: <strong><span id="scannedTrackingNo">{{ document_details.tracking_no }}</span></strong>.</p>
+                    <div class="modal-body pb-2">
+                        <p>You are unauthorized to update this document with <strong>Tracking No. <span id="scannedTrackingNo">{{document_details.tracking_no}}</span></strong>.
+                           If you believe this is an error, please reach out to an administrator for support.</p>
+                    </div>
+                    <div class="modal-footer p-3 pt-0 border-top-0">
+                        <button type="button" id="unauthorizedDocModalClose2Btn" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
@@ -719,17 +725,22 @@
     {% endif %}
 
     {% if scanned_status == 'not-found' %}
-        
-        <!-- Modal for Documet Not Found -->
+        <!-- Modal for Document Not Found -->
         <div class="modal fade" id="documentNotFoundDocModal" tabindex="-1" aria-labelledby="documentNotFoundDocDocLabel" aria-hidden="true">
             <div class="modal-dialog">
-                <div class="modal-content rounded-4 shadow px-3 pb-3">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="documentNotFoundDocLabel" style="color: red;">Document Not Found.</h1>
+                <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                    <div class="modal-header pb-0 border-bottom-0">
+                        <h5 class="modal-title" id="documentNotFoundDocLabel">
+                            <i class="fa-solid fa-triangle-exclamation" style="color: #EA2E2E;"></i> &nbsp;Document Not Found
+                        </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body">
-                        <p class="fs-6">The document you're trying to access does not exist or may have been deleted.</span></p>
+                    <div class="modal-body pb-2">
+                        <p class="fs-6">The document you're trying to access does not exist or may have been deleted. 
+                        If you believe this is an error, please reach out to an administrator for support.</p>
+                    </div>
+                    <div class="modal-footer p-3 pt-0 border-top-0">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
