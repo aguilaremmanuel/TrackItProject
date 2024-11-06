@@ -26,7 +26,7 @@
                     </div>
                 </div>
 
-                <div class="table-responsive d-flex" id="t_activitiesContent" style="display: none;">
+                <div class="table-responsive tracker-action-wrapper d-flex" id="t_activitiesContent" style="display: none;">
                     <table class="table mb-1">
                         <thead>
                             <tr>
@@ -80,23 +80,44 @@
             <div class="modal-footer p-3 pt-0 border-top-0">
                 {% if role == 'DIR' %}
                     {% if not document.next_route %}
-                        <button type="button" data-action="reject" data-document-no="{{ scanned_document_no }}" data-bs-toggle="modal" data-bs-target="#rejectDocumentModal" class="m-0 mb-2 btn btn-danger">Reject Document</button>
+                        <button type="button" data-action="reject" data-document-no="{{ scanned_document_no }}" data-bs-toggle="modal" 
+                            data-bs-target="#rejectDocumentModal" class="m-0 mb-2 btn btn-danger">
+                            <i class="fa-solid fa-xmark"></i>&nbsp; Reject Document
+                        </button>
                     {% endif %}
-                    <button type="button" data-action="approve" data-document-no="{{ scanned_document_no }}" data-bs-toggle="modal" data-bs-target="#approveDocumentModal" class="m-0 mb-2 btn btn-success">Approve Document</button>
+                        <button type="button" data-action="approve" data-document-no="{{ scanned_document_no }}" data-bs-toggle="modal" 
+                            data-bs-target="#approveDocumentModal" class="m-0 mb-2 btn btn-success">
+                            <i class="fa-solid fa-check"></i>&nbsp; Approve Document
+                        </button>
                 {% elif role == 'ADO' %}
                     {% if document_details.status == 'For Routing' %}
-                        <button type="button" data-action="route" data-document-no="{{ scanned_document_no }}" data-bs-toggle="modal" data-bs-target="#routeDocumentModal" class="m-0 mb-2 btn btn-primary">Route Document</button>
+                        <button type="button" data-action="route" data-document-no="{{ scanned_document_no }}" data-bs-toggle="modal"
+                            data-bs-target="#routeDocumentModal" class="m-0 mb-2 btn btn-success">
+                            <i class="fa-solid fa-route"></i>&nbsp; Route Document
+                        </button>
                     {% elif document_details.status == 'For Archiving' %}
-                        <button type="button" data-action="archive" data-document-no="{{ scanned_document_no }}" data-bs-toggle="modal" data-bs-target="#archiveDocumentModal" class="m-0 mb-2 btn btn-primary">Archive Document</button>
+                        <button type="button" data-action="archive" data-document-no="{{ scanned_document_no }}" data-bs-toggle="modal" 
+                            data-bs-target="#archiveDocumentModal" class="m-0 mb-2 btn btn-danger">
+                            <i class="fa-solid fa-box-archive"></i>&nbsp; Archive Document
+                        </button>
                     {% endif %}
                 {% elif role == 'SRO' %}
                     {% if document_details.status == 'For SRO Receiving' %}
-                        <button type="button" data-action="forward" data-document-no="{{ scanned_document_no }}" data-bs-toggle="modal" data-bs-target="#forwardDocumentModal" class="m-0 mb-2 btn btn-primary">Forward Document</button>
+                        <button type="button" data-action="forward" data-document-no="{{ scanned_document_no }}" data-bs-toggle="modal"
+                            data-bs-target="#forwardDocumentModal" class="m-0 mb-2 btn btn-success">
+                            <i class="fa-solid fa-share"></i>&nbsp; Forward Document
+                        </button>
                     {% elif document_details.status == 'For Resolving' %}  
-                        <button type="button" data-action="resolve" data-document-no="{{ scanned_document_no }}" data-bs-toggle="modal" data-bs-target="#resolveDocumentModal" class="m-0 mb-2 btn btn-primary">Resolve Document</button>
+                        <button type="button" data-action="resolve" data-document-no="{{ scanned_document_no }}" data-bs-toggle="modal"
+                            data-bs-target="#resolveDocumentModal" class="m-0 mb-2 btn btn-success">
+                            <i class="fa-solid fa-flag"></i>&nbsp; Resolve Document
+                        </button>
                     {% endif %}
                 {% elif role == 'ACT' %}
-                    <button type="button" data-action="endorse" data-document-no="{{ scanned_document_no }}" data-bs-toggle="modal" data-bs-target="#endorseDocumentModal" class="m-0 mb-2 btn btn-primary">Endorse Document</button>
+                    <button type="button" data-action="endorse" data-document-no="{{ scanned_document_no }}" data-bs-toggle="modal" 
+                        data-bs-target="#endorseDocumentModal" class="m-0 mb-2 btn btn-success">
+                        <i class="fa-solid fa-thumbs-up"></i>&nbsp; Endorse Document
+                    </button>
                 {% endif %}
             </div>
         </div>

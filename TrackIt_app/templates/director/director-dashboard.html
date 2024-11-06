@@ -77,16 +77,16 @@
                     <div class="col-12">
                         <div class="rounded-2 p-3 mt-3" style="background-color: #007bff; color:white; height: auto;">
                             <div class="row p-2">
-                                <div class="col-9 d-flex align-items-center">
+                                <div class="col-6 d-flex align-items-center">
                                     <p class="fs-3 p-0 m-0 fw-bolder d-flex align-items-center"><i class='bx bxs-wink-smile'></i>&nbsp;Welcome, Director!</p>
                                     <!-- <p class="fs-6 p-0 m-0 fw-bold">Office - ACO</p> -->
                                 </div>
-                                <div class="col-3">
+                                <div class="col-6">
                                     <div class="row d-flex align-items-center">
-                                        <div class="col-6 text-end p-0 m-0">
-                                            <p class="p-0 m-0">See latest updates &nbsp;</p>
+                                        <div class="col-9 text-end p-0 m-0 pe-3">
+                                            <p class="p-0 m-0">See latest updates</p>
                                         </div>
-                                        <div class="col-6 p-0">
+                                        <div class="col-3 p-0 pe-3">
                                             <select class="form-select fw-bold" id="inputGroupSelect" style="font-size: 14px !important; background-color: #007bff; color: white; border-color: white;">
                                                 <option value="today" selected>Today</option>
                                                 <option value="month">This Month</option>
@@ -248,15 +248,6 @@
                                         <option value="5">For ACT Receiving</option>
                                         <option value="6">For Resolving</option>
                                         <option value="7">For Archiving</option>
-                                <div class="col-4 d-flex">
-                                    <select class="form-select" id="documentStatusSelect" style="font-size: 12px !important;">
-                                        <option value="all-documents" selected>All Documents</option>
-                                        <option value="For DIR Approval">For DIR Approval</option>
-                                        <option value="For Routing">For Routing</option>
-                                        <option value="For SRO Receiving">For SRO Receiving</option>
-                                        <option value="For ACT Receiving">For ACT Receiving</option>
-                                        <option value="For Resolving">For Resolving</option>
-                                        <option value="For Archiving">For Archiving</option>
                                     </select>
                                 </div>
 
@@ -289,21 +280,21 @@
 
                         <div class="row px-3 my-3 d-flex justify-content-center">
                             <div class="col-4 ps-0 mt-0 rounded-2">
-                                <div class="clickable-box rounded-2 p-3" onclick="window.location.href='{% url 'director_generate_reports' 'all-reports' %}?status=active'">
-                                    <h5 class="text-center mb-0"><i class='bx bxs-report'></i>&nbsp;Generate<br>Report</h5>
-                                </div>
+                                <a class="clickable-box rounded-2 p-3 w-100" href="{% url 'director_generate_reports' 'all-reports' %}?status=active">
+                                    <h5 class="text-center mb-0"><i class='bx bxs-report'></i>&nbsp; Generate<br>Report</h5>
+                                </a>
                             </div>
 
                             <div class="col-4 mt-0 rounded-2">
-                                <div class="clickable-box rounded-2 p-3" onclick="window.location.href='{% url 'director_unacted_records'%}?status=active'">
-                                    <h5 class="text-center mb-0"><i class='bx bxs-message-error'></i>&nbsp;Unacted<br>Documents</h5>
-                                </div>                                                            
+                                <a class="clickable-box rounded-2 p-3 w-100" href="{% url 'director_unacted_records' %}?status=active">
+                                    <h5 class="text-center mb-0"><i class='bx bxs-message-error'></i>&nbsp; Unacted<br>Documents</h5>
+                                </a>                                                            
                             </div>
 
                             <div class="col-4 pe-0 mt-0 rounded-2">
-                                <div class="clickable-box rounded-2 p-3" onclick="window.location.href='{% url 'director_announcements' %}?status=active'">
-                                    <h5 class="text-center mb-0"><i class='bx bxs-megaphone'></i>&nbsp;Post<br>Announcements</h5>
-                                </div>
+                                <a class="clickable-box rounded-2 p-3 w-100" href="{% url 'director_announcements' %}?status=active">
+                                    <h5 class="text-center mb-0"><i class='bx bxs-megaphone'></i>&nbsp; Post<br>Announcements</h5>
+                                </a>
                             </div>
                         </div>
 

@@ -15,7 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 	<link href="{% static 'fontawesomefree/css/all.min.css' %}" rel="stylesheet" type="text/css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <title>Records</title>
+    <title>Pending Records</title>
 </head>
 
 <body>
@@ -68,7 +68,7 @@
             
             <main class="main-content">
                 <div class="title-container d-flex justify-content-between align-items-center">
-                    <h3 class="fw-semibold m-0">Records</h3>
+                    <h3 class="fw-semibold m-0">Pending Records</h3>
                     <div class="d-flex justify-content-between align-items-center" style="gap: 12px;">
                         <div class="search-container">
                             <input type="text" id="searchInput" data-url="{% url 'action_officer_update_records_display' %}" class="form-search form-control shadow-sm" style="font-size: 14px !important;" placeholder="Search a document">
@@ -206,7 +206,7 @@
                         </div>
                     </div>
 
-                    <div class="table-responsive d-flex" id="activitiesContent" style="display: none;">
+                    <div class="table-responsive tracker-wrapper d-flex" id="activitiesContent" style="display: none;">
                         <table class="table mb-1">
                             <thead>
                                 <tr>
@@ -227,7 +227,6 @@
                     </div>
                 </div>
                 <div class="modal-footer p-3 pt-0 border-top-0">
-                    <button type="button" onclick="openDocumentReportPDF()" class="m-0 mb-2 btn btn-primary" id="generateDocumentReportBtn">Generate Document Report</button>
                 </div>
             </div>
         </div>
@@ -288,14 +287,13 @@
             <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
                 <div class="modal-header pb-0 border-bottom-0">
                     <h5 class="modal-title" id="endorseDocumentModalLabel">Endorse Document</h5>
-                    <button type="button" class="btn-close" id="endorseModalCloseBtn" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <p>Are you sure you want to endorse this document for resolution? Once endorsed, the document will be ready for either resolution or further routing.</p>
                 </div>
                 <div class="modal-footer p-3 pt-0 border-top-0">
-                    <button type="button" id="cancelEndorseBtn" class="m-0 my-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="m-0 my-2 btn btn-primary" data-user="ACT" id="confirmEndorse">Confirm</button>
+                    <button type="button" id="cancelEndorseBtn" class="m-0 my-2 btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="m-0 my-2 btn btn-success" data-user="ACT" id="confirmEndorse">Confirm</button>
                 </div>
             </div>
         </div>

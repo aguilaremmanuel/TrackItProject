@@ -11880,21 +11880,6 @@ a:hover {
   text-decoration: none;
 }
 
-.btn-light:hover {
-  background-color: #e2e6ea;
-  color: #000;
-  opacity: 0.8;
-}
-.btn-light:active {
-  background-color: #d0d4d7;
-  color: #000;
-  opacity: 1;
-}
-.btn-light:focus {
-  outline: none;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5);
-}
-
 .btn-primary {
   background-color: #2E72EA;
   font-size: 15px;
@@ -11939,12 +11924,32 @@ a:hover {
   box-shadow: none !important;
 }
 
+.btn-light {
+  background-color: #eff3f5 !important;
+  font-size: 15px;
+  color: #000000 !important;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-color: #eff3f5 !important;
+}
+.btn-light:hover {
+  background-color: #e6ecef !important;
+  color: #000000 !important;
+  border-color: #e6ecef !important;
+}
+.btn-light:active {
+  background-color: #dce5e9 !important;
+  color: #000000 !important;
+  box-shadow: none !important;
+}
+
 .btn-danger {
   background-color: #EA2E2E !important;
   font-size: 15px;
   color: #FFFFFF !important;
   font-weight: 500;
   padding: 0.5rem 1rem;
+  border-color: #EA2E2E !important;
 }
 .btn-danger:hover {
   background-color: #d01515 !important;
@@ -11963,6 +11968,7 @@ a:hover {
   color: #FFFFFF !important;
   font-weight: 500;
   padding: 0.5rem 1rem;
+  border-color: #28A745 !important;
 }
 .btn-success:hover {
   background-color: #1e7e34 !important;

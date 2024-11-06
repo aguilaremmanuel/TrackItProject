@@ -51,25 +51,6 @@ a {
 }
 
 // BUTTONS
-.btn-light {
-    &:hover {
-        background-color: #e2e6ea;
-        color: #000;
-        opacity: 0.8;
-    }
-
-    &:active {
-        background-color: #d0d4d7; 
-        color: #000;
-        opacity: 1;
-    }
-
-    &:focus {
-        outline: none;
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5);
-    }
-}
-
 .btn-primary {
     background-color: $primary;
     font-size: 15px;
@@ -123,12 +104,34 @@ a {
     }
 }
 
+.btn-light {
+    background-color: #eff3f5 !important;
+    font-size: 15px;
+    color: #000000 !important;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-color: #eff3f5 !important;
+
+    &:hover {
+        background-color: darken(#eff3f5, 3%) !important;
+        color: #000000 !important;
+        border-color: darken(#eff3f5, 3%) !important;
+    }
+
+    &:active {
+        background-color: darken(#eff3f5, 6%) !important;
+        color: #000000 !important;
+        box-shadow: none !important; 
+    }
+}
+
 .btn-danger {
     background-color: #EA2E2E !important;
     font-size: 15px;
     color: #FFFFFF !important;
     font-weight: 500;
     padding: 0.5rem 1rem;
+    border-color: #EA2E2E !important;
 
     &:hover {
         background-color: darken(#EA2E2E, 10%) !important;
@@ -149,6 +152,7 @@ a {
     color: #FFFFFF !important;
     font-weight: 500;
     padding: 0.5rem 1rem;
+    border-color: #28A745 !important;
 
     &:hover {
         background-color: darken(#28A745, 10%) !important;
