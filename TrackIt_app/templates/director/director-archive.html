@@ -165,6 +165,7 @@
                                     <th>Department</th>
                                     <th>Role/Position</th>
                                     <th>Remarks</th>
+                                    <th>Attachment</th>
                                     <th class="text-start">Activity</th>
                                 </tr>
                             </thead>
@@ -383,7 +384,7 @@
             });
         
             // When QR Code Modal is closed, show Document Details Modal again
-            document.getElementById('generateQRCode').addEventListener('hidden.bs.modal', function () {
+            document.getElementById('generateQRCode').addEventListener('hide.bs.modal', function () {
                 documentModal.show();
             });
         });

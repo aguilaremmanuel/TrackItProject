@@ -12467,6 +12467,10 @@ table tbody tr td.overdue {
   margin-top: 15px !important;
 }
 
+.drop-report {
+  margin-top: 2.5px !important;
+}
+
 .drop-notif {
   margin-top: 14.2px !important;
 }
@@ -12491,6 +12495,22 @@ table tbody tr td.overdue {
   color: #000000;
 }
 .drop-profile .dropdown-item:hover {
+  background-color: #eff3f5;
+}
+
+.drop-report .dropdown-item {
+  display: grid;
+  grid-template-columns: min-content 1fr;
+  align-items: center;
+  gap: 1rem;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8.45px 11.5px;
+  max-height: 37.85px;
+  border-radius: 6px;
+  color: #000000;
+}
+.drop-report .dropdown-item:hover {
   background-color: #eff3f5;
 }
 
@@ -12579,7 +12599,7 @@ table tbody tr td.overdue {
   text-align: center;
 }
 
-.drop-filter, .drop-report {
+.drop-filter {
   margin-top: 2.5px !important;
   padding: 15px 21px 21px 21px;
 }

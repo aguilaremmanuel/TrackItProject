@@ -141,11 +141,11 @@
                         <!-- -->
                         <div class="mb-3">
                             <label for="formFile" class="form-label">
-                                Upload Attachment 
-                                <span style="color: gray; font-style: italic;">(Optional; please note that only PDF files are allowed.)</span>
+                                Upload Attachment&nbsp;
+                                <span class="text-muted fw-regular opacity-50">(Optional, Upload PDF only)</span>
                             </label>
                             <div class="input-group">
-                                <input class="form-control" type="file" id="formFile" name="attachment" accept=".pdf, application/pdf">
+                                <input class="form-control form-file" type="file" id="formFile" name="attachment" accept=".pdf, application/pdf">
                             </div>
                             <!-- Hidden input to store the default attachment value -->
                             <input type="hidden" id="hiddenAttachment" name="hiddenAttachment" value="/default_attachment.pdf">
