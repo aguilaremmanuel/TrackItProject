@@ -33,7 +33,7 @@ document.getElementById('EmployeeOfficeCategory').addEventListener('change', fun
         .then(response => response.json())
         .then(data => {
             // Clear previous options
-            targetEmployeeSelect.innerHTML = '<option value="">Select Document Type</option>';
+            targetEmployeeSelect.innerHTML = '<option value="" selected disabled hidden>Select Target Employee</option>';
             // Enable the dropdown
             targetEmployeeSelect.disabled = false;
             // Populate new options

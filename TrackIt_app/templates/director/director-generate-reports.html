@@ -149,7 +149,7 @@
                         {% csrf_token %}
                         <div class="mb-3">
                             <label for="reportNameEmployee" class="form-label">Report Name</label>
-                            <input type="text" class="form-control" id="reportNameEmployee" placeholder="Enter Report Name" name="report_name" required autocomplete="off">
+                            <input type="text" class="form-control" id="reportNameEmployee" placeholder="Enter Report Name" name="report_name" maxlength="49" required autocomplete="off">
                         </div>
 
                         <div class="row mb-3 g-3">
@@ -166,7 +166,7 @@
                         <div class="mb-3">
                             <label for="officeID" class="form-label">Employee's Office</label>
                             <select class="form-select" id="EmployeeOfficeCategory" aria-label="EmployeeOfficeCategory" required>
-                                <option value="">Select Employee's Office</option>
+                                <option value="" selected disabled hidden>Select Employee's Office</option>
                                 <option value="DIR">Director</option>
                                 <option value="ADM">Administrative</option>
                                 <option value="ACC">Accounting</option>
@@ -205,7 +205,7 @@
                         
                         <div class="mb-3">
                             <label for="reportNameOffice" class="form-label">Report Name</label>
-                            <input type="text" class="form-control" id="reportNameOffice" placeholder="Enter Report Name" name="report_name" required autocomplete="off">
+                            <input type="text" class="form-control" id="reportNameOffice" placeholder="Enter Report Name" name="report_name" maxlength="49" required autocomplete="off">
                         </div>
 
                         <div class="row mb-3 g-3">
@@ -222,7 +222,7 @@
                         <div class="mb-3">
                             <label for="office" class="form-label">Target Office</label>
                             <select class="form-select" id="office" name="office" required>
-                                <option value="" selected>Select Office</option>
+                                <option value="" selected disabled hidden>Select Office</option>
                                 <option value="ACC">Accounting</option>
                                 <option value="BMD">Budgeting</option>
                                 <option value="CSR">Cashier</option>

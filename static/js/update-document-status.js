@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const modals = {
         route: document.getElementById('routeDocumentModal'),
         approve: document.getElementById('approveDocumentModal'),
+        reject: document.getElementById('rejectDocumentModal'),
         forward: document.getElementById('forwardDocumentModal'),
         endorse: document.getElementById('endorseDocumentModal'),
         resolve: document.getElementById('resolveDocumentModal'),
@@ -12,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const confirmButtons = {
         route: document.getElementById('confirmRoute'),
         approve: document.getElementById('confirmApprove'),
+        reject: document.getElementById('confirmReject'),
         forward: document.getElementById('confirmForward'),
         resolve: document.getElementById('confirmResolve'),
         endorse: document.getElementById('confirmEndorse'),

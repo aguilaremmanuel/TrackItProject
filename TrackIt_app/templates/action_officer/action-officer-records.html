@@ -515,36 +515,10 @@
         
     {% if scanned_status == 'authorized' %}
 
-        <!-- Select Document Action - Endorse Modal -->
-        <div class="modal fade" id="selectEndorseModal" tabindex="-1" aria-labelledby="selectEndorseModalLabel" aria-hidden="true">
-            <div class="modal-dialog" style="max-width: 400px;">
-                <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
-                    <div class="modal-header pb-0 border-bottom-0 d-flex justify-content-between align-items-center" style="font-size: 13.5px;">
-                        <button type="button" class="btn-close" style="visibility: hidden;"></button>
-                        <h5 class="fw-bold mb-0 text-center flex-grow-1" id="selectEndorseLabel">Select Document Action</h5>
-                        <button type="button" id="selectEndorseModalCloseBtn" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body text-center mt-1 mb-2">
-                        <div class="d-flex flex-wrap justify-content-center text-center" style="gap: .4rem 1rem !important;">
-                            <p class=""><strong>Tracking Number:</strong> <span id="trackingNumber">{{ document.tracking_no }}</span></p>
-                            <p class=""><strong>Subject:</strong> <span id="subject"></span>{{ document.subject }}</p>
-                            <p class=""><strong>Sender Name:</strong> <span id="senderName">{{ document.sender_name }}</span></p>
-                            <p class=""><strong>Date Received:</strong> <span id="dateReceived">{{ document.recent_update|date:"Y-m-d" }} {{ document.recent_update|timezone:"Asia/Manila"|date:"h:i A"  }}</span></p>
-                        </div>
-                    </div>
-                    <div class="modal-footer p-3 pt-0 border-top-0 d-flex flex-column align-items-center">
-                        <button type="button" class="m-0 mb-1 btn btn-primary w-100" id="endorseDocument" data-action="endorse" data-document-no="{{ document.document_no }}" data-bs-toggle="modal" data-bs-target="#endorseDocumentModal">Endorse Document</button>
-                        <button type="button" class="m-0 mb-2 btn btn-secondary w-100" id="trackDocument" data-document-no="{{ document.document_no }}" data-bs-toggle="modal" data-bs-target="#trackDocumentModal">Track Document</button>
-                    </div>                
-                </div>
-            </div>
-        </div>
-
         {% include "partials/tracking-document-details.html" %}
         {% include "partials/tracking-qr-code-modal.html" %}
-
-        <script src="{% static 'js/track-document.js' %}"></script>
         <script src="{% static 'js/track-qr-code.js' %}"></script>
+        <script src="{% static 'js/bind-view-attachment.js' %}"></script>
 
         <script>
             function refreshURL() {
@@ -554,110 +528,120 @@
             }
 
             document.addEventListener('DOMContentLoaded', function () {
-                // Select buttons and modals for routing
-                const endorseDocument = document.getElementById('endorseDocument');
-                const selectEndorseModal = new bootstrap.Modal(document.getElementById('selectEndorseModal'));
-                const endorseDocumentModal = new bootstrap.Modal(document.getElementById('endorseDocumentModal'));
-                const endorseModalCloseBtn = document.getElementById('endorseModalCloseBtn');
-            
-                selectEndorseModal.show();
-
-                endorseDocument.addEventListener('click', function () {
-                    selectEndorseModal.hide();
-                    endorseDocumentModal.show();
-                });
-
-                endorseModalCloseBtn.addEventListener('click', function () {
-                    endorseDocumentModal.hide();
-                    selectEndorseModal.show();
-                });
-
-                // When selectEndorseModal is close then refresh the URL
-                const selectEndorseModalCloseBtn = document.getElementById('selectEndorseModalCloseBtn');
-                selectEndorseModalCloseBtn.addEventListener('click', function() {
-                    refreshURL();
-                });
                 
-                // when cancel endorse, show the select endorse modal again
-                const cancelEndorseBtn = document.getElementById('cancelEndorseBtn');
-                cancelEndorseBtn.addEventListener('click', function() {
-                    selectEndorseModal.show();
-                });
-                
+                const trackDocumentModal = new bootstrap.Modal(document.getElementById('trackDocumentModal'),{
+                        backdrop: 'static',
+                        keyboard: false
+                    });
 
-                // When save remarks refresh the URL
-                const saveRemarks = document.getElementById('saveRemarks');
-                saveRemarks.addEventListener('click', function() {
-                    refreshURL();
-                });
-
-                // when close btn in add remarks modal is clicked, refresh the URL
-                const addRemarksCloseBtn = document.getElementById('addRemarksCloseBtn');
-                addRemarksCloseBtn.addEventListener('click', function() {
-                    refreshURL();
-                });
-
-                // when track document modal is close. refresh URL
                 const trackDocumentModalCloseBtn = document.getElementById('trackDocumentModalCloseBtn');
+                trackDocumentModal.show();
+                
+                scanBindViewAttachment();
+
                 trackDocumentModalCloseBtn.addEventListener('click', function() {
                     refreshURL();
                 });
 
-                // when qr code modal is close, show the track document modal
-                const trackingQrCodeCloseBtn = document.getElementById('trackingQrCodeCloseBtn');
-                const trackDocumentModal = new bootstrap.Modal(document.getElementById('trackDocumentModal'));
-                trackingQrCodeCloseBtn.addEventListener('click', function() {
+                document.getElementById('trackingGenerateQRCode').addEventListener('hide.bs.modal', function () {
                     trackDocumentModal.show();
                 });
 
+                document.getElementById('viewAttachmentModal').addEventListener('hide.bs.modal', function () {
+                    trackDocumentModal.show();
+                });
+
+                document.getElementById('cancelEndorseBtn').addEventListener('click', function() {
+                    trackDocumentModal.show();
+                });
+
+                document.getElementById('addRemarksAttachmentModal').addEventListener('hide.bs.modal', function () {
+                    refreshURL();
+                });
             });
 
         </script>
 
     {% elif scanned_status == 'unauthorized' %}
-    <!-- Modal for Unauthorized Document -->
-    <div class="modal fade" id="unauthorizedDocModal" tabindex="-1" aria-labelledby="unauthorizedDocLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content rounded-4 shadow">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="unauthorizedDocModalLabel" style="color: red;">Failed to Scan Document.</h1>
-                    <button type="button" id="unauthorizedDocModalCloseBtn" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p class="fs-6">You are unauthorized to update/track this document with Tracking Number: <strong><span id="scannedTrackingNo">{{ document.tracking_no }}</span></strong>.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" id="unauthorizedDocModalClose2Btn" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <!-- Modal for Unauthorized Document -->
+        <div class="modal fade" id="unauthorizedDocModal" tabindex="-1" aria-labelledby="unauthorizedDocLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content rounded-4 shadow">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="unauthorizedDocModalLabel" style="color: red;">Failed to Scan Document.</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="fs-6">You are unauthorized to update/track this document with Tracking Number: <strong><span id="scannedTrackingNo">{{ document_details.tracking_no }}</span></strong>.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <script>
-        function refreshURL() {
-            setTimeout(function() {
-                window.location.href = "/action-officer-records/-1/?status=active";
-            }, 500);
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-
-            const unauthorizedDocModalElement = document.getElementById('unauthorizedDocModal');
-            if (unauthorizedDocModalElement) {
-                var unauthorizedDocModal = new bootstrap.Modal(unauthorizedDocModalElement);
-                unauthorizedDocModal.show();
+        <script>
+            function refreshURL() {
+                setTimeout(function() {
+                    window.location.href = "/action-officer-records/-1/?status=active";
+                }, 500);
             }
 
-            document.getElementById('unauthorizedDocModalCloseBtn').addEventListener('click', function() {
-                refreshURL();
-            });
+            document.addEventListener('DOMContentLoaded', function () {
 
-            document.getElementById('unauthorizedDocModalClose2Btn').addEventListener('click', function() {
-                refreshURL();
-            });
-        });
-    </script>
+                const unauthorizedDocModal = new bootstrap.Modal(document.getElementById('unauthorizedDocModal'));
+                unauthorizedDocModal.show();
 
+                document.getElementById('unauthorizedDocModal').addEventListener('hide.bs.modal', function() {
+                    refreshURL();
+                });
+
+            });
+        </script>
+
+    {% endif %}
+
+    {% if scanned_status == 'not-found' %}
+        
+        <!-- Modal for Documet Not Found -->
+        <div class="modal fade" id="documentNotFoundDocModal" tabindex="-1" aria-labelledby="documentNotFoundDocDocLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content rounded-4 shadow">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="documentNotFoundDocLabel" style="color: red;">Document Not Found.</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="fs-6">The document you're trying to access does not exist or may have been deleted.</span></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            
+            function refreshURL() {
+                setTimeout(function() {
+                    window.location.href = "/action-officer-records/-1/?status=active";
+                }, 500);
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+
+                const documentNotFoundDocModal = new bootstrap.Modal(document.getElementById('documentNotFoundDocModal'));
+                documentNotFoundDocModal.show();
+
+                document.getElementById('documentNotFoundDocModal').addEventListener('hide.bs.modal', function() {
+                    refreshURL();
+                });
+
+            });
+        </script>
+        
     {% endif %}
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -677,7 +661,10 @@
             // Initialize all modals
             const documentModal = new bootstrap.Modal(document.getElementById('viewDocumentModal'));
             const qrCodeModal = new bootstrap.Modal(document.getElementById('generateQRCode'));
-            const endorseModal = new bootstrap.Modal(document.getElementById('endorseDocumentModal'));
+            const endorseModal = new bootstrap.Modal(document.getElementById('endorseDocumentModal'),{
+                backdrop: 'static',
+                keyboard: false
+            });
             const remarksModal = new bootstrap.Modal(document.getElementById('addRemarksAttachmentModal'),{
                 backdrop: 'static',
                 keyboard: false

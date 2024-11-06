@@ -7,7 +7,7 @@ class Command(BaseCommand):
     help = 'Mark documents as unacted and log them in activity logs'
 
     def handle(self, *args, **kwargs):
-        now = timezone.now().date()  # Get the current date
+        now = timezone.localtime().date()  # Get the current date
 
         # Fetch all documents that are not 'For Archiving' and are past the deadline
         documents = Document.objects.filter(
@@ -52,6 +52,7 @@ class Command(BaseCommand):
                 if not user:
                     print('No user found')
                     return
+            
             unacted_log = UnactedLogs.objects.filter(
                 user_id = user,
                 status = document.status,

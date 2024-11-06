@@ -124,16 +124,16 @@ a {
 }
 
 .btn-danger {
-    background-color: #EA2E2E;
+    background-color: #EA2E2E !important;
     font-size: 15px;
-    color: #FFFFFF;
+    color: #FFFFFF !important;
     font-weight: 500;
     padding: 0.5rem 1rem;
 
     &:hover {
-        background-color: darken(#EA2E2E, 10%);
-        color: #FFFFFF;
-        border-color: darken(#EA2E2E, 10%);
+        background-color: darken(#EA2E2E, 10%) !important;
+        color: #FFFFFF !important;
+        border-color: darken(#EA2E2E, 10%) !important;
     }
 
     &:active {
@@ -142,6 +142,27 @@ a {
         box-shadow: none !important; 
     }
 }
+
+.btn-success {
+    background-color: #28A745 !important;
+    font-size: 15px;
+    color: #FFFFFF !important;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+
+    &:hover {
+        background-color: darken(#28A745, 10%) !important;
+        color: #FFFFFF !important;
+        border-color: darken(#28A745, 10%) !important;
+    }
+
+    &:active {
+        background-color: darken(#28A745, 15%) !important;
+        color: #FFFFFF !important;
+        box-shadow: none !important; 
+    }
+}
+
 
 .btn-green, .btn-red, .btn-blue {
     display: flex;
@@ -525,6 +546,16 @@ thead {
     overflow-y: auto;
 }
 
+.tracker-wrapper {
+    max-height: calc(100vh - 270px) !important;
+    overflow-y: auto;
+}
+
+.tracker-action-wrapper {
+    max-height: calc(100vh - 318px) !important;
+    overflow-y: auto;
+}
+
 .table th {
     background-color: #ffffff !important;
     box-shadow: inset 0 -1.7px 0 rgba(177, 193, 207, 0.4);
@@ -896,6 +927,6 @@ table tbody tr td.overdue {
   }
 
   tbody tr.highlight-priority td {
-    background-color: #f7b7c5 !important;
+    background-color: #f2e3e6 !important;
   } 
   

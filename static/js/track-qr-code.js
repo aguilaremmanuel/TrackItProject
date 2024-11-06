@@ -19,7 +19,7 @@ function displayRoutesTracking(documentNo) {
         .then(response => response.json())
         .then(data => {
             document.getElementById('t_routesInitials').textContent = data.str_routes;
-            document.getElementById('t_routesTitles').textContent = "(" + data.str_routes_titles + ")";
+            //document.getElementById('t_routesTitles').textContent = "(" + data.str_routes_titles + ")";
         })
         .catch(error => console.error('Error:', error));
 }

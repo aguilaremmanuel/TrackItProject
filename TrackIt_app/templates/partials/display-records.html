@@ -10,7 +10,7 @@
                     {{ document.tracking_no }}
                 {% endif %}
             </td>
-            <td>{{ document.status }}</td>
+            <td>{% if document.status == 'Rejected' %} <span style="color:rgb(211, 8, 8)">{{document.status}}</span>{% else %}{{ document.status }}{% endif %}</td>
             <td>
                 {% if search_query %}
                     {{ document.highlighted_sender_name|safe }}
@@ -69,6 +69,17 @@
                     </button>
                     {% if document.status == 'For DIR Approval' %}
                         {% if user == 'DIR' or user == 'SYS' %}
+                            {% if not document.next_route %}
+                                <button type="button" class="btn btn-sm btn-red" 
+                                    data-action="reject" 
+                                    data-document-no="{{ document.document_no }}" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#rejectDocumentModal"
+                                    data-bs-toggle="tooltip" title="Reject Document">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            {% endif %}
+
                             <button type="button" class="btn btn-sm btn-green" 
                                 data-action="approve" 
                                 data-document-no="{{ document.document_no }}" 
@@ -143,6 +154,19 @@
                                 data-bs-toggle="tooltip" title="Delete Document">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
+                        {% endif %}
+                    {% elif document.status == 'Rejected' %}
+                        {% if user == 'ADO' %}
+                            <a href="{% url 'admin_officer_new_record' %}?reupload={{document.document_no}}" class="btn btn-sm btn-green" 
+                            title="Reupload Document">
+                            <i class="fa-solid fa-repeat"></i>
+                            </a>
+                        {% endif %}
+                        {% if user == 'SYS' %}
+                            <a href="{% url 'system_admin_new_record' %}?reupload={{document.document_no}}" class="btn btn-sm btn-green" 
+                            title="Reupload Document">
+                            <i class="fa-solid fa-repeat"></i>
+                            </a>
                         {% endif %}
                     {% endif %}
                 </div>

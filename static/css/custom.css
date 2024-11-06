@@ -11940,19 +11940,37 @@ a:hover {
 }
 
 .btn-danger {
-  background-color: #EA2E2E;
+  background-color: #EA2E2E !important;
   font-size: 15px;
-  color: #FFFFFF;
+  color: #FFFFFF !important;
   font-weight: 500;
   padding: 0.5rem 1rem;
 }
 .btn-danger:hover {
-  background-color: #d01515;
-  color: #FFFFFF;
-  border-color: #d01515;
+  background-color: #d01515 !important;
+  color: #FFFFFF !important;
+  border-color: #d01515 !important;
 }
 .btn-danger:active {
   background-color: #b91313 !important;
+  color: #FFFFFF !important;
+  box-shadow: none !important;
+}
+
+.btn-success {
+  background-color: #28A745 !important;
+  font-size: 15px;
+  color: #FFFFFF !important;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+}
+.btn-success:hover {
+  background-color: #1e7e34 !important;
+  color: #FFFFFF !important;
+  border-color: #1e7e34 !important;
+}
+.btn-success:active {
+  background-color: #19692c !important;
   color: #FFFFFF !important;
   box-shadow: none !important;
 }
@@ -12315,6 +12333,16 @@ thead {
   overflow-y: auto;
 }
 
+.tracker-wrapper {
+  max-height: calc(100vh - 270px) !important;
+  overflow-y: auto;
+}
+
+.tracker-action-wrapper {
+  max-height: calc(100vh - 318px) !important;
+  overflow-y: auto;
+}
+
 .table th {
   background-color: #ffffff !important;
   box-shadow: inset 0 -1.7px 0 rgba(177, 193, 207, 0.4);
@@ -12671,7 +12699,7 @@ table tbody tr td.overdue {
 }
 
 tbody tr.highlight-priority td {
-  background-color: #f7b7c5 !important;
+  background-color: #f2e3e6 !important;
 }
 
 /*# sourceMappingURL=custom.css.map */

@@ -180,6 +180,7 @@
                                     <option value="OES">Office of the Executive Secretary</option>
                                     <option value="OP-PROPER">Office of the President Proper</option>
                                     <option value="SARO">Strategic Action and Response Office</option>
+                                    <option value="TSO">Technical Services Office</option>
                                     <option value="others">Others</option>
                                 </select>
                             </div>
@@ -248,7 +249,7 @@
                     <p>Are you sure you want to confirm this document creation? Please ensure all document details are correct before proceeding.</p>
                 </div>
                 <div class="modal-footer p-3 pt-0 border-top-0">
-                    <button type="button" class="m-0 mb-2 btn btn-primary" id="confirmCreate" data-bs-toggle="modal">Confirm</button>
+                    <button type="button" class="m-0 mb-2 btn btn-primary" id="confirmCreate" data-url="{% url 'admin_officer_new_record' %}" data-bs-toggle="modal">Confirm</button>
                     <button type="button" class="m-0 mb-2 btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </div>
@@ -411,7 +412,56 @@
         </div>
     </div>
         
-        
+    
+    {% if document %}
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+
+                document.getElementById('TrackingNumber').value = '{{document.tracking_no}}';
+                document.getElementById('SenderName').value = '{{document.sender_name}}';
+                
+                const senderDepartmentSelect = document.getElementById('SenderDepartment');
+                const otherInput = document.getElementById('otherInput');
+                const inputContainer = document.getElementById('inputContainer');
+                const documentSenderDept = "{{ document.sender_department }}";
+                
+                let isDepartmentMatched = false;
+                Array.from(senderDepartmentSelect.options).forEach(option => {
+                    if (option.value === documentSenderDept) {
+                        option.selected = true;
+                        isDepartmentMatched = true;
+                    }
+                });
+
+                if (!isDepartmentMatched) {
+                    senderDepartmentSelect.value = "others";
+                    otherInput.value = documentSenderDept;
+                    inputContainer.style.display = "block";
+                }
+                
+                const documentCategorySelect = document.getElementById('DocumentCategory');
+                documentCategorySelect.value = '{{document.document_type.category}}';
+                documentCategorySelect.dispatchEvent(new Event('change'));
+                
+                const documentTypeSelect = document.getElementById('DocumentType');
+                const selectedType = "{{ document.document_type.document_no }}";
+
+                const pollOptions = setInterval(() => {
+                    if (documentTypeSelect.options.length > 1) { // Assuming there's a default option
+                        clearInterval(pollOptions);
+                        Array.from(documentTypeSelect.options).forEach(option => {
+                            if (option.value === selectedType) {
+                                option.selected = true;
+                            }
+                        });
+                    }
+                }, 100);
+
+                document.getElementById('Subject').value = '{{document.subject}}';
+            });
+        </script>
+    {% endif %}
+
     <script src="{% static 'js/toggle-sidebar.js' %}"></script>  
     <script src="{% static 'js/new-record.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

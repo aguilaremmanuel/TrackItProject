@@ -88,9 +88,9 @@
                                         </div>
                                         <div class="col-6 p-0">
                                             <select class="form-select fw-bold" id="inputGroupSelect" style="font-size: 14px !important; background-color: #007bff; color: white; border-color: white;">
-                                                <option selected>Today</option>
-                                                <option value="1">This Month</option>
-                                                <option value="2">This Year</option>
+                                                <option value="today" selected>Today</option>
+                                                <option value="month">This Month</option>
+                                                <option value="year">This Year</option>
                                             </select>
                                         </div>
                                     </div>
@@ -106,44 +106,44 @@
                     <div class="col-6">
                         <div class="container d-block rounded-2 p-3 my-3" style="background-color: white; height: auto;">
                             <div class="row">
-                                <h4><span class="fw-bolder my-3 px-2 rounded-2" style="background-color: #007bff; color:white;">95</span>&nbsp;Total Records</h4>
+                                <h4><span id="overallTotalRecords" class="fw-bolder my-3 px-2 rounded-2" style="background-color: #007bff; color:white;">0</span>&nbsp;Total Records</h4>
                             </div>
                                     
                             <div class="chart-container my-2">
                                 <!-- Bar 1 -->
                                 <div class="bar">
-                                    <div class="percent-label">14</div>
-                                    <div class="bar-shape" style="height: 100px;"></div>
+                                    <div id="directorTotalRecords" class="percent-label">0</div>
+                                    <div class="bar-shape"></div>
                                     <div class="office-label">DIR</div>
                                   </div>
                                   <!-- Bar 2 -->
-                                  <div class="bar selected">
-                                    <div class="percent-label">28</div>
-                                    <div class="bar-shape" style="height: 200px;"></div>
+                                  <div class="bar">
+                                    <div id="admTotalRecords" class="percent-label">0</div>
+                                    <div class="bar-shape"></div>
                                     <div class="office-label">ADM</div>
                                   </div>
                                   <!-- Bar 3 -->
                                   <div class="bar">
-                                    <div class="percent-label">22</div>
-                                    <div class="bar-shape" style="height: 150px;"></div>
+                                    <div id="csrTotalRecords" class="percent-label">0</div>
+                                    <div class="bar-shape"></div>
                                     <div class="office-label">CSR</div>
                                   </div>
                                   <!-- Bar 4 -->
                                   <div class="bar">
-                                    <div class="percent-label">16</div>
-                                    <div class="bar-shape" style="height: 120px;"></div>
+                                    <div id="bdmTotalRecords" class="percent-label">0</div>
+                                    <div class="bar-shape"></div>
                                     <div class="office-label">BDM</div>
                                   </div>
                                   <!-- Bar 5 -->
                                   <div class="bar">
-                                    <div class="percent-label">11</div>
-                                    <div class="bar-shape" style="height: 90px;"></div>
+                                    <div id="accTotalRecords" class="percent-label">0</div>
+                                    <div class="bar-shape"></div>
                                     <div class="office-label">ACC</div>
                                   </div>
                                   <!-- Bar 6 -->
                                   <div class="bar">
-                                    <div class="percent-label">4</div>
-                                    <div class="bar-shape" style="height: 50px;"></div>
+                                    <div id="prlTotalRecords" class="percent-label">0</div>
+                                    <div class="bar-shape"></div>
                                     <div class="office-label">PRL</div>
                                   </div>
                             </div>
@@ -158,21 +158,21 @@
                                     </h4>
                                 </div>
                                 <div class="col-4">
-                                    <select class="form-select" id="inputGroupPerformance" style="font-size: 12px !important;">
-                                        <option selected>DIR</option>
-                                        <option value="1">Administrative</option>
-                                        <option value="2">Accounting</option>
-                                        <option value="3">Budget</option>
-                                        <option value="4">Cashier</option>
-                                        <option value="5">Payroll</option>
+                                    <select class="form-select" id="targetOfficePerformanceSelect" style="font-size: 12px !important;">
+                                        <option selected value="DIR">DIR</option>
+                                        <option value="ADM">Administrative</option>
+                                        <option value="ACC">Accounting</option>
+                                        <option value="BMD">Budget</option>
+                                        <option value="CSR">Cashier</option>
+                                        <option value="PRL">Payroll</option>
                                     </select>
                                 </div>
                             </div>
 
                             <div class="canvas-container my-2 d-flex align-items-center justify-content-center" style="height: 100%;">
-                                <canvas id="myDonutChart"></canvas>
+                                <canvas id="officePerformanceChart"></canvas>
                             </div>
-                            <p class="text-center fw-bold text-success pt-1 mb-0">Congratulations, you have a good performance!</p>
+                            <!-- <p class="text-center fw-bold text-success pt-1 mb-0">Congratulations, you have a good performance!</p> -->
                             <!-- <p class="text-center fw-bold text-warning pt-1 mb-0">Your performance is currently going slow.</p> -->
                             <!-- <p class="text-center fw-bold text-danger pt-1 mb-0">You need to address your current performance</p> -->
                         </div>
@@ -194,84 +194,28 @@
                             <div style="max-height: 302px; overflow-y: auto;">
                                 <table class="table table-sm table-hover" style="table-layout: fixed; width: 100%;">
                                     <tbody>
-                                      <tr>
-                                        <td style="width: 30%;">130976437-DEPT-0</th>
-                                        <td><span class="badge badge-red rounded-pill fw-semibold">VERY URGENT</span></td>   
-                                        <td style="width: 35%;">                    
-                                            <button type="button" class="btn btn-sm btn-blue viewDocumentBtn" data-document-no="{{ document.document_no }}" 
-                                                data-bs-toggle="modal" data-bs-target="#viewDocumentModal"
-                                                data-bs-toggle="tooltip" title="View Document Details">
-                                                <i class="fa-solid fa-eye"></i>
-                                            </button>
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td style="width: 30%;">120976437-DEPT-0</th>
-                                        <td><span class="badge badge-orange rounded-pill fw-semibold">URGENT</span></td>
-                                        <td style="width: 35%;">                    
-                                            <button type="button" class="btn btn-sm btn-blue viewDocumentBtn" data-document-no="{{ document.document_no }}" 
-                                                data-bs-toggle="modal" data-bs-target="#viewDocumentModal"
-                                                data-bs-toggle="tooltip" title="View Document Details">
-                                                <i class="fa-solid fa-eye"></i>
-                                            </button>
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td style="width: 30%;">120976437-DEPT-0</th>
-                                        <td><span class="badge badge-orange rounded-pill fw-semibold">URGENT</span></td>
-                                        <td style="width: 35%;">                    
-                                            <button type="button" class="btn btn-sm btn-blue viewDocumentBtn" data-document-no="{{ document.document_no }}" 
-                                                data-bs-toggle="modal" data-bs-target="#viewDocumentModal"
-                                                data-bs-toggle="tooltip" title="View Document Details">
-                                                <i class="fa-solid fa-eye"></i>
-                                            </button>
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td style="width: 30%;">120976437-DEPT-0</th>
-                                        <td><span class="badge badge-orange rounded-pill fw-semibold">URGENT</span></td>
-                                        <td style="width: 35%;">                    
-                                            <button type="button" class="btn btn-sm btn-blue viewDocumentBtn" data-document-no="{{ document.document_no }}" 
-                                                data-bs-toggle="modal" data-bs-target="#viewDocumentModal"
-                                                data-bs-toggle="tooltip" title="View Document Details">
-                                                <i class="fa-solid fa-eye"></i>
-                                            </button>
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td style="width: 30%;">120977007-DEPT-0</th>
-                                        <td><span class="badge badge-yellow rounded-pill fw-semibold">FOR PREF. ACTION</span></td>
-                                        <td style="width: 35%;">                    
-                                            <button type="button" class="btn btn-sm btn-blue viewDocumentBtn" data-document-no="{{ document.document_no }}" 
-                                                data-bs-toggle="modal" data-bs-target="#viewDocumentModal"
-                                                data-bs-toggle="tooltip" title="View Document Details">
-                                                <i class="fa-solid fa-eye"></i>
-                                            </button>
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td style="width: 30%;">128126437-DEPT-0</th>
-                                        <td><span class="badge badge-green rounded-pill fw-semibold">NORMAL</span></td>
-                                        <td style="width: 35%;">                    
-                                            <button type="button" class="btn btn-sm btn-blue viewDocumentBtn" data-document-no="{{ document.document_no }}" 
-                                                data-bs-toggle="modal" data-bs-target="#viewDocumentModal"
-                                                data-bs-toggle="tooltip" title="View Document Details">
-                                                <i class="fa-solid fa-eye"></i>
-                                            </button>
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td style="width: 30%;">200976437-DEPT-0</th>
-                                        <td><span class="badge badge-orange rounded-pill fw-semibold">URGENT</span></td>
-                                        <td style="width: 35%;">                    
-                                            <button type="button" class="btn btn-sm btn-blue viewDocumentBtn" data-document-no="{{ document.document_no }}" 
-                                                data-bs-toggle="modal" data-bs-target="#viewDocumentModal"
-                                                data-bs-toggle="tooltip" title="View Document Details">
-                                                <i class="fa-solid fa-eye"></i>
-                                            </button>
-                                        </td>
-                                      </tr>
-                                      <!-- Add more rows as needed -->
+                                        {% for record in records %}
+                                            <tr>
+                                                <td style="width: 30%;">{{record.tracking_no}}</th>
+                                                {% if record.document_type.priority_level.priority_level == 'very urgent' %}
+                                                    <td><span class="badge badge-red rounded-pill fw-semibold">VERY URGENT</span></td>
+                                                {% elif record.document_type.priority_level.priority_level == 'urgent' %}
+                                                    <td><span class="badge badge-orange rounded-pill fw-semibold">URGENT</span></td>
+                                                {% elif record.document_type.priority_level.priority_level == 'normal' %}
+                                                    <td><span class="badge badge-green rounded-pill fw-semibold">NORMAL</span></td>
+                                                {% elif record.document_type.priority_level.priority_level == 'for pref. action' %}
+                                                    <td><span class="badge badge-yellow rounded-pill fw-semibold">FOR PREF. ACTION</span></td>
+                                                {% endif %}
+                                                 
+                                                <td style="width: 35%;">                    
+                                                    <button type="button" class="btn btn-sm btn-blue viewDocumentBtn" data-document-no="{{ document.document_no }}" 
+                                                        data-bs-toggle="modal" data-bs-target="#viewDocumentModal"
+                                                        data-bs-toggle="tooltip" title="View Document Details">
+                                                        <i class="fa-solid fa-eye"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
                                     </tbody>
                                 </table>
                             </div>
@@ -281,20 +225,22 @@
                     <div class="col-6">
                         <!-- [ANALYTICS] Pie Chart Document Status -->
                         <div class="rounded-2 p-3 my-3" style="background-color: white; height:auto;">
+                            
                             <div class="row">
                                 <div class="col-8">
                                     <h4 class="mb-2 fw-bold d-flex align-items-center">
                                         <i class='bx bxs-hourglass' style="color: #007bff;"></i>&nbsp;Document Status
                                     </h4>
                                 </div>
-                                <div class="col-4">
-                                    <select class="form-select" id="inputGroupPerformance" style="font-size: 12px !important;">
-                                        <option selected>For DIR Approval</option>
-                                        <option value="1">For Routing</option>
-                                        <option value="2">For SRO Receiving</option>
-                                        <option value="3">For ACT Receiving</option>
-                                        <option value="4">For Resolving</option>
-                                        <option value="5">For Archiving</option>
+                                <div class="col-4 d-flex">
+                                    <select class="form-select" id="documentStatusSelect" style="font-size: 12px !important;">
+                                        <option value="all-documents" selected>All Documents</option>
+                                        <option value="For DIR Approval">For DIR Approval</option>
+                                        <option value="For Routing">For Routing</option>
+                                        <option value="For SRO Receiving">For SRO Receiving</option>
+                                        <option value="For ACT Receiving">For ACT Receiving</option>
+                                        <option value="For Resolving">For Resolving</option>
+                                        <option value="For Archiving">For Archiving</option>
                                     </select>
                                 </div>
                             </div>
@@ -360,32 +306,32 @@
                                         <div class="dropdown-menu" aria-labelledby="filterDropdown">
                                           <div class="dropdown-header">Office</div>
                                             <div class="form-check">
-                                                <input type="radio" class="form-check-input" id="option_all" name="group1" value="All Offices" checked>
+                                                <input type="radio" class="form-check-input" id="option_all" name="target_office_radio" value="All Offices" checked>
                                                 <label class="form-check-label" for="option_all">All Offices</label>
                                             </div>
                                             <div class="form-check">
-                                                <input type="radio" class="form-check-input" id="option_accounting" name="group1" value="Accounting">
+                                                <input type="radio" class="form-check-input" id="option_accounting" name="target_office_radio" value="ACC">
                                                 <label class="form-check-label" for="option_accounting">Accounting</label>
                                             </div>
                                             <div class="form-check">
-                                                <input type="radio" class="form-check-input" id="option_budget" name="group1" value="Budget">
+                                                <input type="radio" class="form-check-input" id="option_budget" name="target_office_radio" value="BMD">
                                                 <label class="form-check-label" for="option_budget">Budget</label>
                                             </div>
                                             <div class="form-check">
-                                                <input type="radio" class="form-check-input" id="option_cashier" name="group1" value="Cashier">
+                                                <input type="radio" class="form-check-input" id="option_cashier" name="target_office_radio" value="CSR">
                                                 <label class="form-check-label" for="option_cashier">Cashier</label>
                                             </div>
                                             <div class="form-check">
-                                                <input type="radio" class="form-check-input" id="option_payroll" name="group1" value="Payroll">
+                                                <input type="radio" class="form-check-input" id="option_payroll" name="target_office_radio" value="PRL">
                                                 <label class="form-check-label" for="option_payroll">Payroll</label>
                                             </div>
                                           <div class="dropdown-header">Performance Type</div>
                                             <div class="form-check">
-                                                <input type="radio" class="form-check-input" id="option_top_employees" name="group2" value="Top-Employees" checked>
+                                                <input type="radio" class="form-check-input" id="option_top_employees" name="target_report_type_radio" value="Top-Employees" checked>
                                                 <label class="form-check-label" for="option_top_employees">Top Employees</label>
                                             </div>
                                             <div class="form-check">
-                                                <input type="radio" class="form-check-input" id="option_underperforming" name="group2" value="Underperforming">
+                                                <input type="radio" class="form-check-input" id="option_underperforming" name="target_report_type_radio" value="Underperforming">
                                                 <label class="form-check-label" for="option_underperforming">Underperforming</label>
                                             </div>
                                         </div>
@@ -394,11 +340,9 @@
                             </div>
 
                             <div class="d-flex align-items-center justify-content-center py-2">
-                                <canvas id="multiAreaChart" height="auto"></canvas>
+                                <canvas id="employeePerformanceChart" height="auto"></canvas>
                             </div>
                         </div>
-
-
                     </div>
                 </div>
             </main>
@@ -616,10 +560,8 @@
         </div>
     </div>
     
-    <script src="{% static 'js/announcement.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'js/toggle-sidebar.js' %}"></script>
-    <script src="{% static 'js/toggle-pass.js' %}"></script>
     <script src="{% static 'js/profile.js' %}"></script>
     {% include "assets/profile-reset-inputs.html" %}
     <script>
@@ -644,145 +586,279 @@
     <!-- Include Chart.js for pie chart functionality -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- [ANALYTICS] Pie Chart JavaScript - Document Status-->
     <script>
-        var ctx1 = document.getElementById('docStatusChart').getContext('2d');
-        var chart = new Chart(ctx1, {
-            type: 'pie',
-            data: {
-                labels: ['Very Urgent', 'Urgent', 'Normal', 'For Pref. Action'],
-                datasets: [{
-                    label: 'Document', // This label will be removed from display by hiding the title
-                    data: [10, 6, 4, 2], // Replace with actual data
-                    backgroundColor: ['#EA2E2E', '#FF7E07', '#22a03f', '#FFC107']
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: 'bottom'
-                    },
-                    title: {
-                        display: false // Set to false to remove the chart title
-                    }
-                }
+
+    document.addEventListener('DOMContentLoaded', function () { 
+
+        const inputGroupSelect = document.getElementById('inputGroupSelect');
+        const documentStatus = document.getElementById('documentStatusSelect');
+        const targetOffice =  document.getElementById('targetOfficePerformanceSelect');
+        let chart; 
+        let officePerformanceChart;
+        let employeePerformanceChart;
+
+        function updateChart(data) {
+
+            if (chart) {
+                chart.destroy();
             }
-        });
-    </script>
 
-    <!-- [DROPDOWN] Employee Performance -->
-    <script>
-        const selectedFiltersDiv = document.getElementById('selectedFilters');
-
-        const radioButtons = document.querySelectorAll('.form-check-input');
-
-        radioButtons.forEach(radio => {
-        radio.addEventListener('change', updateSelectedFilters);
-        });
-
-        // Initial update to display the default selected option
-        updateSelectedFilters();
-
-        function updateSelectedFilters() {
-        const selectedGroup1 = document.querySelector('input[name="group1"]:checked');
-        const selectedGroup2 = document.querySelector('input[name="group2"]:checked');
-
-        const selectedValues = [];
-        if (selectedGroup1) {
-            selectedValues.push(selectedGroup1.value);
-        }
-        if (selectedGroup2) {
-            selectedValues.push(selectedGroup2.value);
-        }
-
-        selectedFiltersDiv.innerHTML = selectedValues.length ? '<b>Filter by:</b> ' + selectedValues.join(', ') : 'No filters selected';
-        }
-    </script>
-
-    <!-- [ANALYTICS] Line Graph JavaScript -->
-    <script>
-        const ctx = document.getElementById('multiAreaChart').getContext('2d');
-        const multiAreaChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['ACO-0001', 'DIR-0001', 'ADM-0001', 'SRO-0002', 'ACO-0005'], // Time periods
-                datasets: [
-                    {
-                        data: [25, 10, 15, 50, 30], // resolved document tot/unacted+delayed tot
-                        borderColor: '#007bff', // Line color
-                        backgroundColor: 'rgba(0, 123, 255, 0.1)', // Fill color
-                        tension: 0.4,
-                        fill: true,
-                        pointBackgroundColor: '#004da0', // Points color
-                        tension: 0.4, // Smooth curve
-                        fill: true, // Fill the area under the line
-                        pointRadius: 5 // Point size
-                    }
-                ]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 100
-                    }
+            const ctx1 = document.getElementById('docStatusChart').getContext('2d');
+            chart = new Chart(ctx1, {
+                type: 'pie',
+                data: {
+                    labels: ['Very Urgent', 'Urgent', 'Normal', 'For Pref. Action'],
+                    datasets: [{
+                        label: 'Document',
+                        data: [data.very_urgent, data.urgent, data.normal, data.for_pref_action],
+                        backgroundColor: ['#EA2E2E', '#FF7E07', '#22a03f', '#FFC107']
+                    }]
                 },
-                plugins: {
-                    legend: {
-                        display: false, // Show the legend
-                        position: 'bottom'
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom'
+                        },
+                        title: {
+                            display: false // Set to false to remove the chart title
+                        }
                     }
                 }
-            }
-        });
-    </script>
+            });
+        }
 
-    <script>
-        const ctx3 = document.getElementById('myDonutChart').getContext('2d');
-        const myDonutChart = new Chart(ctx3, {
-            type: 'doughnut',
-            data: {
-                labels: ['Unacted', 'Pending', 'Delayed', 'Resolved'],
-                datasets: [{
-                    label: '# of Votes',
-                    data: [12, 19, 3, 5],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,  // This will allow the canvas to fill its container
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(tooltipItem) {
-                                return tooltipItem.label + ': ' + tooltipItem.raw;
+
+        function handleSelectChange() {
+            const timeSpan = inputGroupSelect.value;
+
+            fetch(`/director-total-records/${timeSpan}/`)
+                .then(response => response.json())
+                .then(data => {
+                    
+                    document.getElementById('overallTotalRecords').textContent = data.overall_total_records;
+                    document.getElementById('directorTotalRecords').textContent = data.director_total_records;
+                    document.getElementById('admTotalRecords').textContent = data.adm_total_records;
+                    document.getElementById('csrTotalRecords').textContent = data.csr_total_records;
+                    document.getElementById('bdmTotalRecords').textContent = data.bdm_total_records;
+                    document.getElementById('accTotalRecords').textContent = data.acc_total_records;
+                    document.getElementById('prlTotalRecords').textContent = data.prl_total_records;
+
+                    const records = {
+                        directorTotalRecords: data.director_total_records,
+                        admTotalRecords: data.adm_total_records,
+                        csrTotalRecords: data.csr_total_records,
+                        bdmTotalRecords: data.bdm_total_records,
+                        accTotalRecords: data.acc_total_records,
+                        prlTotalRecords: data.prl_total_records
+                    };
+
+                    const maxRecord = Math.max(...Object.values(records));
+                    const maxRecordId = Object.keys(records).find(key => records[key] === maxRecord);
+
+                    // Scale factor for height; adjust 200px as needed for max height
+                    const maxHeight = 200;
+                    const scale = maxRecord > 0 ? maxHeight / maxRecord : 0;
+
+                    document.querySelectorAll('.bar').forEach(bar => bar.classList.remove('selected'));
+                    Object.keys(records).forEach(recordId => {
+                        const barShape = document.querySelector(`#${recordId}`).parentNode.querySelector('.bar-shape');
+                        const height = records[recordId] * scale;
+                        barShape.style.height = height > 0 ? `${height}px` : '0px'; // Set height to 0 if count is zero
+                    });
+
+                    if (maxRecord > 0) {
+                        document.getElementById(maxRecordId).parentNode.classList.add('selected');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+
+            handleDocumentStatusSelectChange();
+            handleOfficePerformanceSelectChange();
+            updateSelectedFilters();
+        }
+
+        function handleDocumentStatusSelectChange() {
+            const timeSpan = inputGroupSelect.value;
+            const documentStatusValue = documentStatus.value;
+
+            fetch(`/director-document-status/${timeSpan}/${documentStatusValue}/`)
+                .then(response => response.json())
+                .then(data => {
+                    updateChart(data);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function updateOfficePerformanceChart(data) {
+
+            if (officePerformanceChart) {
+                officePerformanceChart.destroy();
+            }
+
+            let label, chartData;
+
+            if (data.target_office === 'DIR' || data.target_office === 'ADM') {
+                label = ['Unacted', 'Pending', 'Delayed'];
+                chartData = [data.unacted, data.pending, data.delayed];
+            } else {
+                label = ['Unacted', 'Pending', 'Delayed', 'Resolved'];
+                chartData = [data.unacted, data.pending, data.delayed, data.resolved];
+            }
+
+            const ctx3 = document.getElementById('officePerformanceChart').getContext('2d');
+            officePerformanceChart = new Chart(ctx3, {
+                type: 'doughnut',
+                data: {
+                    labels: label,
+                    datasets: [{
+                        label: '# of Votes',
+                        data: chartData,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,  // This will allow the canvas to fill its container
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return tooltipItem.label + ': ' + tooltipItem.raw;
+                                }
                             }
                         }
                     }
                 }
+            });
+        }
+
+        function updateEmployeePerformanceChart(data) {
+
+            if (employeePerformanceChart) {
+                employeePerformanceChart.destroy();
             }
+
+            const label = Object.keys(data.sorted_performances); 
+            const chartData = Object.values(data.sorted_performances);
+
+            const isUnderperforming = data.target_report_type === 'Underperforming';
+            const lineColor = isUnderperforming ? '#ff4d4d' : '#007bff'; // Red for Underperforming, blue otherwise
+            const backgroundColor = isUnderperforming ? 'rgba(255, 77, 77, 0.1)' : 'rgba(0, 123, 255, 0.1)';
+            const pointColor = isUnderperforming ? '#b32424' : '#004da0'; // Darker red points for Underperforming
+
+            const ctx = document.getElementById('employeePerformanceChart').getContext('2d');
+            employeePerformanceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: label, // Time periods
+                    datasets: [
+                        {
+                            label: isUnderperforming ? 'Underperforming Level' : 'Performance Level',
+                            data: chartData, // resolved document tot/unacted+delayed tot
+                            borderColor: lineColor, // Line color
+                            backgroundColor: backgroundColor, // Fill color
+                            tension: 0.4,
+                            fill: true,
+                            pointBackgroundColor: pointColor, // Points color
+                            tension: 0.4, // Smooth curve
+                            fill: true, // Fill the area under the line
+                            pointRadius: 5 // Point size
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false, // Show the legend
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+        }
+
+        function handleOfficePerformanceSelectChange() {
+            const timeSpan = inputGroupSelect.value;
+            const targetOfficeValue = targetOffice.value;
+
+            fetch(`/director-office-performance/${timeSpan}/${targetOfficeValue}/`)
+                .then(response => response.json())
+                .then(data => {
+                    updateOfficePerformanceChart(data); 
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        const selectedFiltersDiv = document.getElementById('selectedFilters');
+        const radioButtons = document.querySelectorAll('.form-check-input');
+
+        radioButtons.forEach(radio => {
+            radio.addEventListener('change', updateSelectedFilters);
         });
 
+        updateSelectedFilters();
+
+        function updateSelectedFilters() {
+
+            const selectedGroup1 = document.querySelector('input[name="target_office_radio"]:checked');
+            const selectedGroup2 = document.querySelector('input[name="target_report_type_radio"]:checked');
+
+            const selectedValues = [];
+            if (selectedGroup1) {
+                selectedValues.push(selectedGroup1.value);
+            }
+            if (selectedGroup2) {
+                selectedValues.push(selectedGroup2.value);
+            }
+
+            selectedFiltersDiv.innerHTML = selectedValues.length ? '<b>Filter by:</b> ' + selectedValues.join(', ') : 'No filters selected';
+            
+            const timeSpan = inputGroupSelect.value;
+            const targetReportType = selectedGroup2.value;
+            const targetOffice = selectedGroup1.value;
+            
+            fetch(`/director-employee-performance/${timeSpan}/${targetReportType}/${targetOffice}/`)
+                .then(response => response.json())
+                .then(data => {
+                    updateEmployeePerformanceChart(data); 
+                })
+                .catch(error => console.error('Error:', error));
+            
+        }
+
+        inputGroupSelect.addEventListener('change', handleSelectChange);
+        documentStatus.addEventListener('change', handleDocumentStatusSelectChange);
+        targetOffice.addEventListener('change', handleOfficePerformanceSelectChange);
+        handleSelectChange();
+    });
+
+        
     </script>
-    
+
 </body>
 </html>

@@ -1,3 +1,5 @@
+{% load custom_filters %}
+
 <!-- Track Document Modal -->
 <div class="modal fade" id="trackDocumentModal" tabindex="-1" aria-labelledby="trackDocumentModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
@@ -10,23 +12,17 @@
             </div>
             <div class="modal-body">
 
-                <div id="t_loadingSpinner" class="text-center my-5">
-                    <div class="spinner-border" role="status" style="width: 3rem; height: 3rem;">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                </div>
-
-                <div class="d-flex flex-wrap" id="t_documentDetailsContent" style="display: none;">
-                    <p class="me-4 mb-2"><strong>Tracking Number:</strong> <span id="t_documentTrackingNumber"></span></p>
-                    <p class="me-4 mb-2"><strong>Sender:</strong> <span id="t_documentSender"></span></p>
-                    <p class="me-4 mb-2"><strong>Status:</strong> <span id="t_documentStatus"></span></p>
-                    <p class="me-4 mb-2"><strong>Type:</strong> <span id="t_documentType"></span></p>
-                    <p class="me-4 mb-2"><strong>Priority:</strong> <span id="t_documentPriority"></span></p>
+                <div class="d-flex flex-wrap" id="t_documentDetailsContent">
+                    <p class="me-4 mb-2"><strong>Tracking Number:</strong> <span id="t_documentTrackingNumber">{{document_details.tracking_no}}</span></p>
+                    <p class="me-4 mb-2"><strong>Sender:</strong> <span id="t_documentSender">{{document_details.sender_name}}</span></p>
+                    <p class="me-4 mb-2"><strong>Status:</strong> <span id="t_documentStatus">{{document_details.status}}</span></p>
+                    <p class="me-4 mb-2"><strong>Type:</strong> <span id="t_documentType">{{document_details.document_type}}</span></p>
+                    <p class="me-4 mb-2"><strong>Priority:</strong> <span id="t_documentPriority">{{document_details.priority}}</span></p>
                     <p class="me-4 mb-2"><strong>Due In:</strong> <span id="t_documentDueIn"></span></p>
-                    <p class="me-4 mb-2"><strong>Subject/Particulars:</strong> <span id="t_documentSubject"></span></p>
+                    <p class="me-4 mb-2"><strong>Subject/Particulars:</strong> <span id="t_documentSubject">{{document_details.subject}}</span></p>
                     
                     <div class="w-100 mb-2">
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#trackingGenerateQRCode" id="t_documentTitleLink" style="font-size: 15px !important;">Document QR Code</a>
+                        <a href="#" data-document-no="{{scanned_document_no}}" data-bs-toggle="modal" data-bs-target="#trackingGenerateQRCode" id="t_documentTitleLink" style="font-size: 15px !important;">Document QR Code</a>
                     </div>
                 </div>
 
@@ -40,17 +36,68 @@
                                 <th>Department</th>
                                 <th>Role/Position</th>
                                 <th>Remarks</th>
+                                <th>Attachment</th>
                                 <th class="text-start">Activity</th>
                             </tr>
                         </thead>
                         
                         <tbody id="t_activitiesTableBody">
+
+                            {% for log in document_details.activity_logs %}
+                                <tr>
+                                    <td style="white-space: nowrap;">{{log.date}}<br>{{log.time}}</td>
+                                    <td style="white-space: nowrap;">{{log.user_id}}</td>
+                                    <td>{{log.name}}</td>
+                                    <td>{{log.office}}</td>
+                                    <td style="white-space: nowrap;">{{log.role}}</td>
+                                    <td>{% if log.remarks %}{{log.remarks}}{% else %}<span style="opacity: 40%;">-no remarks-</span>{% endif %}</td>
+                                    <td>
+                                        {% if log.file_attachment %}
+                                            <button class="view-attachment-btn" 
+                                                    id="viewAttachmentLink" 
+                                                    data-filepath="{{ log.file_attachment }}" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#viewAttachmentModal">
+                                                    {{ log.file_attachment|filename }}
+                                            </button>
+                                        {% else %}
+                                            <span style="opacity: 40%;">-no attachment-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ log.activity }}</td>
+                                </tr>
+                            {% endfor %}
+
                         </tbody>
                     </table>
                 </div>
             </div>
+            <!--
             <div class="modal-footer p-3 pt-0 border-top-0">
                 <button type="button" class="m-0 mb-2 btn btn-primary" id="generateReport">Generate Document Report</button>
+            </div>
+            -->
+            <div class="modal-footer p-3 pt-0 border-top-0">
+                {% if role == 'DIR' %}
+                    {% if not document.next_route %}
+                        <button type="button" data-action="reject" data-document-no="{{ scanned_document_no }}" data-bs-toggle="modal" data-bs-target="#rejectDocumentModal" class="m-0 mb-2 btn btn-danger">Reject Document</button>
+                    {% endif %}
+                    <button type="button" data-action="approve" data-document-no="{{ scanned_document_no }}" data-bs-toggle="modal" data-bs-target="#approveDocumentModal" class="m-0 mb-2 btn btn-success">Approve Document</button>
+                {% elif role == 'ADO' %}
+                    {% if document_details.status == 'For Routing' %}
+                        <button type="button" data-action="route" data-document-no="{{ scanned_document_no }}" data-bs-toggle="modal" data-bs-target="#routeDocumentModal" class="m-0 mb-2 btn btn-primary">Route Document</button>
+                    {% elif document_details.status == 'For Archiving' %}
+                        <button type="button" data-action="archive" data-document-no="{{ scanned_document_no }}" data-bs-toggle="modal" data-bs-target="#archiveDocumentModal" class="m-0 mb-2 btn btn-primary">Archive Document</button>
+                    {% endif %}
+                {% elif role == 'SRO' %}
+                    {% if document_details.status == 'For SRO Receiving' %}
+                        <button type="button" data-action="forward" data-document-no="{{ scanned_document_no }}" data-bs-toggle="modal" data-bs-target="#forwardDocumentModal" class="m-0 mb-2 btn btn-primary">Forward Document</button>
+                    {% elif document_details.status == 'For Resolving' %}  
+                        <button type="button" data-action="resolve" data-document-no="{{ scanned_document_no }}" data-bs-toggle="modal" data-bs-target="#resolveDocumentModal" class="m-0 mb-2 btn btn-primary">Resolve Document</button>
+                    {% endif %}
+                {% elif role == 'ACT' %}
+                    <button type="button" data-action="endorse" data-document-no="{{ scanned_document_no }}" data-bs-toggle="modal" data-bs-target="#endorseDocumentModal" class="m-0 mb-2 btn btn-primary">Endorse Document</button>
+                {% endif %}
             </div>
         </div>
     </div>

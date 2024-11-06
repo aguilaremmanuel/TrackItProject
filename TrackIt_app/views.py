@@ -375,9 +375,12 @@ def director_dashboard(request):
         Q(all_offices=True) | Q(offices__icontains='Director')
     )
 
+    records = Document.objects.filter(status='For DIR Approval')
+
     context = {
         'announcements': announcements,
-        'user_profile': user_profile
+        'user_profile': user_profile,
+        'records': records,
     }
 
     return render(request, 'director/director-dashboard.html', context)
@@ -680,6 +683,15 @@ def system_admin_new_record(request):
 
     user_profile = request.session.get('user_profile', None)
 
+    re_upload = request.GET.get('reupload')
+
+    if re_upload:
+        document = Document.objects.get(document_no=re_upload)
+        return render(request, 'system_admin/system-admin-new-record.html', {
+            'user_profile': user_profile,
+            'document': document
+        })
+
     return render(request, 'system_admin/system-admin-new-record.html', {
         'user_profile': user_profile
     })
@@ -697,6 +709,15 @@ def admin_officer_new_record(request):
         return redirect(user_login)
 
     user_profile = request.session.get('user_profile', None)
+
+    re_upload = request.GET.get('reupload')
+
+    if re_upload:
+        document = Document.objects.get(document_no=re_upload)
+        return render(request, 'admin_officer/admin-officer-new-record.html', {
+            'user_profile': user_profile,
+            'document': document
+        })
 
     return render(request, 'admin_officer/admin-officer-new-record.html', {
         'user_profile': user_profile,
@@ -722,12 +743,17 @@ def add_record(request):
 
         if Document.objects.filter(tracking_no=tracking_no).exists():
 
-            data = {
-                'trackingNo': tracking_no,
-                'recordExists': True
-            }
-
-            return JsonResponse(data)
+            try:
+                existing_document = Document.objects.get(tracking_no=tracking_no, status='Rejected')
+                if existing_document.is_rejected:
+                    existing_document.status = 'Archived'
+                    existing_document.save()
+            except Document.DoesNotExist:
+                data = {
+                    'trackingNo': tracking_no,
+                    'recordExists': True
+                }
+                return JsonResponse(data)
 
         document = create_document(tracking_no, sender_name, sender_dept, doc_type, subject, remarks, file_attachment, user_id)
 
@@ -828,20 +854,31 @@ def sro_records(request, panel, scanned_document_no):
     user = User.objects.get(user_id=user_id)
     office = user.office_id_id
 
-    document = Document.objects.get(document_no=scanned_document_no)
-
-    if not document:
+    try:
+        document = Document.objects.get(document_no=scanned_document_no)
+    except Document.DoesNotExist:
         scanned_status = "not-found"
-    elif document.status in ["For SRO Receiving", "For Resolving"] and document.next_route == office:
+
+        context = {
+            'user_profile': user_profile,
+            'panel': panel,
+            'scanned_status': scanned_status,
+        }
+
+        return render(request, 'sro/sro-records.html', context)
+
+    if document.status in ["For SRO Receiving", "For Resolving"] and document.next_route == office:
         scanned_status = 'authorized'
     else:
         scanned_status = 'unauthorized'
 
     context = {
         'user_name': user_profile,
+        'role': role,
         'panel': panel,
+        'scanned_document_no': scanned_document_no,
         'scanned_status': scanned_status,
-        'document': document
+        'document_details': get_document_details(document)
     }
 
     return render(request, 'sro/sro-records.html', context)
@@ -864,19 +901,29 @@ def action_officer_records(request, scanned_document_no):
 
     user = User.objects.get(user_id=user_id)
 
-    document = Document.objects.get(document_no=scanned_document_no)
-
-    if not document:
+    try:
+        document = Document.objects.get(document_no=scanned_document_no)
+    except Document.DoesNotExist:
         scanned_status = "not-found"
-    elif document.status == 'For ACT Receiving' and document.next_route == user.office_id_id and document.act_receiver == user_id:
+
+        context = {
+            'user_profile': user_profile,
+            'scanned_status': scanned_status,
+        }
+
+        return render(request, 'action_officer/action-officer-records.html', context)
+
+    if document.status == 'For ACT Receiving' and document.next_route == user.office_id_id and document.act_receiver == user_id:
         scanned_status = 'authorized'
     else:
         scanned_status = 'unauthorized'
 
     context = {
         'user_profile': user_profile,
+        'role': role,
+        'scanned_document_no': scanned_document_no,
         'scanned_status': scanned_status,
-        'document': document
+        'document_details': get_document_details(document)
     }
 
     return render(request, 'action_officer/action-officer-records.html', context)
@@ -902,21 +949,33 @@ def admin_officer_needs_action(request, panel, scanned_document_no):
             'user_profile': user_profile
         })
 
-    document = Document.objects.get(document_no=scanned_document_no)
-
-    if not document:
+    try:
+        document = Document.objects.get(document_no=scanned_document_no)
+    except Document.DoesNotExist:
         scanned_status = "not-found"
-    elif document.status in ["For Routing", "For Archiving"]:
+
+        context = {
+            'user_profile': user_profile,
+            'panel': panel,
+            'scanned_status': scanned_status,
+        }
+
+        return render(request, 'admin_officer/admin-officer-needs-action.html', context)
+
+    if document.status in ["For Routing", "For Archiving"]:
         scanned_status = 'authorized'
     else:
         scanned_status = 'unauthorized'
 
     context = {
         'user_profile': user_profile,
+        'role': role,
         'panel': panel,
+        'scanned_document_no': scanned_document_no,
         'scanned_status': scanned_status,
-        'document': document,
+        'document_details': get_document_details(document)
     }
+
     return render(request, 'admin_officer/admin-officer-needs-action.html', context)
 
 # DIRECTOR NEEDS ACTION
@@ -935,23 +994,33 @@ def director_needs_action(request, scanned_document_no):
     if int(scanned_document_no) < 0:
         return render(request, 'director/director-needs-action.html', {'user_profile': user_profile})
 
-    document = Document.objects.get(document_no=scanned_document_no)
-
-    if not document:
+    try:
+        document = Document.objects.get(document_no=scanned_document_no)
+    except Document.DoesNotExist:
         scanned_status = "not-found"
-    elif document.status == 'For DIR Approval':
+
+        context = {
+            'user_profile': user_profile,
+            'scanned_status': scanned_status,
+        }
+
+        return render(request, 'director/director-needs-action.html', context)
+
+    if document.status == 'For DIR Approval':
         scanned_status = 'authorized'
     else:
         scanned_status = 'unauthorized'
 
     context = {
         'user_profile': user_profile,
+        'role': role,
+        'scanned_document_no': scanned_document_no,
         'scanned_status': scanned_status,
-        'document': document
+        'document': document,
+        'document_details': get_document_details(document)
     }
 
     return render(request, 'director/director-needs-action.html', context)
-
 
 # -------------- ACTIVITY LOGS -------------------
 
@@ -2333,6 +2402,12 @@ def document_update_status(request, action, document_no):
 
         activity = 'Document Approved'
 
+    elif action == 'reject':
+
+        status = 'Rejected'
+        activity = 'Document Rejected'
+        document.is_rejected = True
+
     elif action == 'route':
 
         status = 'For SRO Receiving'
@@ -2536,75 +2611,79 @@ def delete_empty_remarks(request):
     data = {}
     return JsonResponse(data)
 
+def get_document_details(document):
+
+    d_type = document.document_type.category
+    d_type = d_type[0].upper() + d_type[1:]
+    d_type += " - " + document.document_type.document_type.title()
+
+    data = {
+        'tracking_no': document.tracking_no,
+        'sender_name': document.sender_name.title(),
+        'status': document.status,
+        'document_type': d_type,  # Assuming foreign key
+        'priority': document.document_type.priority_level.priority_level.title(),
+        'subject': document.subject,
+    }
+
+    log_entries = []
+
+    activity_logs = ActivityLogs.objects.filter(document_id=document).order_by('-time_stamp')
+    
+    for activity in activity_logs:
+        manila_tz = pytz.timezone('Asia/Manila')
+        local_time = activity.time_stamp.astimezone(manila_tz)
+
+        firstname = activity.user_id.firstname.title()
+        middlename = (activity.user_id.middlename[0].capitalize() + '.' if activity.user_id.middlename else '')
+        lastname = activity.user_id.lastname.capitalize()
+        role = activity.user_id.role
+
+        if role in ['ADO', 'SRO', 'ACT', 'Director', 'System Admin']:
+            office = activity.user_id.office_id.office_name
+        else:
+            office = ""
+        
+        if role == 'ADO':
+            role = 'Admin Officer'
+        elif role == 'SRO':
+            role = 'Sub-Receiving Officer'
+        elif role == 'ACT':
+            role = 'Action Officer'
+        
+
+        if activity.remarks is None:
+            remarks = ""
+        else:
+            remarks = activity.remarks.remarks
+
+        file_attachment = activity.file_attachment.url if activity.file_attachment else ''
+
+        log = {
+            'date': local_time.strftime('%Y-%m-%d'),
+            'time': local_time.strftime('%I:%M %p').lstrip('0'),
+            'user_id': activity.user_id_id,
+            'name': f"{firstname} {middlename} {lastname}".strip(),
+            'office': office,
+            'role': role,
+            'remarks': remarks,
+            'file_attachment': file_attachment,
+            'activity': activity.activity
+        }
+        log_entries.append(log)
+
+    data['activity_logs'] = log_entries
+
+    return data
+
 # ---------- FETCHING --------------
 
 def fetch_document_details(request, document_no):
-    try:
-        document = Document.objects.get(document_no=document_no)
 
-        d_type = document.document_type.category
-        d_type = d_type[0].upper() + d_type[1:]
-        d_type += " - " + document.document_type.document_type.title()
+    document = Document.objects.get(document_no=document_no)
+    data = get_document_details(document)
 
-        data = {
-            'tracking_no': document.tracking_no,
-            'sender_name': document.sender_name.title(),
-            'status': document.status,
-            'document_type': d_type,  # Assuming foreign key
-            'priority': document.document_type.priority_level.priority_level.title(),
-            'subject': document.subject,
-        }
-
-        log_entries = []
-
-        activity_logs = ActivityLogs.objects.filter(document_id=document).order_by('-time_stamp')
-        
-        for activity in activity_logs:
-            manila_tz = pytz.timezone('Asia/Manila')
-            local_time = activity.time_stamp.astimezone(manila_tz)
-
-            firstname = activity.user_id.firstname.title()
-            middlename = (activity.user_id.middlename[0].capitalize() + '.' if activity.user_id.middlename else '')
-            lastname = activity.user_id.lastname.capitalize()
-            role = activity.user_id.role
-
-            if role in ['ADO', 'SRO', 'ACT', 'Director', 'System Admin']:
-                office = activity.user_id.office_id.office_name
-            else:
-                office = ""
-            
-            if role == 'ADO':
-                role = 'Admin Officer'
-            elif role == 'SRO':
-                role = 'Sub-Receiving Officer'
-            elif role == 'ACT':
-                role = 'Action Officer'
-            
-
-            if activity.remarks is None:
-                remarks = ""
-            else:
-                remarks = activity.remarks.remarks
-
-            file_attachment = activity.file_attachment.url if activity.file_attachment else ''
-
-            log = {
-                'date': local_time.strftime('%Y-%m-%d'),
-                'time': local_time.strftime('%I:%M %p').lstrip('0'),
-                'user_id': activity.user_id_id,
-                'name': f"{firstname} {middlename} {lastname}".strip(),
-                'office': office,
-                'role': role,
-                'remarks': remarks,
-                'file_attachment': file_attachment,
-                'activity': activity.activity
-            }
-            log_entries.append(log)
-        data['activity_logs'] = log_entries
-
-        return JsonResponse(data)
-    except Document.DoesNotExist:
-        return JsonResponse({'error': 'Document not found'}, status=404)
+    return JsonResponse(data)
 
 # ---------- PARTIALS --------------
 
@@ -2734,7 +2813,7 @@ def admin_officer_update_needs_action_display(request, panel):
     order = request.GET.get('order', 'asc')
 
     if panel == 'For-DIR-Approval':
-        documents = Document.objects.filter(status='For DIR Approval').order_by('-recent_update')
+        documents = Document.objects.filter(status__in=['For DIR Approval', 'Rejected'], next_route=None).order_by('-recent_update')
         status = "For DIR Approval"
     elif panel == 'For-Routing':
         documents = Document.objects.filter(status='For Routing').order_by('-recent_update')
@@ -2743,7 +2822,7 @@ def admin_officer_update_needs_action_display(request, panel):
         documents = Document.objects.filter(status='For Archiving').order_by('-recent_update')
         status = "For Archiving"
     else:
-        documents = Document.objects.filter(status__in=["For DIR Approval", "For Routing", "For Archiving"]).order_by('-recent_update')
+        documents = Document.objects.filter(status__in=["For DIR Approval", "For Routing", "For Archiving", "Rejected"]).order_by('-recent_update')
         status = "ADO - All Documents"
 
     if search_query:
@@ -2927,7 +3006,7 @@ def update_archive_display(request, user):
     sort_by = request.GET.get('sort_by')
     order = request.GET.get('order', 'asc')
 
-    documents = Document.objects.filter(status='archived')
+    documents = Document.objects.filter(status='archived').order_by('-recent_update')
 
     if search_query:
         documents = search_documents(documents, search_query)
@@ -2950,7 +3029,8 @@ def update_archive_display(request, user):
 def generate_document_report(request, document_no):
 
     user_id = request.session.get('user_id')
-    user_name = request.session.get('user_name')
+    user_profile = request.session.get('user_profile', None)
+    user_name = user_profile.get('firstname') + ' ' + user_profile.get('lastname')
 
     if not user_id:
         return redirect(user_login)
@@ -3131,8 +3211,8 @@ def load_target_employees(request):
 def download_performance_report(request, report_no):
 
     user_id = request.session.get('user_id')
-    user_name = request.session.get('user_name')
-
+    user_profile = request.session.get('user_profile', None)
+    user_name = user_profile.get('firstname') + ' ' + user_profile.get('lastname')
     if not user_id:
         return redirect(user_login)
 
@@ -3713,41 +3793,6 @@ def edit_profile(request):
     return JsonResponse({'status': 'success'})
 
 
-"""def edit_profile(request):
-    if request.method == 'POST':
-        user_id = request.session.get('user_id')
-        user = User.objects.get(user_id=user_id)
-
-        user.firstname = request.POST.get('firstname')
-        user.middlename = request.POST.get('middlename')
-        user.lastname = request.POST.get('lastname')
-        user.email = request.POST.get('email')
-        user.contact_no = request.POST.get('contact_no')
-
-        if 'profile_picture' in request.FILES:
-            if user.profile_picture and user.profile_picture.url != '/attachments/profile_pics/default_profile_pic.png':
-                old_picture_path = os.path.join(settings.MEDIA_ROOT, user.profile_picture.name)
-                if os.path.isfile(old_picture_path):
-                    os.remove(old_picture_path)
-
-            user.profile_picture = request.FILES['profile_picture']
-
-
-        if request.POST.get('delete_photo'):
-            if user.profile_picture.url != '/attachments/profile_pics/default_profile_pic.png':
-                old_picture_path = os.path.join(settings.MEDIA_ROOT, user.profile_picture.name)
-                if os.path.isfile(old_picture_path):
-                    os.remove(old_picture_path)
-
-            user.profile_picture = 'profile_pics/default_profile_pic.png'
-
-        user.save()
-        
-        return redirect(request.META.get('HTTP_REFERER', '/'))
-
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method.'}, status=400)"""
-
-
 # ------------------ ANNOUNCEMENTS -----------------------
 
 def update_announcement(request, id):
@@ -3793,3 +3838,262 @@ def view_attachment(request, announcement_id):
         else:
             return HttpResponse("PDF conversion not available.", status=404)
     return HttpResponse("No attachment", status=404)
+
+# ------------------ ANALYTICS -----------------------
+
+def director_total_records(request, time_span):
+
+    start_date, end_date = get_time_span(time_span)
+
+    records = Document.objects.filter(recent_update__gte=start_date, recent_update__lt=end_date)
+
+    director_total_records = records.filter(status='For DIR Approval').count()
+    adm_total_records = records.filter(status__in=['For Routing', 'For Archiving', 'Rejected']).count()
+    csr_total_records = records.filter(status__in=['For SRO Receiving', 'For ACT Receiving', 'For Resolving'], next_route='CSR').count()
+    bdm_total_records = records.filter(status__in=['For SRO Receiving', 'For ACT Receiving', 'For Resolving'], next_route='BMD').count()
+    acc_total_records = records.filter(status__in=['For SRO Receiving', 'For ACT Receiving', 'For Resolving'], next_route='ACC').count()
+    prl_total_records = records.filter(status__in=['For SRO Receiving', 'For ACT Receiving', 'For Resolving'], next_route='PRL').count()
+
+    overall_total_records = (
+        director_total_records +
+        adm_total_records +
+        csr_total_records +
+        bdm_total_records +
+        acc_total_records +
+        prl_total_records
+    )
+
+    data = {
+        'overall_total_records': overall_total_records,
+        'director_total_records': director_total_records,
+        'adm_total_records': adm_total_records,
+        'csr_total_records': csr_total_records,
+        'bdm_total_records': bdm_total_records,
+        'acc_total_records': acc_total_records,
+        'prl_total_records': prl_total_records
+    }
+
+    return JsonResponse(data)
+
+def director_document_status(request, time_span, document_status):
+
+    start_date, end_date = get_time_span(time_span)
+
+    if document_status == 'all-documents':
+        records = Document.objects.filter(
+            recent_update__gte=start_date, 
+            recent_update__lt=end_date
+        ).exclude(status__in=['Archived', 'Rejected'])
+    else:
+        records = Document.objects.filter(recent_update__gte=start_date, recent_update__lt=end_date, status=document_status)
+
+    very_urgent = records.filter(document_type__priority_level__priority_level = 'very urgent').count()
+    urgent = records.filter(document_type__priority_level__priority_level = 'urgent').count()
+    normal = records.filter(document_type__priority_level__priority_level = 'normal').count()
+    for_pref_action = records.filter(document_type__priority_level__priority_level = 'for pref. action').count()
+
+    data = {
+        'very_urgent': very_urgent,
+        'urgent': urgent,
+        'normal': normal,
+        'for_pref_action': for_pref_action
+    }
+
+    return JsonResponse(data)
+
+def director_office_performance(request, time_span, target_office):
+
+    start_date, end_date = get_time_span(time_span)
+
+    unacted = UnactedLogs.objects.filter(
+        user_id__office_id__office_id=target_office,
+        is_acted=False,
+        time_stamp__gte=start_date, 
+        time_stamp__lt=end_date
+    ).count()
+
+    now = timezone.localtime().date()
+
+    if target_office == 'DIR':
+        status = ['For DIR Approval']
+    elif target_office == 'ADM':
+        status = ['For Routing']
+    else:
+        status = ['For SRO Receiving', 'For ACT Receiving', 'For Resolving']
+    
+    if target_office in ['DIR', 'ADM']:
+        pending = Document.objects.filter(
+            status=status,
+            recent_update__gte=start_date, 
+            recent_update__lt=end_date,
+            ongoing_deadline__gt=now
+        ).count()
+    else:
+        pending = Document.objects.filter(
+            status__in=status,
+            recent_update__gte=start_date, 
+            recent_update__lt=end_date,
+            ongoing_deadline__gt=now,
+            next_route=target_office
+        ).count()
+
+    delayed = UnactedLogs.objects.filter(
+        user_id__office_id__office_id=target_office,
+        is_acted=True,
+        time_stamp__gte=start_date, 
+        time_stamp__lt=end_date
+    ).count()
+
+    if target_office in ['ACC', 'BMD', 'CSR', 'PRL']:
+
+        resolved = ActivityLogs.objects.filter(
+            user_id__office_id__office_id=target_office,
+            activity = 'Document Resolved',
+            time_stamp__gte=start_date, 
+            time_stamp__lt=end_date
+        ).count()
+
+        data = {
+            'target_office': target_office,
+            'unacted': unacted,
+            'pending': pending,
+            'delayed': delayed,
+            'resolved': resolved
+        }
+        return JsonResponse(data)
+
+    data = {
+        'target_office': target_office,
+        'unacted': unacted,
+        'pending': pending,
+        'delayed': delayed
+    }
+    return JsonResponse(data)
+
+def director_employee_performance(request, time_span, target_report_type, target_office):
+
+    start_date, end_date = get_time_span(time_span)
+    now = timezone.localtime().date()
+
+    if target_office == 'All Offices':
+        employees = User.objects.filter(status='active').exclude(role='System Admin')
+    else:
+        employees = User.objects.filter(status='active', office_id_id=target_office).exclude(role='System Admin')
+
+    performances = {}
+
+    for emp in employees:
+            
+        if emp.role == 'Director':
+            acted_document_count = ActivityLogs.objects.filter(
+                activity = 'Document Approved',
+                time_stamp__gte=start_date, 
+                time_stamp__lt=end_date
+            ).count()
+
+            pending_document_count = Document.objects.filter(
+                status='For DIR Approval',
+                recent_update__gte=start_date,
+                ongoing_deadline__gt=now
+            ).count()
+
+        elif emp.role == 'ADO':
+            acted_document_count = ActivityLogs.objects.filter(
+                activity = 'Document Routed',
+                time_stamp__gte=start_date, 
+                time_stamp__lt=end_date
+            ).count()
+
+            pending_document_count = Document.objects.filter(
+                status='For Routing',
+                recent_update__gte=start_date,
+                ongoing_deadline__gt=now
+            ).count()
+
+        elif emp.role == 'SRO':
+            acted_document_count = ActivityLogs.objects.filter(
+                user_id_id=emp.user_id,
+                activity__in=['Document Forwarded to Action Officer', 'Document Resolved'],
+                time_stamp__gte=start_date, 
+                time_stamp__lt=end_date
+            ).count()
+
+            pending_document_count = Document.objects.filter(
+                next_route=emp.office_id_id,
+                status__in=['For SRO Receiving', 'For Resolving'],
+                recent_update__gte=start_date,
+                ongoing_deadline__gt=now
+            ).count()
+
+        elif emp.role == 'ACT':
+            acted_document_count = ActivityLogs.objects.filter(
+                user_id_id=emp.user_id,
+                activity__in=['Document Endorsed by Action Officer', 'Document Resolved'],
+                time_stamp__gte=start_date, 
+                time_stamp__lt=end_date
+            ).count()
+
+            pending_document_count = Document.objects.filter(
+                act_receiver=emp.user_id,
+                status='For ACT Receiving',
+                recent_update__gte=start_date,
+                ongoing_deadline__gt=now
+            ).count()
+            
+        unacted_document_count = UnactedLogs.objects.filter(
+            user_id_id=emp.user_id,
+            is_acted=False,
+            time_stamp__gte=start_date, 
+            time_stamp__lt=end_date
+        ).count()
+
+        total_received_document = acted_document_count + pending_document_count + unacted_document_count
+
+        if total_received_document <= 0:
+            average_perf_level = -1
+        else:
+            if target_report_type == 'Top-Employees':
+                average_perf_level = (
+                    ((acted_document_count/total_received_document) * 1.0) +
+                    ((pending_document_count/total_received_document) * 0.5) +
+                    ((unacted_document_count/total_received_document) * 0.5)
+                ) * 100
+            else:
+                average_perf_level = (
+                    ((unacted_document_count/total_received_document) * 1.0) +
+                    ((pending_document_count/total_received_document) * 0.5)
+                ) * 100
+
+        performances[emp.employee_id] = average_perf_level
+
+    filtered_performances = {emp_id: perf for emp_id, perf in performances.items() if perf != -1}
+    sorted_performances = dict(sorted(filtered_performances.items(), key=lambda item: item[1])[:10])
+        
+    data = {
+        'target_report_type': target_report_type,
+        'sorted_performances': sorted_performances
+    }
+
+    return JsonResponse(data)
+
+def get_time_span(time_span):
+    
+    now = timezone.now()
+    if time_span == 'today':
+        start_date = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_date = start_date + timedelta(days=1)
+        return start_date, end_date
+    
+    elif time_span == 'month':
+        start_date = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        if start_date.month == 12:
+            end_date = start_date.replace(year=start_date.year + 1, month=1)
+        else:
+            end_date = start_date.replace(month=start_date.month + 1)
+        return start_date, end_date
+    
+    elif time_span == 'year':
+        start_date = now.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+        end_date = start_date.replace(year=start_date.year + 1)
+        return start_date, end_date
+    

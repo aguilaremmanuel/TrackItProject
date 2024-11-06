@@ -104,5 +104,10 @@ urlpatterns = [
     path('delete-announcement/<int:id>/', views.delete_announcement, name='delete_announcement'),
     path('announcement/<int:announcement_id>/attachment/', views.view_attachment, name='view_attachment'),
 
+    path('director-total-records/<str:time_span>/', views.director_total_records, name='director_total_records'),
+    path('director-document-status/<str:time_span>/<str:document_status>/', views.director_document_status, name='director_document_status'),
+    path('director-office-performance/<str:time_span>/<str:target_office>/', views.director_office_performance, name='director_office_performance'),
+    path('director-employee-performance/<str:time_span>/<str:target_report_type>/<str:target_office>/', views.director_employee_performance, name='director_employee_performance'),
+
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

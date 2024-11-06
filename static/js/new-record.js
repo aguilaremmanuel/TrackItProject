@@ -3,20 +3,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const params = new URLSearchParams(window.location.search);
     const status = params.get('status');
     if (status) {
-        // Assuming you want to add the class to the element with ID 'targetElement'
         document.querySelector('#new').classList.add(status);
     }
-    /*
-    try {
-        const generateQRCodeModal = new bootstrap.Modal(document.getElementById('generateQRCode'));
-        // Automatically show the generateQRCode modal when the page loads
-        if (generateQRCodeModal) {
-            generateQRCodeModal.show();
-        }
-    } catch (error) {
-        console.error("QR Code modal could not be shown:", error);
-    }
-    */
 });
 
 // Add an event listener to the submit button
@@ -45,7 +33,7 @@ document.getElementById('DocumentCategory').addEventListener('change', function 
         .then(response => response.json())
         .then(data => {
             // Clear previous options
-            docTypeSelect.innerHTML = '<option value="">Select Document Type</option>';
+            docTypeSelect.innerHTML = '<option value="" disabled selected hidden>Select Document Type</option>';
             // Enable the dropdown
             docTypeSelect.disabled = false;
             // Populate new options
@@ -55,7 +43,7 @@ document.getElementById('DocumentCategory').addEventListener('change', function 
             });
         });
     } else {
-        docTypeSelect.innerHTML = '<option value="">Select Document Type</option>';
+        docTypeSelect.innerHTML = '<option value="" disabled selected hidden>Select Document Type</option>';
         docTypeSelect.disabled = true;
     }
 });
@@ -87,6 +75,7 @@ document.addEventListener("DOMContentLoaded", function() {
         e.preventDefault();
 
         const formData = new FormData(form);
+        const new_record_url = confirmCreateBtn.getAttribute('data-url');
 
         fetch('/add-record/', {
             method: 'POST',
@@ -103,6 +92,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 const recordExistsModal = new bootstrap.Modal(document.getElementById('recordExistsModal'));
                 recordExistsModal.show();
             } else {
+                
                 document.getElementById('routesQr').textContent = data.str_routes;
                 document.getElementById('qrCodeImage').src = data.qr_code_url;
                 document.getElementById('trackingNoQr').textContent = data.str_tracking_no;
@@ -110,7 +100,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 generateQRCodeModal.show();
                 form.reset();
             }
-
         })
         .catch(error => {
             console.error('Error:', error);

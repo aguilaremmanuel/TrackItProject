@@ -114,13 +114,23 @@
                                     {% if item.type == 'document' %}
                                         <div class="activity-item d-flex justify-content-between align-items-center">
                                             <div class="d-flex">
-                                                <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center feed-green">
-                                                    <i class="fa-solid fa-check"></i>
-                                                </div>
-                                                <p class="mb-0">
-                                                    <strong class="d-block">Document Approved: Tracking No. {{item.log.document_id.tracking_no}}</strong>
-                                                    The document has been approved and is now ready for routing and further action.
-                                                </p>
+                                                {% if item.log.activity == 'Document Approved' %}
+                                                    <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center feed-green">
+                                                        <i class="fa-solid fa-check"></i>
+                                                    </div>
+                                                    <p class="mb-0">
+                                                        <strong class="d-block">Document Approved: Tracking No. {{item.log.document_id.tracking_no}}</strong>
+                                                        The document has been approved and is now ready for routing and further action.
+                                                    </p>
+                                                {% elif item.log.activity == 'Document Rejected' %}
+                                                    <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center feed-red">
+                                                        <i class="fa-solid fa-xmark"></i>
+                                                    </div>
+                                                    <p class="mb-0">
+                                                        <strong class="d-block">Document Rejected: Tracking No. {{item.log.document_id.tracking_no}}</strong>
+                                                        The document has been rejected and sent back to the Admin Officer for re-uploading.
+                                                    </p>
+                                                {% endif %}
                                             </div>
                                             <p class="text-end mb-0" style="white-space: nowrap;">{{item.log.time_stamp|date:"Y-m-d"}}<br>{{item.log.time_stamp|date:"h:i A"}}</p>
                                         </div>
