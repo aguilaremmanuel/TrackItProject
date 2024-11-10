@@ -421,7 +421,10 @@
         <script>
             document.addEventListener('DOMContentLoaded', function () {
 
-                document.getElementById('TrackingNumber').value = '{{document.tracking_no}}';
+                const trackingInput = document.getElementById('TrackingNumber');
+                trackingInput.value = '{{document.tracking_no}}';
+                trackingInput.readOnly = true;
+                
                 document.getElementById('SenderName').value = '{{document.sender_name}}';
                 
                 const senderDepartmentSelect = document.getElementById('SenderDepartment');

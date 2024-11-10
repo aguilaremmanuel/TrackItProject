@@ -1217,7 +1217,7 @@ def sys_dir_activity_logs(request, activity_type):
     user_profile = request.session.get('user_profile', None)
 
     if activity_type == 'doc-management':
-        doc_management_logs = DocumentManagementLogs.objects.filter(user_id=user_id)
+        doc_management_logs = DocumentManagementLogs.objects.filter(user_id=user_id).order_by('-time_stamp')
         records = []
         routes = DocumentRoute.objects.all()
 
@@ -1242,7 +1242,7 @@ def sys_dir_activity_logs(request, activity_type):
         return render(request, 'assets/sys-dir-activity-logs.html', context)
 
     elif activity_type == 'reports':
-        records = ReportManagementLogs.objects.filter(user_id=user_id)
+        records = ReportManagementLogs.objects.filter(user_id=user_id).order_by('-time_stamp')
         context = {
             'role': role,
             'user_profile': user_profile,
@@ -1252,7 +1252,7 @@ def sys_dir_activity_logs(request, activity_type):
         return render(request, 'assets/sys-dir-activity-logs.html', context)
     
     elif activity_type == 'user-management':
-        records = UserManagementLogs.objects.filter(user=user_id)
+        records = UserManagementLogs.objects.filter(user=user_id).order_by('-time_stamp')
         context = {
             'role': role,
             'user_profile': user_profile,
@@ -1262,7 +1262,7 @@ def sys_dir_activity_logs(request, activity_type):
         return render(request, 'assets/sys-dir-activity-logs.html', context)
     
     elif activity_type == 'records':
-        records = ActivityLogs.objects.filter(user_id_id=user_id)
+        records = ActivityLogs.objects.filter(user_id_id=user_id).order_by('-time_stamp')
         context = {
             'role': role,
             'user_profile': user_profile,
@@ -1339,7 +1339,7 @@ def sro_activity_logs(request, activity_type):
     user_profile = request.session.get('user_profile', None)
 
     if activity_type == 'all-activity':
-        records = ActivityLogs.objects.filter(user_id_id=user_id)
+        records = ActivityLogs.objects.filter(user_id_id=user_id).order_by('-time_stamp')
         context = {
             'user_profile': user_profile,
             'activity_type': activity_type,
@@ -1408,7 +1408,7 @@ def admin_officer_activity_logs(request, activity_type):
     user_profile = request.session.get('user_profile', None)
 
     if activity_type == 'all-activity':
-        records = ActivityLogs.objects.filter(user_id_id=user_id)
+        records = ActivityLogs.objects.filter(user_id_id=user_id).order_by('-time_stamp')
         context = {
             'user_profile': user_profile,
             'activity_type': activity_type,
@@ -1476,7 +1476,7 @@ def action_officer_activity_logs(request, activity_type):
     user_profile = request.session.get('user_profile', None)
 
     if activity_type == 'all-activity':
-        records = ActivityLogs.objects.filter(user_id_id=user_id)
+        records = ActivityLogs.objects.filter(user_id_id=user_id).order_by('-time_stamp')
         context = {
             'user_profile': user_profile,
             'activity_type': activity_type,
@@ -4095,19 +4095,21 @@ def director_office_performance(request, time_span, target_office):
     now = timezone.localtime().date()
 
     if target_office == 'DIR':
-        status = ['For DIR Approval']
+        status = 'For DIR Approval'
     elif target_office == 'ADM':
-        status = ['For Routing']
+        status = 'For Routing'
     else:
         status = ['For SRO Receiving', 'For ACT Receiving', 'For Resolving']
     
     if target_office in ['DIR', 'ADM']:
+
         pending = Document.objects.filter(
             status=status,
             recent_update__gte=start_date, 
             recent_update__lt=end_date,
             ongoing_deadline__gt=now
         ).count()
+
     else:
         pending = Document.objects.filter(
             status__in=status,
@@ -4141,7 +4143,6 @@ def director_office_performance(request, time_span, target_office):
             'resolved': resolved
         }
         return JsonResponse(data)
-
     data = {
         'target_office': target_office,
         'unacted': unacted,
@@ -4227,6 +4228,16 @@ def director_employee_performance(request, time_span, target_report_type, target
             time_stamp__lt=end_date
         ).count()
 
+        if emp.role in ['ADO', 'SRO', 'Director']:
+
+            pending_document_count += unacted_document_count
+            acted_document_count += UnactedLogs.objects.filter(
+                user_id_id=emp.user_id,
+                is_acted=True,
+                time_stamp__gte=start_date, 
+                time_stamp__lt=end_date
+            ).count()
+
         total_received_document = acted_document_count + pending_document_count + unacted_document_count
 
         if total_received_document <= 0:
@@ -4234,9 +4245,9 @@ def director_employee_performance(request, time_span, target_report_type, target
         else:
             if target_report_type == 'Top-Employees':
                 average_perf_level = (
-                    ((acted_document_count/total_received_document) * 1.0) +
-                    ((pending_document_count/total_received_document) * 0.5) +
-                    ((unacted_document_count/total_received_document) * 0.5)
+                    ((acted_document_count/total_received_document) * 1.0) + 
+                    ((pending_document_count/total_received_document) * 0.5) - 
+                    ((unacted_document_count/total_received_document) * 0.5) 
                 ) * 100
             else:
                 average_perf_level = (
@@ -4248,7 +4259,7 @@ def director_employee_performance(request, time_span, target_report_type, target
 
     filtered_performances = {emp_id: perf for emp_id, perf in performances.items() if perf != -1}
     sorted_performances = dict(sorted(filtered_performances.items(), key=lambda item: item[1])[:10])
-        
+    
     data = {
         'target_report_type': target_report_type,
         'sorted_performances': sorted_performances

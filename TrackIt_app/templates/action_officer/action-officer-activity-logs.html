@@ -97,15 +97,27 @@
                                     {% if today_logs %}
                                         {% for log in today_logs %}
                                             <div class="activity-item d-flex justify-content-between align-items-center">
-                                                <div class="d-flex">
-                                                    <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center feed-green">
-                                                        <i class="fa-solid fa-thumbs-up"></i>
+                                                {% if log.activity == 'Document Endorsed by Action Officer' %}
+                                                    <div class="d-flex">
+                                                        <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center feed-green">
+                                                            <i class="fa-solid fa-thumbs-up"></i>
+                                                        </div>
+                                                        <p class="mb-0">
+                                                            <strong class="d-block">Document Endorsed for Resolution: Tracking No. {{log.document_id.tracking_no}}</strong>
+                                                            The document has been endorsed and is now ready for either resolution or further routing.
+                                                        </p>
                                                     </div>
-                                                    <p class="mb-0">
-                                                        <strong class="d-block">Document Endorsed for Resolution: Tracking No. {{log.document_id.tracking_no}}</strong>
-                                                        The document has been endorsed and is now ready for either resolution or further routing.
-                                                    </p>
-                                                </div>
+                                                {% elif log.activity == 'Document Reassigned Due to Inaction' %}
+                                                    <div class="d-flex">
+                                                        <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center feed-red">
+                                                            <i class="fa-solid fa-paper-plane"></i>
+                                                        </div>
+                                                        <p class="mb-0">
+                                                            <strong class="d-block">Document Reassigned Due to Inaction: Tracking No. {{log.document_id.tracking_no}} (Received by: {{log.receiver_id.firstname}} {{log.receiver_id.lastname}})</strong>
+                                                            The document has been reassigned due to inaction and is now with another officer for immediate action. 
+                                                        </p>
+                                                    </div>
+                                                {% endif %}
                                                 <p class="text-end mb-0" style="white-space: nowrap;">{{log.time_stamp|date:"Y-m-d"}}<br>{{log.time_stamp|date:"h:i A"}}</p>
                                             </div>
                                         {% endfor %}
@@ -119,7 +131,8 @@
                                     <h6 class="activity-label">Yesterday</h6>
                                     {% if yesterday_logs %}
                                         {% for log in yesterday_logs %}
-                                            <div class="activity-item d-flex justify-content-between align-items-center">
+                                        <div class="activity-item d-flex justify-content-between align-items-center">
+                                            {% if log.activity == 'Document Endorsed by Action Officer' %}
                                                 <div class="d-flex">
                                                     <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center feed-green">
                                                         <i class="fa-solid fa-thumbs-up"></i>
@@ -129,8 +142,19 @@
                                                         The document has been endorsed and is now ready for either resolution or further routing.
                                                     </p>
                                                 </div>
-                                                <p class="text-end mb-0" style="white-space: nowrap;">{{log.time_stamp|date:"Y-m-d"}}<br>{{log.time_stamp|date:"h:i A"}}</p>
-                                            </div>
+                                            {% elif log.activity == 'Document Reassigned Due to Inaction' %}
+                                                <div class="d-flex">
+                                                    <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center feed-red">
+                                                        <i class="fa-solid fa-paper-plane"></i>
+                                                    </div>
+                                                    <p class="mb-0">
+                                                        <strong class="d-block">Document Reassigned Due to Inaction: Tracking No. {{log.document_id.tracking_no}} (Received by: {{log.receiver_id.firstname}} {{log.receiver_id.lastname}})</strong>
+                                                        The document has been reassigned due to inaction and is now with another officer for immediate action. 
+                                                    </p>
+                                                </div>
+                                            {% endif %}
+                                            <p class="text-end mb-0" style="white-space: nowrap;">{{log.time_stamp|date:"Y-m-d"}}<br>{{log.time_stamp|date:"h:i A"}}</p>
+                                        </div>
                                         {% endfor %}
                                     {% else %}
                                         <p class="activity-label" style="opacity: 50%; padding-left: 30px;"><i>No logs for today.</i></p>
@@ -142,7 +166,8 @@
                                     <h6 class="activity-label">This Week</h6>
                                     {% if this_week_logs %}
                                         {% for log in this_week_logs %}
-                                            <div class="activity-item d-flex justify-content-between align-items-center">
+                                        <div class="activity-item d-flex justify-content-between align-items-center">
+                                            {% if log.activity == 'Document Endorsed by Action Officer' %}
                                                 <div class="d-flex">
                                                     <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center feed-green">
                                                         <i class="fa-solid fa-thumbs-up"></i>
@@ -152,8 +177,19 @@
                                                         The document has been endorsed and is now ready for either resolution or further routing.
                                                     </p>
                                                 </div>
-                                                <p class="text-end mb-0" style="white-space: nowrap;">{{log.time_stamp|date:"Y-m-d"}}<br>{{log.time_stamp|date:"h:i A"}}</p>
-                                            </div>
+                                            {% elif log.activity == 'Document Reassigned Due to Inaction' %}
+                                                <div class="d-flex">
+                                                    <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center feed-red">
+                                                        <i class="fa-solid fa-paper-plane"></i>
+                                                    </div>
+                                                    <p class="mb-0">
+                                                        <strong class="d-block">Document Reassigned Due to Inaction: Tracking No. {{log.document_id.tracking_no}} (Received by: {{log.receiver_id.firstname}} {{log.receiver_id.lastname}})</strong>
+                                                        The document has been reassigned due to inaction and is now with another officer for immediate action. 
+                                                    </p>
+                                                </div>
+                                            {% endif %}
+                                            <p class="text-end mb-0" style="white-space: nowrap;">{{log.time_stamp|date:"Y-m-d"}}<br>{{log.time_stamp|date:"h:i A"}}</p>
+                                        </div>
                                         {% endfor %}
                                     {% else %}
                                         <p class="activity-label" style="opacity: 50%; padding-left: 30px;"><i>No logs for today.</i></p>
@@ -165,7 +201,8 @@
                                     <h6 class="activity-label">Last 15 Days</h6>
                                     {% if last_fifteen_days_logs %}
                                         {% for log in last_fifteen_days_logs %}
-                                            <div class="activity-item d-flex justify-content-between align-items-center">
+                                        <div class="activity-item d-flex justify-content-between align-items-center">
+                                            {% if log.activity == 'Document Endorsed by Action Officer' %}
                                                 <div class="d-flex">
                                                     <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center feed-green">
                                                         <i class="fa-solid fa-thumbs-up"></i>
@@ -175,8 +212,19 @@
                                                         The document has been endorsed and is now ready for either resolution or further routing.
                                                     </p>
                                                 </div>
-                                                <p class="text-end mb-0" style="white-space: nowrap;">{{log.time_stamp|date:"Y-m-d"}}<br>{{log.time_stamp|date:"h:i A"}}</p>
-                                            </div>
+                                            {% elif log.activity == 'Document Reassigned Due to Inaction' %}
+                                                <div class="d-flex">
+                                                    <div class="activity-icon-wrapper rounded d-flex justify-content-center align-items-center feed-red">
+                                                        <i class="fa-solid fa-paper-plane"></i>
+                                                    </div>
+                                                    <p class="mb-0">
+                                                        <strong class="d-block">Document Reassigned Due to Inaction: Tracking No. {{log.document_id.tracking_no}} (Received by: {{log.receiver_id.firstname}} {{log.receiver_id.lastname}})</strong>
+                                                        The document has been reassigned due to inaction and is now with another officer for immediate action. 
+                                                    </p>
+                                                </div>
+                                            {% endif %}
+                                            <p class="text-end mb-0" style="white-space: nowrap;">{{log.time_stamp|date:"Y-m-d"}}<br>{{log.time_stamp|date:"h:i A"}}</p>
+                                        </div>
                                         {% endfor %}
                                     {% else %}
                                         <p class="activity-label" style="opacity: 50%; padding-left: 30px;"><i>No logs for today.</i></p>

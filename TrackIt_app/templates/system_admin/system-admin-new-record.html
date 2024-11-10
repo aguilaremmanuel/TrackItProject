@@ -353,6 +353,59 @@
         </div>
     </div>
 
+    {% if document %}
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+
+                const trackingInput = document.getElementById('TrackingNumber');
+                trackingInput.value = '{{document.tracking_no}}';
+                trackingInput.readOnly = true;
+                document.getElementById('SenderName').value = '{{document.sender_name}}';
+                
+                const senderDepartmentSelect = document.getElementById('SenderDepartment');
+                const otherInput = document.getElementById('otherInput');
+                const inputContainer = document.getElementById('inputContainer');
+                const documentSenderDept = "{{ document.sender_department }}";
+                
+                let isDepartmentMatched = false;
+                Array.from(senderDepartmentSelect.options).forEach(option => {
+                    if (option.value === documentSenderDept) {
+                        option.selected = true;
+                        isDepartmentMatched = true;
+                    }
+                });
+
+                if (!isDepartmentMatched) {
+                    senderDepartmentSelect.value = "others";
+                    otherInput.value = documentSenderDept;
+                    inputContainer.style.display = "block";
+                }
+                
+                const documentCategorySelect = document.getElementById('DocumentCategory');
+                documentCategorySelect.value = '{{document.document_type.category}}';
+                documentCategorySelect.dispatchEvent(new Event('change'));
+                
+                const documentTypeSelect = document.getElementById('DocumentType');
+                const selectedType = "{{document.document_type.document_no}}";
+                console.log("selected type: " + selectedType);
+                const pollOptions = setInterval(() => {
+                    if (documentTypeSelect.options.length > 1) { 
+                        clearInterval(pollOptions);
+                        Array.from(documentTypeSelect.options).forEach(option => {
+                            console.log("Checking option:", option.value);
+                            if (option.value === selectedType) {
+                                option.selected = true;
+                                console.log("nagequal");
+                            }
+                        });
+                    }
+                }, 100);
+
+                document.getElementById('Subject').value = '{{document.subject}}';
+            });
+        </script>
+    {% endif %}
+
     <script src="{% static 'js/toggle-sidebar.js' %}"></script>  
     <script src="{% static 'js/new-record.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
