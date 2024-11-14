@@ -594,289 +594,281 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
+        document.addEventListener('DOMContentLoaded', function () { 
 
-    document.addEventListener('DOMContentLoaded', function () { 
+            const inputGroupSelect = document.getElementById('inputGroupSelect');
+            const documentStatus = document.getElementById('documentStatusSelect');
+            const targetOffice =  document.getElementById('targetOfficePerformanceSelect');
+            let chart; 
+            let officePerformanceChart;
+            let employeePerformanceChart;
 
-        const inputGroupSelect = document.getElementById('inputGroupSelect');
-        const documentStatus = document.getElementById('documentStatusSelect');
-        const targetOffice =  document.getElementById('targetOfficePerformanceSelect');
-        let chart; 
-        let officePerformanceChart;
-        let employeePerformanceChart;
+            function updateChart(data) {
 
-        function updateChart(data) {
+                if (chart) {
+                    chart.destroy();
+                }
 
-            if (chart) {
-                chart.destroy();
-            }
-
-            const ctx1 = document.getElementById('docStatusChart').getContext('2d');
-            chart = new Chart(ctx1, {
-                type: 'pie',
-                data: {
-                    labels: ['Very Urgent', 'Urgent', 'Normal', 'For Pref. Action'],
-                    datasets: [{
-                        label: 'Document',
-                        data: [data.very_urgent, data.urgent, data.normal, data.for_pref_action],
-                        backgroundColor: ['#EA2E2E', '#FF7E07', '#22a03f', '#FFC107']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'bottom'
-                        },
-                        title: {
-                            display: false // Set to false to remove the chart title
+                const ctx1 = document.getElementById('docStatusChart').getContext('2d');
+                chart = new Chart(ctx1, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Very Urgent', 'Urgent', 'Normal', 'For Pref. Action'],
+                        datasets: [{
+                            label: 'Document',
+                            data: [data.very_urgent, data.urgent, data.normal, data.for_pref_action],
+                            backgroundColor: ['#EA2E2E', '#FF7E07', '#22a03f', '#FFC107']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'bottom'
+                            },
+                            title: {
+                                display: false // Set to false to remove the chart title
+                            }
                         }
                     }
+                });
+            }
+
+            function handleSelectChange() {
+                const timeSpan = inputGroupSelect.value;
+
+                fetch(`/director-total-records/${timeSpan}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        
+                        document.getElementById('overallTotalRecords').textContent = data.overall_total_records;
+                        document.getElementById('directorTotalRecords').textContent = data.director_total_records;
+                        document.getElementById('admTotalRecords').textContent = data.adm_total_records;
+                        document.getElementById('csrTotalRecords').textContent = data.csr_total_records;
+                        document.getElementById('bdmTotalRecords').textContent = data.bdm_total_records;
+                        document.getElementById('accTotalRecords').textContent = data.acc_total_records;
+                        document.getElementById('prlTotalRecords').textContent = data.prl_total_records;
+
+                        const records = {
+                            directorTotalRecords: data.director_total_records,
+                            admTotalRecords: data.adm_total_records,
+                            csrTotalRecords: data.csr_total_records,
+                            bdmTotalRecords: data.bdm_total_records,
+                            accTotalRecords: data.acc_total_records,
+                            prlTotalRecords: data.prl_total_records
+                        };
+
+                        const maxRecord = Math.max(...Object.values(records));
+                        const maxRecordId = Object.keys(records).find(key => records[key] === maxRecord);
+
+                        // Scale factor for height; adjust 200px as needed for max height
+                        const maxHeight = 200;
+                        const scale = maxRecord > 0 ? maxHeight / maxRecord : 0;
+
+                        document.querySelectorAll('.bar').forEach(bar => bar.classList.remove('selected'));
+                        Object.keys(records).forEach(recordId => {
+                            const barShape = document.querySelector(`#${recordId}`).parentNode.querySelector('.bar-shape');
+                            const height = records[recordId] * scale;
+                            barShape.style.height = height > 0 ? `${height}px` : '0px'; // Set height to 0 if count is zero
+                        });
+
+                        if (maxRecord > 0) {
+                            document.getElementById(maxRecordId).parentNode.classList.add('selected');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+
+                handleDocumentStatusSelectChange();
+                handleOfficePerformanceSelectChange();
+                updateSelectedFilters();
+            }
+
+            function handleDocumentStatusSelectChange() {
+                const timeSpan = inputGroupSelect.value;
+                const documentStatusValue = documentStatus.value;
+
+                fetch(`/director-document-status/${timeSpan}/${documentStatusValue}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        updateChart(data);
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+
+            function updateOfficePerformanceChart(data) {
+
+                if (officePerformanceChart) {
+                    officePerformanceChart.destroy();
                 }
-            });
-        }
 
+                let label, chartData;
 
-        function handleSelectChange() {
-            const timeSpan = inputGroupSelect.value;
+                if (data.target_office === 'DIR' || data.target_office === 'ADM') {
+                    label = ['Unacted', 'Pending', 'Delayed'];
+                    chartData = [data.unacted, data.pending, data.delayed];
+                } else {
+                    label = ['Unacted', 'Pending', 'Delayed', 'Resolved'];
+                    chartData = [data.unacted, data.pending, data.delayed, data.resolved];
+                }
 
-            fetch(`/director-total-records/${timeSpan}/`)
-                .then(response => response.json())
-                .then(data => {
-                    
-                    document.getElementById('overallTotalRecords').textContent = data.overall_total_records;
-                    document.getElementById('directorTotalRecords').textContent = data.director_total_records;
-                    document.getElementById('admTotalRecords').textContent = data.adm_total_records;
-                    document.getElementById('csrTotalRecords').textContent = data.csr_total_records;
-                    document.getElementById('bdmTotalRecords').textContent = data.bdm_total_records;
-                    document.getElementById('accTotalRecords').textContent = data.acc_total_records;
-                    document.getElementById('prlTotalRecords').textContent = data.prl_total_records;
-
-                    const records = {
-                        directorTotalRecords: data.director_total_records,
-                        admTotalRecords: data.adm_total_records,
-                        csrTotalRecords: data.csr_total_records,
-                        bdmTotalRecords: data.bdm_total_records,
-                        accTotalRecords: data.acc_total_records,
-                        prlTotalRecords: data.prl_total_records
-                    };
-
-                    const maxRecord = Math.max(...Object.values(records));
-                    const maxRecordId = Object.keys(records).find(key => records[key] === maxRecord);
-
-                    // Scale factor for height; adjust 200px as needed for max height
-                    const maxHeight = 200;
-                    const scale = maxRecord > 0 ? maxHeight / maxRecord : 0;
-
-                    document.querySelectorAll('.bar').forEach(bar => bar.classList.remove('selected'));
-                    Object.keys(records).forEach(recordId => {
-                        const barShape = document.querySelector(`#${recordId}`).parentNode.querySelector('.bar-shape');
-                        const height = records[recordId] * scale;
-                        barShape.style.height = height > 0 ? `${height}px` : '0px'; // Set height to 0 if count is zero
-                    });
-
-                    if (maxRecord > 0) {
-                        document.getElementById(maxRecordId).parentNode.classList.add('selected');
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-
-            handleDocumentStatusSelectChange();
-            handleOfficePerformanceSelectChange();
-            updateSelectedFilters();
-        }
-
-        function handleDocumentStatusSelectChange() {
-            const timeSpan = inputGroupSelect.value;
-            const documentStatusValue = documentStatus.value;
-
-            fetch(`/director-document-status/${timeSpan}/${documentStatusValue}/`)
-                .then(response => response.json())
-                .then(data => {
-                    updateChart(data);
-                })
-                .catch(error => console.error('Error:', error));
-        }
-
-        function updateOfficePerformanceChart(data) {
-
-            if (officePerformanceChart) {
-                officePerformanceChart.destroy();
-            }
-
-            let label, chartData;
-
-            if (data.target_office === 'DIR' || data.target_office === 'ADM') {
-                label = ['Unacted', 'Pending', 'Delayed'];
-                chartData = [data.unacted, data.pending, data.delayed];
-            } else {
-                label = ['Unacted', 'Pending', 'Delayed', 'Resolved'];
-                chartData = [data.unacted, data.pending, data.delayed, data.resolved];
-            }
-
-            const ctx3 = document.getElementById('officePerformanceChart').getContext('2d');
-            officePerformanceChart = new Chart(ctx3, {
-                type: 'doughnut',
-                data: {
-                    labels: label,
-                    datasets: [{
-                        label: '# of Votes',
-                        data: chartData,
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.2)',
-                            'rgba(54, 162, 235, 0.2)',
-                            'rgba(255, 206, 86, 0.2)',
-                            'rgba(75, 192, 192, 0.2)'
-                        ],
-                        borderColor: [
-                            'rgba(255, 99, 132, 1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(255, 206, 86, 1)',
-                            'rgba(75, 192, 192, 1)'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,  // This will allow the canvas to fill its container
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(tooltipItem) {
-                                    return tooltipItem.label + ': ' + tooltipItem.raw;
+                const ctx3 = document.getElementById('officePerformanceChart').getContext('2d');
+                officePerformanceChart = new Chart(ctx3, {
+                    type: 'doughnut',
+                    data: {
+                        labels: label,
+                        datasets: [{
+                            label: '# of Votes',
+                            data: chartData,
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,  // This will allow the canvas to fill its container
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(tooltipItem) {
+                                        return tooltipItem.label + ': ' + tooltipItem.raw;
+                                    }
                                 }
                             }
                         }
                     }
-                }
-            });
-        }
-
-        function updateEmployeePerformanceChart(data) {
-
-            if (employeePerformanceChart) {
-                employeePerformanceChart.destroy();
+                });
             }
 
-            const label = Object.keys(data.sorted_performances); 
-            const chartData = Object.values(data.sorted_performances);
+            function updateEmployeePerformanceChart(data) {
 
-            const isUnderperforming = data.target_report_type === 'Underperforming';
-            const lineColor = isUnderperforming ? '#ff4d4d' : '#007bff'; // Red for Underperforming, blue otherwise
-            const backgroundColor = isUnderperforming ? 'rgba(255, 77, 77, 0.1)' : 'rgba(0, 123, 255, 0.1)';
-            const pointColor = isUnderperforming ? '#b32424' : '#004da0'; // Darker red points for Underperforming
+                if (employeePerformanceChart) {
+                    employeePerformanceChart.destroy();
+                }
 
-            const ctx = document.getElementById('employeePerformanceChart').getContext('2d');
-            employeePerformanceChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: label, // Time periods
-                    datasets: [
-                        {
-                            label: isUnderperforming ? 'Underperforming Level' : 'Performance Level',
-                            data: chartData, // resolved document tot/unacted+delayed tot
-                            borderColor: lineColor, // Line color
-                            backgroundColor: backgroundColor, // Fill color
-                            tension: 0.4,
-                            fill: true,
-                            pointBackgroundColor: pointColor, // Points color
-                            tension: 0.4, // Smooth curve
-                            fill: true, // Fill the area under the line
-                            pointRadius: 5 // Point size
-                        }
-                    ]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 100
-                        }
+                const label = Object.keys(data.sorted_performances); 
+                const chartData = Object.values(data.sorted_performances);
+
+                const isUnderperforming = data.target_report_type === 'Underperforming';
+                const lineColor = isUnderperforming ? '#ff4d4d' : '#007bff'; // Red for Underperforming, blue otherwise
+                const backgroundColor = isUnderperforming ? 'rgba(255, 77, 77, 0.1)' : 'rgba(0, 123, 255, 0.1)';
+                const pointColor = isUnderperforming ? '#b32424' : '#004da0'; // Darker red points for Underperforming
+
+                const ctx = document.getElementById('employeePerformanceChart').getContext('2d');
+                employeePerformanceChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: label, // Time periods
+                        datasets: [
+                            {
+                                label: isUnderperforming ? 'Underperforming Level' : 'Performance Level',
+                                data: chartData, // resolved document tot/unacted+delayed tot
+                                borderColor: lineColor, // Line color
+                                backgroundColor: backgroundColor, // Fill color
+                                tension: 0.4,
+                                fill: true,
+                                pointBackgroundColor: pointColor, // Points color
+                                tension: 0.4, // Smooth curve
+                                fill: true, // Fill the area under the line
+                                pointRadius: 5 // Point size
+                            }
+                        ]
                     },
-                    plugins: {
-                        legend: {
-                            display: false, // Show the legend
-                            position: 'bottom'
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false, // Show the legend
+                                position: 'bottom'
+                            }
                         }
                     }
-                }
+                });
+
+            }
+
+            function handleOfficePerformanceSelectChange() {
+                const timeSpan = inputGroupSelect.value;
+                const targetOfficeValue = targetOffice.value;
+
+                fetch(`/director-office-performance/${timeSpan}/${targetOfficeValue}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        updateOfficePerformanceChart(data); 
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+
+            const selectedFiltersDiv = document.getElementById('selectedFilters');
+            const radioButtons = document.querySelectorAll('.form-check-input');
+
+            radioButtons.forEach(radio => {
+                radio.addEventListener('change', updateSelectedFilters);
             });
 
-        }
+            updateSelectedFilters();
 
-        function handleOfficePerformanceSelectChange() {
-            const timeSpan = inputGroupSelect.value;
-            const targetOfficeValue = targetOffice.value;
+            function updateSelectedFilters() {
 
-            fetch(`/director-office-performance/${timeSpan}/${targetOfficeValue}/`)
-                .then(response => response.json())
-                .then(data => {
-                    updateOfficePerformanceChart(data); 
-                })
-                .catch(error => console.error('Error:', error));
-        }
+                const selectedGroup1 = document.querySelector('input[name="target_office_radio"]:checked');
+                const selectedGroup2 = document.querySelector('input[name="target_report_type_radio"]:checked');
 
-        const selectedFiltersDiv = document.getElementById('selectedFilters');
-        const radioButtons = document.querySelectorAll('.form-check-input');
+                const selectedValues = [];
+                if (selectedGroup1) {
+                    selectedValues.push(selectedGroup1.value);
+                }
+                if (selectedGroup2) {
+                    selectedValues.push(selectedGroup2.value);
+                }
 
-        radioButtons.forEach(radio => {
-            radio.addEventListener('change', updateSelectedFilters);
-        });
-
-        updateSelectedFilters();
-
-        function updateSelectedFilters() {
-
-            const selectedGroup1 = document.querySelector('input[name="target_office_radio"]:checked');
-            const selectedGroup2 = document.querySelector('input[name="target_report_type_radio"]:checked');
-
-            const selectedValues = [];
-            if (selectedGroup1) {
-                selectedValues.push(selectedGroup1.value);
-            }
-            if (selectedGroup2) {
-                selectedValues.push(selectedGroup2.value);
+                selectedFiltersDiv.innerHTML = selectedValues.length ? '<b>Filter by:</b> ' + selectedValues.join(', ') : 'No filters selected';
+                
+                const timeSpan = inputGroupSelect.value;
+                const targetReportType = selectedGroup2.value;
+                const targetOffice = selectedGroup1.value;
+                
+                fetch(`/director-employee-performance/${timeSpan}/${targetReportType}/${targetOffice}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        updateEmployeePerformanceChart(data); 
+                    })
+                    .catch(error => console.error('Error:', error));
             }
 
-            selectedFiltersDiv.innerHTML = selectedValues.length ? '<b>Filter by:</b> ' + selectedValues.join(', ') : 'No filters selected';
-            
-            const timeSpan = inputGroupSelect.value;
-            const targetReportType = selectedGroup2.value;
-            const targetOffice = selectedGroup1.value;
-            
-            fetch(`/director-employee-performance/${timeSpan}/${targetReportType}/${targetOffice}/`)
-                .then(response => response.json())
-                .then(data => {
-                    updateEmployeePerformanceChart(data); 
-                })
-                .catch(error => console.error('Error:', error));
-            
-        }
+            inputGroupSelect.addEventListener('change', handleSelectChange);
+            documentStatus.addEventListener('change', handleDocumentStatusSelectChange);
+            targetOffice.addEventListener('change', handleOfficePerformanceSelectChange);
+            handleSelectChange();
 
-        inputGroupSelect.addEventListener('change', handleSelectChange);
-        documentStatus.addEventListener('change', handleDocumentStatusSelectChange);
-        targetOffice.addEventListener('change', handleOfficePerformanceSelectChange);
-        handleSelectChange();
+            document.getElementById('generateDocumentStatusReportBtn').addEventListener('click', function() {
+                
+                const timeSpan = inputGroupSelect.value;
+                const documentStatusValue = documentStatus.value;
 
-        document.getElementById('generateDocumentStatusReportBtn').addEventListener('click', function() {
-            
-            const timeSpan = inputGroupSelect.value;
-            const documentStatusValue = documentStatus.value;
-
-            window.open(`/generate-document-status-report/${timeSpan}/${documentStatusValue}`, '_blank');
-            
-            
+                window.open(`/generate-document-status-report/${timeSpan}/${documentStatusValue}`, '_blank');
+            });
 
         });
-
-    });
-
-        
     </script>
 
 </body>

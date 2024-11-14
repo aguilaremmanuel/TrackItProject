@@ -22,8 +22,6 @@ import os, shutil
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
 
-
-
 #---------------
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
@@ -690,38 +688,8 @@ def system_admin_doc_management(request):
             activity='Document Type Created',
             user_id=user_id
         )
-    
-    records = []
-
-    document_type_records = DocumentType.objects.filter(is_active=True).order_by('-last_update')
-
-    sort_by = request.GET.get('sort_by')
-    order = request.GET.get('order', 'asc')
-
-    if sort_by in ['document_type', 'category', 'priority_level_id', 'email']:  # Only allow sorting by valid fields
-        if order == 'asc':
-            document_type_records = document_type_records.order_by(sort_by)
-        else:
-            document_type_records = document_type_records.order_by(f'-{sort_by}')
-
-    routes = DocumentRoute.objects.all()
-
-    for document_type_record in document_type_records:
-        record = {}
-        record['document_no'] = document_type_record.document_no
-        record['document_type'] = document_type_record.document_type
-        record['category'] = document_type_record.category
-        record['priority_level'] = document_type_record.priority_level.priority_level
-
-        temp_route = []
-        for route in routes:
-            if route.document_type_id == document_type_record.document_no:
-                temp_route.append(route.route.office_name)
-        record['routes'] = temp_route
-        records.append(record)
 
     context = {
-        'records': records,
         'user_profile': user_profile
     }
 
@@ -729,6 +697,7 @@ def system_admin_doc_management(request):
 
 # SYSTEM ADMIN DOC MANAGEMENT
 def director_doc_management(request):
+    
     user_id = request.session.get('user_id')
     if not user_id:
         return redirect('user_login')
@@ -768,38 +737,11 @@ def director_doc_management(request):
             user_id=user_id
         )
 
-    records = []
-
-    document_type_records = DocumentType.objects.filter(is_active=True)
-
-    sort_by = request.GET.get('sort_by')
-    order = request.GET.get('order', 'asc')
-
-    if sort_by in ['document_type', 'category', 'priority_level_id', 'email']:
-        if order == 'asc':
-            document_type_records = document_type_records.order_by(sort_by)
-        else:
-            document_type_records = document_type_records.order_by(f'-{sort_by}')
-
-    routes = DocumentRoute.objects.all()
-
-    for document_type_record in document_type_records:
-        record = {
-            'document_no': document_type_record.document_no,
-            'document_type': document_type_record.document_type,
-            'category': document_type_record.category,
-            'priority_level': document_type_record.priority_level.priority_level,
-            'routes': [route.route.office_name for route in routes if route.document_type_id == document_type_record.document_no]
-        }
-        records.append(record)
-
     context = {
-        'user_profile': user_profile,
-        'records': records
+        'user_profile': user_profile
     }
 
     return render(request, 'director/director-doc-management.html', context)
-
 
 # -------------- NEW RECORD -------------------
 
@@ -2354,6 +2296,24 @@ def get_routes(request, document_no):
     except Document.DoesNotExist:
         return JsonResponse({'error': 'Document not found'}, status=404)
 
+def search_document_type(document_types, search_query):
+
+    document_types = document_types.filter(
+            Q(document_type__icontains=search_query)
+        )
+    
+    for doc_type in document_types:
+
+        if search_query in doc_type.document_type:
+            doc_type.highlighted_document_type = doc_type.document_type.replace(
+                search_query, f"<span class='highlight-search'>{search_query}</span>"
+            )
+            print(doc_type.highlighted_document_type)
+        else:
+            doc_type.highlighted_document_type = doc_type.document_type
+    
+    return document_types
+
 def search_documents(documents, search_query):
 
     documents = documents.filter(
@@ -2865,6 +2825,52 @@ def fetch_document_details(request, document_no):
     return JsonResponse(data)
 
 # ---------- PARTIALS --------------
+
+def update_document_types_display(request):
+
+    search_query = request.GET.get('search', '').strip()
+    sort_by = request.GET.get('sort_by')
+    order = request.GET.get('order', 'asc')
+
+    records = []
+
+    document_type_records = DocumentType.objects.filter(is_active=True)
+
+    if search_query:
+        document_type_records = search_document_type(document_type_records, search_query)
+
+    sort_by = request.GET.get('sort_by')
+    order = request.GET.get('order', 'asc')
+
+    if sort_by in ['document_type', 'category', 'priority_level_id', 'email']:
+        if order == 'asc':
+            document_type_records = document_type_records.order_by(sort_by)
+        else:
+            document_type_records = document_type_records.order_by(f'-{sort_by}')
+
+    routes = DocumentRoute.objects.all()
+
+    for document_type_record in document_type_records:
+        record = {
+            'document_no': document_type_record.document_no,
+            'category': document_type_record.category,
+            'priority_level': document_type_record.priority_level.priority_level,
+            'routes': [route.route.office_name for route in routes if route.document_type_id == document_type_record.document_no]
+        }
+        if search_query:
+            record['document_type'] = document_type_record.highlighted_document_type
+        else:
+            record['document_type'] =document_type_record.document_type
+
+        records.append(record)
+
+    context = {
+        'search_query': search_query,
+        'records': records
+    }
+
+    html = render_to_string('partials/display-document-types.html', context)
+    return JsonResponse({'html': html})
 
 def update_user_display(request, office):
 

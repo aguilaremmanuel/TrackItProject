@@ -1,0 +1,56 @@
+{% if records %}
+    {% for record in records %}
+        <tr>
+            <td>
+                {{ record.document_type|safe }}
+            </td>
+            <td>{{ record.category|capfirst }}</td>
+            <td>
+                {% for route in record.routes %}
+                    <span>{{ route }}</span>
+                    {% if not forloop.last %}
+                        <i class="fa-solid fa-chevron-right px-1"></i>
+                    {% endif %}
+                {% endfor %}
+            </td>
+            <td>
+                {% if record.priority_level == 'for pref. action' %}
+                    <span class="badge badge-gray rounded-pill fw-semibold">FOR PREF. ACTION</span>
+                {% elif record.priority_level == 'normal' %}
+                    <span class="badge badge-green rounded-pill fw-semibold">NORMAL</span>
+                {% elif record.priority_level == 'urgent' %}
+                    <span class="badge badge-yellow rounded-pill fw-semibold">URGENT</span>
+                {% else %}
+                    <span class="badge badge-red rounded-pill fw-semibold">VERY URGENT</span>
+                {% endif %}
+            </td>
+            <td>
+                <div class="table-action">
+                    <button type="button" class="btn btn-sm btn-blue"
+                        data-bs-toggle="modal" 
+                        data-bs-target="#editDocumentTypeModal" 
+                        data-document-no="{{ record.document_no }}" 
+                        data-document-type="{{ record.document_type }}"
+                        data-category="{{ record.category|capfirst }}"
+                        data-priority-level="{{ record.priority_level|capfirst }}"
+                        data-routes="{{ record.routes|join:',' }}"
+                        data-bs-toggle="tooltip" title="Edit Document Type">
+                        <i class="fa-solid fa-pen"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-red" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#deleteDocumentTypeModal" 
+                        data-document-no="{{ record.document_no }}" 
+                        data-url="{% url 'delete_document_type' 0 %}" 
+                        data-bs-toggle="tooltip" title="Delect Document Type">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    {% endfor %}
+{% else %}
+    <tr>
+        <td colspan="8" class="text-center">No data to display in table.</td>
+    </tr>
+{% endif %}
