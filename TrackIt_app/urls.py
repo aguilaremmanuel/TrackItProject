@@ -29,6 +29,9 @@ urlpatterns = [
     
     path('document-update-status/<str:action>/<int:document_no>/', views.document_update_status, name='document_update_status'),
 
+    # DOCUMENT TYPES:
+    path('update-document-types-display/', views.update_document_types_display, name='update_document_types_display'),
+
     #path('director-login/',views.director_login, name='director_login'),
     path('director-user-management/<str:office>/', views.director_user_management, name='director_user_management'),
     path('director-doc-management/',views.director_doc_management, name='director_doc_management'),

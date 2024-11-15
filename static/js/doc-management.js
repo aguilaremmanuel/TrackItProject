@@ -1,9 +1,34 @@
-document.addEventListener('DOMContentLoaded', function () {
+function fetchDocumentTypes() {
 
-    deleteModal = document.getElementById('deleteDocumentTypeModal');
-    confirmDeleteBtn = document.getElementById('confirmDelete');
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchQuery = document.getElementById('searchInput');
+    let searchValue = searchQuery.value.trim();
+    let updateUrl = searchQuery.getAttribute('data-url');
+    let fetchUrl = updateUrl + `?search=${encodeURIComponent(searchValue)}`;
     
-    editModal = document.getElementById('editDocumentTypeModal');
+    if (!searchValue) {
+        const sortBy = urlParams.get('sort_by') || '';
+        const order = urlParams.get('order') || 'asc';
+        fetchUrl = updateUrl + "?sort_by=" + sortBy + "&order=" + order;
+    }
+
+    fetch(fetchUrl)
+        .then(response => response.json())
+        .then(data => {
+
+            document.getElementById('docTableBody').innerHTML = data.html;
+            /*
+                document.getElementById('docTableBody').innerHTML = data.html;
+                let noOfRecords = document.getElementById('docuLength').value;
+                document.getElementById('recordCount').textContent = noOfRecords;
+                bindViewButtons();
+            */
+    });
+}
+
+function editDocumentType() {
+
+    const editModal = document.getElementById('editDocumentTypeModal');
     const editDocumentNo = document.getElementById('editDocumentNo');
     const editDocumentType = document.getElementById('editDocumentType');
     const editCategory = document.getElementById('editCategory');
@@ -11,6 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const editRouteStepsContainer = document.getElementById('edit-route-steps-container');
 
     editModal.addEventListener('show.bs.modal', function (event) {
+        
         const button = event.relatedTarget;
         const documentNo = button.getAttribute('data-document-no');
         const documentType = button.getAttribute('data-document-type');
@@ -49,8 +75,14 @@ document.addEventListener('DOMContentLoaded', function () {
             `;
             editRouteStepsContainer.appendChild(routeStep);
         });
-
     });
+
+}
+
+function deleteDocumentType() {
+
+    deleteModal = document.getElementById('deleteDocumentTypeModal');
+    confirmDeleteBtn = document.getElementById('confirmDelete');
 
     deleteModal.addEventListener('show.bs.modal', function (event){
         const button = event.relatedTarget;
@@ -62,5 +94,11 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+}
 
+document.addEventListener('DOMContentLoaded', function() {
+    fetchDocumentTypes();
+    editDocumentType();
+    deleteDocumentType();
+    setInterval(fetchDocumentTypes, 3000);
 });
