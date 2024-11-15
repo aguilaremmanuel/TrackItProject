@@ -494,6 +494,7 @@ input:focus::-webkit-datetime-edit {
     font-weight: 600;
     position: relative;
     transition: color 0.3s, border-color 0.3s;
+    cursor: pointer !important;
 }
 
 .tab-link::after {
@@ -779,6 +780,11 @@ table tbody tr td.overdue {
     font-size: 14px;
 }
 
+.dropdown-menu-end {
+    right: calc(100% - 205px) !important;
+    left: auto;
+}
+
 .drop-notif .dropdown-item {
     display: grid;
     grid-template-columns: min-content 1fr;
@@ -794,13 +800,25 @@ table tbody tr td.overdue {
     }
 }
 
-.unread-notif {
-    color: #2E72EA !important;
-}
-
 .notif-wrapper {
     max-height: calc(100vh - 200px) !important;
     overflow-y: auto;
+}
+
+.notif-icon-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.notif-indicator {
+    color: #2E72EA;
+    font-size: 8.5px;
+    position: absolute;
+    top: 6px;
+    right: -4px;
+    border: 2px solid #FFFFFF;
+    border-radius: 50%;
+    background-color: #2E72EA;
 }
 
 // PROFILE
@@ -891,66 +909,66 @@ table tbody tr td.overdue {
 
 .delete-phone-upload-btn {
     cursor: pointer;
-  }
+}
   
-  .delete-phone-upload-btn:hover{
+.delete-phone-upload-btn:hover{
     color: #8B0000;
-  }
+}
   
-  .file-name-phone-upload {
+.file-name-phone-upload {
     font-weight: bold; 
     color:rgb(46, 114, 234);
-  }
+}
   
-  .qr-code-container {
+.qr-code-container {
     position: relative;
     width: 30%;
     display: inline-block;
     margin: 5px 0;
-  }
+}
   
-  .qr-code-container img {
+.qr-code-container img {
     width: 100%;
     height: auto;
-  }
+}
   
-  .corner {
+.corner {
     position: absolute;
     width: 20px; 
     height: 20px;
     border: 4px solid rgb(46, 114, 234); 
     box-sizing: border-box;
-  }
+}
   
-  .top-left {
+.top-left {
     top: -3px;
     left: -3px;
     border-right: none;
     border-bottom: none;
-  }
+}
   
-  .top-right {
+.top-right {
     top: -3px;
     right: -3px;
     border-left: none;
     border-bottom: none;
-  }
+}
   
-  .bottom-left {
+.bottom-left {
     bottom: -3px;
     left: -3px;
     border-top: none;
     border-right: none;
-  }
+}
   
-  .bottom-right {
+.bottom-right {
     bottom: -3px;
     right: -3px;
     border-top: none;
     border-left: none;
-  }
+}
 
-  tbody tr.highlight-priority td {
+tbody tr.highlight-priority td {
     background-color: #f2e3e6 !important;
-  } 
+} 
   

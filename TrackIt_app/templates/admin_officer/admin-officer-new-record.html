@@ -33,71 +33,7 @@
             <header class="header">
                 <button class="toggle-sidebar" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
                 <div class="header-right">
-                    <!---->
-                    <div class="dropdown">
-                        <button class="toggle-notification" type="button" id="notificationDropdown" data-bs-toggle="dropdown" title="Notifications">
-                            <i class="fa-solid fa-bell"></i>
-                        </button>
-                        <div class="drop-notif dropdown-menu dropdown-menu-center" aria-labelledby="notificationDropdown"> 
-                            <h5 class="mb-1" id="notificationDropdownLabel">Notifications</h5>
-                            <ul class="notif-tabs">
-                                <li class="tab-item">
-                                    <a class="tab-link active">All</a>
-                                </li>
-                                <li class="tab-item">
-                                    <a class="tab-link">Unread</a>
-                                </li>
-                            </ul>
-                            <!-- Scrollable -->
-                            <div class="notif-wrapper">
-                                <h6 class="notif-label mt-2">New</h6>
-                                <div class="dropdown-item d-flex">
-                                    <img src="{% static 'images/default-profile.png' %}" alt="Profile Picture" class="rounded-circle mt-1" style="width: 40px; height: 40px;">
-                                    <div class="text-wrap text-break" style="max-width: 320px;">
-                                        <p class="mb-1"><strong>John Doe</strong> approved the document you created (TN. 123123123-DEPT-01). It's now ready for routing.</p>
-                                        <small class="d-block"><span class="unread-notif"><i class='bx bxs-circle' style="font-size: 10px;"></i>&nbsp; Just Now</span></small>
-                                    </div>
-                                </div>
-                                <div class="dropdown-item d-flex">
-                                    <img src="{% static 'images/default-profile.png' %}" alt="Profile Picture" class="rounded-circle mt-1" style="width: 40px; height: 40px;">
-                                    <div class="text-wrap text-break" style="max-width: 320px;">
-                                        <p class="mb-1"><strong>John Doe</strong> approved the document you created (TN. 123123123-DEPT-01). It's now ready for routing.</p>
-                                        <small class="d-block"><span class="unread-notif"><i class='bx bxs-circle' style="font-size: 10px;"></i>&nbsp; 2h</span></small>
-                                    </div>
-                                </div>
-
-                                <h6 class="notif-label">Earlier</h6>
-                                <div class="dropdown-item d-flex">
-                                    <img src="{% static 'images/default-profile.png' %}" alt="Profile Picture" class="rounded-circle mt-1" style="width: 40px; height: 40px;">
-                                    <div class="text-wrap text-break" style="max-width: 320px;">
-                                        <p class="mb-1"><strong>John Doe</strong> approved the document you created (TN. 123123123-DEPT-01). It's now ready for routing.</p>
-                                        <small class="d-block"><span class="text-muted">1d</span></small>
-                                    </div>
-                                </div>
-                                <div class="dropdown-item d-flex">
-                                    <img src="{% static 'images/default-profile.png' %}" alt="Profile Picture" class="rounded-circle mt-1" style="width: 40px; height: 40px;">
-                                    <div class="text-wrap text-break" style="max-width: 320px;">
-                                        <p class="mb-1"><strong>John Doe</strong> approved the document you created (TN. 123123123-DEPT-01). It's now ready for routing.</p>
-                                        <small class="d-block"><span class="text-muted">1d</span></small>
-                                    </div>
-                                </div>
-                                <div class="dropdown-item d-flex">
-                                    <img src="{% static 'images/default-profile.png' %}" alt="Profile Picture" class="rounded-circle mt-1" style="width: 40px; height: 40px;">
-                                    <div class="text-wrap text-break" style="max-width: 320px;">
-                                        <p class="mb-1"><strong>John Doe</strong> approved the document you created (TN. 123123123-DEPT-01). It's now ready for routing.</p>
-                                        <small class="d-block"><span class="text-muted">2d</span></small>
-                                    </div>
-                                </div>
-                                <div class="dropdown-item d-flex">
-                                    <img src="{% static 'images/default-profile.png' %}" alt="Profile Picture" class="rounded-circle mt-1" style="width: 40px; height: 40px;">
-                                    <div class="text-wrap text-break" style="max-width: 320px;">
-                                        <p class="mb-1"><strong>John Doe</strong> approved the document you created (TN. 123123123-DEPT-01). It's now ready for routing.</p>
-                                        <small class="d-block"><span class="text-muted">2d</span></small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <button class="toggle-notification" id="notification" title="Notifications"><i class="fa-solid fa-bell"></i></button>
                     <!---->
                     <div class="dropdown">
                         <button class="profile m-0" type="button" id="profileDropdown" data-bs-toggle="dropdown">

@@ -1,0 +1,279 @@
+{% load static %}
+
+<div class="dropdown">
+    <button class="toggle-notification position-relative me-1" type="button" id="notificationDropdown" data-bs-toggle="dropdown" title="Notifications">
+        <span class="notif-icon-wrapper">
+            <i class="fa-solid fa-bell"></i>
+            <!-- may circle pag may bagong notif tas di pa nakiclick yung bell button, wag na magcounter kasi anliit -->
+            <i class="bx bxs-circle notif-indicator"></i>
+        </span>
+    </button>
+    
+    <div class="drop-notif dropdown-menu dropdown-menu-end position-absolute" aria-labelledby="notificationDropdown"> 
+        <div class="d-flex align-items-center justify-content-between">
+            <h5 class="mb-1" id="notificationDropdownLabel">Notifications</h5>
+            <a id="markAllAsReadBtn" title="Mark All as Read" href="#">Mark All as Read</a>
+        </div>
+
+        <ul class="notif-tabs">
+            <li class="tab-item">
+                <a class="tab-link active" data-target="all">All</a>
+            </li>
+            <li class="tab-item">
+                <a class="tab-link" data-target="unread">Unread</a>
+            </li>
+        </ul>
+
+        <div class="notif-wrapper">
+            <div class="notif-section" data-section="all">
+                <!-- Magkakaron lang ng NEW lang na notif-label if may notif na pasok sa 2hrs after upload? 
+                 if wala, tanggal na rin pati label. The rest sa EARLIER na papasok -->
+
+                <h6 class="notif-label mt-2">New</h6>
+
+                <!-- <h6 class="notif-label">Earlier</h6> -->
+
+                <!-- SYSTEM ADMIN  -->
+
+                <!-- Document Archived -->
+                <a href="" class="dropdown-item d-flex">
+                    <img src="{% static 'images/default_profile_picture.png' %}" alt="Profile Picture" class="rounded-circle mt-1" style="width: 40px; height: 40px;">
+                    <div class="text-wrap text-break" style="max-width: 320px;">
+                        <p class="mb-1"><strong>John Doe</strong> archived a document.
+                            <span style="white-space: nowrap;">(TN. 123123123-DEPT-01)</span>   
+                        </p>
+                        <small class="d-block text-primary"><i class='bx bxs-circle me-1' style="font-size: 10px;"></i>Just Now</small>
+                    </div>
+                </a>
+                    
+                <!-- DIRECTOR -->
+
+                <!-- Document Created -->
+                <a href="" class="dropdown-item d-flex">
+                    <img src="{% static 'images/default_profile_picture.png' %}" alt="Profile Picture" class="rounded-circle mt-1" style="width: 40px; height: 40px;">
+                    <div class="text-wrap text-break" style="max-width: 320px;">
+                        <p class="mb-1"><strong>John Doe</strong> forwarded a new document for your approval.
+                            <span style="white-space: nowrap;">(TN. 123123123-DEPT-01)</span>   
+                        </p>
+                        <small class="d-block text-primary"><i class='bx bxs-circle me-1' style="font-size: 10px;"></i>Just Now</small>
+                    </div>
+                </a>
+
+                <!-- Document Reuploaded -->
+                <a href="" class="dropdown-item d-flex">
+                    <img src="{% static 'images/default_profile_picture.png' %}" alt="Profile Picture" class="rounded-circle mt-1" style="width: 40px; height: 40px;">
+                    <div class="text-wrap text-break" style="max-width: 320px;">
+                        <p class="mb-1"><strong>John Doe</strong> forwarded a reuploaded document for your approval.
+                            <span style="white-space: nowrap;">(TN. 123123123-DEPT-01)</span>
+                        </p>
+                        <small class="d-block text-primary"><i class='bx bxs-circle me-1' style="font-size: 10px;"></i>0m</small>
+                    </div>
+                </a>
+
+                <!-- ADMIN OFFICER -->
+
+                <!-- Document Approved -->
+                <a href="" class="dropdown-item d-flex">
+                    <img src="{% static 'images/default_profile_picture.png' %}" alt="Profile Picture" class="rounded-circle mt-1" style="width: 40px; height: 40px;">
+                    <div class="text-wrap text-break" style="max-width: 320px;">
+                        <p class="mb-1"><strong>John Doe</strong> approved the document you forwarded and is now ready for routing.
+                            <span style="white-space: nowrap;">(TN. 123123123-DEPT-01)</span>   
+                        </p>
+                        <small class="d-block text-primary"><i class='bx bxs-circle me-1' style="font-size: 10px;"></i>0m</small>
+                    </div>
+                </a>
+
+                <!-- Document Rejected -->
+                <a href="" class="dropdown-item d-flex">
+                    <img src="{% static 'images/default_profile_picture.png' %}" alt="Profile Picture" class="rounded-circle mt-1" style="width: 40px; height: 40px;">
+                    <div class="text-wrap text-break" style="max-width: 320px;">
+                        <p class="mb-1"><strong>John Doe</strong> rejected the document you forwarded. Please reupload if necessary.
+                            <span style="white-space: nowrap;">(TN. 123123123-DEPT-01)</span>
+                        </p>
+                        <small class="d-block text-primary"><i class='bx bxs-circle me-1' style="font-size: 10px;"></i>0m</small>
+                    </div>
+                </a>
+
+                <!-- Document Resolved -->
+                <a href="" class="dropdown-item d-flex">
+                    <img src="{% static 'images/default_profile_picture.png' %}" alt="Profile Picture" class="rounded-circle mt-1" style="width: 40px; height: 40px;">
+                    <div class="text-wrap text-break" style="max-width: 320px;">
+                        <p class="mb-1"><strong>John Doe</strong> approved the document you forwarded and is now ready for routing.
+                            <span style="white-space: nowrap;">(TN. 123123123-DEPT-01)</span>   
+                        </p>
+                        <small class="d-block text-primary"><i class='bx bxs-circle me-1' style="font-size: 10px;"></i>0h</small>
+                    </div>
+                </a>
+
+                <!-- SUB-RECEIVING OFFICER -->
+
+                <!-- Document Routed -->
+                <a href="" class="dropdown-item d-flex">
+                    <img src="{% static 'images/default_profile_picture.png' %}" alt="Profile Picture" class="rounded-circle mt-1" style="width: 40px; height: 40px;">
+                    <div class="text-wrap text-break" style="max-width: 320px;">
+                        <p class="mb-1"><strong>John Doe</strong> routed a document to your department for processing.
+                            <span style="white-space: nowrap;">(TN. 123123123-DEPT-01)</span>   
+                        </p>
+                        <small class="d-block text-primary"><i class='bx bxs-circle me-1' style="font-size: 10px;"></i>0h</small>
+                    </div>
+                </a>
+
+                <!-- Document Endorsed by Action Officer -->
+                <a href="" class="dropdown-item d-flex">
+                    <img src="{% static 'images/default_profile_picture.png' %}" alt="Profile Picture" class="rounded-circle mt-1" style="width: 40px; height: 40px;">
+                    <div class="text-wrap text-break" style="max-width: 320px;">
+                        <p class="mb-1"><strong>John Doe</strong> endorsed the document you forwarded and is now ready for resolving.
+                            <span style="white-space: nowrap;">(TN. 123123123-DEPT-01)</span>   
+                        </p>
+                        <small class="d-block text-primary"><i class='bx bxs-circle me-1' style="font-size: 10px;"></i>0h</small>
+                    </div>
+                </a>
+
+                <!-- ACTION OFFICER -->
+
+                <!-- Document Forwarded to Action Officer -->
+                <a href="" class="dropdown-item d-flex">
+                    <img src="{% static 'images/default_profile_picture.png' %}" alt="Profile Picture" class="rounded-circle mt-1" style="width: 40px; height: 40px;">
+                    <div class="text-wrap text-break" style="max-width: 320px;">
+                        <p class="mb-1"><strong>John Doe</strong> forwarded a document for your review and further action.
+                            <span style="white-space: nowrap;">(TN. 123123123-DEPT-01)</span>   
+                        </p>
+                        <small class="d-block text-primary"><i class='bx bxs-circle me-1' style="font-size: 10px;"></i>0h</small>
+                    </div>
+                </a>
+
+                <!-- Document Reassigned Due to Inaction -->
+                <a href="" class="dropdown-item d-flex">
+                    <img src="{% static 'images/default_profile_picture.png' %}" alt="Profile Picture" class="rounded-circle mt-1" style="width: 40px; height: 40px;">
+                    <div class="text-wrap text-break" style="max-width: 320px;">
+                        <p class="mb-1"><strong>John Doe</strong> has an unacted document reassigned to you for review and further action.
+                            <span style="white-space: nowrap;">(TN. 123123123-DEPT-01)</span>   
+                        </p>
+                        <small class="d-block text-muted">0d</small>
+                    </div>
+                </a>
+
+                <!-- ANNOUNCEMENTS (ADO, SRO, ACT) -->
+                <a href="" class="dropdown-item d-flex">
+                    <img src="{% static 'images/default_profile_picture.png' %}" alt="Profile Picture" class="rounded-circle mt-1" style="width: 40px; height: 40px;">
+                    <div class="text-wrap text-break" style="max-width: 320px;">
+                        <p class="mb-1"><strong>John Doe</strong> issued an announcement. 
+                            Please review the latest announcements in the dashboard to stay informed.
+                        </p>
+                        <small class="d-block text-muted">0d</small>
+                    </div>
+                </a>
+
+                <!-- REMINDERS (DIR, ADO, SRO, ACT) -->
+
+                <!-- 18hrs Before Due (Only for Very Urgent) -->
+                <a href="" class="dropdown-item d-flex">
+                    <img src="{% static 'images/default_profile_picture.png' %}" alt="Profile Picture" class="rounded-circle mt-1" style="width: 40px; height: 40px;">
+                    <div class="text-wrap text-break" style="max-width: 320px;">
+                        <p class="mb-1">A document with very urgent priority is awaiting your action. Please take immediate action to prevent delays.
+                            <span style="white-space: nowrap;">(TN. 123123123-DEPT-01)</span>   
+                        </p>
+                        <small class="d-block text-muted">0d</small>
+                    </div>
+                </a>
+
+                <!-- 12hrs Before Due -->
+                <a href="" class="dropdown-item d-flex">
+                    <img src="{% static 'images/default_profile_picture.png' %}" alt="Profile Picture" class="rounded-circle mt-1" style="width: 40px; height: 40px;">
+                    <div class="text-wrap text-break" style="max-width: 320px;">
+                        <p class="mb-1">A document awaiting your action is due in 12 hours. Please take action promptly to prevent delays.
+                            <span style="white-space: nowrap;">(TN. 123123123-DEPT-01)</span>   
+                        </p>
+                        <small class="d-block text-muted">0d</small>
+                    </div>
+                </a>
+
+                <!-- 2hrs Before Due -->
+                <a href="" class="dropdown-item d-flex">
+                    <img src="{% static 'images/default_profile_picture.png' %}" alt="Profile Picture" class="rounded-circle mt-1" style="width: 40px; height: 40px;">
+                    <div class="text-wrap text-break" style="max-width: 320px;">
+                        <p class="mb-1">A document awaiting your action is due in 12 hours. Please take action promptly to prevent delays.
+                            <span style="white-space: nowrap;">(TN. 123123123-DEPT-01)</span>   
+                        </p>
+                        <small class="d-block text-muted">0w</small>
+                    </div>
+                </a>
+
+                <!-- Overdue -->
+                <a href="" class="dropdown-item d-flex">
+                    <img src="{% static 'images/default_profile_picture.png' %}" alt="Profile Picture" class="rounded-circle mt-1" style="width: 40px; height: 40px;">
+                    <div class="text-wrap text-break" style="max-width: 320px;">
+                        <p class="mb-1">A document awaiting your action has surpassed its due time. Please take action promptly to prevent delays.
+                            <span style="white-space: nowrap;">(TN. 123123123-DEPT-01)</span>   
+                        </p>
+                        <small class="d-block text-muted">0w</small>
+                    </div>
+                </a>
+
+                <!-- Overdue Reassigned (Only for ACT) -->
+                <a href="" class="dropdown-item d-flex">
+                    <img src="{% static 'images/default_profile_picture.png' %}" alt="Profile Picture" class="rounded-circle mt-1" style="width: 40px; height: 40px;">
+                    <div class="text-wrap text-break" style="max-width: 320px;">
+                        <p class="mb-1">A document awaiting your action has surpassed its due time. The system reassigned it to another officer.
+                            <span style="white-space: nowrap;">(TN. 123123123-DEPT-01)</span>   
+                        </p>
+                        <small class="d-block text-muted">0w</small>
+                    </div>
+                </a>
+
+                
+            </div>
+            
+            <div class="notif-section d-none mt-3" data-section="unread">
+                <!-- No need ng notif-labels sa Unread -->
+
+                <a href="" class="dropdown-item d-flex">
+                    <img src="{% static 'images/default_profile_picture.png' %}" alt="Profile Picture" class="rounded-circle mt-1" style="width: 40px; height: 40px;">
+                    <div class="text-wrap text-break" style="max-width: 320px;">
+                        <p class="mb-1">A document awaiting your action has surpassed its due time. The system reassigned it to another officer.
+                            <span style="white-space: nowrap;">(TN. 123123123-DEPT-01)</span>   
+                        </p>
+                        <small class="d-block text-primary"><i class='bx bxs-circle me-1' style="font-size: 10px;"></i>Just Now</small>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const tabLinks = document.querySelectorAll('.tab-link');
+        const notifSections = document.querySelectorAll('.notif-section');
+        const notifDropdown = document.querySelector('.drop-notif');
+
+        // Prevent dropdown from closing when clicking inside the dropdown content
+        notifDropdown.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        tabLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+
+                // Remove active class from all tab links
+                tabLinks.forEach(tab => tab.classList.remove('active'));
+
+                // Add active class to the clicked tab link
+                link.classList.add('active');
+
+                // Get the target section from the clicked tab
+                const targetSection = link.getAttribute('data-target');
+
+                // Show the target section and hide others
+                notifSections.forEach(section => {
+                    if (section.getAttribute('data-section') === targetSection) {
+                        section.classList.remove('d-none');
+                    } else {
+                        section.classList.add('d-none');
+                    }
+                });
+            });
+        });
+    });
+</script>
