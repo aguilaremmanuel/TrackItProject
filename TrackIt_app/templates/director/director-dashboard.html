@@ -623,6 +623,7 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        animation: false,
                         plugins: {
                             legend: {
                                 display: true,
@@ -637,6 +638,7 @@
             }
 
             function handleSelectChange() {
+
                 const timeSpan = inputGroupSelect.value;
 
                 fetch(`/director-total-records/${timeSpan}/`)
@@ -739,6 +741,7 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,  // This will allow the canvas to fill its container
+                        animation: false,
                         plugins: {
                             legend: {
                                 position: 'top',
@@ -801,7 +804,8 @@
                                 display: false, // Show the legend
                                 position: 'bottom'
                             }
-                        }
+                        },
+                        animation: false,
                     }
                 });
 
@@ -859,6 +863,7 @@
             documentStatus.addEventListener('change', handleDocumentStatusSelectChange);
             targetOffice.addEventListener('change', handleOfficePerformanceSelectChange);
             handleSelectChange();
+            setInterval(handleSelectChange, 3000);
 
             document.getElementById('generateDocumentStatusReportBtn').addEventListener('click', function() {
                 

@@ -7,6 +7,7 @@
     <style>
 
         @page {
+            size: A4 landscape;
             margin: 40pt 60pt;
         }
 
@@ -149,11 +150,11 @@
                 <thead>
                     <tr>
                         <td style="width: 7%;">No</td>
-                        <td style="width: 15%;">Tracking <br> No.</td>
+                        <td style="width: 15%;">Tracking No.</td>
                         <td style="width: 32%;">Subject</td>
                         <td style="width: 17%;">Type</td>
-                        <td style="width: 15%;">Priority <br> Level</td>
-                        <td style="width: 14%;">Delayed <br> In</td>
+                        <td style="width: 15%;">Priority Level</td>
+                        <td style="width: 14%;">Delayed In</td>
                     </tr>
                 </thead>
                 <tbody>
@@ -161,7 +162,7 @@
                         {% for docu in delayed_documents %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
-                                <td>{{ docu.tracking_no_first }}-<br>{{ docu.tracking_no_second }}</td>
+                                <td>{{docu.document_id.tracking_no}}</td>
                                 <td>{{docu.document_id.subject}}</td>
                                 <td>{{docu.document_id.document_type.document_type}}</td>
                                 <td>{{docu.document_id.document_type.priority_level.priority_level|title}}</td>
@@ -189,11 +190,11 @@
                 <thead>
                     <tr>
                         <td style="width: 7%;">No</td>
-                        <td style="width: 15%;">Tracking <br> No.</td>
+                        <td style="width: 15%;">Tracking No.</td>
                         <td style="width: 32%;">Subject</td>
                         <td style="width: 17%;">Type</td>
-                        <td style="width: 15%;">Priority <br> Level</td>
-                        <td style="width: 14%;">Delayed <br> In</td>
+                        <td style="width: 15%;">Priority Level</td>
+                        <td style="width: 14%;">Delayed In</td>
                     </tr>
                 </thead>
                 <tbody>
@@ -201,7 +202,7 @@
                         {% for docu in delayed_forwarding_documents %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
-                                <td>{{ docu.tracking_no_first }}-<br>{{ docu.tracking_no_second }}</td>
+                                <td>{{docu.document_id.tracking_no}}</td>
                                 <td>{{docu.document_id.subject}}</td>
                                 <td>{{docu.document_id.document_type.document_type}}</td>
                                 <td>{{docu.document_id.document_type.priority_level.priority_level|title}}</td>
@@ -227,11 +228,11 @@
                 <thead>
                     <tr>
                         <td style="width: 7%;">No</td>
-                        <td style="width: 15%;">Tracking <br> No.</td>
+                        <td style="width: 15%;">Tracking No.</td>
                         <td style="width: 32%;">Subject</td>
                         <td style="width: 17%;">Type</td>
-                        <td style="width: 15%;">Priority <br> Level</td>
-                        <td style="width: 14%;">Delayed <br> In</td>
+                        <td style="width: 15%;">Priority Level</td>
+                        <td style="width: 14%;">Delayed In</td>
                     </tr>
                 </thead>
                 <tbody>
@@ -239,7 +240,7 @@
                         {% for docu in delayed_resolving_documents %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
-                                <td>{{ docu.tracking_no_first }}-<br>{{ docu.tracking_no_second }}</td>
+                                <td>{{docu.document_id.tracking_no}}</td>
                                 <td>{{docu.document_id.subject}}</td>
                                 <td>{{docu.document_id.document_type.document_type}}</td>
                                 <td>{{docu.document_id.document_type.priority_level.priority_level|title}}</td>
@@ -267,11 +268,11 @@
             <thead>
                 <tr>
                     <td style="width: 7%;">No</td>
-                    <td style="width: 15%;">Tracking <br> No.</td>
+                    <td style="width: 15%;">Tracking No.</td>
                     <td style="width: 32%;">Subject</td>
                     <td style="width: 17%;">Type</td>
-                    <td style="width: 15%;">Priority <br> Level</td>
-                    <td style="width: 14%;">Date <br> Received</td>
+                    <td style="width: 15%;">Priority Level</td>
+                    <td style="width: 14%;">Date Received</td>
                 </tr>
             </thead>
             <tbody>
@@ -279,7 +280,7 @@
                     {% for log in unacted_logs %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
-                            <td>{{ log.tracking_no_first }}-<br>{{ log.tracking_no_second }}</td>
+                            <td>{{log.document_id.tracking_no}}</td>
                             <td>{{log.document_id.subject}}</td>
                             <td>{{log.document_id.document_type.document_type}}</td>
                             <td>{{log.document_id.document_type.priority_level.priority_level|title}}</td>
