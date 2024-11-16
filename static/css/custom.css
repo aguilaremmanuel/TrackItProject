@@ -12285,6 +12285,7 @@ input:focus::-webkit-datetime-edit {
   font-weight: 600;
   position: relative;
   transition: color 0.3s, border-color 0.3s;
+  cursor: pointer !important;
 }
 
 .tab-link::after {
@@ -12557,6 +12558,11 @@ table tbody tr td.overdue {
   font-size: 14px;
 }
 
+.dropdown-menu-end {
+  right: calc(100% - 205px) !important;
+  left: auto;
+}
+
 .drop-notif .dropdown-item {
   display: grid;
   grid-template-columns: min-content 1fr;
@@ -12571,13 +12577,25 @@ table tbody tr td.overdue {
   background-color: #eff3f5;
 }
 
-.unread-notif {
-  color: #2E72EA !important;
-}
-
 .notif-wrapper {
   max-height: calc(100vh - 200px) !important;
   overflow-y: auto;
+}
+
+.notif-icon-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.notif-indicator {
+  color: #2E72EA;
+  font-size: 8.5px;
+  position: absolute;
+  top: 6px;
+  right: -4px;
+  border: 2px solid #FFFFFF;
+  border-radius: 50%;
+  background-color: #2E72EA;
 }
 
 .title-cover {
