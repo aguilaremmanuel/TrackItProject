@@ -262,18 +262,15 @@
                             <h4 class="mb-0 fw-bold d-flex align-items-center"><i class='bx bxs-megaphone' style="color: #007bff;"></i>&nbsp;Latest Announcements</h4>
                             <!-- Announcements -->
                             <div class="container d-block px-2 pt-3" style="max-height: 250px; overflow-y: auto;">
-                                <p class="announcements border border-danger rounded-2 my-2 p-2" style="background-color: #F5F7F8;">
-                                    To all users, please be advised that the system will undergo scheduled maintenance on August 10, 2024, from 12:00 AM to 4:00 AM. During this time, the system will be unavailable. Thank you for your understanding and cooperation!
-                                </p>
-                                <p class="announcements border border-primary rounded-2 my-2 p-2" style="background-color: #F5F7F8;">
-                                    This is a reminder to all departments that the Q3 Financial Reports must be submitted no later than October 25, 2024. Please ensure that all expenses, invoices, and financial statements are accurately recorded and attached.
-                                </p>
-                                <p class="announcements border border-warning rounded-2 my-2 p-2" style="background-color: #F5F7F8;">
-                                    Please be informed that the deadline for the submission of all budget requests for the upcoming fiscal year is November 15, 2024. All requests must be submitted through the system for proper tracking and documentation.
-                                </p>
-                                <p class="announcements border border-warning rounded-2 my-2 p-2" style="background-color: #F5F7F8;">
-                                    Please be informed that the deadline for the submission of all budget requests for the upcoming fiscal year is November 15, 2024. All requests must be submitted through the system for proper tracking and documentation.
-                                </p>
+                                {% if announcements %}
+                                    {% for ann in announcements %}
+                                        <p class="announcements border border-danger rounded-2 my-2 p-2" style="background-color: #F5F7F8;">
+                                            {{ann.description}}
+                                        </p>
+                                    {% endfor %}
+                                {% else %}
+                                    <p style="text-align: center; opacity: 50%; padding-top: 50px;">No announcements to show</p>
+                                {% endif %}
                             </div>
                         </div>
 
