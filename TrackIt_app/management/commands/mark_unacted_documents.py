@@ -61,7 +61,7 @@ class Command(BaseCommand):
 
             if not unacted_log:
                 UnactedLogs.objects.create(
-                    time_stamp = ongoing_deadline, 
+                    time_stamp = timezone.now(), 
                     document_id = document,
                     user_id = user,
                     status = document.status

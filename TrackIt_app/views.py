@@ -21,6 +21,9 @@ from xhtml2pdf import pisa
 import os, shutil
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
+from itertools import chain
+from django.db.models import F
+from django.db.models import Value
 
 #---------------
 from django.core.mail import EmailMultiAlternatives
@@ -2695,6 +2698,10 @@ def document_update_status(request, action, document_no):
     elif action == 'route':
         sro = User.objects.get(status='active', role='SRO', office_id_id=document.next_route)
         act_receiver = sro.user_id
+    elif action == 'endorse':
+        sro = User.objects.get(status='active', role='SRO', office_id_id=document.next_route)
+        act_receiver = sro.user_id
+
     new_remarks = Remarks.objects.create(
         remarks=""
     )
@@ -3552,7 +3559,7 @@ def download_performance_report(request, report_no):
         unacted_logs = UnactedLogs.objects.filter(
             user_id_id = report.employee_id_id,
             is_acted=False,
-            time_stamp__range=[report.start_date, report.end_date]
+            time_stamp__range=[converted_start_date, converted_end_date]
         )
 
         for log in unacted_logs: 
@@ -3610,7 +3617,7 @@ def download_performance_report(request, report_no):
         delayed_logs = UnactedLogs.objects.filter(
             user_id__role__in=['SRO', 'ACT'],
             is_acted=True,
-            time_stamp__range=[report.start_date, report.end_date]
+            time_stamp__range=[converted_start_date, converted_end_date]
         )
 
         for docu in delayed_logs: 
@@ -3622,7 +3629,7 @@ def download_performance_report(request, report_no):
         unacted_logs = UnactedLogs.objects.filter(
             user_id__role__in=['SRO', 'ACT'],
             is_acted=False,
-            time_stamp__range=[report.start_date, report.end_date]
+            time_stamp__range=[converted_start_date, converted_end_date]
         )
 
         for log in unacted_logs: 
@@ -4360,3 +4367,388 @@ def generate_document_status_report(request, time_span, document_status):
     response['Content-Disposition'] = 'inline; filename="Document-Status-Report.pdf"'
 
     return response
+
+def fetch_new_notifications(request):
+
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect(user_login)
+    
+    two_hours_ago = timezone.now() - timedelta(hours=2)
+
+    role = user_id.split('-')[0]
+
+    document_due_today = DocumentDueLogs.objects.filter(
+        due_type='today',
+        user_id_id=user_id,
+        time_stamp__gte=two_hours_ago
+    ).annotate(notification_type=F('due_type'))
+
+    document_due_tomorrow = DocumentDueLogs.objects.filter(
+        due_type='tomorrow',
+        user_id_id=user_id,
+        time_stamp__gte=two_hours_ago
+    ).annotate(notification_type=F('due_type'))
+
+    document_unacted = UnactedLogs.objects.filter(
+        is_acted=False,
+        user_id_id=user_id,
+        time_stamp__gte=two_hours_ago
+    ).annotate(notification_type=Value('Unacted'))
+
+    if role == 'DIR':
+
+        document_created = ActivityLogs.objects.filter(
+            activity='Document Created',
+            time_stamp__gte=two_hours_ago
+        ).annotate(notification_type=F('activity'))
+
+        document_reuploaded = ActivityLogs.objects.filter(
+            activity='Document Reupload',
+            time_stamp__gte=two_hours_ago
+        ).annotate(notification_type=F('activity'))
+
+        document_resolved = ActivityLogs.objects.filter(
+            activity='Document Resolved',
+            time_stamp__gte=two_hours_ago,
+            receiver_id_id = user_id
+        ).annotate(notification_type=F('activity'))
+
+        all_notifications = sorted(
+            chain(document_created, document_reuploaded, document_resolved, document_due_today, document_due_tomorrow, document_unacted),
+            key=lambda x: x.time_stamp,
+            reverse=True
+        )
+
+    elif role == 'ADO':
+
+        document_approved = ActivityLogs.objects.filter(
+            activity='Document Approved',
+            time_stamp__gte=two_hours_ago
+        ).annotate(notification_type=F('activity'))
+
+        all_notifications = sorted(
+            chain(document_approved, document_due_today, document_due_tomorrow, document_unacted),
+            key=lambda x: x.time_stamp,
+            reverse=True
+        )
+    
+    elif role == 'SRO':
+
+        document_routed = ActivityLogs.objects.filter(
+            activity='Document Routed',
+            time_stamp__gte=two_hours_ago,
+            receiver_id_id = user_id
+        ).annotate(notification_type=F('activity'))
+
+        document_endorsed = ActivityLogs.objects.filter(
+            activity='Document Endorsed by Action Officer',
+            time_stamp__gte=two_hours_ago,
+            receiver_id_id = user_id
+        ).annotate(notification_type=F('activity'))
+
+        document_resolved = ActivityLogs.objects.filter(
+            activity='Document Resolved',
+            time_stamp__gte=two_hours_ago,
+            receiver_id_id = user_id
+        ).annotate(notification_type=F('activity'))
+
+        all_notifications = sorted(
+            chain(document_routed, document_endorsed, document_resolved, document_due_today, document_due_tomorrow, document_unacted),
+            key=lambda x: x.time_stamp,
+            reverse=True
+        )
+
+    elif role == 'ACT':
+
+        document_forwarded = ActivityLogs.objects.filter(
+            activity='Document Forwarded to Action Officer',
+            time_stamp__gte=two_hours_ago,
+            receiver_id_id = user_id
+        ).annotate(notification_type=F('activity'))
+
+        all_notifications = sorted(
+            chain(document_forwarded, document_due_today, document_due_tomorrow, document_unacted),
+            key=lambda x: x.time_stamp,
+            reverse=True
+        )
+    
+    if not all_notifications:
+        return JsonResponse({'html': ''})
+
+    context = {
+        'notifications': all_notifications
+    }
+
+    html = render_to_string('partials/notification-instances.html', context)
+    return JsonResponse({'html': html})
+
+def fetch_earlier_notifications(request):
+
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect(user_login)
+    
+    role = user_id.split('-')[0]
+
+    now = timezone.now()
+    two_hours_ago = now - timedelta(hours=2)
+    thirty_days_ago = now - timedelta(days=30)
+
+    document_due_today = DocumentDueLogs.objects.filter(
+        due_type='today',
+        user_id_id=user_id,
+        time_stamp__gte=thirty_days_ago,
+        time_stamp__lt=two_hours_ago
+    ).annotate(notification_type=F('due_type'))
+
+    document_due_tomorrow = DocumentDueLogs.objects.filter(
+        due_type='tomorrow',
+        user_id_id=user_id,
+        time_stamp__gte=thirty_days_ago,
+        time_stamp__lt=two_hours_ago
+    ).annotate(notification_type=F('due_type'))
+
+    document_unacted = UnactedLogs.objects.filter(
+        is_acted=False,
+        user_id_id=user_id,
+        time_stamp__gte=thirty_days_ago,
+        time_stamp__lt=two_hours_ago
+    ).annotate(notification_type=Value('Unacted'))
+
+    if role == 'DIR':
+    
+        document_created = ActivityLogs.objects.filter(
+            activity='Document Created',
+            time_stamp__gte=thirty_days_ago,
+            time_stamp__lt=two_hours_ago
+        ).annotate(notification_type=F('activity'))
+
+        document_reuploaded = ActivityLogs.objects.filter(
+            activity='Document Reupload',
+            time_stamp__gte=thirty_days_ago,
+            time_stamp__lt=two_hours_ago
+        ).annotate(notification_type=F('activity'))
+
+        document_resolved = ActivityLogs.objects.filter(
+            activity='Document Resolved',
+            time_stamp__gte=thirty_days_ago,
+            time_stamp__lt=two_hours_ago,
+            receiver_id_id = user_id
+        ).annotate(notification_type=F('activity'))
+
+        all_earlier_notifications = sorted(
+            chain(document_created, document_reuploaded, document_resolved, document_due_today, document_due_tomorrow, document_unacted),
+            key=lambda x: x.time_stamp,
+            reverse=True
+        )
+
+    if role == 'ADO':
+
+        document_approved = ActivityLogs.objects.filter(
+            activity='Document Approved',
+            time_stamp__gte=thirty_days_ago,
+            time_stamp__lt=two_hours_ago
+        ).annotate(notification_type=F('activity'))
+
+        all_earlier_notifications = sorted(
+            chain(document_approved, document_due_today, document_due_tomorrow, document_unacted),
+            key=lambda x: x.time_stamp,
+            reverse=True
+        )
+    
+    elif role == 'SRO':
+
+        document_routed = ActivityLogs.objects.filter(
+            activity='Document Routed',
+            time_stamp__gte=thirty_days_ago,
+            time_stamp__lt=two_hours_ago,
+            receiver_id_id = user_id
+        ).annotate(notification_type=F('activity'))
+
+        document_endorsed = ActivityLogs.objects.filter(
+            activity='Document Endorsed by Action Officer',
+            time_stamp__gte=thirty_days_ago,
+            time_stamp__lt=two_hours_ago,
+            receiver_id_id = user_id
+        ).annotate(notification_type=F('activity'))
+
+        document_resolved = ActivityLogs.objects.filter(
+            activity='Document Resolved',
+            time_stamp__gte=thirty_days_ago,
+            time_stamp__lt=two_hours_ago,
+            receiver_id_id = user_id
+        ).annotate(notification_type=F('activity'))
+
+        all_earlier_notifications = sorted(
+            chain(document_routed, document_resolved, document_endorsed, document_due_today, document_due_tomorrow, document_unacted),
+            key=lambda x: x.time_stamp,
+            reverse=True
+        )
+
+    elif role == 'ACT':
+
+        document_forwarded = ActivityLogs.objects.filter(
+            activity='Document Forwarded to Action Officer',
+            time_stamp__gte=thirty_days_ago,
+            time_stamp__lt=two_hours_ago,
+            receiver_id_id = user_id
+        ).annotate(notification_type=F('activity'))
+
+        all_earlier_notifications = sorted(
+            chain(document_forwarded, document_due_today, document_due_tomorrow, document_unacted),
+            key=lambda x: x.time_stamp,
+            reverse=True
+        )
+    
+    if not all_earlier_notifications:
+        return JsonResponse({'html': ''})
+
+    # Render the notifications into HTML
+    context = {
+        'notifications': all_earlier_notifications
+    }
+
+    html = render_to_string('partials/notification-instances.html', context)
+    return JsonResponse({'html': html})
+
+def fetch_unread_notifications(request):
+
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect(user_login)
+
+    role = user_id.split('-')[0]
+
+    unread_document_due_today = DocumentDueLogs.objects.filter(
+        due_type='today',
+        is_read='unread',
+        user_id_id=user_id
+    ).annotate(notification_type=F('due_type'))
+
+    unread_document_due_tomorrow = DocumentDueLogs.objects.filter(
+        due_type='tomorrow',
+        is_read='unread',
+        user_id_id=user_id
+    ).annotate(notification_type=F('due_type'))
+
+    unread_document_unacted = UnactedLogs.objects.filter(
+        is_acted=False,
+        is_read='unread',
+        user_id_id=user_id
+    ).annotate(notification_type=Value('Unacted'))
+
+    if role == 'DIR':
+
+        unread_document_created = ActivityLogs.objects.filter(
+            activity='Document Created',
+            is_read='unread'
+        ).annotate(notification_type=F('activity'))
+
+        unread_document_reuploaded = ActivityLogs.objects.filter(
+            activity='Document Reupload',
+            is_read='unread'
+        ).annotate(notification_type=F('activity'))
+
+        unread_document_resolved = ActivityLogs.objects.filter(
+            activity='Document Resolved',
+            receiver_id_id = user_id,
+            is_read='unread'
+        ).annotate(notification_type=F('activity'))
+
+        all_unread_notifications = sorted(
+            chain(unread_document_created, unread_document_reuploaded, unread_document_resolved, unread_document_due_today, unread_document_due_tomorrow, unread_document_unacted),
+            key=lambda x: x.time_stamp,
+            reverse=True
+        )
+
+    elif role == 'ADO':
+        
+        unread_document_approved = ActivityLogs.objects.filter(
+            activity='Document Approved',
+            is_read='unread'
+        ).annotate(notification_type=F('activity'))
+
+        all_unread_notifications = sorted(
+            chain(unread_document_approved, unread_document_due_today, unread_document_due_tomorrow, unread_document_unacted),
+            key=lambda x: x.time_stamp,
+            reverse=True
+        )
+
+    elif role == 'SRO':
+
+        document_routed = ActivityLogs.objects.filter(
+            activity='Document Routed',
+            is_read='unread',
+            receiver_id_id = user_id
+        ).annotate(notification_type=F('activity'))
+
+        document_endorsed = ActivityLogs.objects.filter(
+            activity='Document Endorsed by Action Officer',
+            is_read='unread',
+            receiver_id_id = user_id
+        ).annotate(notification_type=F('activity'))
+
+        unread_document_resolved = ActivityLogs.objects.filter(
+            activity='Document Resolved',
+            receiver_id_id = user_id,
+            is_read='unread'
+        ).annotate(notification_type=F('activity'))
+
+        all_unread_notifications = sorted(
+            chain(document_routed, document_endorsed, unread_document_resolved, unread_document_due_today, unread_document_due_tomorrow, unread_document_unacted),
+            key=lambda x: x.time_stamp,
+            reverse=True
+        )
+
+    elif role == 'ACT':
+
+        document_forwarded = ActivityLogs.objects.filter(
+            activity='Document Forwarded to Action Officer',
+            is_read='unread',
+            receiver_id_id = user_id
+        ).annotate(notification_type=F('activity'))
+
+
+
+        all_unread_notifications = sorted(
+            chain(document_forwarded, unread_document_due_today, unread_document_due_tomorrow, unread_document_unacted),
+            key=lambda x: x.time_stamp,
+            reverse=True
+        )
+    
+    if not all_unread_notifications:
+        return JsonResponse({'html': ''})
+
+    context = {
+        'notifications': all_unread_notifications
+    }
+
+    html = render_to_string('partials/notification-instances.html', context)
+
+    return JsonResponse({'html': html})
+
+
+def click_notification(request, notification_type, no):
+
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect(user_login)
+
+    if notification_type in ['Document Created', 'Document Reupload', 'Document Approved', 'Document Routed', 'Document Endorsed by Action Officer', 'Document Resolved']:
+        document = ActivityLogs.objects.get(no=no)
+    
+    elif notification_type in ['today', 'tomorrow']:
+        document = DocumentDueLogs.objects.get(no=no)
+
+    elif notification_type == 'Unacted':
+        document = UnactedLogs.objects.get(no=no)
+        role = user_id.split('-')[0]
+        if role == 'ACT':
+            return redirect('action_officer_unacted_records')
+
+    document.is_read = 'read'
+    document.save()
+    return redirect('scanning_qr_code', document.document_id.document_no)   
+
+

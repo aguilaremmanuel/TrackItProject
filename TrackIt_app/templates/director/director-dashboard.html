@@ -862,6 +862,7 @@
             documentStatus.addEventListener('change', handleDocumentStatusSelectChange);
             targetOffice.addEventListener('change', handleOfficePerformanceSelectChange);
             handleSelectChange();
+            
             setInterval(handleSelectChange, 3000);
 
             document.getElementById('generateDocumentStatusReportBtn').addEventListener('click', function() {

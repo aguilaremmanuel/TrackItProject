@@ -92,6 +92,7 @@ class ActivityLogs(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='activity_logs_actor')
     receiver_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='activity_logs_receiver')
     file_attachment = models.FileField(upload_to=document_directory_path, null=True, blank=True)
+    is_read = models.CharField(default='unread', max_length=10)
     class Meta:
         db_table = 'tbl_activity_logs'
 
@@ -109,13 +110,14 @@ class Reports(models.Model):
         db_table = 'tbl_reports'
 
 class UnactedLogs(models.Model):
-    record_no = models.BigAutoField(primary_key=True)
-    time_stamp = models.DateField(null=True, blank=True)
+    no = models.BigAutoField(primary_key=True)
+    time_stamp = models.DateTimeField(null=True, blank=True)
     document_id = models.ForeignKey(Document, on_delete=models.SET_NULL, null=True, blank=True)
     status = models.CharField(max_length=25, null=True, blank=True)
     user_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     is_acted = models.BooleanField(default=False)
     date_acted = models.DateField(null=True, blank=True)
+    is_read = models.CharField(default='unread', max_length=10)
     class Meta:
         db_table = 'tbl_unacted_logs'
 
@@ -159,5 +161,14 @@ class Announcement(models.Model):
     class Meta:
         db_table = 'tbl_announcement'
 
+class DocumentDueLogs(models.Model):
+    no = models.BigAutoField(primary_key=True)
+    time_stamp = models.DateTimeField(blank=True, null=True)
+    due_type = models.CharField(max_length=10)
+    user_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    document_id = models.ForeignKey(Document, on_delete=models.SET_NULL, null=True, blank=True)
+    is_read = models.CharField(default='unread', max_length=10)
+    class Meta:
+        db_table = 'tbl_document_due_logs'
 
 

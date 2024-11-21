@@ -113,4 +113,9 @@ urlpatterns = [
     path('director-employee-performance/<str:time_span>/<str:target_report_type>/<str:target_office>/', views.director_employee_performance, name='director_employee_performance'),
     path('generate-document-status-report/<str:time_span>/<str:document_status>/', views.generate_document_status_report, name='generate_document_status_report'),
 
+    path('fetch-new-notifications/', views.fetch_new_notifications, name='fetch_new_notifications'),
+    path('fetch-earlier-notifications/', views.fetch_earlier_notifications, name='fetch_earlier_notifications'),
+    path('fetch-unread-notifications/', views.fetch_unread_notifications, name='fetch_unread_notifications'),
+    path('click-notification/<str:notification_type>/<int:no>/', views.click_notification, name='click_notification'),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

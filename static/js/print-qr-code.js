@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
         printWindow.document.write('</head><body>');;    
         printWindow.document.write('<div style="width: 165px; display: flex; flex-direction: column; align-items: center;">'); // Centering div
         printWindow.document.write('<p>' + routesInitials + '</p>');
-        printWindow.document.write('<p style="font-size: 9px; font-weight: 400">('+ routesTitles +')</p>');
+        printWindow.document.write('<p style="font-size: 9px; font-weight: 400">'+ routesTitles +'</p>');
         printWindow.document.write('<img id="qrCodeImage" src="' + url + '" />');
         printWindow.document.write('<p style="font-size: 13px;">' + trackingNo + '</p>');
         printWindow.document.write('<p style="font-size: 8px; font-weight: 400">(Document Tracking Number)</p>');

@@ -12746,4 +12746,9 @@ tbody tr.highlight-priority td {
   background-color: #f2e3e6 !important;
 }
 
+.unread {
+  font-weight: bold;
+}
+
+
 /*# sourceMappingURL=custom.css.map */

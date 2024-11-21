@@ -1,0 +1,94 @@
+{% load static %}
+{% for notification in notifications %}
+    {% if notification.document_id.status != 'For Archiving' %}
+        <a href="{% url 'click_notification' notification.notification_type notification.no %}" class="dropdown-item d-flex">
+            <img src="{% if notification.user_id.profile_picture %}/media/{{ notification.user_id.profile_picture }}{% else %}{% static 'images/default_profile_picture.png' %}{% endif %}" alt="Profile Picture" class="rounded-circle mt-1" style="width:40px; height:40px; object-fit:cover;">
+            <div class="text-wrap text-break" style="max-width: 320px;">
+                {% if notification.notification_type == 'Document Created' %}
+                    {% if notification.document_id.document_type.priority_level.priority_level == 'very urgent' %}
+                        <p class="mb-1 {{notification.is_read}}">A document with <strong style="color:red;">very urgent</strong> priority is awaiting your action. Please take immediate action to prevent delays.
+                            <span style="white-space: nowrap;">(TN. {{notification.document_id.tracking_no}})</span>   
+                        </p>
+                    {% else %}
+                        <p class="mb-1 {{notification.is_read}}"><strong>{{notification.user_id.firstname}} {{notification.user_id.lastname}}</strong> forwarded a new document for your approval.
+                            <span style="white-space: nowrap;">(TN. {{notification.document_id.tracking_no}})</span>   
+                        </p>
+                    {% endif %}
+                {% elif notification.notification_type == 'Document Reupload' %}
+                    <p class="mb-1 {{notification.is_read}}"><strong>{{notification.user_id.firstname}} {{notification.user_id.lastname}}</strong> forwarded a reuploaded document for your approval.
+                        <span style="white-space: nowrap;">(TN. {{notification.document_id.tracking_no}})</span>
+                    </p>
+                {% elif notification.notification_type == 'today' %}
+                    <p class="mb-1 {{notification.is_read}}">A document awaiting your action is <strong>due today</strong>. Please take action promptly to prevent delays.
+                        <span style="white-space: nowrap;">(TN. {{notification.document_id.tracking_no}})</span>   
+                    </p>
+                {% elif notification.notification_type == 'tomorrow' %}
+                    <p class="mb-1 {{notification.is_read}}">A document awaiting your action is <strong>due tomorrow</strong>. Please take action promptly to prevent delays.
+                        <span style="white-space: nowrap;">(TN. {{notification.document_id.tracking_no}})</span>   
+                    </p>
+                {% elif notification.notification_type == 'Unacted' %}
+                    <p class="mb-1 {{notification.is_read}}">A document awaiting your action has <strong>surpassed its due time</strong>. Please take action promptly to prevent delays.
+                        <span style="white-space: nowrap;">(TN. {{notification.document_id.tracking_no}})</span>   
+                    </p>
+                {% elif notification.notification_type == 'Document Approved' %}
+                    {% if notification.document_id.document_type.priority_level.priority_level == 'very urgent' %}
+                        <p class="mb-1 {{notification.is_read}}">A document with <strong style="color:red;">very urgent</strong> priority is awaiting your action. Please take immediate action to prevent delays.
+                            <span style="white-space: nowrap;">(TN. {{notification.document_id.tracking_no}})</span>   
+                        </p>
+                    {% else %}
+                        <p class="mb-1 {{notification.is_read}}"><strong>{{notification.user_id.firstname}} {{notification.user_id.lastname}}</strong> approved the document you forwarded and is now ready for routing.
+                            <span style="white-space: nowrap;">(TN. {{notification.document_id.tracking_no}})</span>   
+                        </p>
+                    {% endif %}
+                {% elif notification.notification_type == 'Document Routed' %}
+                    {% if notification.document_id.document_type.priority_level.priority_level == 'very urgent' %}
+                        <p class="mb-1 {{notification.is_read}}">A document with <strong style="color:red;">very urgent</strong> priority is awaiting your action. Please take immediate action to prevent delays.
+                            <span style="white-space: nowrap;">(TN. {{notification.document_id.tracking_no}})</span>   
+                        </p>
+                    {% else %}
+                        <p class="mb-1 {{notification.is_read}}"><strong>{{notification.user_id.firstname}} {{notification.user_id.lastname}}</strong> routed a document to your department for processing.
+                            <span style="white-space: nowrap;">(TN. {{notification.document_id.tracking_no}})</span>   
+                        </p>
+                    {% endif %}
+                {% elif notification.notification_type == 'Document Forwarded to Action Officer' %}
+                    {% if notification.document_id.document_type.priority_level.priority_level == 'very urgent' %}
+                        <p class="mb-1 {{notification.is_read}}">A document with <strong style="color:red;">very urgent</strong> priority is awaiting your action. Please take immediate action to prevent delays.
+                            <span style="white-space: nowrap;">(TN. {{notification.document_id.tracking_no}})</span>   
+                        </p>
+                    {% else %}
+                        <p class="mb-1 {{notification.is_read}}"><strong>{{notification.user_id.firstname}} {{notification.user_id.lastname}}</strong> forwarded a document for your review and further action.
+                            <span style="white-space: nowrap;">(TN. {{notification.document_id.tracking_no}})</span>   
+                        </p>
+                    {% endif %}
+                {% elif notification.notification_type == 'Document Endorsed by Action Officer' %}
+                    {% if notification.document_id.document_type.priority_level.priority_level == 'very urgent' %}
+                        <p class="mb-1 {{notification.is_read}}">A document with <strong style="color:red;">very urgent</strong> priority is awaiting your action. Please take immediate action to prevent delays.
+                            <span style="white-space: nowrap;">(TN. {{notification.document_id.tracking_no}})</span>   
+                        </p>
+                    {% else %}
+                        <p class="mb-1 {{notification.is_read}}"><strong>{{notification.user_id.firstname}} {{notification.user_id.lastname}}</strong> endorsed the document you forwarded and is now ready for resolving.
+                            <span style="white-space: nowrap;">(TN. {{notification.document_id.tracking_no}})</span>   
+                        </p>
+                    {% endif %}
+                {% elif notification.notification_type == 'Document Resolved' %}
+                    {% if notification.document_id.document_type.priority_level.priority_level == 'very urgent' %}
+                        <p class="mb-1 {{notification.is_read}}">A document with <strong style="color:red;">very urgent</strong> priority is awaiting your action. Please take immediate action to prevent delays.
+                            <span style="white-space: nowrap;">(TN. {{notification.document_id.tracking_no}})</span>   
+                        </p>
+                    {% else %}
+                        <p class="mb-1 {{notification.is_read}}"><strong>{{notification.user_id.firstname}} {{notification.user_id.lastname}}</strong> resolved a document and routed to your department for processing.
+                            <span style="white-space: nowrap;">(TN. {{notification.document_id.tracking_no}})</span>   
+                        </p>
+                    {% endif %}
+                {% endif %}
+                <small class="d-block text-muted">
+                    {% if notification.time_stamp|timesince == '0 minutes' %}
+                        <span class="text-primary"><i class='bx bxs-circle me-1' style="font-size: 10px;"></i>Just Now</span>
+                    {% else %}
+                        {{ notification.time_stamp|timesince }} ago
+                    {% endif %}
+                </small>
+            </div>
+        </a>
+    {% endif %}
+{% endfor %}
