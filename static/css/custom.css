@@ -193,6 +193,30 @@
   }
 }
 
+/* ------------------- SCROLL BAR ------------------- */
+
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #ffffff;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #007BFF;
+  border-radius: 10px; /* Round corners for the handle */
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #004080;
+  border-radius: 10px; /* Ensure consistency on hover */
+}
+
 body {
   margin: 0;
   font-family: var(--bs-body-font-family);
