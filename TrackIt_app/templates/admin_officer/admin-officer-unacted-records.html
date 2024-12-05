@@ -29,7 +29,7 @@
                     <!---->
                     <div class="dropdown">
                         <button class="profile m-0" type="button" id="profileDropdown" data-bs-toggle="dropdown">
-                            <div>
+                            <div class="profile-pic">
                                 <img src="{% if user_profile.profile_picture %}/media/{{ user_profile.profile_picture }}{% else %}{% static 'images/default_profile_picture.png' %}{% endif %}"
                                      id="profilePicture" 
                                      class="profile-modal-pic" 
