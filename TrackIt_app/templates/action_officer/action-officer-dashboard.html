@@ -351,9 +351,9 @@
 
                 <div class="modal-body mt-1 pt-2">
                     <div class="mb-3">
-                        <label for="password" class="form-label">Account Password</label>
+                        <label for="accountPassword" class="form-label">Account Password</label>
                         <p class="mb-2">If you wish to change your password, please click the button below.</p>
-                        <button type="button" class="btn btn-secondary w-100" data-bs-toggle="modal" data-bs-target="#changePasswordModal" style="font-size: 14px;" >Set New Password</button>
+                        <button type="button" class="btn btn-secondary w-100" id="accountPassword" data-bs-toggle="modal" data-bs-target="#changePasswordModal" style="font-size: 14px;" >Set New Password</button>
                     </div>
 
                     <div class="mb-2">
@@ -417,17 +417,17 @@
 
                     <form>
                         <div class="mb-3">
-                            <label for="currentPassword" class="form-label">Current Password</label>
+                            <label for="password" class="form-label">Current Password</label>
                             <input type="password" name="current_password" class="form-control" id="password" placeholder="Enter Current Password" required>
                             <i class="fa-regular fa-eye toggle-pass" id="togglePassword"></i>
                         </div>
                         <div class="mb-3">
-                            <label for="newPassword" class="form-label">New Password</label>
+                            <label for="password2" class="form-label">New Password</label>
                             <input type="password" name="new_password" class="form-control" id="password2" placeholder="Enter New Password" required>
                             <i class="fa-regular fa-eye toggle-pass" id="togglePassword2"></i>
                         </div>
                         <div class="mb-3">
-                            <label for="confirmNewPassword" class="form-label">Confirm New Password</label>
+                            <label for="password3" class="form-label">Confirm New Password</label>
                             <input type="password" name="confirm_new_password" class="form-control" id="password3" placeholder="Confirm New Password" required>
                             <i class="fa-regular fa-eye toggle-pass" id="togglePassword3"></i>
                         </div>

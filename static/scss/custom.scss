@@ -893,6 +893,32 @@ table tbody tr td.overdue {
     padding: 10px 12px;
 }
 
+// SCROLLBAR
+
+::-webkit-scrollbar {
+    width: 13px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+ 
+::-webkit-scrollbar-thumb {
+    box-shadow: inset 0 0 13px 13px #BFCDDB;
+    border: solid 4px transparent;    
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    box-shadow: inset 0 0 13px 13px #B1C1CF;
+}
+
+::-webkit-scrollbar-button {
+    display: none;
+}
+
+/* -------------------------------------- */
+
 .highlight-search {
     background-color: rgb(46, 114, 234); /* Change to desired color */
     color: white; /* Text color */
