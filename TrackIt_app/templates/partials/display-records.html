@@ -74,6 +74,20 @@
                     </button>
                     {% if document.status == 'For DIR Approval' %}
                         {% if user == 'DIR' or user == 'SYS' %}
+
+                            {% if id == '1002' %}
+                                <button type="button" class="reroutebtn btn btn-sm btn-blue" 
+                                    data-action="re-route"
+                                    data-document-no="{{ document.document_no }}"
+                                    data-document-type="{{ document.document_type.document_type }}"
+                                    data-document-category="{{ document.document_type.category }}"
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#editDocumentRouteModal"
+                                    data-bs-toggle="tooltip" title="Re-route Document">
+                                    <i class="fa-solid fa-route"></i>
+                                </button>
+                            {% endif %}
+
                             {% if not document.next_route %}
                                 <button type="button" class="btn btn-sm btn-red" 
                                     data-action="reject" 

@@ -27,7 +27,6 @@
                 <div class="header-right">
                     <!-- NOTIFICATIONS UI -->
                     {% include "partials/display-notifications.html" %}
-                    <!---->
                     <div class="dropdown">
                         <button class="profile m-0" type="button" id="profileDropdown" data-bs-toggle="dropdown">
                             <div>
@@ -62,7 +61,6 @@
                             </li>
                         </ul>
                     </div>
-                    <!---->
                 </div>
             </header>
             
@@ -91,9 +89,9 @@
                                         </div>
                                         <div class="col-3 p-0 pe-3">
                                             <select class="form-select fw-bold" id="inputGroupSelect" style="font-size: 14px !important; background-color: #007bff; color: white; border-color: white;">
-                                                <option selected>Today</option>
-                                                <option value="1">This Month</option>
-                                                <option value="2">This Year</option>
+                                                <option value="today" selected>Today</option>
+                                                <option value="month">This Month</option>
+                                                <option value="year">This Year</option>
                                             </select>
                                         </div>
                                     </div>
@@ -110,14 +108,15 @@
                         <div class="container d-block rounded-2 p-3 my-3" style="background-color: white; height: auto;">
                             <div class="row">
                                 <div class="col-7 d-flex align-items-center">
-                                    <h4><span class="fw-bolder my-3 px-2 rounded-2" style="background-color: #007bff; color:white;">95</span>&nbsp;Total Records</h4>
+                                    <h4><span class="fw-bolder my-3 px-2 rounded-2" id="overallTotalRecords" style="background-color: #007bff; color:white;">0</span>&nbsp;Total Records</h4>
                                 </div>
                                 <div class="col-5 p-2 d-flex justify-content-end">
-                                    <select class="form-select w-75" id="inputGroupSelect" style="font-size: 12px !important;">
-                                        <option selected>Very Urgent</option>
-                                        <option value="1">Urgent</option>
-                                        <option value="2">Normal</option>
-                                        <option value="3">For Pref. Action</option>
+                                    <select class="form-select w-75" id="targetPrioLevelSelect" style="font-size: 12px !important;">
+                                        <option value='all' selected>All Documents</option>
+                                        <option value='very urgent'>Very Urgent</option>
+                                        <option value="urgent">Urgent</option>
+                                        <option value="normal">Normal</option>
+                                        <option value="for pref. action">For Pref. Action</option>
                                     </select>
                                 </div> 
                             </div>
@@ -125,20 +124,20 @@
                             <div class="chart-container my-2">
                                 <!-- Bar 1 -->
                                 <div class="bar">
-                                <div class="percent-label">14</div>
-                                <div class="bar-shape" style="height: 100px;"></div>
+                                <div id="dirApprovalRecordCount" class="percent-label">0</div>
+                                <div class="bar-shape"></div>
                                 <div class="office-label">Dir. Approval</div>
                                 </div>
                                 <!-- Bar 2 -->
                                 <div class="bar selected">
-                                <div class="percent-label">28</div>
-                                <div class="bar-shape" style="height: 200px;"></div>
+                                <div id="routingRecordCount" class="percent-label">0</div>
+                                <div class="bar-shape"></div>
                                 <div class="office-label">For Routing</div>
                                 </div>
                                 <!-- Bar 3 -->
                                 <div class="bar">
-                                <div class="percent-label">22</div>
-                                <div class="bar-shape" style="height: 150px;"></div>
+                                <div id="archivingRecordCount" class="percent-label">0</div>
+                                <div class="bar-shape"></div>
                                 <div class="office-label">For Archiving</div>
                                 </div>
                             </div>
@@ -151,7 +150,7 @@
                             <div class="canvas-container d-flex flex-grow-1 align-items-center justify-content-center pb-3">
                                 <canvas id="unactedDocumentsChart" style="width: 400; height: 400;"></canvas>
                             </div>
-                            <p class="text-center fw-bold text-success pt-2">Congratulations, you have a good performance!</p>
+                            <!-- <p class="text-center fw-bold text-success pt-2">Congratulations, you have a good performance!</p> -->
                             <!-- <p class="text-center fw-bold text-warning">Your performance is currently going slow.</p> -->
                             <!-- <p class="text-center fw-bold text-danger">You need to address your current performance</p> -->
                         </div>
@@ -170,15 +169,7 @@
                                     <div>
                                         <h5 class="mb-1 fw-bold title" style="color: #5BC0EB;">{{ announcement.title }}</h5>
                                         <p class="mb-0 description">{{ announcement.description }}</p>
-                                        <!--<p class="mb-0 text-muted" style="font-size: 0.9em;">
-                                            <i class='bx bx-calendar' style="color: #007bff;"></i>
-                                            <span class="dateCreated">Created on {{ announcement.created_at|date:"M d, Y" }}</span>
-                                        </p>-->
                                         {% if announcement.end_date %}
-                                        <p class="mb-0 text-muted" style="font-size: 0.9em;">
-                                            <!--<i class='bx bx-calendar-exclamation' style="color: #ff0000;"></i>-->
-                                            <!--<span class="dateEnd">Ends on {{ announcement.end_date|date:"M d, Y" }}</span>-->
-                                        </p>
                                         {% endif %}
                                     </div>
                                     <div class="d-flex align-items-center">
@@ -214,21 +205,21 @@
 
                         <div class="row px-3 my-3 d-flex justify-content-center">
                             <div class="col-4 ps-0 mt-0 rounded-2">
-                                <div class="clickable-box rounded-2 p-3" onclick="window.location.href='{% url 'admin_officer_new_record' %}?status=active'">
+                                <a class="clickable-box rounded-2 p-3" href="{% url 'admin_officer_new_record' %}">
                                     <h5 class="text-center mb-0"><i class='bx bxs-file-plus'></i>&nbsp;Add<br>Record</h5>
-                                </div>
+                                </a>
                             </div>
 
                             <div class="col-4 mt-0 rounded-2">
-                                <div class="clickable-box rounded-2 p-3" onclick="window.location.href='{% url 'admin_officer_unacted_records'%}?status=active'">
+                                <a class="clickable-box rounded-2 p-3" href="{% url 'admin_officer_unacted_records'%}">
                                     <h5 class="text-center mb-0"><i class='bx bxs-message-error'></i>&nbsp;Unacted<br>Documents</h5>
-                                </div>                                                            
+                                </a>                                                            
                             </div>
 
                             <div class="col-4 pe-0 mt-0 rounded-2">
-                                <div class="clickable-box rounded-2 p-3" onclick="window.location.href='{% url 'admin_officer_archive'%}?status=active'">
+                                <a class="clickable-box rounded-2 p-3" href="{% url 'admin_officer_archive'%}">
                                     <h5 class="text-center mb-0"><i class='bx bxs-file-archive'></i>&nbsp;Archived<br>Documents</h5>
-                                </div>
+                                </a>
                             </div>
 
                             <!-- [ANALYTICS] Line Graph -->
@@ -486,58 +477,156 @@
         setInterval(updateTime, 1000);
         updateTime();
     </script>
-
-    <!-- [ANALYTICS] Archived Documents -->
     <script>
-        const ctx2 = document.getElementById('archivedChart').getContext('2d');
-        const archivedChart = new Chart(ctx2, {
-            type: 'line',
-            data: {
-                labels: ['6 Days Before', '5 Days Before', '4 Days Before', '3 Days Before', '2 Days Before', 'Yesterday', 'Today'], // Days of the week
-                datasets: [{
-                    label: 'Archived Documents',
-                    data: [300, 350, 340, 380, 320, 360, 480], // Sample data
-                    borderColor: '#007bff', // Line color
-                    backgroundColor: 'rgba(0, 123, 255, 0.1)', // Line fill color
-                    pointBackgroundColor: '#004da0', // Points color
-                    tension: 0.4, // Smooth curve
-                    fill: true, // Fill the area under the line
-                    pointRadius: 5 // Point size
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: false
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: false // Hide the legend
-                    }
+        document.addEventListener('DOMContentLoaded', function () { 
+
+            const inputGroupSelect = document.getElementById('inputGroupSelect');
+            const targetPrioLevel = document.getElementById('targetPrioLevelSelect');
+            let performanceChart, archivedChart;
+
+            function handleSelectChange() {
+
+                const timeSpan = inputGroupSelect.value;
+                handleDocumentPriorityLevelChange();
+                updateMyPerformanceChart();
+                updateArchivedChart();
+
+            }
+
+            function updateMyPerformanceChart() {
+
+                if (performanceChart) {
+                    performanceChart.destroy();
                 }
+
+                const timeSpan = inputGroupSelect.value;
+
+                fetch(`/admin-officer-performance/${timeSpan}/`)
+                    .then(response => response.json())
+                    .then(data => {
+
+                        var ctx1 = document.getElementById('unactedDocumentsChart').getContext('2d');
+                        performanceChart = new Chart(ctx1, {
+                            type: 'pie',
+                            data: {
+                                labels: ['Resolved', 'Pending', 'Delayed', 'Unacted'],
+                                datasets: [{
+                                    label: 'Document',
+                                    data: [data.resolved_count, data.pending_count, data.delayed_count, data.unacted_count], // Replace with actual data
+                                    backgroundColor: ['#4DA8DA', '#4169E1',  '#003366', '#008080']
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                animation: false,
+                            }
+                        });
+
+                    })
+                    .catch(error => console.error('Error:', error));
+
             }
+
+            function handleDocumentPriorityLevelChange() {
+
+                const timeSpan = inputGroupSelect.value;
+                const targetPrioLevelValue = targetPrioLevel.value;
+
+                fetch(`/admin-officer-total-records/${timeSpan}/${targetPrioLevelValue}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('overallTotalRecords').textContent = data.dir_approval + data.routing + data.archiving;
+                        document.getElementById('dirApprovalRecordCount').textContent = data.dir_approval;
+                        document.getElementById('routingRecordCount').textContent = data.routing;
+                        document.getElementById('archivingRecordCount').textContent = data.archiving;
+
+                        const records = {
+                            dirApprovalRecordCount: data.dir_approval,
+                            routingRecordCount: data.routing,
+                            archivingRecordCount: data.archiving
+                        };
+
+                        const maxRecord = Math.max(...Object.values(records));
+                        const maxRecordId = Object.keys(records).find(key => records[key] === maxRecord);
+
+                        // Scale factor for height; adjust 200px as needed for max height
+                        const maxHeight = 200;
+                        const scale = maxRecord > 0 ? maxHeight / maxRecord : 0;
+
+
+                        document.querySelectorAll('.bar').forEach(bar => bar.classList.remove('selected'));
+
+                        Object.keys(records).forEach(recordId => {
+                            const barShape = document.querySelector(`#${recordId}`).parentNode.querySelector('.bar-shape');
+                            const height = records[recordId] * scale;
+                            barShape.style.height = height > 0 ? `${height}px` : '0px'; // Set height to 0 if count is zero
+                        });
+
+                        if (maxRecord > 0) {
+                            document.getElementById(maxRecordId).parentNode.classList.add('selected');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+                
+            }
+
+            function updateArchivedChart() {
+                
+                const timeSpan = inputGroupSelect.value;
+
+                fetch(`/admin-officer-archived/${timeSpan}/`)
+                    .then(response => response.json())
+                    .then(data => {
+
+                        if (archivedChart) {
+                            archivedChart.destroy();
+                        }
+
+                        const ctx2 = document.getElementById('archivedChart').getContext('2d');
+                        archivedChart = new Chart(ctx2, {
+                            type: 'line',
+                            data: {
+                                labels: data.labels,
+                                datasets: [{
+                                    label: 'Archived Documents',
+                                    data: [300, 350, 340, 380, 320, 360, 480], // Sample data
+                                    borderColor: '#007bff', // Line color
+                                    backgroundColor: 'rgba(0, 123, 255, 0.1)', // Line fill color
+                                    pointBackgroundColor: '#004da0', // Points color
+                                    tension: 0.4, // Smooth curve
+                                    fill: true, // Fill the area under the line
+                                    pointRadius: 5 // Point size
+                                }]
+                            },
+                            options: {
+                                scales: {
+                                    y: {
+                                        beginAtZero: false
+                                    }
+                                },
+                                plugins: {
+                                    legend: {
+                                        display: false // Hide the legend
+                                    }
+                                },
+                                animation: false
+                            }
+                        });
+
+
+                    })
+                    .catch(error => console.error('Error:', error));
+
+            }
+            
+            inputGroupSelect.addEventListener('change', handleSelectChange);
+            targetPrioLevel.addEventListener('change', handleDocumentPriorityLevelChange);
+            handleSelectChange();
+            setInterval(handleSelectChange, 3000);
+
         });
     </script>
 
-    <!-- [ANALYTICS] Pie Chart JavaScript -->
-    <script>
-        var ctx1 = document.getElementById('unactedDocumentsChart').getContext('2d');
-        var chart = new Chart(ctx1, {
-            type: 'pie',
-            data: {
-                labels: ['Resolved', 'Pending', 'Delayed', 'Unacted'],
-                datasets: [{
-                    label: 'Document',
-                    data: [10, 6, 4, 2], // Replace with actual data
-                    backgroundColor: ['#4DA8DA', '#4169E1',  '#003366', '#008080']
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-            }
-        });
-    </script>
 </body>
 </html>

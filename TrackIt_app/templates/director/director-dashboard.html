@@ -636,6 +636,7 @@
                 });
             }
 
+            // TODAY, THIS MONTH, THIS YEAR SELECT CHANGE
             function handleSelectChange() {
 
                 const timeSpan = inputGroupSelect.value;
@@ -686,6 +687,7 @@
                 updateSelectedFilters();
             }
 
+            // DOCUMENT STATUS
             function handleDocumentStatusSelectChange() {
                 const timeSpan = inputGroupSelect.value;
                 const documentStatusValue = documentStatus.value;
@@ -698,6 +700,7 @@
                     .catch(error => console.error('Error:', error));
             }
 
+            // OFFICE PERFORMANCE
             function updateOfficePerformanceChart(data) {
 
                 if (officePerformanceChart) {
@@ -757,6 +760,7 @@
                 });
             }
 
+            // EMPLOYEE PERFORMANCE
             function updateEmployeePerformanceChart(data) {
 
                 if (employeePerformanceChart) {
@@ -810,6 +814,7 @@
 
             }
 
+            // OFFICE PERFORMANCE SELECT CHANGE
             function handleOfficePerformanceSelectChange() {
                 const timeSpan = inputGroupSelect.value;
                 const targetOfficeValue = targetOffice.value;
@@ -822,6 +827,8 @@
                     .catch(error => console.error('Error:', error));
             }
 
+
+            
             const selectedFiltersDiv = document.getElementById('selectedFilters');
             const radioButtons = document.querySelectorAll('.form-check-input');
 

@@ -24,6 +24,7 @@ from django.db.models import Count
 from itertools import chain
 from django.db.models import F
 from django.db.models import Value
+from dateutil.relativedelta import relativedelta
 
 #---------------
 from django.core.mail import EmailMultiAlternatives
@@ -231,14 +232,14 @@ def user_signup(request):
                 plain_message = strip_tags(html_message)
 
                 # Create and send the email
-                email = EmailMultiAlternatives(
+                """email = EmailMultiAlternatives(
                     subject=subject,
                     body=plain_message,
                     from_email=settings.DEFAULT_FROM_EMAIL,
                     to=[user_email]
                 )
                 email.attach_alternative(html_message, "text/html")
-                email.send(fail_silently=False)
+                email.send(fail_silently=False)"""
 
                 return redirect('user_login')
             except IntegrityError:
@@ -299,6 +300,7 @@ def user_login(request):
         user_profile = {
             'user_id': user.user_id,
             'role': role,
+            'office': user.office_id_id,
             'firstname': user.firstname.title(),
             'middlename': middlename,
             'lastname': user.lastname.title(),
@@ -945,7 +947,7 @@ def director_all_records(request):
     if not user_id:
         return redirect('user_login')
 
-    role = user_id.split('-')[0]
+    role, id = user_id.split('-')
     if role != 'DIR':
         return redirect(user_login)
 
@@ -954,6 +956,10 @@ def director_all_records(request):
     context = {
         'user_profile': user_profile,
     }
+
+    if id == '1002':
+
+        return render(request, 'director/director-plus-all-records.html', context)
 
     return render(request, 'director/director-all-records.html', context)
 
@@ -1109,13 +1115,18 @@ def director_needs_action(request, scanned_document_no):
     if not user_id:
         return redirect('user_login')
     
-    role = user_id.split('-')[0]
+    role, id = user_id.split('-')
+
     if role != 'DIR':
         return redirect('user_login')
     
     user_profile = request.session.get('user_profile', None)
 
     if int(scanned_document_no) < 0:
+
+        if id == '1002':
+            return render(request, 'director/director-plus-needs-action.html', {'user_profile': user_profile})
+
         return render(request, 'director/director-needs-action.html', {'user_profile': user_profile})
 
     try:
@@ -1920,6 +1931,52 @@ def edit_document_type(request):
 
     # If it's not a POST request, raise an error or handle appropriately
     raise ValueError("This view only handles POST requests.")
+
+def edit_routes(request):
+
+    if request.method == 'POST':
+
+        document_no = request.POST.get('edit_document_no')
+        new_routes = request.POST.getlist('editRoutes[]')
+        new_priority_level = request.POST.get('edit_priority_level')
+        document_type = request.POST.get('document_type')
+        document_category = request.POST.get('document_category')
+        
+        prio_level = PriorityLevel.objects.get(priority_level=new_priority_level)
+
+        new_document_type = DocumentType.objects.create(
+            document_type=document_type,
+            category=document_category,
+            priority_level_id=prio_level.no,
+            is_active = False
+        )
+
+        for route in new_routes:
+
+            if route == 'Accounting':
+                route_id = 'ACC'
+            elif route == 'Director':
+                route_id = 'DIR'
+            elif route == 'Payroll':
+                route_id = 'PRL'
+            elif route == 'Cashier':
+                route_id = 'CSR'
+            elif route == 'Budgeting':
+                route_id = 'BMD'
+            
+            DocumentRoute.objects.create(
+                document_type = new_document_type,
+                route_id = route_id
+            )
+
+        document = Document.objects.get(document_no=document_no)
+        document.document_type = new_document_type
+        document.save()
+
+    return JsonResponse({'success': 'success'})
+
+
+
 
 # SYSTEM ADMIN FUNCTION: DELETE DOCUMENT TYPE
 def delete_document_type(request, document_no):
@@ -2974,6 +3031,12 @@ def update_user_display(request, office):
 
 def update_all_records_display(request, user):
 
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('user_login')
+
+    id = user_id.split('-')[1]
+
     search_query = request.GET.get('search', '').strip()
     sort_by = request.GET.get('sort_by')
     order = request.GET.get('order', 'asc')
@@ -2992,7 +3055,8 @@ def update_all_records_display(request, user):
         'most_priority_doc_type': most_priority_doc_type,
         'search_query': search_query,
         'user': user,
-        'today': date.today() 
+        'today': date.today(),
+        'id': id
     }
 
     html = render_to_string('partials/display-records.html', context)
@@ -3035,6 +3099,12 @@ def admin_officer_update_needs_action_display(request, panel):
 
 def director_update_needs_action_display(request):
     
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('user_login')
+    
+    id = user_id.split('-')[1]
+
     search_query = request.GET.get('search', '').strip()
     sort_by = request.GET.get('sort_by')
     order = request.GET.get('order', 'asc')
@@ -3053,7 +3123,8 @@ def director_update_needs_action_display(request):
         'most_priority_doc_type': most_priority_doc_type,
         'search_query': search_query,
         'user': 'DIR',
-        'today': date.today()
+        'today': date.today(),
+        'id': id
     }
 
     html = render_to_string('partials/display-records.html', context)
@@ -4368,6 +4439,301 @@ def generate_document_status_report(request, time_span, document_status):
 
     return response
 
+def admin_officer_total_records(request, time_span, target_prio_level):
+
+    start_date, end_date = get_time_span(time_span)
+
+    if target_prio_level == 'all':
+        records = Document.objects.filter(
+            status__in = ['For DIR Approval', 'For Routing', 'For Archiving'],
+            recent_update__gte=start_date, 
+            recent_update__lt=end_date
+        )
+    else:
+        records = Document.objects.filter(
+            status__in = ['For DIR Approval', 'For Routing', 'For Archiving'],
+            document_type__priority_level__priority_level = target_prio_level,
+            recent_update__gte=start_date, 
+            recent_update__lt=end_date
+        )
+    
+    data = {
+        'dir_approval': records.filter(status='For DIR Approval').count(),
+        'routing': records.filter(status='For Routing').count(),
+        'archiving': records.filter(status='For Archiving').count()
+    }
+
+    return JsonResponse(data)
+
+def admin_officer_performance(request, time_span):
+
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('user_login')
+
+    start_date, end_date = get_time_span(time_span)
+
+    resolved_count = ActivityLogs.objects.filter(
+        time_stamp__gte=start_date, 
+        time_stamp__lt=end_date,
+        activity='Document Routed'
+    ).count()
+
+    pending_count = Document.objects.filter(
+        recent_update__gte=start_date, 
+        recent_update__lt=end_date,
+        status='For Routing'
+    ).count()
+
+    unactedlogs = UnactedLogs.objects.filter(
+        time_stamp__gte=start_date, 
+        time_stamp__lt=end_date,
+        user_id_id=user_id
+    )
+
+    delayed_count = unactedlogs.filter(is_acted=True).count()
+    unacted_count = unactedlogs.filter(is_acted=False).count()
+
+    data = {
+        'resolved_count': resolved_count,
+        'pending_count': pending_count,
+        'delayed_count': delayed_count,
+        'unacted_count': unacted_count
+    }
+
+    return JsonResponse(data)
+
+def admin_officer_archived(request, time_span):
+
+    # today: Today, Yesterday, 2 Days Before, 3 Days Before 4 Days Before, 5 Days Before, 6 Days Before
+    # month: current month...... last 7th month
+    # year: current year...... last 7th year
+    today = datetime.today()
+
+    if time_span == 'today':
+        labels = ['6 Days Before', '5 Days Before', '4 Days Before', '3 Days Before', '2 Days Before', 'Yesterday', 'Today']
+        values = []
+
+        for i in range(6, -1, -1):
+            target_date = today - timedelta(days=i)
+
+            count = Document.objects.filter(
+                status='Archived',
+                recent_update__date=target_date  # Compare the date part of recent_update
+            ).count()
+            values.append(count)
+        
+    elif time_span == 'month':
+        labels = []
+        values = []
+
+        for i in range(7):
+            month_offset = today - relativedelta(months=i)
+            month_name = month_offset.strftime('%B')
+            labels.append(month_name)
+            
+            count = Document.objects.filter(
+                status='Archived',
+                recent_update__year=month_offset.year,
+                recent_update__month=month_offset.month
+            ).count()
+            
+            values.append(count)
+
+        labels.reverse()
+        values.reverse()
+    
+    else:
+        current_year = today.year
+        labels = []
+        values = []
+        for i in range(7):
+            labels.append(current_year - i)
+        labels.reverse()
+
+    data = {
+        'labels': labels,
+        'values': values
+    }
+
+    return JsonResponse(data)
+
+def sro_total_records(request, time_span, target_prio_level):
+
+    user_profile = request.session.get('user_profile', None)
+
+    if user_profile:
+        office = user_profile.get('office')
+    else:
+        return redirect(user_login)
+
+    start_date, end_date = get_time_span(time_span)
+
+    if target_prio_level == 'all':
+        records = Document.objects.filter(
+            status__in = ['For Routing', 'For SRO Receiving', 'For Resolving'],
+            next_route = office,
+            recent_update__gte=start_date, 
+            recent_update__lt=end_date
+        )
+    else:
+        records = Document.objects.filter(
+            status__in = ['For Routing', 'For SRO Receiving', 'For Resolving'],
+            next_route = office,
+            document_type__priority_level__priority_level = target_prio_level,
+            recent_update__gte=start_date, 
+            recent_update__lt=end_date
+        )
+    
+    data = {
+        'act_forwarding': records.filter(status='For SRO Receiving').count(),
+        'routing': records.filter(status='For Routing').count(),
+        'resolving': records.filter(status='For Resolving').count()
+    }
+
+    return JsonResponse(data)
+
+def sro_performance(request, time_span, target_performance):
+
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('user_login')
+    
+    user_profile = request.session.get('user_profile', None)
+
+    if user_profile:
+        office = user_profile.get('office')
+    else:
+        return redirect(user_login)
+
+    start_date, end_date = get_time_span(time_span)
+
+    if target_performance == 'my-performance':
+
+        resolved_count = ActivityLogs.objects.filter(
+            time_stamp__gte=start_date, 
+            time_stamp__lt=end_date,
+            activity='Document Resolved',
+            user_id_id = user_id
+        ).count()
+
+        pending_count = Document.objects.filter(
+            recent_update__gte=start_date, 
+            recent_update__lt=end_date,
+            status__in = ["For Resolving", "For SRO Receiving"],
+            next_route = office
+        ).count()
+
+    else:
+        
+        resolved_count = ActivityLogs.objects.filter(
+            time_stamp__gte=start_date, 
+            time_stamp__lt=end_date,
+            activity='Document Resolved',
+            user_id_id = user_id
+        ).count()
+
+        pending_count = Document.objects.filter(
+            recent_update__gte=start_date, 
+            recent_update__lt=end_date,
+            status__in = ["For Resolving", "For SRO Receiving", "For ACT Receiving"],
+            next_route = office
+        ).count()
+
+    unactedlogs = UnactedLogs.objects.filter(
+            time_stamp__gte=start_date, 
+            time_stamp__lt=end_date,
+            user_id_id=user_id
+        )
+
+    delayed_count = unactedlogs.filter(is_acted=True).count()
+    unacted_count = unactedlogs.filter(is_acted=False).count()
+
+    data = {
+        'resolved_count': resolved_count,
+        'pending_count': pending_count,
+        'delayed_count': delayed_count,
+        'unacted_count': unacted_count
+    }
+
+    return JsonResponse(data)
+
+def sro_employee_performance(request, time_span, target_employee_performance):
+
+
+    data = {
+        'success': 'success'
+    }
+
+    return JsonResponse(data)
+
+def action_officer_total_records(request, time_span, target_prio_level):
+
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('user_login')
+
+    start_date, end_date = get_time_span(time_span)
+
+    if target_prio_level == 'all':
+
+        completed_count = ActivityLogs.objects.filter(
+            time_stamp__gte=start_date, 
+            time_stamp__lt=end_date,
+            activity='Document Endorsed by Action Officer',
+            user_id_id = user_id
+        ).count()
+
+        unacted_count = UnactedLogs.objects.filter(
+            time_stamp__gte=start_date, 
+            time_stamp__lt=end_date,
+            user_id_id=user_id
+        ).count()
+
+        for_receive_count = Document.objects.filter(
+            recent_update__gte=start_date, 
+            recent_update__lt=end_date,
+            status = 'For ACT Receiving',
+            act_receiver = user_id
+        ).count()
+
+    else:
+
+        completed_count = ActivityLogs.objects.filter(
+            time_stamp__gte=start_date, 
+            time_stamp__lt=end_date,
+            activity='Document Endorsed by Action Officer',
+            user_id_id = user_id,
+            document_id__document_type__priority_level__priority_level = target_prio_level
+        ).count()
+
+        unacted_count = UnactedLogs.objects.filter(
+            time_stamp__gte=start_date, 
+            time_stamp__lt=end_date,
+            user_id_id=user_id,
+            document_id__document_type__priority_level__priority_level = target_prio_level
+        ).count()
+
+        for_receive_count = Document.objects.filter(
+            recent_update__gte=start_date, 
+            recent_update__lt=end_date,
+            status = 'For ACT Receiving',
+            act_receiver = user_id,
+            document_type__priority_level__priority_level = target_prio_level
+        ).count()
+
+
+    data = {
+        'completed_count': completed_count,
+        'unacted_count': unacted_count,
+        'for_receive_count': for_receive_count
+    }
+
+    return JsonResponse(data)
+
+
+# ------------------ NOTIFICATIONS -----------------------
+
 def fetch_new_notifications(request):
 
     user_id = request.session.get('user_id')
@@ -4728,7 +5094,6 @@ def fetch_unread_notifications(request):
 
     return JsonResponse({'html': html})
 
-
 def click_notification(request, notification_type, no):
 
     user_id = request.session.get('user_id')
@@ -4750,5 +5115,21 @@ def click_notification(request, notification_type, no):
     document.is_read = 'read'
     document.save()
     return redirect('scanning_qr_code', document.document_id.document_no)   
+
+
+def fetch_document_routes(request, document_no):
+
+    document = Document.objects.get(document_no=document_no)
+
+    routes = DocumentRoute.objects.filter(document_type=document.document_type).values_list('route__office_name', flat=True)
+
+    routes_list = list(routes)
+
+    data = {
+        'priority_level': document.document_type.priority_level.priority_level,
+        'routes': routes_list
+    }
+
+    return JsonResponse(data)
 
 
