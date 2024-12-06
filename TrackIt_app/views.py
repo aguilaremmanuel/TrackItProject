@@ -2681,7 +2681,8 @@ def document_update_status(request, action, document_no):
 
                 if next_route == 'DIR':
                     status = 'For DIR Approval'
-                    act_receiver = User.objects.get(status='active', role='Director').user_id
+                    #act_receiver = User.objects.get(status='active', role='Director').user_id
+                    act_receiver = 'DIR-1002'
                 else:
                     status = 'For SRO Receiving'
                     act_receiver = User.objects.get(status='active', role='SRO', office_id_id=next_route).user_id
