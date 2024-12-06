@@ -1,0 +1,144 @@
+#datetime-container {
+    font-size: 13px;
+    font-weight: bold;
+    color: #333;
+    display: flex;
+    align-items: center;
+}
+
+#datetime-container span {
+    margin: 0 5px;
+}
+
+.card {
+    border: 2px solid #007bff !important;
+    text-align: center;
+    padding: 10px;
+    border-radius: 10px; /* Rounded corners */
+    background-color: white;
+}
+
+.card h2 {
+    color: #007bff; /* Number color */
+    font-size: 36px;
+    margin-bottom: 0;
+}
+
+.card p {
+    font-size: 15px;
+    color: #333;
+    font-weight: bold;
+}
+
+.table, .table-count, .announcements{
+    font-size: 12px;
+}
+
+/* Bar chart container */
+.chart-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 10px;
+  max-width: 100%;
+}
+
+/* Individual bar */
+.bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 14px;
+  flex: 1; /* Make bars take equal width */
+  max-width: 100px; /* Optional: Limit max width for each bar */
+}
+
+/* The percentage label above the bar */
+.bar .percent-label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+/* The actual bar with gradient and rounded corners */
+.bar .bar-shape {
+  width: 100%; /* Make width of each bar responsive */
+  background: linear-gradient(180deg, #007bff, #63afff);
+  border-radius: 10px;
+  transition: height 0.5s ease;
+}
+
+/* The office label below the bar */
+.bar .office-label {
+  margin-top: 10px;
+  font-weight: bold;
+  color: #9d9d9d;
+}
+
+/* Styling for the highlighted middle bar */
+.bar.selected .bar-shape {
+  background: linear-gradient(180deg, #004c9e, #63afff);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.bar.selected .office-label {
+  color: #fff;
+  background-color: #000;
+  padding: 2px 6px;
+  border-radius: 5px;
+}
+
+.progress-circle {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.progress-circle .inner-content {
+    position: absolute;
+    width: 90px;
+    height: 90px;
+    background: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.progress-circle .percentage {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #333;
+}
+
+.progress-circle .label {
+    font-size: 1em;
+    color: #666;
+}
+
+ /* Box styling */
+ .clickable-box {
+  background-color: #2E72EA;
+  border-color: #2E72EA;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.1s, transform 0.1s;
+}
+      
+.clickable-box h5{
+  color: #FFFFFF;
+}
+
+ /* Hover effect */
+.clickable-box:hover {
+    background-color: #007bff;
+    border-color: #007bff; 
+    color: #FFFFFF;
+    transform: scale(1.025);
+}
