@@ -112,10 +112,20 @@ urlpatterns = [
     path('director-office-performance/<str:time_span>/<str:target_office>/', views.director_office_performance, name='director_office_performance'),
     path('director-employee-performance/<str:time_span>/<str:target_report_type>/<str:target_office>/', views.director_employee_performance, name='director_employee_performance'),
     path('generate-document-status-report/<str:time_span>/<str:document_status>/', views.generate_document_status_report, name='generate_document_status_report'),
+    path('admin-officer-total-records/<str:time_span>/<str:target_prio_level>/', views.admin_officer_total_records, name='admin_officer_total_records'),
+    path('admin-officer-performance/<str:time_span>/', views.admin_officer_performance, name='admin_officer_performance'),
+    path('admin-officer-archived/<str:time_span>/', views.admin_officer_archived, name='admin_officer_archived'),
+    path('sro-total-records/<str:time_span>/<str:target_prio_level>/', views.sro_total_records, name='sro_total_records'),
+    path('sro-performance/<str:time_span>/<str:target_performance>/', views.sro_performance, name='sro_performance'),
+    path('sro-employee-performance/<str:time_span>/<str:target_employee_performance>/', views.sro_employee_performance, name='sro_employee_performance'),
+    path('action-officer-total-records/<str:time_span>/<str:target_prio_level>/', views.action_officer_total_records, name='action_officer_total_records'),
 
     path('fetch-new-notifications/', views.fetch_new_notifications, name='fetch_new_notifications'),
     path('fetch-earlier-notifications/', views.fetch_earlier_notifications, name='fetch_earlier_notifications'),
     path('fetch-unread-notifications/', views.fetch_unread_notifications, name='fetch_unread_notifications'),
     path('click-notification/<str:notification_type>/<int:no>/', views.click_notification, name='click_notification'),
+
+    path('fetch-document-routes/<int:document_no>/', views.fetch_document_routes, name='fetch_document_routes'),
+    path('edit-routes/', views.edit_routes, name='edit_routes'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

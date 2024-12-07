@@ -91,9 +91,9 @@
                                         </div>
                                         <div class="col-3 p-0 pe-3">
                                             <select class="form-select fw-bold" id="inputGroupSelect" style="font-size: 14px !important; background-color: #007bff; color: white; border-color: white;">
-                                                <option selected>Today</option>
-                                                <option value="1">This Month</option>
-                                                <option value="2">This Year</option>
+                                                <option value="today" selected>Today</option>
+                                                <option value="month">This Month</option>
+                                                <option value="year">This Year</option>
                                             </select>
                                         </div>
                                     </div>
@@ -110,14 +110,15 @@
                         <div class="container d-block rounded-2 p-3 my-3" style="background-color: white; height: auto;">
                             <div class="row">
                                 <div class="col-7 d-flex align-items-center">
-                                    <h4><span class="fw-bolder my-3 px-2 rounded-2" style="background-color: #007bff; color:white;">95</span>&nbsp;Total Records</h4>
+                                    <h4><span id="overallTotalRecords" class="fw-bolder my-3 px-2 rounded-2" style="background-color: #007bff; color:white;"></span>&nbsp;Total Records</h4>
                                 </div>
                                 <div class="col-5 p-2 d-flex justify-content-end">
-                                    <select class="form-select w-75" id="inputGroupPrio" style="font-size: 12px !important;">
-                                        <option selected>Very Urgent</option>
-                                        <option value="1">Urgent</option>
-                                        <option value="2">Normal</option>
-                                        <option value="3">For Pref. Action</option>
+                                    <select class="form-select w-75" id="targetPrioLevelSelect" style="font-size: 12px !important;">
+                                        <option value='all' selected>All Documents</option>
+                                        <option value='very urgent'>Very Urgent</option>
+                                        <option value="urgent">Urgent</option>
+                                        <option value="normal">Normal</option>
+                                        <option value="for pref. action">For Pref. Action</option>
                                     </select>
                                 </div> 
                             </div>
@@ -125,20 +126,20 @@
                             <div class="chart-container my-2">
                                 <!-- Bar 1 -->
                                 <div class="bar">
-                                <div class="percent-label">14</div>
-                                <div class="bar-shape" style="height: 100px;"></div>
-                                <div class="office-label">For ACO</div>
+                                <div id="forACORecordCount" class="percent-label">0</div>
+                                <div class="bar-shape"></div>
+                                <div class="office-label">For Receiving</div>
                                 </div>
                                 <!-- Bar 2 -->
-                                <div class="bar selected">
-                                <div class="percent-label">28</div>
-                                <div class="bar-shape" style="height: 200px;"></div>
+                                <div class="bar">
+                                <div id="forRoutingRecordCount" class="percent-label">0</div>
+                                <div class="bar-shape"></div>
                                 <div class="office-label">For Routing</div>
                                 </div>
                                 <!-- Bar 3 -->
                                 <div class="bar">
-                                <div class="percent-label">22</div>
-                                <div class="bar-shape" style="height: 150px;"></div>
+                                <div id="forResolvingRecordCount" class="percent-label">0</div>
+                                <div class="bar-shape"></div>
                                 <div class="office-label">For Resolving</div>
                                 </div>
                             </div>
@@ -153,23 +154,20 @@
                                     </h4>
                                 </div>
                                 <div class="col-4">
-                                    <select class="form-select" id="inputGroupPerformance" style="font-size: 12px !important;">
-                                        <option selected>SRO</option>
-                                        <option value="1">Office</option>
+                                    <select class="form-select" id="targetPerformance" style="font-size: 12px !important;">
+                                        <option value="my-performance"selected>My Performance</option>
+                                        <option value="office-performance">Office Performance</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="canvas-container d-flex flex-grow-1 align-items-center justify-content-center p-4">
                                 <canvas id="performanceChart" style="width: 400; height: 400;"></canvas>
                             </div>
-                            <p class="text-center fw-bold text-success pt-2">Congratulations, you have a good performance!</p>
+                            <!-- <p class="text-center fw-bold text-success pt-2">Congratulations, you have a good performance!</p> -->
                             <!-- <p class="text-center fw-bold text-warning">Your performance is currently going slow.</p> -->
                             <!-- <p class="text-center fw-bold text-danger">You need to address your current performance</p> -->
                         </div>
                         
-                        
-
-
                     </div>
     
                     <div class="col-7">
@@ -212,21 +210,21 @@
 
                         <div class="row px-3 my-3 d-flex justify-content-center">
                             <div class="col-4 ps-0 mt-0 rounded-2">
-                                <div class="clickable-box rounded-2 p-3" onclick="window.location.href='{% url 'sro_records' 'All-Documents' '-1' %}?status=active'">
+                                <a class="clickable-box rounded-2 p-3" href="{% url 'sro_records' 'All-Documents' '-1' %}?status=active">
                                     <h5 class="text-center mb-0"><i class='bx bxs-file-find'></i>&nbsp;View<br>All Records</h5>
-                                </div>
+                                </a>
                             </div>
 
                             <div class="col-4 mt-0 rounded-2">
-                                <div class="clickable-box rounded-2 p-3" onclick="window.location.href='{% url 'sro_unacted_records' %}?status=active'">
+                                <a class="clickable-box rounded-2 p-3" href="{% url 'sro_unacted_records' %}?status=active">
                                     <h5 class="text-center mb-0"><i class='bx bxs-message-error'></i>&nbsp;Unacted<br>Documents</h5>
-                                </div>                                                            
+                                </a>                                                            
                             </div>
 
                             <div class="col-4 pe-0 mt-0 rounded-2">
-                                <div class="clickable-box rounded-2 p-3" onclick="window.location.href='{% url 'sro_activity_logs' 'recent' %}?status=active'">
+                                <a class="clickable-box rounded-2 p-3" href="{% url 'sro_activity_logs' 'recent' %}?status=active">
                                     <h5 class="text-center mb-0"><i class='bx bxs-timer'></i>&nbsp;Recent<br>Activities</h5>
-                                </div>
+                                </a>
                             </div>
 
                             <!-- [ANALYTICS] Line Graph -->
@@ -237,9 +235,9 @@
                                     </div>
                                     
                                     <div class="col-4">
-                                        <select class="form-select" id="inputPerformanceOption" style="font-size: 12px !important;">
-                                            <option selected>Top Employees</option>
-                                            <option value="1">Underperforming</option>
+                                        <select class="form-select" id="targetEmployeePerformance" style="font-size: 12px !important;">
+                                            <option value="top-employees" selected>Top Employees</option>
+                                            <option value="underperforming">Underperforming Employees</option>
                                         </select>
                                     </div>
                                 </div>
@@ -368,6 +366,41 @@
         </div>
     </div>
 
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0">
+                    <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-3">Your password must contain at least 8 characters with a special character and an uppercase letter.</p>
+
+                    <form>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Current Password</label>
+                            <input type="password" name="current_password" class="form-control" id="password" placeholder="Enter Current Password" required>
+                            <i class="fa-regular fa-eye toggle-pass" id="togglePassword"></i>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password2" class="form-label">New Password</label>
+                            <input type="password" name="new_password" class="form-control" id="password2" placeholder="Enter New Password" required>
+                            <i class="fa-regular fa-eye toggle-pass" id="togglePassword2"></i>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmNewPassword" class="form-label">Confirm New Password</label>
+                            <input type="password" name="confirm_new_password" class="form-control" id="password3" placeholder="Confirm New Password" required>
+                            <i class="fa-regular fa-eye toggle-pass" id="togglePassword3"></i>
+                        </div>
+
+						<button type="submit" class="w-100 mt-1 mb-2 btn btn-primary">Create New Password</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Settings Modal -->
     <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -379,9 +412,9 @@
 
                 <div class="modal-body mt-1 pt-2">
                     <div class="mb-3">
-                        <label for="password" class="form-label">Account Password</label>
+                        <label for="accountPassword" class="form-label">Account Password</label>
                         <p class="mb-2">If you wish to change your password, please click the button below.</p>
-                        <button type="button" class="btn btn-secondary w-100" data-bs-toggle="modal" data-bs-target="#changePasswordModal" style="font-size: 14px;" >Set New Password</button>
+                        <button type="button" class="btn btn-secondary w-100" id="accountPassword" data-bs-toggle="modal" data-bs-target="#changePasswordModal" style="font-size: 14px;" >Set New Password</button>
                     </div>
 
                     <div class="mb-2">
@@ -411,124 +444,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Change Password Modal -->
-    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
-                <div class="modal-header pb-0 border-bottom-0">
-                    <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p class="mb-3">Your password must contain at least 8 characters with a special character and an uppercase letter.</p>
-
-                    <form>
-                        <div class="mb-3">
-                            <label for="currentPassword" class="form-label">Current Password</label>
-                            <input type="password" name="current_password" class="form-control" id="password" placeholder="Enter Current Password" required>
-                            <i class="fa-regular fa-eye toggle-pass" id="togglePassword"></i>
-                        </div>
-                        <div class="mb-3">
-                            <label for="newPassword" class="form-label">New Password</label>
-                            <input type="password" name="new_password" class="form-control" id="password2" placeholder="Enter New Password" required>
-                            <i class="fa-regular fa-eye toggle-pass" id="togglePassword2"></i>
-                        </div>
-                        <div class="mb-3">
-                            <label for="confirmNewPassword" class="form-label">Confirm New Password</label>
-                            <input type="password" name="confirm_new_password" class="form-control" id="password3" placeholder="Confirm New Password" required>
-                            <i class="fa-regular fa-eye toggle-pass" id="togglePassword3"></i>
-                        </div>
-
-						<button type="submit" class="w-100 mt-1 mb-2 btn btn-primary">Create New Password</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Settings Modal -->
-    <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
-                <div class="modal-header pb-0 border-bottom-0">
-                    <h5 class="modal-title" id="settingsModalLabel">Account Settings</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-
-                <div class="modal-body mt-1 pt-2">
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Account Password</label>
-                        <p class="mb-2">If you wish to change your password, please click the button below.</p>
-                        <button type="button" class="btn btn-secondary w-100" data-bs-toggle="modal" data-bs-target="#changePasswordModal" style="font-size: 14px;" >Set New Password</button>
-                    </div>
-
-                    <div class="mb-2">
-                        <label for="receiveEmails" class="form-label">Receive Emails</label>
-                        <div class="row">
-                            <div class="col">
-                                <p class="mb-2">Choose whether to receive updates and notifications via email.</p>
-                            </div>
-                            <div class="col-auto">
-                                <div class="form-check form-switch mt-2">
-                                    <input class="form-check-input" type="checkbox" id="receiveEmails" role="switch" style="transform: scale(1.25);">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mb-1">
-                        <label for="twoFactorAuth" class="form-label">Two-Factor Authentication</label>
-                        <div class="row">
-                            <div class="col">
-                                <p class="mb-2">Choose whether to enable two-factor authentication for added security.</p>
-                            </div>
-                            <div class="col-auto">
-                                <div class="form-check form-switch mt-2">
-                                    <input class="form-check-input" type="checkbox" id="twoFactorAuth" role="switch" style="transform: scale(1.25);">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Change Password Modal -->
-    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
-                <div class="modal-header pb-0 border-bottom-0">
-                    <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p class="mb-3">Your password must contain at least 8 characters with a special character and an uppercase letter.</p>
-
-                    <form>
-                        <div class="mb-3">
-                            <label for="currentPassword" class="form-label">Current Password</label>
-                            <input type="password" name="current_password" class="form-control" id="password" placeholder="Enter Current Password" required>
-                            <i class="fa-regular fa-eye toggle-pass" id="togglePassword"></i>
-                        </div>
-                        <div class="mb-3">
-                            <label for="newPassword" class="form-label">New Password</label>
-                            <input type="password" name="new_password" class="form-control" id="password2" placeholder="Enter New Password" required>
-                            <i class="fa-regular fa-eye toggle-pass" id="togglePassword2"></i>
-                        </div>
-                        <div class="mb-3">
-                            <label for="confirmNewPassword" class="form-label">Confirm New Password</label>
-                            <input type="password" name="confirm_new_password" class="form-control" id="password3" placeholder="Confirm New Password" required>
-                            <i class="fa-regular fa-eye toggle-pass" id="togglePassword3"></i>
-                        </div>
-
-						<button type="submit" class="w-100 mt-1 mb-2 btn btn-primary">Create New Password</button>
-                    </form>
                 </div>
             </div>
         </div>
@@ -596,6 +511,129 @@
         updateTime();
     </script>
 
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function () { 
+
+            const inputGroupSelect = document.getElementById('inputGroupSelect');
+            const targetPrioLevel = document.getElementById('targetPrioLevelSelect');
+            const targetPerformance = document.getElementById('targetPerformance');
+            const targetEmployeePerformance = document.getElementById('targetEmployeePerformance');
+            let performanceChart;
+
+
+            function handleSelectChange() {
+
+                const timeSpan = inputGroupSelect.value;
+                handleDocumentPriorityLevelChange();
+                handleTargetPerformanceChange();
+                handleTargetEmployeePerformance();
+            }
+
+            function handleDocumentPriorityLevelChange() {
+
+                const timeSpan = inputGroupSelect.value;
+                const targetPrioLevelValue = targetPrioLevel.value;
+
+                fetch(`/sro-total-records/${timeSpan}/${targetPrioLevelValue}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('overallTotalRecords').textContent = data.act_forwarding + data.routing + data.resolving;
+                        document.getElementById('forACORecordCount').textContent = data.act_forwarding;
+                        document.getElementById('forRoutingRecordCount').textContent = data.routing;
+                        document.getElementById('forResolvingRecordCount').textContent = data.resolving;
+
+                        const records = {
+                            forACORecordCount: data.act_forwarding,
+                            forRoutingRecordCount: data.routing,
+                            forResolvingRecordCount: data.resolving
+                        };
+
+                        const maxRecord = Math.max(...Object.values(records));
+                        const maxRecordId = Object.keys(records).find(key => records[key] === maxRecord);
+
+                        // Scale factor for height; adjust 200px as needed for max height
+                        const maxHeight = 200;
+                        const scale = maxRecord > 0 ? maxHeight / maxRecord : 0;
+
+
+                        document.querySelectorAll('.bar').forEach(bar => bar.classList.remove('selected'));
+
+                        Object.keys(records).forEach(recordId => {
+                            const barShape = document.querySelector(`#${recordId}`).parentNode.querySelector('.bar-shape');
+                            const height = records[recordId] * scale;
+                            barShape.style.height = height > 0 ? `${height}px` : '0px'; // Set height to 0 if count is zero
+                        });
+
+                        if (maxRecord > 0) {
+                            document.getElementById(maxRecordId).parentNode.classList.add('selected');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+
+            }
+
+            function handleTargetPerformanceChange() {
+
+                if (performanceChart) {
+                    performanceChart.destroy();
+                }
+
+                const timeSpan = inputGroupSelect.value;
+                const targetPerformanceValue = targetPerformance.value;
+
+                fetch(`/sro-performance/${timeSpan}/${targetPerformanceValue}`)
+                    .then(response => response.json())
+                    .then(data => {
+
+                        var ctx1 = document.getElementById('performanceChart').getContext('2d');
+                        performanceChart = new Chart(ctx1, {
+                            type: 'pie',
+                            data: {
+                                labels: ['Resolved', 'Pending', 'Delayed', 'Unacted'],
+                                datasets: [{
+                                    label: 'Document',
+                                    data: [data.resolved_count, data.pending_count, data.delayed_count, data.unacted_count], // Replace with actual data
+                                    backgroundColor: ['#4DA8DA', '#4169E1',  '#003366', '#008080']
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                animation: false,
+                            }
+                        });
+
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+
+            function handleTargetEmployeePerformance() {
+
+                const timeSpan = inputGroupSelect.value;
+                const targetEmployeePerformanceValue = targetEmployeePerformance.value;
+
+                fetch(`/sro-employee-performance/${timeSpan}/${targetEmployeePerformanceValue}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log("success");
+                    })
+                    .catch(error => console.error('Error:', error));
+
+            }
+            
+            inputGroupSelect.addEventListener('change', handleSelectChange);
+            targetPrioLevel.addEventListener('change', handleDocumentPriorityLevelChange);
+            targetPerformance.addEventListener('change', handleTargetPerformanceChange);
+            targetEmployeePerformance.addEventListener('change', handleTargetEmployeePerformance);
+            handleSelectChange();
+            setInterval(handleSelectChange, 3000);
+
+        });
+
+
+    </script>
+
     <!-- [ANALYTICS] Line Graph JavaScript -->
     <script>
         const ctx = document.getElementById('multiAreaChart').getContext('2d');
@@ -634,24 +672,5 @@
         });
     </script>
 
-    <!-- [ANALYTICS] Pie Chart JavaScript -->
-    <script>
-        var ctx1 = document.getElementById('performanceChart').getContext('2d');
-        var chart = new Chart(ctx1, {
-            type: 'pie',
-            data: {
-                labels: ['Resolved', 'Pending', 'Delayed', 'Unacted'],
-                datasets: [{
-                    label: 'Document',
-                    data: [10, 6, 4, 2], // Replace with actual data
-                    backgroundColor: ['#4DA8DA', '#4169E1',  '#003366', '#008080']
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-            }
-        });
-    </script>
 </body>
 </html>
