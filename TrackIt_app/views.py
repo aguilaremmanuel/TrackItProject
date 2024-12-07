@@ -4675,6 +4675,9 @@ def fetch_unread_notifications(request):
             reverse=True
         )
 
+        for notif in all_unread_notifications:
+            print(notif.document_id.tracking_no)
+
     elif role == 'SRO':
 
         document_routed = ActivityLogs.objects.filter(
@@ -4727,7 +4730,6 @@ def fetch_unread_notifications(request):
     html = render_to_string('partials/notification-instances.html', context)
 
     return JsonResponse({'html': html})
-
 
 def click_notification(request, notification_type, no):
 

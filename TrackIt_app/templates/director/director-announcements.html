@@ -26,11 +26,12 @@
             <header class="header">
                 <button class="toggle-sidebar" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
                 <div class="header-right">
-                    <button class="toggle-notification" id="notification"><i class="fa-solid fa-bell"></i></button>
+                    <!-- NOTIFICATIONS UI -->
+                    {% include "partials/display-notifications.html" %}
                     <!---->
                     <div class="dropdown">
                         <button class="profile m-0" type="button" id="profileDropdown" data-bs-toggle="dropdown">
-                            <div class="profile-pic">
+                            <div>
                                 <img src="{% if user_profile.profile_picture %}/media/{{ user_profile.profile_picture }}{% else %}{% static 'images/default_profile_picture.png' %}{% endif %}"
                                      id="profilePicture" 
                                      class="profile-modal-pic" 
@@ -200,7 +201,7 @@
                                 {% endif %}
                                 <!-- Edit Button -->
                                 <button type="button" class="btn btn-sm btn-green mx-1" title="Edit Announcement" 
-                                    onclick="console.log('{{ announcement.title|escapejs }}'); openEditModal('{{ announcement.id }}', '{{ announcement.title|escapejs }}', '{{ announcement.description|escapejs }}', '{{ announcement.attachment.url|default:'' }}', '{{ announcement.end_date|date:'Y-m-d' }}')">
+                                    onclick="console.log('{{ announcement.title|escapejs }}'); openEditModal(`{{announcement.id}}`, `{{ announcement.title|escapejs }}`, `{{ announcement.description|escapejs }}`, `{{ announcement.attachment.url|default:'' }}`, `{{ announcement.end_date|date:'Y-m-d' }}`);">
                                     <i class="fa-solid fa-edit"></i>
                                 </button>
 

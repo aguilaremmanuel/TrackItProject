@@ -2,7 +2,10 @@
 {% for notification in notifications %}
     {% if notification.document_id.status != 'For Archiving' %}
         <a href="{% url 'click_notification' notification.notification_type notification.no %}" class="dropdown-item d-flex">
-            <img src="{% if notification.user_id.profile_picture %}/media/{{ notification.user_id.profile_picture }}{% else %}{% static 'images/default_profile_picture.png' %}{% endif %}" alt="Profile Picture" class="rounded-circle mt-1" style="width:40px; height:40px; object-fit:cover;">
+            <img src="{% if notification.user_id.profile_picture %}/media/{{ notification.user_id.profile_picture }}{% else %}{% static 'images/default_profile_picture.png' %}{% endif %}" 
+            alt="Profile Picture"
+            class="mt-1" 
+            style="width:40px; height:40px; object-fit: cover; border-radius:50%;">
             <div class="text-wrap text-break" style="max-width: 320px;">
                 {% if notification.notification_type == 'Document Created' %}
                     {% if notification.document_id.document_type.priority_level.priority_level == 'very urgent' %}

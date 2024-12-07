@@ -8855,6 +8855,7 @@ textarea.form-control-lg {
 
 .rounded-circle {
   border-radius: 50% !important;
+  object-fit: cover !important;
 }
 
 .rounded-pill {
