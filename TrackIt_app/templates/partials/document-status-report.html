@@ -70,16 +70,7 @@
                                 <td>{{ document.subject }}</td>
                                 <td>{{ document.document_type.document_type }}</td>
                                 <td>{{ document.document_type.priority_level.priority_level|title}}</td>
-                                <td>{% with remaining_days=document.ongoing_deadline|date_diff:today %}
-                                        {% if remaining_days > 0 %}
-                                            {{ remaining_days }} day{% if remaining_days > 1 %}s{% endif %}
-                                        {% elif remaining_days == 0 %}
-                                            Due today
-                                        {% else %}
-                                            Overdue
-                                        {% endif %}
-                                    {% endwith %}
-                                </td>
+                                <td>{{ document.ongoing_deadline }}</td>
                             </tr>
                         {% endfor %}
                     {% else %}

@@ -327,6 +327,7 @@ def user_login(request):
             return redirect('user_login')
 
     return render(request, "user-login.html")
+
 # USER LOGOUT
 def user_logout(request):
 
@@ -938,6 +939,10 @@ def admin_officer_all_records(request):
 
     user_profile = request.session.get('user_profile', None)
 
+    filter_documents = request.session.get('filter_documents')
+    if filter_documents:
+        del request.session['filter_documents']
+
     return render(request, 'admin_officer/admin-officer-all-records.html', {'user_profile': user_profile})
 
 # DIRECTOR ALL RECORDS
@@ -952,6 +957,10 @@ def director_all_records(request):
         return redirect(user_login)
 
     user_profile = request.session.get('user_profile', None)
+
+    filter_documents = request.session.get('filter_documents')
+    if filter_documents:
+        del request.session['filter_documents']
     
     context = {
         'user_profile': user_profile,
@@ -977,6 +986,10 @@ def sro_records(request, panel, scanned_document_no):
         return redirect(user_login)
 
     user_profile = request.session.get('user_profile', None)
+
+    filter_documents = request.session.get('filter_documents')
+    if filter_documents:
+        del request.session['filter_documents']
 
     if int(scanned_document_no) < 0:
         return render(request, 'sro/sro-records.html', {'panel': panel, 'user_profile': user_profile})
@@ -1026,6 +1039,10 @@ def action_officer_records(request, scanned_document_no):
 
     user_profile = request.session.get('user_profile', None)
 
+    filter_documents = request.session.get('filter_documents')
+    if filter_documents:
+        del request.session['filter_documents']
+
     if int(scanned_document_no) < 0:
         return render(request, 'action_officer/action-officer-records.html', {'user_profile': user_profile})
 
@@ -1072,6 +1089,15 @@ def admin_officer_needs_action(request, panel, scanned_document_no):
         return redirect('user_login')
 
     user_profile = request.session.get('user_profile', None)
+
+    filter_documents = request.session.get('filter_documents')
+    if filter_documents:
+        del request.session['filter_documents']
+
+    selected_documents = request.session.get('selected_documents')
+
+    if selected_documents:
+        del request.session['selected_documents']
     
     if int(scanned_document_no) < 0:
         return render(request, 'admin_officer/admin-officer-needs-action.html', {
@@ -1121,6 +1147,15 @@ def director_needs_action(request, scanned_document_no):
         return redirect('user_login')
     
     user_profile = request.session.get('user_profile', None)
+
+    filter_documents = request.session.get('filter_documents')
+    if filter_documents:
+        del request.session['filter_documents']
+
+    selected_documents = request.session.get('selected_documents')
+
+    if selected_documents:
+        del request.session['selected_documents']
 
     if int(scanned_document_no) < 0:
 
@@ -1895,10 +1930,6 @@ def edit_document_type(request):
         routes = DocumentRoute.objects.filter(document_type_id=document_no)
         routes.delete()
 
-        # Adjusting the priority level if necessary
-        if priority_level_str == 'For Preferential Action':
-            priority_level_str = 'for pref. action'
-
         priority_level = PriorityLevel.objects.get(priority_level=priority_level_str)
 
         # Updating document type
@@ -2293,6 +2324,7 @@ def create_document(tracking_no, sender_name, sender_dept, doc_type, subject, re
         document_id=document,
         user_id_id=user_id,
         remarks = new_remarks,
+        receiver_id_id = 'DIR-1001',
         file_attachment = file_attachment
     )
 
@@ -2442,6 +2474,8 @@ def search_unacted_documents(unacted_logs, search_query):
 
     return unacted_logs
 
+# SORTINGGG
+
 def sort_documents(documents, sort_by, order, status):
     if sort_by == 'status':
         if order == 'asc':
@@ -2500,26 +2534,32 @@ def sort_documents_sro(documents, sort_by, order, status, next_route):
         if sort_by == 'document_type':
             if status == 'For ACT Forwarding':
                 documents = Document.objects.filter(status="For SRO Receiving", next_route=next_route).order_by('document_type__category')
+            elif status == 'For ACT Receiving':
+                documents = Document.objects.filter(status="For ACT Receiving", next_route=next_route).order_by('document_type__category')
             elif status == 'For Resolving':
                 documents = Document.objects.filter(status="For Resolving", next_route=next_route).order_by('document_type__category')
             else:
-                documents = Document.objects.filter(status__in=["For SRO Receiving", "For Resolving"], next_route=next_route).order_by('document_type__category')
+                documents = Document.objects.filter(status__in=["For SRO Receiving", "For Resolving", "For ACT Receiving"], next_route=next_route).order_by('document_type__category')
         # For Due
         elif sort_by == 'deadline':
             if status == 'For ACT Forwarding':
                 documents = Document.objects.filter(status="For SRO Receiving", next_route=next_route).order_by('document_type__priority_level__deadline')
+            if status == 'For ACT Receiving':
+                documents = Document.objects.filter(status="For ACT Receiving", next_route=next_route).order_by('document_type__priority_level__deadline')
             if status == 'For Resolving':
                 documents = Document.objects.filter(status="For Resolving", next_route=next_route).order_by('document_type__priority_level__deadline')
             else:
-                documents = Document.objects.filter(status__in=["For SRO Receiving", "For Resolving"], next_route=next_route).order_by('document_type__priority_level__deadline')
+                documents = Document.objects.filter(status__in=["For SRO Receiving", "For ACT Receiving", "For Resolving"], next_route=next_route).order_by('document_type__priority_level__deadline')
         # For Priority Level
         else:
             if status == 'For ACT Forwarding':
                 documents = Document.objects.filter(status="For SRO Receiving", next_route=next_route).order_by('document_type__priority_level__priority_level')
+            if status == 'For ACT Receiving':
+                documents = Document.objects.filter(status="For ACT Receiving", next_route=next_route).order_by('document_type__priority_level__priority_level')
             elif status == 'For Resolving':
                 documents = Document.objects.filter(status="For Resolving", next_route=next_route).order_by('document_type__priority_level__priority_level')
             else:
-                documents = Document.objects.filter(status__in=["For SRO Receiving", "For Resolving"], next_route=next_route).order_by('document_type__priority_level__priority_level')
+                documents = Document.objects.filter(status__in=["For SRO Receiving", "For ACT Receiving", "For Resolving"], next_route=next_route).order_by('document_type__priority_level__priority_level')
 
     return documents
 
@@ -2539,6 +2579,51 @@ def sort_documents_act(documents, sort_by, order, user_id):
             documents = Document.objects.filter(status="For ACT Receiving", act_receiver=user_id).order_by('document_type__priority_level__priority_level')
 
     return documents
+
+# FILTERINGGG
+
+def filter_records(request):
+
+    if request.method == 'POST':
+
+        body = json.loads(request.body)
+
+        statuses = body.get('status', [])
+        types = body.get('type', [])
+        priorities = body.get('priority', [])
+
+        if statuses or types or priorities:
+
+            filter_documents = {
+                'statuses': statuses,
+                'types': types,
+                'priorities': priorities
+            }
+
+        else:
+            filter_documents = {}
+
+        request.session['filter_documents'] = filter_documents
+
+    data = {
+        'success': 'success'
+    }
+
+    return JsonResponse(data)
+
+def remove_filter(request):
+
+    filter_documents = request.session.get('filter_documents')
+    if filter_documents:
+        del request.session['filter_documents']
+
+    data = {
+        'success': 'success'
+    }
+
+    return JsonResponse(data)
+
+
 
 def scanning_qr_code(request, document_no):
 
@@ -2586,15 +2671,21 @@ def document_update_status(request, action, document_no):
                 next_route = routes_list[current_route_index + 1]
                 document.next_route = next_route
                 status = 'For SRO Receiving'
+                user = User.objects.filter(role='SRO', office_id_id=next_route, status='active').first()
+                act_receiver = user.user_id
             else:
                 # If it's the last route
                 status = 'For Archiving'
+                act_receiver = 'ADO-1001'
 
         else:
+
             if routes.count() == 1 and routes.first().route_id == 'DIR':
                 status = 'For Archiving'
             else:
                 status = 'For Routing'
+            
+            act_receiver = 'ADO-1001'
 
         days_deadline = document.document_type.priority_level.deadline
         document.ongoing_deadline = date.today() + timedelta(days=days_deadline)
@@ -2606,6 +2697,7 @@ def document_update_status(request, action, document_no):
         status = 'Rejected'
         activity = 'Document Rejected'
         document.is_rejected = True
+        act_receiver = 'ADO-1001'
 
     elif action == 'route':
 
@@ -2785,6 +2877,30 @@ def document_update_status(request, action, document_no):
     #resolve = For Archiving
     #archive = Archived
 
+def document_multiple_update_status(request, action):
+
+    if request.method == 'POST':
+        body = json.loads(request.body)
+
+        documents_no = list(map(int, body.get('checkedValues', [])))
+
+        for no in documents_no:
+
+            document_update_status(request, action, no)
+
+
+
+        # For SRO Receiving, For Routing, For Archiving
+
+
+
+    data = {
+        "success": "success"
+    }
+
+    return JsonResponse(data)
+
+
 def add_remarks(request, document_no, remarks_no):
 
     if request.method == 'POST':
@@ -2821,6 +2937,18 @@ def get_document_details(document):
     d_type = d_type[0].upper() + d_type[1:]
     d_type += " - " + document.document_type.document_type.title()
 
+    routes_txt = ""
+
+    if document.status != 'For DIR Approval':
+
+        routes = DocumentRoute.objects.filter(document_type_id=document.document_type_id)
+
+        for index, route in enumerate(routes):
+            routes_txt += route.route.office_name
+            if index < len(routes) - 1: 
+                routes_txt += ' - '
+
+
     data = {
         'tracking_no': document.tracking_no,
         'sender_name': document.sender_name.title(),
@@ -2828,6 +2956,7 @@ def get_document_details(document):
         'document_type': d_type,  # Assuming foreign key
         'priority': document.document_type.priority_level.priority_level.title(),
         'subject': document.subject,
+        'routes_txt': routes_txt
     }
 
     log_entries = []
@@ -2863,16 +2992,23 @@ def get_document_details(document):
 
         file_attachment = activity.file_attachment.url if activity.file_attachment else ''
 
+        receiver_name = ""
+
+        if activity.activity != "Document Archived":
+
+            receiver_name += activity.receiver_id.firstname + " " + activity.receiver_id.lastname
+
         log = {
             'date': local_time.strftime('%Y-%m-%d'),
             'time': local_time.strftime('%I:%M %p').lstrip('0'),
-            'user_id': activity.user_id_id,
+            'employee_id': activity.user_id.employee_id,
             'name': f"{firstname} {middlename} {lastname}".strip(),
             'office': office,
             'role': role,
             'remarks': remarks,
             'file_attachment': file_attachment,
-            'activity': activity.activity
+            'activity': activity.activity,
+            'receiver_name': receiver_name
         }
         log_entries.append(log)
 
@@ -3043,7 +3179,24 @@ def update_all_records_display(request, user):
     order = request.GET.get('order', 'asc')
 
     most_priority_doc_type = DocumentType.objects.filter(priority_level__priority_level='very urgent').order_by('-used_count').first()
+
     documents = Document.objects.exclude(status='archived').order_by('-recent_update')
+
+    # FILTERING:
+    filter_documents = request.session.get('filter_documents')  
+
+    if filter_documents:
+
+        filter_status = filter_documents.get('statuses', [])
+        filter_type = filter_documents.get('types', [])
+        filter_priority = filter_documents.get('priorities', [])
+
+        if filter_status:
+            documents = documents.filter(status__in=filter_status)
+        if filter_type:
+            documents = documents.filter(document_type__category__in=filter_type)
+        if filter_priority:
+            documents = documents.filter(document_type__priority_level__priority_level__in=filter_priority)
 
     if search_query:
         documents = search_documents(documents, search_query)
@@ -3069,18 +3222,37 @@ def admin_officer_update_needs_action_display(request, panel):
     sort_by = request.GET.get('sort_by')
     order = request.GET.get('order', 'asc')
 
+    selection = False
+
+    selected_documents = request.session.get('selected_documents', [])
+
     if panel == 'For-DIR-Approval':
         documents = Document.objects.filter(status__in=['For DIR Approval', 'Rejected'], next_route=None).order_by('-recent_update')
         status = "For DIR Approval"
     elif panel == 'For-Routing':
+        selection = True
         documents = Document.objects.filter(status='For Routing').order_by('-recent_update')
         status = "For Routing"
     elif panel == 'For-Archiving':
+        selection = True
         documents = Document.objects.filter(status='For Archiving').order_by('-recent_update')
         status = "For Archiving"
     else:
         documents = Document.objects.filter(status__in=["For DIR Approval", "For Routing", "For Archiving", "Rejected"]).order_by('-recent_update')
         status = "ADO - All Documents"
+
+    # FILTERING:
+    filter_documents = request.session.get('filter_documents')  
+
+    if filter_documents:
+
+        filter_type = filter_documents.get('types', [])
+        filter_priority = filter_documents.get('priorities', [])
+
+        if filter_type:
+            documents = documents.filter(document_type__category__in=filter_type)
+        if filter_priority:
+            documents = documents.filter(document_type__priority_level__priority_level__in=filter_priority)
 
     if search_query:
         documents = search_documents(documents, search_query)
@@ -3089,13 +3261,15 @@ def admin_officer_update_needs_action_display(request, panel):
         documents = sort_documents(documents, sort_by, order, status)
 
     context = {
+        'selection': selection,
+        'selected_documents': selected_documents,
         'documents': documents,
         'search_query': search_query,
         'user': 'ADO',
         'today': date.today() 
     }
 
-    html = render_to_string('partials/display-records.html', context)
+    html = render_to_string('partials/display-records-with-mult-update.html', context)
     return JsonResponse({'html': html})
 
 def director_update_needs_action_display(request):
@@ -3106,12 +3280,28 @@ def director_update_needs_action_display(request):
     
     id = user_id.split('-')[1]
 
+    selected_documents = request.session.get('selected_documents', [])
+
     search_query = request.GET.get('search', '').strip()
     sort_by = request.GET.get('sort_by')
     order = request.GET.get('order', 'asc')
 
     most_priority_doc_type = DocumentType.objects.filter(priority_level__priority_level='very urgent').order_by('-used_count').first()
+    
     documents = Document.objects.filter(status='For DIR Approval').order_by('-recent_update')
+
+    # FILTERING:
+    filter_documents = request.session.get('filter_documents')  
+
+    if filter_documents:
+
+        filter_type = filter_documents.get('types', [])
+        filter_priority = filter_documents.get('priorities', [])
+
+        if filter_type:
+            documents = documents.filter(document_type__category__in=filter_type)
+        if filter_priority:
+            documents = documents.filter(document_type__priority_level__priority_level__in=filter_priority)
 
     if search_query:
         documents = search_documents(documents, search_query)
@@ -3121,6 +3311,8 @@ def director_update_needs_action_display(request):
 
     context = {
         'documents': documents,
+        'selection': True,
+        'selected_documents': selected_documents,
         'most_priority_doc_type': most_priority_doc_type,
         'search_query': search_query,
         'user': 'DIR',
@@ -3128,7 +3320,7 @@ def director_update_needs_action_display(request):
         'id': id
     }
 
-    html = render_to_string('partials/display-records.html', context)
+    html = render_to_string('partials/display-records-with-mult-update.html', context)
     return JsonResponse({'html': html})
 
 def sro_update_records_display(request, panel):
@@ -3153,9 +3345,24 @@ def sro_update_records_display(request, panel):
     elif panel == 'For-Resolving':
         documents = Document.objects.filter(status='For Resolving', next_route=office).order_by('-recent_update')
         status = 'For Resolving'
+    elif panel == 'For-ACT-Receiving':
+        documents = Document.objects.filter(status='For ACT Receiving', next_route=office).order_by('-recent_update')
+        status = 'For ACT Receiving'
     else:
-        documents = Document.objects.filter(status__in=["For SRO Receiving", "For Resolving"], next_route=office).order_by('-recent_update')
+        documents = Document.objects.filter(status__in=["For SRO Receiving", "For Resolving", "For ACT Receiving"], next_route=office).order_by('-recent_update')
         status = 'SRO All Documents'
+
+    # FILTERING:
+    filter_documents = request.session.get('filter_documents')  
+    if filter_documents:
+
+        filter_type = filter_documents.get('types', [])
+        filter_priority = filter_documents.get('priorities', [])
+
+        if filter_type:
+            documents = documents.filter(document_type__category__in=filter_type)
+        if filter_priority:
+            documents = documents.filter(document_type__priority_level__priority_level__in=filter_priority)
 
     if search_query:
         documents = search_documents(documents, search_query)
@@ -3185,6 +3392,18 @@ def action_officer_update_records_display(request):
     order = request.GET.get('order', 'asc')
 
     documents = Document.objects.filter(status='For ACT Receiving', act_receiver=user_id).order_by('-recent_update')
+
+    # FILTERING:
+    filter_documents = request.session.get('filter_documents')  
+    if filter_documents:
+
+        filter_type = filter_documents.get('types', [])
+        filter_priority = filter_documents.get('priorities', [])
+
+        if filter_type:
+            documents = documents.filter(document_type__category__in=filter_type)
+        if filter_priority:
+            documents = documents.filter(document_type__priority_level__priority_level__in=filter_priority)
 
     if search_query:
         documents = search_documents(documents, search_query)
@@ -3779,6 +3998,7 @@ def check_remarks(request, document_no, activity_log_no):
         detected_words = is_high_priority(remarks)
 
         if detected_words:
+
             high_priority_detected = True
             highlighted_remarks = highlight_words(remarks, detected_words)
             
@@ -3802,6 +4022,7 @@ def check_remarks(request, document_no, activity_log_no):
                 new_remarks.save()
 
         else:
+
             high_priority_detected = False
             highlighted_remarks = remarks  # No highlights if no priority words
             
@@ -3822,7 +4043,151 @@ def check_remarks(request, document_no, activity_log_no):
     data = {
         'remarks': remarks,
         'high_priority_detected': high_priority_detected,
-        'highlighted_remarks': highlighted_remarks  # Include HTML string with highlighted words
+        'highlighted_remarks': highlighted_remarks
+    }
+
+    return JsonResponse(data)
+
+from django.core.files.base import ContentFile
+
+def multiple_update_remarks(request, remarks_no):
+
+    if request.method == 'POST':
+
+        activity_logs_no = request.POST.getlist('activityLogsNo')
+        activity_logs_no = ast.literal_eval(activity_logs_no[0])
+        documents_no = request.POST.get('checkedValues')
+        documents_no = json.loads(documents_no)
+        documents_no = list(map(int, documents_no))
+        remarks = request.POST.get('remarks')
+        file_attachment = request.FILES.get('attachment')
+
+        detected_words = is_high_priority(remarks)
+
+        if detected_words:
+
+            high_priority_detected = True
+            highlighted_remarks = highlight_words(remarks, detected_words)
+
+            documents = Document.objects.filter(document_no__in=documents_no)
+            
+            documents_to_prioritize = []
+
+            for document in documents:
+
+                if document.document_type.priority_level.priority_level != 'very urgent':
+
+                    documents_to_prioritize.append(document.document_no)
+
+            if not documents_to_prioritize:
+
+                high_priority_detected = False
+
+                for document in documents:
+
+                    document.remarks = remarks
+                    document.save()
+                
+                logs = ActivityLogs.objects.filter(no__in=activity_logs_no)
+
+                logs.update(remarks_id=remarks_no)
+
+                if file_attachment:
+                    for log in logs:
+                        folder_path = os.path.join(settings.MEDIA_ROOT, "document", str(log.document_id.document_no))
+                        os.makedirs(folder_path, exist_ok=True)  # Ensure the folder exists
+                        file_attachment_name = handle_file_versioning(file_attachment, folder_path)
+                        with open(file_attachment.temporary_file_path(), 'rb') as f:
+                            file_content = f.read()
+                        
+                        log.file_attachment.save(file_attachment_name, ContentFile(file_content))
+                        log.save()
+
+                remarks_instance = Remarks.objects.get(no=remarks_no)
+                remarks_instance.remarks = remarks
+                remarks_instance.save()
+            
+            else:
+                high_priority_detected = True
+
+        else:
+
+            high_priority_detected = False
+            highlighted_remarks = ""
+
+            documents = Document.objects.filter(document_no__in=documents_no)
+
+            for document in documents:
+                document.remarks = remarks
+                document.save()
+
+            logs = ActivityLogs.objects.filter(no__in=activity_logs_no)
+
+            logs.update(remarks_id=remarks_no)
+
+            if file_attachment:
+                for log in logs:
+                    folder_path = os.path.join(settings.MEDIA_ROOT, "document", str(log.document_id.document_no))
+                    os.makedirs(folder_path, exist_ok=True)  # Ensure the folder exists
+                    file_attachment_name = handle_file_versioning(file_attachment, folder_path)
+                    with open(file_attachment.temporary_file_path(), 'rb') as f:
+                        file_content = f.read()
+                    
+                    log.file_attachment.save(file_attachment_name, ContentFile(file_content))
+                    log.save()
+
+            remarks_instance = Remarks.objects.get(no=remarks_no)
+            remarks_instance.remarks = remarks
+            remarks_instance.save()
+
+    data = {
+        "high_priority_detected": high_priority_detected,
+        'highlighted_remarks': highlighted_remarks,
+    }
+
+    return JsonResponse(data)
+
+def multiple_update_reject_remarks(request, remarks_no):
+
+    if request.method == 'POST':
+
+        activity_logs_no = request.POST.getlist('activityLogsNo')
+        activity_logs_no = ast.literal_eval(activity_logs_no[0])
+
+        documents_no = request.POST.get('checkedValues')
+        documents_no = json.loads(documents_no)
+        documents_no = list(map(int, documents_no))
+
+        remarks = request.POST.get('remarks')
+        file_attachment = request.FILES.get('attachment')
+
+        documents = Document.objects.filter(document_no__in=documents_no)
+
+        for document in documents:
+            document.remarks = remarks
+            document.save()
+
+        logs = ActivityLogs.objects.filter(no__in=activity_logs_no)
+
+        logs.update(remarks_id=remarks_no)
+
+        if file_attachment:
+                for log in logs:
+                    folder_path = os.path.join(settings.MEDIA_ROOT, "document", str(log.document_id.document_no))
+                    os.makedirs(folder_path, exist_ok=True)  # Ensure the folder exists
+                    file_attachment_name = handle_file_versioning(file_attachment, folder_path)
+                    with open(file_attachment.temporary_file_path(), 'rb') as f:
+                        file_content = f.read()
+                    
+                    log.file_attachment.save(file_attachment_name, ContentFile(file_content))
+                    log.save()
+
+        remarks_instance = Remarks.objects.get(no=remarks_no)
+        remarks_instance.remarks = remarks
+        remarks_instance.save()
+
+    data = {
+        'success': 'success'
     }
 
     return JsonResponse(data)
@@ -3845,7 +4210,7 @@ def change_priority_level(request, document_no, activity_log_no):
         new_document_type = DocumentType.objects.create(
             document_type=document.document_type.document_type,
             category=document.document_type.category,
-            priority_level_id=4,
+            priority_level_id=3,
             is_active = False
         )
 
@@ -3874,6 +4239,80 @@ def change_priority_level(request, document_no, activity_log_no):
             'sucess': 'sucess'
         }
         return JsonResponse(data)
+
+import ast
+def change_priority_level_multiple_documents(request):
+
+    if request.method == 'POST':
+
+        remarks_no = request.POST.get('remarks_no')
+        activity_logs_no = request.POST.getlist('activity_logs_no') 
+        activity_logs_no = ast.literal_eval(activity_logs_no[0])
+        checked_values = request.POST.get('checked_values')
+        checked_values = json.loads(checked_values)
+        checked_values = list(map(int, checked_values))
+
+        remarks = request.POST.get('remarks')
+
+        attachment = request.FILES.get('attachment') 
+
+        documents = Document.objects.filter(document_no__in=checked_values)
+
+        logs = ActivityLogs.objects.filter(no__in=activity_logs_no)
+
+
+        for document in documents:
+
+            document_prio_level = document.document_type.priority_level.priority_level
+
+            if document_prio_level != "very urgent":
+
+                new_document_type = DocumentType.objects.create(
+                    document_type=document.document_type.document_type,
+                    category=document.document_type.category,
+                    priority_level_id=3,
+                    is_active = False
+                )
+
+                current_routes = DocumentRoute.objects.filter(
+                    document_type=document.document_type
+                )
+
+                for route_instance in current_routes:
+                    DocumentRoute.objects.create(
+                        document_type = new_document_type,
+                        route_id = route_instance.route_id
+                    )
+                
+                document.old_document_type = document.document_type.document_no
+                document.document_type = new_document_type
+    
+
+            document.remarks = remarks
+            document.save()
+        
+        logs.update(remarks_id=remarks_no)
+
+        if attachment:
+            for log in logs:
+                folder_path = os.path.join(settings.MEDIA_ROOT, "document", str(log.document_id.document_no))
+                os.makedirs(folder_path, exist_ok=True)
+                file_attachment_name = handle_file_versioning(attachment, folder_path)
+                with open(attachment.temporary_file_path(), 'rb') as f:
+                    file_content = f.read()
+                
+                log.file_attachment.save(file_attachment_name, ContentFile(file_content))
+                log.save()
+
+        remarks_instance = Remarks.objects.get(no=remarks_no)
+        remarks_instance.remarks = remarks
+        remarks_instance.save()
+
+    data = {
+        "sucess": "success"
+    }
+
+    return JsonResponse(data)
 
 def handle_file_versioning(file, folder_path):
     # Start with the original name and extension
@@ -5042,9 +5481,6 @@ def fetch_unread_notifications(request):
             reverse=True
         )
 
-        for notif in all_unread_notifications:
-            print(notif.document_id.tracking_no)
-
     elif role == 'SRO':
 
         document_routed = ActivityLogs.objects.filter(
@@ -5135,5 +5571,45 @@ def fetch_document_routes(request, document_no):
     }
 
     return JsonResponse(data)
+
+
+def select_document(request, action, document_no):
+
+    selected_documents = request.session.get('selected_documents', [])
+
+    if action == 'checked':
+        selected_documents.append(document_no)
+    else:
+        selected_documents.remove(document_no)
+
+    request.session['selected_documents'] = selected_documents
+
+    data = {
+        'success': 'success'
+    }
+
+    return JsonResponse(data)
+
+def select_all_documents(request, action):
+
+    if request.method == 'POST':
+        body = json.loads(request.body)
+        documents_no = list(map(int, body.get('documents_no', [])))
+        
+        if action == 'select-all':
+            request.session['selected_documents'] = documents_no
+
+        elif action == 'deselect-all':
+            selected_documents = request.session.get('selected_documents')
+            if selected_documents:
+                del request.session['selected_documents']
+            
+        return JsonResponse({'status': 'success'})
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
+
+
+
+
 
 

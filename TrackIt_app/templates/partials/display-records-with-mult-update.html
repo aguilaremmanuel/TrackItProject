@@ -4,6 +4,10 @@
     {% for document in documents %}
         <tr class="{% if user == 'DIR' %}{% if document.document_type.document_no == most_priority_doc_type.document_no %}highlight-priority{% endif %}{% endif %}">
             
+            {% if selection %}
+                <td><input type="checkbox" value="{{document.document_no}}" {% if document.document_no in selected_documents %}checked{% endif %}></td>
+            {% endif %}
+            
             <td style="white-space: nowrap;">
                 {% if search_query %}
                     {{ document.highlighted_tracking_no|safe }}
@@ -100,27 +104,17 @@
 
                             <button type="button" class="approve-btn btn btn-sm btn-green" 
                                 data-action="approve" 
-                                data-document-no="{{ document.document_no }}" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#approveDocumentModal"
-                                data-bs-toggle="tooltip" title="Approve Document">
-                                <i class="fa-solid fa-check"></i>
-                            </button>
-                            <!-- <button type="button" class="approve-btn btn btn-sm btn-green" 
-                                data-action="approve" 
                                 data-document-no="{{ document.document_no }}"
                                 data-bs-toggle="tooltip" title="Approve Document">
                                 <i class="fa-solid fa-check"></i>
-                            </button> -->
+                            </button>
                             
                         {% endif %}
                     {% elif document.status == 'For Routing' %}
                         {% if user == 'ADO' or user == 'SYS' %}
-                            <button type="button" class="btn btn-sm btn-green routeDocumentBtn" 
+                            <button type="button" class="route-btn btn btn-sm btn-green routeDocumentBtn" 
                                 data-action="route" 
-                                data-document-no="{{ document.document_no }}" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#routeDocumentModal"
+                                data-document-no="{{ document.document_no }}"
                                 data-bs-toggle="tooltip" title="Route Document">
                                 <i class="fa-solid fa-route"></i>
                             </button>
