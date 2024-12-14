@@ -908,6 +908,7 @@ def add_record(request):
         return redirect(system_admin_new_record)
 
 # ---------------- ALL RECORDS -------------------
+
 # SYSTEM ADMIN ALL RECORDS
 def system_admin_all_records(request):
 
@@ -1564,7 +1565,29 @@ def action_officer_unacted_records(request):
 
     return render(request, 'action_officer/action-officer-unacted-records.html', context)
 
-# -------------- ARCHIVE -------------------
+# ----------------- RESOLVED RECORDS -------------------
+
+# ADMIN OFFICER RESOLVED RECORDS
+def admin_officer_resolved_records(request):
+
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('user_login')
+
+    role = user_id.split('-')[0]
+    if role != 'ADO':
+        return redirect(user_login)
+    
+    user_profile = request.session.get('user_profile', None)
+
+    context = {
+        'user_profile': user_profile
+    }
+
+    return render(request, 'admin_officer/admin-officer-resolved-records.html', context)
+
+# ---------------- ARCHIVE -------------------
+
 # SYSTEM ADMIN ARCHIVE
 def system_admin_archive(request):
 
@@ -1621,6 +1644,7 @@ def admin_officer_archive(request):
     return render(request, 'admin_officer/admin-officer-archive.html', context)
 
 # ------------------ ANNOUNCEMENTS -----------------------
+
 def system_admin_announcements(request):
 
     user_id = request.session.get('user_id')
@@ -1712,8 +1736,8 @@ def director_announcements(request):
 
 # ------------------ GENERATE REPORTS ------------------
 
-# SYSTEM ADMIN GENERATE REPORTS MODULE
-def system_admin_generate_reports(request, report_type):    
+# SYSTEM ADMIN PERFORMANCE REPORTS
+def system_admin_performance_reports(request, report_type):    
     
     user_id = request.session.get('user_id')
     if not user_id:
@@ -1734,12 +1758,12 @@ def system_admin_generate_reports(request, report_type):
         'reports': reports,
     }
 
-    return render(request, 'system_admin/system-admin-generate-reports.html', context)
+    return render(request, 'system_admin/system-admin-performance-reports.html', context)
 
-# DIRECTOR GENERATE REPORTS MODULE
-def director_generate_reports(request, report_type):
+# DIRECTOR PERFORMANCE REPORTS
+def director_performance_reports(request, report_type):
+
     user_id = request.session.get('user_id')
-
     if not user_id:
         return redirect('user_login')
     
@@ -1758,7 +1782,67 @@ def director_generate_reports(request, report_type):
         'reports': reports
     }
 
-    return render(request, 'director/director-generate-reports.html', context)
+    return render(request, 'director/director-performance-reports.html', context)
+
+# SYSTEM ADMIN PENDING REPORTS
+def system_admin_pending_reports(request):
+
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('user_login')
+    
+    user_profile = request.session.get('user_profile', None)
+    
+    context = {
+        'user_profile': user_profile,
+    }
+
+    return render(request, 'system_admin/system-admin-pending-reports.html', context)
+
+# DIRECTOR PENDING REPORTS
+def director_pending_reports(request):
+
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('user_login')
+    
+    user_profile = request.session.get('user_profile', None)
+    
+    context = {
+        'user_profile': user_profile,
+    }
+
+    return render(request, 'director/director-pending-reports.html', context)
+
+# ADMIN OFFICER PENDING REPORTS
+def admin_officer_pending_reports(request):
+
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('user_login')
+    
+    user_profile = request.session.get('user_profile', None)
+    
+    context = {
+        'user_profile': user_profile,
+    }
+
+    return render(request, 'admin_officer/admin-officer-pending-reports.html', context)
+
+# SUB-RECEIVING OFFICER PENDING REPORTS
+def sro_pending_reports(request):
+
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('user_login')
+    
+    user_profile = request.session.get('user_profile', None)
+    
+    context = {
+        'user_profile': user_profile,
+    }
+
+    return render(request, 'sro/sro-pending-reports.html', context)
 
 # ------------- PASSWORD UPDATE -------------------
 
@@ -3387,9 +3471,9 @@ def new_employee_report(request):
         return JsonResponse(data)
 
     if role == 'SYS':
-        return redirect(system_admin_generate_reports)
+        return redirect(system_admin_performance_reports)
     elif role == 'DIR':
-        return redirect(director_generate_reports)
+        return redirect(director_performance_reports)
 
 def new_office_report(request):
 
@@ -3438,9 +3522,9 @@ def new_office_report(request):
         return JsonResponse(data)
 
     if role == 'SYS':
-        return redirect(system_admin_generate_reports)
+        return redirect(system_admin_performance_reports)
     elif role == 'DIR':
-        return redirect(director_generate_reports)
+        return redirect(director_performance_reports)
 
 def delete_report(request, report_no):
 

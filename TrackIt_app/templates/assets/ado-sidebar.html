@@ -1,54 +1,107 @@
 {% load static %}
 
 <aside class="sidebar">
-    <nav class="nav d-flex flex-column flex-shrink-0 p-2 pt-0">
-        <div class="nav-logo mb-2">
-            <img src="{% static 'images/logo-icon.png' %}" alt="Logo Icon" class="nav-logo-icon">
-            <img src="{% static 'images/logo-name.png' %}" alt="Logo Name" class="nav-logo-name">
-        </div>
-        <ul class="nav-list">
-            <li>
-                <a href="{% url 'admin_officer_dashboard' %}?status=active" class="nav-link mb-2 {% if request.resolver_match.url_name == 'admin_officer_dashboard' %}active{% endif %}" id="dashboard"> 
-                    <i class='bx bx-grid-alt nav-icon'></i>
-                    <span class="nav-name">Dashboard</span>
-                </a> 
-            </li>            
-            <li>
-                <a href="{% url 'admin_officer_new_record' %}?status=active" class="nav-link mb-2 {% if request.resolver_match.url_name == 'admin_officer_new_record' %}active{% endif %}" id="new"> 
-                    <i class='bx bx-folder-plus nav-icon'></i>
-                    <span class="nav-name">New Record</span>
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'admin_officer_all_records'%}?status=active" class="nav-link mb-2 {% if request.resolver_match.url_name == 'admin_officer_all_records' %}active{% endif %}" id="all-records">
-                    <i class='bx bx-folder-open nav-icon'></i>
-                    <span class="nav-name">All Records</span>
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'admin_officer_needs_action' 'all-documents' '-1' %}?status=active" class="nav-link mb-2 {% if request.resolver_match.url_name == 'admin_officer_needs_action' %}active{% endif %}" id="needs-action">
-                    <i class='bx bx-calendar-exclamation nav-icon'></i>
-                    <span class="nav-name">Needs Action</span>
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'admin_officer_unacted_records'%}?status=active" class="nav-link mb-2 {% if request.resolver_match.url_name == 'admin_officer_unacted_records' %}active{% endif %}" id="overdue">
-                    <i class='bx bx-calendar-x nav-icon'></i>   
-                    <span class="nav-name">Unacted Records</span>
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'admin_officer_archive'%}?status=active" class="nav-link mb-2 {% if request.resolver_match.url_name == 'admin_officer_archive' %}active{% endif %}" id="archiveModule">
-                    <i class='bx bx-box nav-icon'></i>
-                    <span class="nav-name">Archive</span>
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'admin_officer_activity_logs' 'recent' %}?status=active" class="nav-link mb-2 {% if request.resolver_match.url_name == 'admin_officer_activity_logs' %}active{% endif %}" id="act-logs">
-                    <i class='bx bx-history nav-icon'></i>
-                    <span class="nav-name">Activity Logs</span>
-                </a>
-            </li> 
-        </ul>
-    </nav>
+    <div class="nav-logo d-flex flex-shrink-0 mx-2 my-0">
+        <img src="{% static 'images/logo-icon.png' %}" alt="Logo Icon" class="nav-logo-icon">
+        <img src="{% static 'images/logo-name.png' %}" alt="Logo Name" class="nav-logo-name">
+    </div>
+
+    <div class="sidebar-content" id="sidebarAccordion">
+        <nav class="nav d-flex flex-column flex-shrink-0 p-2 pt-0">
+            <ul class="list-unstyled ps-0">
+                <li class="my-2">
+                    <a href="{% url 'admin_officer_dashboard' %}?status=active" id="dashboard"
+                       class="nav-link {% if request.resolver_match.url_name == 'admin_officer_dashboard' %}active{% endif %}"> 
+                        <i class='bx bx-grid-alt nav-icon'></i>
+                        <span class="nav-name">Dashboard</span>
+                    </a> 
+                </li>
+
+                <li class="mb-2">
+                    <a href="{% url 'admin_officer_new_record' %}?status=active" id="new"
+                       class="nav-link mb-2 {% if request.resolver_match.url_name == 'admin_officer_new_record' %}active{% endif %}"> 
+                        <i class='bx bx-folder-plus nav-icon'></i>
+                        <span class="nav-name">New Record</span>
+                    </a>
+                </li>
+
+                <li class="mb-2">
+                    <button class="nav-link w-100 d-flex justify-content-between align-items-center collapsed
+                        {% if request.resolver_match.url_name == 'admin_officer_all_records' %}active{% endif %} 
+                        {% if request.resolver_match.url_name == 'admin_officer_needs_action' %}active{% endif %} 
+                        {% if request.resolver_match.url_name == 'admin_officer_unacted_records' %}active{% endif %}
+                        {% if request.resolver_match.url_name == 'admin_officer_resolved_records' %}active{% endif %}
+                        {% if request.resolver_match.url_name == 'admin_officer_archive' %}active{% endif %}"
+                        data-bs-toggle="collapse" data-bs-target="#records-collapse" aria-expanded="true">
+                        <div class="d-flex align-items-center">
+                            <i class='bx bx-folder-open nav-icon'></i>
+                            <span class="nav-name name-margin">Records</span>
+                        </div>
+                        <i class="bx bx-chevron-right nav-drop-icon fs-5"></i>
+                    </button>
+
+                    <div id="records-collapse" data-bs-parent="#sidebarAccordion" class="collapse
+                        {% if request.resolver_match.url_name == 'admin_officer_all_records' %}show{% endif %} 
+                        {% if request.resolver_match.url_name == 'admin_officer_needs_action' %}show{% endif %} 
+                        {% if request.resolver_match.url_name == 'admin_officer_unacted_records' %}show{% endif %}
+                        {% if request.resolver_match.url_name == 'admin_officer_resolved_records' %}show{% endif %} 
+                        {% if request.resolver_match.url_name == 'admin_officer_archive' %}show{% endif %}">
+                        <ul class="list-unstyled">
+                            <li class="mt-2">
+                                <a href="{% url 'admin_officer_all_records' %}?status=active" id="all-records"
+                                   class="nav-submenu {% if request.resolver_match.url_name == 'admin_officer_all_records' %}active{% endif %}">
+                                    <i class='bx bx-calendar-alt nav-icon'></i>
+                                    <span class="nav-name">All Records</span>
+                                </a>
+                            </li>
+                            <li class="mt-2">
+                                <a href="{% url 'admin_officer_needs_action' 'all-documents' '-1' %}?status=active" id="needs-action"
+                                   class="nav-submenu {% if request.resolver_match.url_name == 'admin_officer_needs_action' %}active{% endif %}" >
+                                    <i class='bx bx-calendar-exclamation nav-icon'></i>
+                                    <span class="nav-name">Needs Action</span>
+                                </a>
+                            </li>
+                            <li class="mt-2">
+                                <a href="{% url 'admin_officer_unacted_records'%}?status=active" id="overdue"
+                                   class="nav-submenu {% if request.resolver_match.url_name == 'admin_officer_unacted_records' %}active{% endif %}">
+                                    <i class='bx bx-calendar-x nav-icon'></i>   
+                                    <span class="nav-name">Unacted Records</span>
+                                </a>
+                            </li>
+                            <li class="mt-2">
+                                <a href="{% url 'admin_officer_resolved_records'%}?status=active" id="resolved"
+                                   class="nav-submenu {% if request.resolver_match.url_name == 'admin_officer_resolved_records' %}active{% endif %}">
+                                    <i class='bx bx-calendar-check nav-icon'></i>   
+                                    <span class="nav-name">Resolved Records</span>
+                                </a>
+                            </li>
+                            <li class="mt-2">
+                                <a href="{% url 'admin_officer_archive' %}?status=active" id="archiveModule"
+                                   class="nav-submenu {% if request.resolver_match.url_name == 'admin_officer_archive' %}active{% endif %}">
+                                    <i class='bx bx-box nav-icon'></i>
+                                    <span class="nav-name">Archived Records</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+                <li class="mb-2">
+                    <a href="{% url 'admin_officer_pending_reports' %}?status=active" id="pendingReports"
+                       class="nav-link {% if request.resolver_match.url_name == 'admin_officer_pending_reports' %}active{% endif %}"> 
+                        <i class='bx bx-chart nav-icon'></i>
+                        <span class="nav-name">Pending Reports</span>
+                    </a>
+                </li>
+
+                <li class="mb-2">
+                    <a href="{% url 'admin_officer_activity_logs' 'recent'%}?status=active" id="act-logs"
+                       class="nav-link {% if request.resolver_match.url_name == 'admin_officer_activity_logs' %}active{% endif %}"> 
+                        <i class='bx bx-history nav-icon'></i>
+                        <span class="nav-name">Activity Logs</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
 </aside>

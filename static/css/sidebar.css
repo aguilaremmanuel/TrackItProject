@@ -15,7 +15,7 @@ body, html {
     margin: 0;
     padding: 0;
     max-width: 100%;
-    grid-template-columns: var(--sidebar-width, 225px) 1fr;
+    grid-template-columns: var(--sidebar-width, 232px) 1fr;
     grid-template-rows: 100vh;
     height: 100vh;
     transition: grid-template-columns 0.2s ease;
@@ -32,6 +32,14 @@ body, html {
     border-right: 1px solid rgba(177, 193, 207, 0.4);
 }
 
+.sidebar-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* SIDEBAR - TOP LOGO */
+
 .nav-logo {
     display: grid;
     grid-template-columns: min-content 1fr;
@@ -42,7 +50,7 @@ body, html {
     height: 60px;
     border-bottom: 1px solid rgba(177, 193, 207, 0.4);
 
-    &.collapsed {
+    &.toggled {
         width: fit-content;
         gap: 0;
         
@@ -60,33 +68,67 @@ body, html {
     width: 5.5rem;
 }
 
-.nav-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
+/* SIDEBAR - BOTTOM NAVLINKS */
 
-.nav-link {
+.nav-link, .nav-submenu {
     display: grid;
     grid-template-columns: min-content 1fr;
     align-items: center;
-    padding: 0.85rem 0.85rem;
     margin: 0;
-    gap: 1rem;
+    gap: 0.8rem;
     text-decoration: none;
     color: #000000;
     font-weight: 600;
     border-radius: 5px;
     white-space: nowrap;
 
-    &.collapsed {
+    &.toggled {
         width: fit-content;
         gap: 0;
         
         .nav-name {
             display: none;
         }
+
+        .nav-drop-icon {
+            display: none;
+        }
     }
+}
+
+.nav-link {
+    padding: 0.85rem 0.85rem;
+}
+
+.nav-submenu {
+    padding: 0.75rem 0.85rem 0.75rem 1.45rem;
+}
+
+.nav-link:hover,
+.nav-submenu:hover {
+    background-color: #eff3f5;
+}
+
+.nav-link:hover .nav-icon,
+.nav-submenu:hover .nav-icon {
+    color: #909aa5; 
+}
+
+.nav-link.active {
+    background-color: #eaf0fb;
+}
+
+.nav-submenu.active {
+    background-color: #eaf0fb9c;
+}
+
+.nav-link.active .nav-icon,
+.nav-submenu.active .nav-icon {
+    color: #2E72EA; 
+}
+
+.nav-link.active::before {
+    content: none;
 }
 
 .nav-icon {
@@ -95,29 +137,19 @@ body, html {
     width: 1.35rem;
 }
 
+.nav-drop-icon {
+    color: #000000;
+    width: 1rem;
+    transition: transform 0.3s ease;
+}
+
 .nav-name {
     font-size: 13.5px;
     color: #000000;
 }
 
-.nav-link:hover {
-    background-color: #eff3f5;
-}
-
-.nav-link:hover .nav-icon {
-    color: #909aa5; 
-}
-
-.nav-link.active {
-    background-color: #eaf0fb;
-}
-
-.nav-link.active .nav-icon {
-    color: #2E72EA;
-}
-
-.nav-link.active::before {
-    content: none;
+.name-margin {
+    margin-left: 0.8rem;
 }
 
 /* RIGHT - HEADER & MAIN CONTENT */

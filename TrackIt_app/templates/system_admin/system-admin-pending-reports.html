@@ -1,0 +1,370 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/static/images/logo-icon.png" type="image/png">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/table-content.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="{% static 'fontawesomefree/css/all.min.css' %}" rel="stylesheet" type="text/css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <title>Generate Reports</title>
+</head>
+
+<body>
+    <div class="container">
+        {% include "assets/sys-sidebar.html" %}
+
+        <div class="right-section">
+            <header class="header">
+                <button class="toggle-sidebar" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
+                <div class="header-right">
+                    <button class="toggle-notification" id="notification" title="Notifications"><i class="fa-solid fa-bell"></i></button>
+                    <!---->
+                    <div class="dropdown">
+                        <button class="profile m-0" type="button" id="profileDropdown" data-bs-toggle="dropdown">
+                            <div class="profile-pic">
+                                <img src="{% if user_profile.profile_picture %}/media/{{ user_profile.profile_picture }}{% else %}{% static 'images/default_profile_picture.png' %}{% endif %}"
+                                     id="profilePicture" 
+                                     class="profile-modal-pic" 
+                                     style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;">
+                            </div>                                                                                
+                            <div class="profile-info">
+                                <span class="profile-name">{{ user_profile.firstname }} {{user_profile.lastname}}</span>
+                                <span class="profile-role">{{ user_profile.role }}</span>
+                            </div>
+                        </button>
+                        <ul class="drop-profile dropdown-menu" aria-labelledby="profileDropdown">
+                            <li>
+                                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#profileModal">
+                                    <i class='bx bx-user-circle drop-icon'></i>
+                                    <span class="drop-name">Profile</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#settingsModal">
+                                    <i class='bx bx-cog drop-icon'></i> 
+                                    <span class="drop-name">Settings</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'user_logout' %}">
+                                    <i class='bx bx-log-out drop-icon'></i> 
+                                    <span class="drop-name">Log Out</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <!---->
+                </div>
+            </header>
+
+            <main class="main-content">
+                <div class="title-container d-flex justify-content-between align-items-center">
+                    <h3 class="fw-semibold m-0">Generate Pending Reports</h3>
+                    <button type="button" class="btn btn-primary m-0 shadow-sm" style="font-size: 14px; max-height: 37.85; padding: 7.63px 11.2px;" data-bs-toggle="modal" data-bs-target="#">
+                        <i class="fa-solid fa-file" style="font-size: 16px !important;"></i>&nbsp; Download Report
+                    </button>
+                </div>
+                <div class="row my-3">
+                    <div class="col-lg-3 col-md-5 pe-2">
+                        <div class="bg-white rounded shadow-sm">
+                            <div class="accordion" id="officesAccordion">
+                                <div class="accordion-item bg-white">
+                                    <p class="accordion-header" id="headingAdmin">
+                                        <button class="accordion-button collapsed bg-white custom-drop" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAdmin" aria-expanded="true" aria-controls="collapseAccounting">
+                                            Admin
+                                            <i class="bx bx-chevron-down nav-drop-icon fs-5"></i>
+                                        </button>
+                                    </p>
+                                    <div id="collapseAdmin" class="accordion-collapse collapse" aria-labelledby="headingAdmin" data-bs-parent="#officesAccordion">
+                                        <div class="p-0 accordion-body bg-white">
+                                            <ul class="list-unstyled mb-0">
+                                                <li><a href="#">(148639-ADM) - Ranirez, Lucas</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item bg-white">
+                                    <p class="accordion-header" id="headingAccounting">
+                                        <button class="accordion-button collapsed bg-white custom-drop" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAccounting" aria-expanded="true" aria-controls="collapseAccounting">
+                                            Accounting
+                                            <i class="bx bx-chevron-down nav-drop-icon fs-5"></i>
+                                        </button>
+                                    </p>
+                                    <div id="collapseAccounting" class="accordion-collapse collapse" aria-labelledby="headingAccounting" data-bs-parent="#officesAccordion">
+                                        <div class="p-0 accordion-body bg-white">
+                                            <ul class="list-unstyled mb-0">
+                                                <li><a href="#">(175024-ACC) - Domingo, Sheena</a></li>
+                                                <li><a href="#">(194782-ACC) - Bernardo, Daniel</a></li>
+                                                <li><a href="#">(167254-ACC) - Castillo, Leah</a></li>
+                                                <li><a href="#">(132895-ACC) - Cruz, Nathan</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item bg-white">
+                                    <p class="accordion-header" id="headingBudgeting">
+                                        <button class="accordion-button collapsed bg-white custom-drop" type="button" data-bs-toggle="collapse" data-bs-target="#collapseBudgeting" aria-expanded="false" aria-controls="collapseBudgeting">
+                                            Budgeting
+                                            <i class="bx bx-chevron-down nav-drop-icon fs-5"></i>
+                                        </button>
+                                    </p>
+                                    <div id="collapseBudgeting" class="accordion-collapse collapse" aria-labelledby="headingBudgeting" data-bs-parent="#officesAccordion">
+                                        <div class="p-0 accordion-body bg-white">
+                                            <ul class="list-unstyled mb-0">
+                                                <li><a href="#">(163408-BMD) - Villanueva, Dylan</a></li>
+                                                <li><a href="#">(187634-BMD) - Castro, Samantha</a></li>
+                                                <li><a href="#">(158392-BMD) - Soriano, Lara</a></li>
+                                                <li><a href="#">(120473-BMD) - Mactan, Joshua</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item bg-white">
+                                    <p class="accordion-header" id="headingCashier">
+                                        <button class="accordion-button collapsed bg-white custom-drop" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCashier" aria-expanded="false" aria-controls="collapseCashier">
+                                            Cashier
+                                            <i class="bx bx-chevron-down nav-drop-icon fs-5"></i>
+                                        </button>
+                                    </p>
+                                    <div id="collapseCashier" class="accordion-collapse collapse" aria-labelledby="headingCashier" data-bs-parent="#officesAccordion">
+                                        <div class="p-0 accordion-body bg-white">
+                                            <ul class="list-unstyled mb-0">
+                                                <li><a href="#">(174950-CSR) - Lim, Rafael</a></li>
+                                                <li><a href="#">(145678-CSR) - Suarez, Catherine</a></li>
+                                                <li><a href="#">(196425-CSR) - Moreno, Louie</a></li>
+                                                <li><a href="#">(124893-CSR) - Anor, Angela</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item bg-white">
+                                    <p class="accordion-header" id="headingPayroll">
+                                        <button class="accordion-button collapsed bg-white custom-drop" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePayroll" aria-expanded="false" aria-controls="collapsePayroll">
+                                            Payroll
+                                            <i class="bx bx-chevron-down nav-drop-icon fs-5"></i>
+                                        </button>
+                                    </p>
+                                    <div id="collapsePayroll" class="accordion-collapse collapse" aria-labelledby="headingPayroll" data-bs-parent="#officesAccordion">
+                                        <div class="p-0 accordion-body bg-white">
+                                            <ul class="list-unstyled mb-0">
+                                                <li><a href="#">(139657-PRL) - Sebastian, Michelle</a></li>
+                                                <li><a href="#">(176843-PRL) - Rodriguez, Darwin</a></li>
+                                                <li><a href="#">(152376-PRL) - Sulit, Lemuel</a></li>
+                                                <li><a href="#">(180295-PRL) - Soliman, Cherry</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-9 col-md-7 pe-2">
+                        <div class="px-3 py-2 bg-white rounded shadow-sm">
+                            <div class="table-wrapper table-responsive d-flex">
+                                <table class="table mb-1">
+                                    <thead>
+                                        <tr>
+                                            <th>Tracking Number</th>
+                                            <th>
+                                                Status
+                                                <a href="?status=active&sort_by=status&order=asc"><i class='bx bxs-sort-alt'></i></a>
+                                            </th>
+                                            <th>Particulars</th>
+                                            <th>
+                                                Type 
+                                                <a href="?status=active&sort_by=document_type&order=asc"><i class='bx bxs-sort-alt'></i></a>
+                                            </th>
+                                            <th>
+                                                Due In
+                                                <a href="?status=active&sort_by=deadline&order=asc"><i class='bx bxs-sort-alt'></i></a>
+                                            </th>
+                                            <th>
+                                                Priority
+                                                <a href="?status=active&sort_by=priority_level&order=asc"><i class='bx bxs-sort-alt'></i></a>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                
+                                    <tbody id="docTableBody">
+                                    </tbody>
+                                </table>
+                            </div>
+                            <p class="d-block text-start my-0 p-2 fw-semibold" id="record-count" style="color: #000000; opacity: 0.6;">
+                                Showing total of <span id="recordCount"></span> record(s)
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            
+        </div>
+    </div>
+
+    <!-- No Employee Selected Modal -->
+    <div class="modal fade" id="noEmployeeSelectedModal" tabindex="-1" aria-labelledby="noEmployeeSelectedModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0">
+                    <h5 class="modal-title" id="noEmployeeSelectedModalLabel">
+                        <i class="fa-solid fa-triangle-exclamation" style="color: #EA2E2E;"></i> &nbsp;No Employee Selected
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body pb-2">
+                    <p>Please select an employee from the list to generate and download their pending records.</p>
+                </div>
+                <div class="modal-footer p-3 pt-0 border-top-0">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-0 pb-2 bg-white shadow">
+                <div class="title-cover modal-header pb-1 pt-4 border-bottom-0" style="padding-left: 32px; padding-right: 32px;">
+                    <h5 class="modal-title" id="departmentReportModalLabel">Your Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="cover modal-body py-3 pb-0" style="padding-left: 32px; padding-right: 32px;">
+                    <div class="text-center">
+                        <img src="{% if user_profile.profile_picture %}/media/{{ user_profile.profile_picture }}{% else %}{% static 'images/default_profile_picture.png' %}{% endif %}" 
+                             id="profilePicture" 
+                             class="profile-modal-pic">
+                    </div>
+                </div>                
+
+                <div class="modal-body pt-1" style="padding-left: 32px; padding-right: 32px;">
+                    <div class="mb-3">
+                        <h4 id="fullName" class="text-center my-1 p-0">{{ user_profile.firstname }} {% if user_profile.middlename %}{{user_profile.middlename|slice:":1"}}.{%endif%} {{user_profile.lastname}}</h4>
+                        <p id="role" class="text-center p-0">{{ user_profile.role }}</p>
+                    </div>
+
+                    <div class="row mb-3 g-3">
+                        <div class="col text-start">
+                            <p id="userIDLabel" class="d-flex align-items-center gap-2">
+                                <i class="fa-solid fa-circle-user profile-icon"></i><strong>User ID</strong>
+                            </p>
+                        </div>
+                        <div class="col text-end">
+                            <p id="userIDValue">{{ user_profile.user_id }}</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3 g-3">
+                        <div class="col text-start">
+                            <p id="emailAddress" class="d-flex align-items-center gap-2">
+                                <i class="fa-solid fa-envelope profile-icon"></i><strong>Email Address</strong>
+                            </p>
+                        </div>
+                        <div class="col text-end">
+                            <p id="employeeEmail">{{ user_profile.email }}</p>
+                        </div>
+                    </div>
+                
+                    <div class="row mb-3 g-3">
+                        <div class="col text-start">
+                            <p id="contactNumber" class="d-flex align-items-center gap-2">
+                                <i class="fa-solid fa-phone profile-icon"></i><strong>Contact Number</strong>
+                            </p>
+                        </div>
+                        <div class="col text-end">
+                            <p id="employeeContact">{{ user_profile.contact_no }}</p>
+                        </div>
+                    </div>
+
+                    <button type="button" class="w-100 mt-1 mb-2 btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit Profile</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0">
+                    <h5 class="modal-title" id="departmentReportModalLabel">Edit Profile Information</h5>
+                    <button type="button" id="clostEditProfileModalBtn" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <form id="editProfileForm" method="post" action="" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="d-flex align-items-center justify-content-center mb-3">
+                            <div class="me-3">
+                                <img src="{% if user_profile.profile_picture %}/media/{{ user_profile.profile_picture }}{% else %}{% static 'images/default_profile_picture.png' %}{% endif %}" 
+                                    alt="Profile Picture" id="editProfilePicture" class="profile-modal-pic" style="width: 115px; height: 115px;">
+                            </div>
+                            <div>
+                                <div class="mb-2">
+                                    <input type="file" name="new_profile_photo" id="changePhotoInput" style="display:none;" accept="image/*" value="{% if user_profile.profile_picture %}/media/{{ user_profile.profile_picture }}{% endif %}" onchange="previewImage(event)">
+                                    <button type="button" class="btn btn-primary me-2" onclick="document.getElementById('changePhotoInput').click()">Change Photo</button>
+                                    <button type="button" class="btn btn-secondary" id="deletePhotoButton" onclick="deletePhoto()">Delete Photo</button>
+                                </div>
+                                <p class="mt-2 text-muted"><small>Upload PNG or JPG. (max 300 x 300px)</small></p>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editFirstName" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="editFirstName" name="new_firstname" value="{{ user_profile.firstname }}" maxlength="40" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editMiddleName" class="form-label">Middle Name (optional)</label>
+                            <input type="text" class="form-control" id="editMiddleName" name="new_middlename" value="{{ user_profile.middlename }}" maxlength="40">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editLastName" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="editLastName" name="new_lastname" value="{{ user_profile.lastname }}" maxlength="40" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editContactNumber" class="form-label">Contact Number</label>
+                            <input type="text" class="form-control" id="editContactNumber" name="new_contact_no" value="{{ user_profile.contact_no }}" maxlength="11" required>
+                        </div>
+                        <input type="hidden" name="temp_delete_profile" id="tempDeleteProfile" value="no">
+                    </form>
+                    <button type="button" id="saveEditProfileBtn" class="w-100 mt-1 mb-2 btn btn-primary">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="{% static 'js/toggle-sidebar.js' %}"></script>
+    <script src="{% static 'js/tabs-nav.js' %}"></script>  
+    <script src="{% static 'js/clear-search.js' %}"></script>
+    <script src="{% static 'js/generate-report.js' %}"></script>  
+    <script src="{% static 'js/fetch-reports.js' %}"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/profile.js' %}"></script>
+    {% include "assets/profile-reset-inputs.html" %}
+    
+    <!-- <script>
+        document.querySelectorAll('.preview').forEach(button => {
+            button.addEventListener('click', function() {
+                // Replace with actual logic of the generated PDF
+                const generatedPdfUrl = '/path/to/generated-report.pdf';  
+                
+                const pdfFrame = document.getElementById('reportPdfFrame');
+                pdfFrame.src = generatedPdfUrl;
+            });
+        });
+    </script> -->
+    
+<body>
+</html>
