@@ -22,7 +22,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     action = "checked";
                 } else {
                     action = "unchecked";
-                    selectAllBtn.innerHTML = 'Select All';
+                    // selectAllBtn.innerHTML = 'Select All';
+                    selectAllBtn.innerHTML = "<i class='bx bxs-checkbox-checked fs-4' style='color:#2e72ea' ></i>";
                 }
 
                 fetch(`/select-document/${action}/${numericValue}/`)
@@ -55,10 +56,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         if(allSelected) {
-            selectAllBtn.innerHTML = 'Select All';
+            // selectAllBtn.innerHTML = 'Select All';
+            selectAllBtn.innerHTML = "<i class='bx bxs-checkbox-checked fs-4' style='color:#2e72ea' ></i>";
             action = 'deselect-all';
         }else{
-            selectAllBtn.innerHTML = 'Deselect All';
+            // selectAllBtn.innerHTML = 'Deselect All';
+            selectAllBtn.innerHTML = "<i class='bx bx-checkbox fs-4' style='color:#2e72ea'></i>";
             action = 'select-all';
         }
 

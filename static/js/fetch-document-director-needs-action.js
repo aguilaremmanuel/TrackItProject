@@ -343,7 +343,8 @@ function resetSelection(table) {
     
 
     const selectAllBtn = document.getElementById('selectAllBtn');
-    selectAllBtn.innerHTML = 'Select All';
+    // selectAllBtn.innerHTML = 'Select All';
+    selectAllBtn.innerHTML = "<i class='bx bxs-checkbox-checked fs-4' style='color:#2e72ea' ></i>";
 
     documents_no = [0,0]
 

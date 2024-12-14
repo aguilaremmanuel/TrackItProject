@@ -5,7 +5,11 @@
         <tr class="{% if user == 'DIR' %}{% if document.document_type.document_no == most_priority_doc_type.document_no %}highlight-priority{% endif %}{% endif %}">
             
             {% if selection %}
-                <td><input type="checkbox" value="{{document.document_no}}" {% if document.document_no in selected_documents %}checked{% endif %}></td>
+            <td>
+                <div class="d-flex justify-content-center">
+                    <input type="checkbox" value="{{document.document_no}}" {% if document.document_no in selected_documents %}checked{% endif %}>
+                </div>
+            </td>            
             {% endif %}
             
             <td style="white-space: nowrap;">

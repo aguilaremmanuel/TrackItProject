@@ -25,7 +25,9 @@ urlpatterns = [
     path('system-admin-all-records/', views.system_admin_all_records, name='system_admin_all_records'),
     path('system-admin-archive/', views.system_admin_archive, name='system_admin_archive'),
     path('system-admin-announcements/',views.system_admin_announcements, name='system_admin_announcements'),
-    path('system-admin-generate-reports/<str:report_type>/',views.system_admin_generate_reports, name='system_admin_generate_reports'),
+    path('system-admin-performance-reports/<str:report_type>/',views.system_admin_performance_reports, name='system_admin_performance_reports'),
+    path('system-admin-pending-reports/',views.system_admin_pending_reports, name='system_admin_pending_reports'),
+
     
     path('document-update-status/<str:action>/<int:document_no>/', views.document_update_status, name='document_update_status'),
 
@@ -44,7 +46,9 @@ urlpatterns = [
     path('director-update-needs-action-display', views.director_update_needs_action_display, name='director_update_needs_action_display'),
     path('director-announcements/',views.director_announcements, name='director_announcements'),
     path('director-archive/', views.director_archive, name='director_archive'),
-    path('director-generate-reports/<str:report_type>/',views.director_generate_reports, name='director_generate_reports'),
+    path('director-performance-reports/<str:report_type>/',views.director_performance_reports, name='director_performance_reports'),
+    path('director-pending-reports/',views.director_pending_reports, name='director_pending_reports'),
+
 
     path('admin-officer-dashboard/',views.admin_officer_dashboard, name='admin_officer_dashboard'),
     path('admin-officer-new-record/',views.admin_officer_new_record, name='admin_officer_new_record'),
@@ -61,14 +65,18 @@ urlpatterns = [
     path('admin-officer-needs-action/<str:panel>/<str:scanned_document_no>/',views.admin_officer_needs_action, name='admin_officer_needs_action'),
     path('admin-officer-update-needs-action-display/<str:panel>/', views.admin_officer_update_needs_action_display, name='admin_officer_update_needs_action_display'),
     path('admin-officer-unacted-records/',views.admin_officer_unacted_records, name='admin_officer_unacted_records'),
+    path('admin-officer-resolved-records/',views.admin_officer_resolved_records, name='admin_officer_resolved_records'),
     path('admin-officer-archive/',views.admin_officer_archive, name='admin_officer_archive'),
     path('admin-officer-activity-logs/<str:activity_type>/',views.admin_officer_activity_logs, name='admin_officer_activity_logs'),
+    path('admin-officer-pending-reports/',views.admin_officer_pending_reports, name='admin_officer_pending_reports'),
 
     path('sro-dashboard/',views.sro_dashboard, name='sro_dashboard'),
     path('sro-records/<str:panel>/<str:scanned_document_no>/',views.sro_records, name='sro_records'),
     path('sro-update-records-display/<str:panel>/', views.sro_update_records_display, name='sro_update_records_display'),
     path('sro-unacted-records/',views.sro_unacted_records, name='sro_unacted_records'),
     path('sro-activity-logs/<str:activity_type>/',views.sro_activity_logs, name='sro_activity_logs'),
+    path('sro-pending-reports/',views.sro_pending_reports, name='sro_pending_reports'),
+
     
     path('action-officer-dashboard/',views.action_officer_dashboard, name='action_officer_dashboard'),
     path('action-officer-records/<str:scanned_document_no>/',views.action_officer_records, name='action_officer_records'),
