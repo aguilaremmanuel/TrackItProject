@@ -136,8 +136,12 @@
                         {% csrf_token %}
                         <div class="row mb-3 g-3">
                             <div class="col-12 col-md-4">
-                                <label for="TrackingNumber" class="form-label">Tracking Number</label>
-                                <input type="text" maxlength="18" class="form-control" name="tracking_no" id="TrackingNumber" aria-describedby="TrackingNumber" placeholder="e.g. 112922032-DEPT-001" required oninput="formatInput(this)">
+                                <div>
+                                    <label for="TrackingNumber" class="form-label">Tracking Number&nbsp;</label>
+                                    <input class="form-check-input" type="checkbox" id="generatedTN">
+                                    <label for="GeneratedTrackingNumber" class="fw-semibold text-muted opacity-50">&nbsp;(Tick for Generated TN)</label>
+                                </div>
+                                <input type="text" maxlength="18" class="form-control" name="tracking_no" id="TrackingNumber" aria-describedby="TrackingNumber" placeholder="e.g. 112922032-DEPT-001" required>
                             </div>
         
                             <div class="col-12 col-md-4">
@@ -213,7 +217,7 @@
                                 <span class="text-muted fw-regular opacity-50">(Optional, Upload PDF only)</span>
                             </label>
                             <div class="input-group">
-                                <input class="form-control form-file" type="file" accept=".pdf" id="formFile" name="attachment">
+                                <input class="form-control form-file" type="file" accept=".pdf" id="formFile" name="attachment" accept=".pdf">
                             </div>
                         </div>
         

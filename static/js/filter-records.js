@@ -9,10 +9,6 @@ document.getElementById('applyFilterBtn').addEventListener('click', function() {
                 .map(checkbox => checkbox.value);
     const priority = Array.from(document.querySelectorAll('input[name="priority"]:checked'))
                 .map(checkbox => checkbox.value);
-
-    console.log(status);
-    console.log(type);
-    console.log(priority);
                 
     const filterData = {
         status: status.length > 0 ? status : [],

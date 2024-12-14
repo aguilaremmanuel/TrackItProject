@@ -16,11 +16,11 @@
         </div>
 
         <ul class="notif-tabs">
-            <li class="tab-item">
-                <a class="tab-link active" data-target="all">All</a>
+            <li class="notif-tab-item">
+                <a class="notif-tab-link active" data-target="all">All</a>
             </li>
-            <li class="tab-item">
-                <a class="tab-link" data-target="unread">Unread</a>
+            <li class="notif-tab-item">
+                <a class="notif-tab-link" data-target="unread">Unread</a>
             </li>
         </ul>
 
@@ -183,7 +183,7 @@
         updateNotification();
         setInterval(updateNotification, 3000);
 
-        const tabLinks = document.querySelectorAll('.tab-link');
+        const tabLinks = document.querySelectorAll('.notif-tab-link');
         const notifSections = document.querySelectorAll('.notif-section');
         const notifDropdown = document.querySelector('.drop-notif');
 
