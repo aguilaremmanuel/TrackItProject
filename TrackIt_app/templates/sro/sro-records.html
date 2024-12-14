@@ -149,7 +149,7 @@
                             <thead>
                                 <tr>
                                     {% if panel == 'For-ACT-Forwarding' or panel == 'For-Resolving' %}
-                                        <th><a id="selectAllBtn" href="#">Select All</a></th>
+                                    <th><a id="selectAllBtn" href="#"><i class='bx bxs-checkbox-checked fs-4' style='color:#2e72ea' ></i></a></th>
                                     {% endif %}
                                     <th>Tracking Number</th>
                                     <th>
@@ -600,6 +600,20 @@
                         trackDocumentModal.show();
                     });
 
+                    document.getElementById('confirmForward').addEventListener('click', function() {
+                        const documentNo = "{{scanned_document_no}}";
+                        fetch(`/document-update-status/forward/${documentNo}/`)
+                            .then(response => response.json())
+                            .then(data => {
+                                document.getElementById('saveRemarks').setAttribute('data-remarks-no', data.remarks_no);
+                                document.getElementById('saveRemarks').setAttribute('data-document-no', documentNo);
+                                document.getElementById('saveRemarks').removeAttribute('data-activity-log-no');
+                                console.log(data.activity_log_no);
+                                document.getElementById('saveRemarks').setAttribute('data-activity-log-no', data.activity_log_no);
+                            })
+                            .catch(error => console.error('Error', error));
+                    });
+
                     document.getElementById('addRemarksAttachmentModal').addEventListener('hide.bs.modal', function () {
                         refreshURL();
                     });
@@ -649,6 +663,20 @@
 
                     document.getElementById('cancelResolveBtn').addEventListener('click', function() {
                         trackDocumentModal.show();
+                    });
+
+                    document.getElementById('confirmResolve').addEventListener('click', function() {
+                        const documentNo = "{{scanned_document_no}}";
+                        fetch(`/document-update-status/resolve/${documentNo}/`)
+                            .then(response => response.json())
+                            .then(data => {
+                                document.getElementById('saveRemarks').setAttribute('data-remarks-no', data.remarks_no);
+                                document.getElementById('saveRemarks').setAttribute('data-document-no', documentNo);
+                                document.getElementById('saveRemarks').removeAttribute('data-activity-log-no');
+                                console.log(data.activity_log_no);
+                                document.getElementById('saveRemarks').setAttribute('data-activity-log-no', data.activity_log_no);
+                            })
+                            .catch(error => console.error('Error', error));
                     });
 
                     document.getElementById('addRemarksAttachmentModal').addEventListener('hide.bs.modal', function () {

@@ -340,7 +340,6 @@ function resetSelection(table) {
     checkboxes.forEach(checkbox => {
         checkbox.checked = false;
     });
-    
 
     const selectAllBtn = document.getElementById('selectAllBtn');
     // selectAllBtn.innerHTML = 'Select All';

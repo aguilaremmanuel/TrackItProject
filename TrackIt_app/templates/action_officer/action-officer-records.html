@@ -133,7 +133,7 @@
                         <table id="recordsTable" class="table mb-1 with-action">
                             <thead>
                                 <tr>
-                                    <th><a id="selectAllBtn" href="#">Select All</a></th>
+                                    <th><a id="selectAllBtn" href="#"><i class='bx bxs-checkbox-checked fs-4' style='color:#2e72ea' ></i></a></th>
                                     <th>Tracking Number</th>
                                     <th>
                                         Status 
@@ -543,6 +543,20 @@
                 document.getElementById('cancelEndorseBtn').addEventListener('click', function() {
                     trackDocumentModal.show();
                 });
+
+                document.getElementById('confirmEndorse').addEventListener('click', function() {
+                        const documentNo = "{{scanned_document_no}}";
+                        fetch(`/document-update-status/endorse/${documentNo}/`)
+                            .then(response => response.json())
+                            .then(data => {
+                                document.getElementById('saveRemarks').setAttribute('data-remarks-no', data.remarks_no);
+                                document.getElementById('saveRemarks').setAttribute('data-document-no', documentNo);
+                                document.getElementById('saveRemarks').removeAttribute('data-activity-log-no');
+                                console.log(data.activity_log_no);
+                                document.getElementById('saveRemarks').setAttribute('data-activity-log-no', data.activity_log_no);
+                            })
+                            .catch(error => console.error('Error', error));
+                    });
 
                 document.getElementById('addRemarksAttachmentModal').addEventListener('hide.bs.modal', function () {
                     refreshURL();
