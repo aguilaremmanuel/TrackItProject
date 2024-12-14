@@ -121,44 +121,36 @@
                         {% endif %}
                     {% elif document.status == 'For Archiving' %}
                         {% if user == 'ADO' or user == 'SYS' %}
-                            <button type="button" class="btn btn-sm btn-red" 
+                            <button type="button" class="archive-btn btn btn-sm btn-red" 
                                 data-action="archive" 
-                                data-document-no="{{ document.document_no }}" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#archiveDocumentModal"
+                                data-document-no="{{ document.document_no }}"
                                 data-bs-toggle="tooltip" title="Archive Document">
                                 <i class="fa-solid fa-box-archive"></i>
                             </button>
                         {% endif %}
                     {% elif document.status == 'For SRO Receiving' %}
                         {% if user == 'SRO' or user == 'SYS' %}
-                            <button type="button" class="btn btn-sm btn-green" 
-                                data-action="forward" 
-                                data-document-no="{{ document.document_no }}" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#forwardDocumentModal"
+                            <button type="button" class="forward-btn btn btn-sm btn-green" 
+                                data-action="forward"
+                                data-document-no="{{ document.document_no }}"
                                 data-bs-toggle="tooltip" title="Forward Document">
                                 <i class="fa-solid fa-share"></i>
                             </button>
                         {% endif %}
                     {% elif document.status == 'For ACT Receiving' %}
                         {% if user == 'ACT' or user == 'SYS' %}
-                            <button type="button" class="btn btn-sm btn-green" 
+                            <button type="button" class="endorse-btn btn btn-sm btn-green" 
                                 data-action="endorse" 
-                                data-document-no="{{ document.document_no }}" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#endorseDocumentModal"
+                                data-document-no="{{ document.document_no }}"
                                 data-bs-toggle="tooltip" title="Endorse Document">
                                 <i class="fa-solid fa-thumbs-up"></i>
                             </button>
                         {% endif %}
                     {% elif document.status == 'For Resolving' %}
                         {% if user == 'SRO' or user == 'SYS' %}
-                            <button type="button" class="btn btn-sm btn-green" 
+                            <button type="button" class="resolve-btn btn btn-sm btn-green" 
                                 data-action="resolve" 
-                                data-document-no="{{ document.document_no }}" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#resolveDocumentModal"
+                                data-document-no="{{ document.document_no }}"
                                 data-bs-toggle="tooltip" title="Resolve Document">
                                 <i class="fa-solid fa-flag"></i>
                             </button>

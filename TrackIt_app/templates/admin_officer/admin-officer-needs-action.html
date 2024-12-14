@@ -26,7 +26,7 @@
                 <button class="toggle-sidebar" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
                 <div class="header-right">
                     <!-- NOTIFICATIONS UI -->
-                    {% include "partials/display-notifications.html" %}
+                    {#% include "partials/display-notifications.html" %}
                     <!---->
                     <div class="dropdown">
                         <button class="profile m-0" type="button" id="profileDropdown" data-bs-toggle="dropdown">
@@ -295,6 +295,24 @@
         </div>
     </div>
 
+    <!-- Archive Multiple Documents Modal -->
+    <div class="modal fade" id="archiveMultipleDocumentsModal">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0">
+                    <h5 class="modal-title" id="archiveMultipleDocumentsModalLabel"><span id="selectedDocsCountArchive">0</span> Documents Are Selected</h5>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to archive all selected documents? Once archived, they will be moved to storage and will no longer appear in active workflows.</p>
+                </div>
+                <div class="modal-footer p-3 pt-0 border-top-0">
+                    <button type="button" id="cancelArchiveMultipleDocsBtn" class="m-0 my-2 btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="m-0 my-2 btn btn-success" data-user="ADO" id="confirmMultipleDocsArchive">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Add Remarks and Attachment Modal -->
     <div class="modal fade" id="addRemarksAttachmentModal" tabindex="-1" aria-labelledby="addRemarksAttachmentModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -360,6 +378,37 @@
                 </div>
                 <div class="modal-footer p-3 pt-0 border-top-0">
                     <button type="button" class="m-0 mt-1 mb-2 btn btn-primary w-100" id="saveRemarks">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Remarks and Attachment Modal for Multiple Update -->
+    <div class="modal fade" id="addRemarksAttachmentModalForMultipleUpdate" tabindex="-1" aria-labelledby="addRemarksAttachmentModalForMultipleUpdateLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0">
+                    <h5 class="modal-title" id="addRemarksAttachmentModalForMultipleUpdateLabel">Add Remarks & Attachment</h5>
+                    <button type="button" id="addRemarksMultipleUpdateCloseBtn" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="actionMessageMultiple" class="mb-3"></p>
+                    <form method="post" action="" id="remarksFormForMultipleUpdate" enctype="multipart/form-data">
+                        {% csrf_token %}
+    
+                        <div class="form-group mb-3">
+                            <label for="remarksTextarea" class="form-label">Remarks</label>
+                            <textarea class="form-control" name="remarks" id="remarksMultiple" rows="3" placeholder="Add any additional remarks here..."></textarea>
+                        </div>
+
+                        <div id="option1Multiple">
+                            <input class="form-control form-file" type="file" id="attachmentFileMultiple" accept=".pdf" name="attachment">
+                        </div>
+        
+                    </form>
+                </div>
+                <div class="modal-footer p-3 pt-0 border-top-0">
+                    <button type="button" class="m-0 mt-1 mb-2 btn btn-primary w-100" id="saveRemarksMultiple">Save Changes</button>
                 </div>
             </div>
         </div>
@@ -736,7 +785,6 @@
     <script src="{% static 'js/fetch-document-admin-officer-needs-action.js' %}"></script>
     <script src="{% static 'js/qr-code.js' %}"></script>
     <script src="{% static 'js/print-qr-code.js' %}"></script>
-    <script src="{% static 'js/update-document-status.js' %}"></script>
     <script src="{% static 'js/add-remarks.js' %}"></script>
     <script src="{% static 'js/generate-document-report.js' %}"></script>
     <script src="{% static 'js/filter-dropdown.js' %}"></script>
@@ -761,6 +809,11 @@
                 backdrop: 'static',
                 keyboard: false
             });
+            const remarksModalForMultipleUpdate = new bootstrap.Modal(document.getElementById('addRemarksAttachmentModalForMultipleUpdate'),{
+                backdrop: 'static',
+                keyboard: false
+            });
+            
             const actionMessage = document.getElementById('actionMessage');
     
             let isQRCodeSelected = false;
@@ -783,10 +836,24 @@
                 actionMessage.textContent = "The document has been successfully routed. Add any additional remarks and upload necessary attachment related to this action below, or leave as blank if not applicable.";
                 remarksModal.show();
             });
+
+            // Handle Confirm Archive Action
+            document.getElementById('confirmArchive').addEventListener('click', function () {
+                archiveModal.hide();
+            });
     
             // Handle Confirm Archive Action
             document.getElementById('confirmArchive').addEventListener('click', function () {
                 archiveModal.hide();
+            });
+
+            document.getElementById('confirmMultipleDocsRoute').addEventListener('click', function () {
+                actionMessageMultiple.textContent = "The documents have been routed. Add any additional remarks and upload necessary attachment related to this action below, or leave as blank if not applicable.";
+                remarksModalForMultipleUpdate.show();
+            });
+
+            document.getElementById('saveRemarksMultiple').addEventListener('click', function () {
+                remarksModalForMultipleUpdate.hide();
             });
     
             // Handle radio button changes to show/hide attachment options

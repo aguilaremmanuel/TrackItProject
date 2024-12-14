@@ -991,6 +991,11 @@ def sro_records(request, panel, scanned_document_no):
     if filter_documents:
         del request.session['filter_documents']
 
+    selected_documents = request.session.get('selected_documents')
+
+    if selected_documents:
+        del request.session['selected_documents']
+
     if int(scanned_document_no) < 0:
         return render(request, 'sro/sro-records.html', {'panel': panel, 'user_profile': user_profile})
     
@@ -1038,6 +1043,11 @@ def action_officer_records(request, scanned_document_no):
         return redirect(user_login)
 
     user_profile = request.session.get('user_profile', None)
+
+    selected_documents = request.session.get('selected_documents')
+
+    if selected_documents:
+        del request.session['selected_documents']
 
     filter_documents = request.session.get('filter_documents')
     if filter_documents:
@@ -2783,9 +2793,11 @@ def document_update_status(request, action, document_no):
                 # If it's the last route
                 print("Last route reached")
                 status = 'For Archiving'
+                act_receiver = 'ADO-1001'
         else:
             print("1 route only")
             status = 'For Archiving'
+            act_receiver = 'ADO-1001'
 
         days_deadline = document.document_type.priority_level.deadline
         document.ongoing_deadline = date.today() + timedelta(days=days_deadline)
@@ -3339,12 +3351,17 @@ def sro_update_records_display(request, panel):
     sort_by = request.GET.get('sort_by')
     order = request.GET.get('order', 'asc')
 
+    selected_documents = request.session.get('selected_documents', [])
+    selection = False
+
     if panel == 'For-ACT-Forwarding':
         documents = Document.objects.filter(status='For SRO Receiving', next_route=office).order_by('-recent_update')
         status = 'For ACT Forwarding'
+        selection = True
     elif panel == 'For-Resolving':
         documents = Document.objects.filter(status='For Resolving', next_route=office).order_by('-recent_update')
         status = 'For Resolving'
+        selection = True
     elif panel == 'For-ACT-Receiving':
         documents = Document.objects.filter(status='For ACT Receiving', next_route=office).order_by('-recent_update')
         status = 'For ACT Receiving'
@@ -3371,13 +3388,15 @@ def sro_update_records_display(request, panel):
         documents = sort_documents_sro(documents, sort_by, order, status, office)
 
     context = {
+        'selected_documents': selected_documents,
+        'selection': selection,
         'documents': documents,
         'search_query': search_query,
         'user': 'SRO',
         'today': date.today()
     }
 
-    html = render_to_string('partials/display-records.html', context)
+    html = render_to_string('partials/display-records-with-mult-update.html', context)
     return JsonResponse({'html': html})
 
 def action_officer_update_records_display(request):
@@ -3390,6 +3409,8 @@ def action_officer_update_records_display(request):
     search_query = request.GET.get('search', '').strip()
     sort_by = request.GET.get('sort_by')
     order = request.GET.get('order', 'asc')
+
+    selected_documents = request.session.get('selected_documents', [])
 
     documents = Document.objects.filter(status='For ACT Receiving', act_receiver=user_id).order_by('-recent_update')
 
@@ -3412,13 +3433,15 @@ def action_officer_update_records_display(request):
         documents = sort_documents_act(documents, sort_by, order, user_id)
 
     context = {
+        'selection': True,
+        'selected_documents': selected_documents,
         'documents': documents,
         'search_query': search_query,
         'user': 'ACT',
         'today': date.today()
     }
 
-    html = render_to_string('partials/display-records.html', context)
+    html = render_to_string('partials/display-records-with-mult-update.html', context)
     return JsonResponse({'html': html})
 
 def update_reports_display(request, report_type):
@@ -4191,6 +4214,28 @@ def multiple_update_reject_remarks(request, remarks_no):
     }
 
     return JsonResponse(data)
+
+"""def unprioritized_multiple_update_remarks(request, remarks_no):
+
+    if request.method == 'POST':
+
+        activity_logs_no = request.POST.getlist('activityLogsNo')
+        activity_logs_no = ast.literal_eval(activity_logs_no[0])
+
+        documents_no = request.POST.get('checkedValues')
+        documents_no = json.loads(documents_no)
+        documents_no = list(map(int, documents_no))
+
+        remarks = request.POST.get('remarks')
+        file_attachment = request.FILES.get('attachment')
+
+
+
+    data = {
+        'success': 'success'
+    }
+
+    return JsonResponse(data)"""
 
 def change_priority_level(request, document_no, activity_log_no):
 

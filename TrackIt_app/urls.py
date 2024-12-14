@@ -135,6 +135,7 @@ urlpatterns = [
 
     path('multiple-update-remarks/<int:remarks_no>/', views.multiple_update_remarks, name='multiple_update_remarks'),
     path('multiple-update-reject-remarks/<int:remarks_no>/', views.multiple_update_reject_remarks, name='multiple_update_reject_remarks'),
+    #path('unprioritized-multiple-update-remarks/<int:remarks_no>/', views.unprioritized_multiple_update_remarks, name='unprioritized_multiple_update_remarks'),
 
     path('change-priority-level-multiple-documents/', views.change_priority_level_multiple_documents, name='change_priority_level_multiple_documents'),
 
