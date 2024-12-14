@@ -206,8 +206,6 @@
                                                     <td><span class="badge badge-yellow rounded-pill fw-semibold">URGENT</span></td>
                                                 {% elif record.document_type.priority_level.priority_level == 'normal' %}
                                                     <td><span class="badge badge-green rounded-pill fw-semibold">NORMAL</span></td>
-                                                {% elif record.document_type.priority_level.priority_level == 'for pref. action' %}
-                                                    <td><span class="badge badge-gray rounded-pill fw-semibold">FOR PREF. ACTION</span></td>
                                                 {% endif %}
                                                  
                                                 <td style="width: 35%;">                    
@@ -613,11 +611,11 @@
                 chart = new Chart(ctx1, {
                     type: 'pie',
                     data: {
-                        labels: ['Very Urgent', 'Urgent', 'Normal', 'For Pref. Action'],
+                        labels: ['Very Urgent', 'Urgent', 'Normal'],
                         datasets: [{
                             label: 'Document',
-                            data: [data.very_urgent, data.urgent, data.normal, data.for_pref_action],
-                            backgroundColor: ['#EA2E2E', '#FF7E07', '#22a03f', '#FFC107']
+                            data: [data.very_urgent, data.urgent, data.normal],
+                            backgroundColor: ['#EA2E2E', '#FF7E07', '#22a03f']
                         }]
                     },
                     options: {

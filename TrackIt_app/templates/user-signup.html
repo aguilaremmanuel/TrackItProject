@@ -146,4 +146,24 @@
         });
     </script>
 </body>
+
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		const selectOffice = document.getElementById('selectOffice');
+		const selectRole = document.getElementById('selectRole');
+
+		// Hide and disable the first option of the selectOffice dropdown
+		if (selectOffice && selectOffice.options[0]) {
+			selectOffice.options[0].style.display = 'none';  // Hide the option
+			selectOffice.options[0].disabled = true;         // Disable the option
+		}
+
+		// Hide and disable the first option of the selectRole dropdown
+		if (selectRole && selectRole.options[0]) {
+			selectRole.options[0].style.display = 'none';  // Hide the option
+			selectRole.options[0].disabled = true;         // Disable the option
+		}
+	});
+</script>
+
 </html>

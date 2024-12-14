@@ -94,27 +94,27 @@
                                     <div class="col-md-6">
                                         <label class="title-filter mb-2">Status</label>
                                         <div class="form-check mb-1">
-                                            <input class="form-check-input mt-1" type="checkbox" value="" id="dirApproval">
+                                            <input class="form-check-input mt-1" type="checkbox" name="status" value="For DIR Approval" id="dirApproval">
                                             <label class="form-check-label" for="dirApproval">For DIR Approval</label>
                                         </div>
                                         <div class="form-check mb-1">
-                                            <input class="form-check-input mt-1" type="checkbox" value="" id="forRouting">
+                                            <input class="form-check-input mt-1" type="checkbox" name="status" value="For Routing" id="forRouting">
                                             <label class="form-check-label" for="forRouting">For Routing</label>
                                         </div>
                                         <div class="form-check mb-1">
-                                            <input class="form-check-input mt-1" type="checkbox" value="" id="forSROReceiving">
+                                            <input class="form-check-input mt-1" type="checkbox" name="status" value="For SRO Receiving" id="forSROReceiving">
                                             <label class="form-check-label" for="forSROReceiving">For SRO Receiving</label>
                                         </div>
                                         <div class="form-check mb-1">
-                                            <input class="form-check-input mt-1" type="checkbox" value="" id="forACTReceiving">
+                                            <input class="form-check-input mt-1" type="checkbox" name="status" value="For ACT Receiving" id="forACTReceiving">
                                             <label class="form-check-label" for="forACTReceiving">For ACT Receiving</label>
                                         </div>
                                         <div class="form-check mb-1">
-                                            <input class="form-check-input mt-1" type="checkbox" value="" id="forResolving">
+                                            <input class="form-check-input mt-1" type="checkbox" name="status" value="For Resolving" id="forResolving">
                                             <label class="form-check-label" for="forResolving">For Resolving</label>
                                         </div>
                                         <div class="form-check mb-1">
-                                            <input class="form-check-input mt-1" type="checkbox" value="" id="forArchiving">
+                                            <input class="form-check-input mt-1" type="checkbox" name="status" value="For Archiving" id="forArchiving">
                                             <label class="form-check-label" for="forArchiving">For Archiving</label>
                                         </div>
                                     </div>
@@ -123,30 +123,26 @@
                                         <div style="margin-bottom: 10px;">
                                             <label class="title-filter mb-2">Type</label>
                                             <div class="form-check mb-1">
-                                                <input class="form-check-input mt-1" type="checkbox" value="" id="regularType">
+                                                <input class="form-check-input mt-1" type="checkbox" name="type" value="Regular" id="regularType">
                                                 <label class="form-check-label" for="regularType">Regular</label>
                                             </div>
                                             <div class="form-check mb-1">
-                                                <input class="form-check-input mt-1" type="checkbox" value="" id="scpType">
+                                                <input class="form-check-input mt-1" type="checkbox" name="type" value="Trust" id="scpType">
                                                 <label class="form-check-label" for="scpType">Trust</label>
                                             </div>
                                         </div>
                                         <div>
                                             <label class="title-filter mb-2">Priority</label>
                                             <div class="form-check mb-1">
-                                                <input class="form-check-input mt-1" type="checkbox" value="" id="prefAction">
-                                                <label class="form-check-label" for="prefAction">For Pref. Action</label>
-                                            </div>
-                                            <div class="form-check mb-1">
-                                                <input class="form-check-input mt-1" type="checkbox" value="" id="normalPriority">
+                                                <input class="form-check-input mt-1" type="checkbox" name="priority" value="normal" id="normalPriority">
                                                 <label class="form-check-label" for="normalPriority">Normal</label>
                                             </div>
                                             <div class="form-check mb-1">
-                                                <input class="form-check-input mt-1" type="checkbox" value="" id="urgentPriority">
+                                                <input class="form-check-input mt-1" type="checkbox" name="priority" value="urgent" id="urgentPriority">
                                                 <label class="form-check-label" for="urgentPriority">Urgent</label>
                                             </div>
                                             <div class="form-check mb-1">
-                                                <input class="form-check-input mt-1" type="checkbox" value="" id="veryUrgentPriority">
+                                                <input class="form-check-input mt-1" type="checkbox" name="priority" value="very urgent" id="veryUrgentPriority">
                                                 <label class="form-check-label" for="veryUrgentPriority">Very Urgent</label>
                                             </div>
                                         </div>
@@ -154,9 +150,9 @@
                                 </div>
 
                                 <div class="d-flex justify-content-between mt-3 gap-2">
-                                    <input class="btn btn-primary w-100" type="submit" value="Apply Filter">
-                                    <button id="resetFilters" class="btn btn-red d-flex align-items-center justify-content-center" style="width: 40px; height: 36px;" title="Reset Filter">
-                                        <i class="fa-solid fa-trash-can" style="font-size: 16px;"></i>
+                                    <button id="applyFilterBtn" class="btn btn-primary w-100">Apply Filter</button>
+                                    <button id="resetFilters" class="btn btn-green d-flex align-items-center justify-content-center" style="width: 49.35px; height: 36px;" title="Reset Filter">
+                                        <i class="fa-solid fa-arrows-rotate"></i>
                                     </button>
                                 </div>
                             </ul>
@@ -208,62 +204,7 @@
         </div>
     </div>
 
-    <!-- View Document Modal -->
-    <div class="modal fade" id="viewDocumentModal" tabindex="-1" aria-labelledby="viewDocumentModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
-                <div class="modal-header pb-0 border-bottom-0">
-                    <h5 class="modal-title" id="viewDocumentModalLabel">
-                        <i class="fa-solid fa-circle-info" style="color: #2E72EA;"></i>&nbsp; Document Details
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-
-                    <div id="loadingSpinner" class="text-center my-5" style="display: none;">
-                        <div class="spinner-border" role="status" style="width: 3rem; height: 3rem;">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                    </div>
-
-                    <div class="d-flex flex-wrap" id="documentDetailsContent" style="display: none;">
-                        <p class="me-4 mb-2"><strong>Tracking Number:</strong> <span id="documentTrackingNumber"></span></p>
-                        <p class="me-4 mb-2"><strong>Sender:</strong> <span id="documentSender"></span></p>
-                        <p class="me-4 mb-2"><strong>Status:</strong> <span id="documentStatus"></span></p>
-                        <p class="me-4 mb-2"><strong>Type:</strong> <span id="documentType"></span></p>
-                        <p class="me-4 mb-2"><strong>Priority:</strong> <span id="documentPriority"></span></p>
-                        <p class="me-4 mb-2"><strong>Subject/Particulars:</strong> <span id="documentSubject"></span></p>
-                        
-                        <div class="w-100 mb-2">
-                            <a href="#" data-bs-toggle="modal" data-bs-target="#generateQRCode" id="documentTitleLink" style="font-size: 15px !important;">Document QR Code</a>
-                        </div>
-                    </div>
-
-                    <div class="table-responsive tracker-wrapper d-flex" id="activitiesContent" style="display: none;">
-                        <table class="table mb-1">
-                            <thead>
-                                <tr>
-                                    <th>Timestamp</th>
-                                    <th>User ID</th>
-                                    <th>Name</th>
-                                    <th>Office</th>
-                                    <th>Role/Position</th>
-                                    <th>Remarks</th>
-                                    <th>Attachment</th>
-                                    <th class="text-start">Activity</th>
-                                </tr>
-                            </thead>
-                            
-                            <tbody id="activitiesTableBody">
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="modal-footer p-3 pt-0 border-top-0">
-                </div>
-            </div>
-        </div>
-    </div>
+    {% include "partials/view-document-modal.html" %}
 
     <!-- View Attachment Modal -->
     <div class="modal fade" id="viewAttachmentModal" tabindex="-1" aria-labelledby="viewAttachmentModalLabel" aria-hidden="true">
@@ -595,6 +536,7 @@
     <script src="{% static 'js/generate-document-report.js' %}"></script>
     <script src="{% static 'js/filter-dropdown.js' %}"></script>
     <script src="{% static 'js/profile.js' %}"></script>
+    <script src="{% static 'js/filter-records.js' %}"></script>
     {% include "assets/profile-reset-inputs.html" %}
     <script>
         document.addEventListener('DOMContentLoaded', function () {

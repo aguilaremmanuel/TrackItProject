@@ -136,4 +136,18 @@ urlpatterns = [
     path('fetch-document-routes/<int:document_no>/', views.fetch_document_routes, name='fetch_document_routes'),
     path('edit-routes/', views.edit_routes, name='edit_routes'),
 
+    path('select-document/<str:action>/<int:document_no>/', views.select_document, name='select_document'),
+    path('select-all-documents/<str:action>/', views.select_all_documents, name='select_all_documents'),
+
+    path('document-multiple-update-status/<str:action>/', views.document_multiple_update_status, name='document_multiple_update_status'),
+
+    path('multiple-update-remarks/<int:remarks_no>/', views.multiple_update_remarks, name='multiple_update_remarks'),
+    path('multiple-update-reject-remarks/<int:remarks_no>/', views.multiple_update_reject_remarks, name='multiple_update_reject_remarks'),
+
+    path('change-priority-level-multiple-documents/', views.change_priority_level_multiple_documents, name='change_priority_level_multiple_documents'),
+
+    # FILTERING URLS
+    path('filter-records/', views.filter_records, name='filter_records'),
+    path('remove-filter/', views.remove_filter, name='remove_filter'),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

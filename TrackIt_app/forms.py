@@ -174,5 +174,3 @@ class EditProfileForm(forms.ModelForm):
         model = User
         fields = ['firstname', 'middlename', 'lastname', 'email', 'contact_no', 'profile_picture']
 
-
-

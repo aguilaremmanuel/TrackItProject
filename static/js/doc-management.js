@@ -48,9 +48,7 @@ function editDocumentType() {
         editDocumentNo.value = documentNo;
         editDocumentType.value = documentType;
         editCategory.value = category;
-        if(priorityLevel === 'For pref. action') {
-            editPriorityLevel.value = 'For Preferential Action';
-        } else if(priorityLevel === 'Very urgent') {
+        if(priorityLevel === 'Very urgent') {
             editPriorityLevel.value = 'Very Urgent';
         } else {
             editPriorityLevel.value = priorityLevel;
