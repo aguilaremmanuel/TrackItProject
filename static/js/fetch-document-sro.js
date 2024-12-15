@@ -24,25 +24,25 @@ function fetchDocuments() {
             let noOfRecords = document.getElementById('docuLength').value;
             document.getElementById('recordCount').textContent = noOfRecords;
             bindViewButtons();
-            bindRouteButtons();
-            bindArchiveButtons();
+            bindForwardButtons();
+            bindResolveButtons();
     });
 }
 
-function bindRouteButtons() {
+function bindForwardButtons() {
     
     const table = document.querySelector('#recordsTable');
-    const routeButtons = document.querySelectorAll('.route-btn');
-    const routeModal = new bootstrap.Modal(document.getElementById('routeDocumentModal'),{
+    const forwardButtons = document.querySelectorAll('.forward-btn');
+    const forwardModal = new bootstrap.Modal(document.getElementById('forwardDocumentModal'),{
         backdrop: 'static',
         keyboard: false
     });
-    const routeMultipleDocumentsModal = new bootstrap.Modal(document.getElementById('routeMultipleDocumentsModal'),{
+    const forwardMultipleDocumentsModal = new bootstrap.Modal(document.getElementById('forwardMultipleDocumentsModal'),{
         backdrop: 'static',
         keyboard: false
     });
     
-    routeButtons.forEach(button => {
+    forwardButtons.forEach(button => {
 
         button.addEventListener('click', function () {
 
@@ -66,16 +66,16 @@ function bindRouteButtons() {
             if (checkedValues.length > 1) {
 
                 document.getElementById('selectedDocsCount').innerHTML = checkedValues.length;
-                routeMultipleDocumentsModal.show();
+                forwardMultipleDocumentsModal.show();
 
                 let remarksNo;
                 let activityLogsNo = [];
 
-                document.getElementById('confirmMultipleDocsRoute').addEventListener('click', function() {
+                document.getElementById('confirmMultipleDocsForward').addEventListener('click', function() {
                     
                     checkedValues.forEach((element, index) => {
                         
-                        fetch(`/document-update-status/route/${element}`)
+                        fetch(`/document-update-status/forward/${element}`)
                             .then(response => response.json())
                             .then(data => {
                                 if(index == 0) {
@@ -86,7 +86,7 @@ function bindRouteButtons() {
                             .catch(error => console.error('Error', error));
                     });
 
-                    routeMultipleDocumentsModal.hide();
+                    forwardMultipleDocumentsModal.hide();
 
                 });
                 
@@ -118,11 +118,11 @@ function bindRouteButtons() {
                 
             } else {
                 
-                routeModal.show();
+                forwardModal.show();
                 
-                document.getElementById('confirmRoute').addEventListener('click', function() {
+                document.getElementById('confirmForward').addEventListener('click', function() {
 
-                    fetch(`/document-update-status/route/${checkedValues[0]}/`)
+                    fetch(`/document-update-status/forward/${checkedValues[0]}/`)
                         .then(response => response.json())
                         .then(data => {
                             document.getElementById('saveRemarks').setAttribute('data-remarks-no', data.remarks_no);
@@ -141,36 +141,36 @@ function bindRouteButtons() {
     });
 
     
-    document.getElementById('cancelRouteBtn').addEventListener('click', function() {
-        routeModal.hide();
+    document.getElementById('cancelForwardBtn').addEventListener('click', function() {
+        forwardModal.hide();
         resetSelection(table);
     });
     
-    document.getElementById('cancelRouteMultipleDocsBtn').addEventListener('click', function() {
-        routeMultipleDocumentsModal.hide();
+    document.getElementById('cancelForwardMultipleDocsBtn').addEventListener('click', function() {
+        forwardMultipleDocumentsModal.hide();
         resetSelection(table);
     });
 
-    document.getElementById('confirmRoute').addEventListener('click', function () {
-        routeModal.hide();
+    document.getElementById('confirmForward').addEventListener('click', function () {
+        forwardModal.hide();
     });
     
 }
 
-function bindArchiveButtons() {
+function bindResolveButtons() {
     
     const table = document.querySelector('#recordsTable');
-    const archiveButtons = document.querySelectorAll('.archive-btn');
-    const archiveModal = new bootstrap.Modal(document.getElementById('archiveDocumentModal'),{
+    const resolveButtons = document.querySelectorAll('.resolve-btn');
+    const resolveModal = new bootstrap.Modal(document.getElementById('resolveDocumentModal'),{
         backdrop: 'static',
         keyboard: false
     });
-    const archiveMultipleDocumentsModal = new bootstrap.Modal(document.getElementById('archiveMultipleDocumentsModal'),{
+    const resolveMultipleDocumentsModal = new bootstrap.Modal(document.getElementById('resolveMultipleDocumentsModal'),{
         backdrop: 'static',
         keyboard: false
     });
     
-    archiveButtons.forEach(button => {
+    resolveButtons.forEach(button => {
 
         button.addEventListener('click', function () {
 
@@ -185,27 +185,25 @@ function bindArchiveButtons() {
                 const event = new Event('change', { bubbles: true, cancelable: true });
                 checkbox.dispatchEvent(event);
             }
-
+            
             const checkboxes = table.querySelectorAll('input[type="checkbox"]');
             const checkedValues = Array.from(checkboxes)
                 .filter(checkbox => checkbox.checked)
                 .map(checkbox => checkbox.value);
-        
+            
             if (checkedValues.length > 1) {
-
-                console.log("checked vaues: " + checkedValues.length);
-
-                document.getElementById('selectedDocsCountArchive').innerHTML = checkedValues.length;
-                archiveMultipleDocumentsModal.show();
-
+            
+                document.getElementById('selectedDocsCountResolve').innerHTML = checkedValues.length;
+                resolveMultipleDocumentsModal.show();
+            
                 let remarksNo;
                 let activityLogsNo = [];
 
-                document.getElementById('confirmMultipleDocsArchive').addEventListener('click', function() {
+                document.getElementById('confirmMultipleDocsResolve').addEventListener('click', function() {
                     
                     checkedValues.forEach((element, index) => {
                         
-                        fetch(`/document-update-status/archive/${element}`)
+                        fetch(`/document-update-status/resolve/${element}`)
                             .then(response => response.json())
                             .then(data => {
                                 if(index == 0) {
@@ -216,20 +214,49 @@ function bindArchiveButtons() {
                             .catch(error => console.error('Error', error));
                     });
 
-                    archiveMultipleDocumentsModal.hide();
+                    resolveMultipleDocumentsModal.hide();
 
+                });
+                
+                const saveRemarksBtn =  document.getElementById('saveRemarksMultiple');
+                saveRemarksBtn.addEventListener('click', function (e) {
+
+                    e.preventDefault();
+
+                    const form = document.getElementById('remarksFormForMultipleUpdate');
+                    const formData = new FormData(form);
+
+                    formData.append('activityLogsNo', JSON.stringify(activityLogsNo)); 
+                    formData.append('checkedValues', JSON.stringify(checkedValues));
+
+                    fetch(`/multiple-update-reject-remarks/${remarksNo}/`, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRFToken': getCSRFToken(),
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log("SUCCESS");
+                    })
+                    .catch(error => console.error('Error', error));
+                
                 });
                 
             } else {
                 
-                archiveModal.show();
+                resolveModal.show();
                 
-                document.getElementById('confirmArchive').addEventListener('click', function() {
+                document.getElementById('confirmResolve').addEventListener('click', function() {
 
-                    fetch(`/document-update-status/archive/${checkedValues[0]}/`)
+                    fetch(`/document-update-status/resolve/${checkedValues[0]}/`)
                         .then(response => response.json())
                         .then(data => {
-                            console.log("successfully archived");
+                            document.getElementById('saveRemarks').setAttribute('data-remarks-no', data.remarks_no);
+                            document.getElementById('saveRemarks').setAttribute('data-document-no', documentNo);
+                            document.getElementById('saveRemarks').removeAttribute('data-activity-log-no');
+                            document.getElementById('saveRemarks').setAttribute('data-activity-log-no', data.activity_log_no);
                         })
                         .catch(error => console.error('Error', error));
 
@@ -241,19 +268,18 @@ function bindArchiveButtons() {
 
     });
 
-    
-    document.getElementById('cancelArchiveBtn').addEventListener('click', function() {
-        archiveModal.hide();
+    document.getElementById('cancelResolveBtn').addEventListener('click', function() {
+        resolveModal.hide();
         resetSelection(table);
     });
     
-    document.getElementById('cancelArchiveMultipleDocsBtn').addEventListener('click', function() {
-        archiveMultipleDocumentsModal.hide();
+    document.getElementById('cancelResolveMultipleDocsBtn').addEventListener('click', function() {
+        resolveMultipleDocumentsModal.hide();
         resetSelection(table);
     });
 
-    document.getElementById('confirmArchive').addEventListener('click', function () {
-        archiveModal.hide();
+    document.getElementById('confirmResolve').addEventListener('click', function () {
+        resolveModal.hide();
     });
     
 }
@@ -267,8 +293,7 @@ function resetSelection(table) {
     
 
     const selectAllBtn = document.getElementById('selectAllBtn');
-    selectAllBtn.innerHTML = "<i class='bx bxs-checkbox-checked fs-4' style='color:#2e72ea' ></i>";
-    //selectAllBtn.innerHTML = 'Select All';
+    selectAllBtn.innerHTML = 'Select All';
 
     documents_no = [0,0]
 

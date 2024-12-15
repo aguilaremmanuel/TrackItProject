@@ -31,6 +31,8 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.db import IntegrityError
+from django.views.decorators.csrf import csrf_exempt
+import random
 # ----------- LOGIN AND SIGNUP -----------------
 
 #-------- STYLES FOR USER UPDATE ------------
@@ -232,14 +234,14 @@ def user_signup(request):
                 plain_message = strip_tags(html_message)
 
                 # Create and send the email
-                """email = EmailMultiAlternatives(
+                email = EmailMultiAlternatives(
                     subject=subject,
                     body=plain_message,
                     from_email=settings.DEFAULT_FROM_EMAIL,
                     to=[user_email]
                 )
                 email.attach_alternative(html_message, "text/html")
-                email.send(fail_silently=False)"""
+                email.send(fail_silently=False)
 
                 return redirect('user_login')
             except IntegrityError:
@@ -249,84 +251,377 @@ def user_signup(request):
 
     return render(request, "user-signup.html", {'form': form})
 
-# USER LOGIN
-def user_login(request):
-
-    # Check if a user is already logged in
-    user_id = request.session.get('user_id')
-    if user_id:
-        role = user_id.split('-')[0]
-        if role == 'ADO':
-            return redirect(admin_officer_dashboard)
-        elif role == 'SRO':
-            return redirect(sro_dashboard)
-        elif role == 'ACT':
-            return redirect(action_officer_dashboard)
-        elif role == 'DIR':
-            return redirect(director_dashboard)
-        elif role == 'SYS':
-            return redirect(system_admin_dashboard)
 
     if request.method == 'POST':
-        user_id = request.POST['user_id']
-        password = request.POST['password']
+        form = UserSignupForm(request.POST)
+        if form.is_valid():
 
+            user_email = form.cleaned_data['email']
+            if User.objects.filter(email=user_email).exists():
+                form.add_error('email', "A user with this email already exists.")
+                return render(request, "user-signup.html", {'form': form})
+
+            employee_id = form.cleaned_data['employee_id']
+            if User.objects.filter(employee_id=employee_id).exists():
+                form.add_error('employee_id', "A user with this Employee ID already exists.")
+                return render(request, "user-signup.html", {'form': form})
+
+            try:
+                user = form.save(commit=False)
+                role_prefix = form.cleaned_data['role']
+                user.user_id = generate_user_id(role_prefix)
+                user.registered_date = timezone.now()
+                user.save()
+
+                # Get user email
+                user_email = form.cleaned_data['email']
+
+                # Define subject and message content
+                subject = 'TrackIt: Account Status'
+
+                # HTML message with advanced styling
+                html_message = f"""
+                <html>
+                <head>
+                    <style>
+                        body {{
+                            font-family: 'Arial', sans-serif;
+                            background-color: #f4f4f4;
+                            margin: 0;
+                            padding: 0;
+                            line-height: 1.6;
+                            color: #333;
+                        }}
+                        .email-container {{
+                            background-color: #ffffff;
+                            padding: 30px;
+                            border-radius: 10px;
+                            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+                            max-width: 600px;
+                            margin: 50px auto;
+                            overflow: hidden;
+                        }}
+                        .email-header {{
+                            background-color: #007BFF;
+                            padding: 20px;
+                            text-align: center;
+                            color: #fff;
+                            font-size: 24px;
+                            font-weight: bold;
+                            border-radius: 10px 10px 0 0;
+                        }}
+                        .email-content {{
+                            padding: 30px;
+                            font-size: 16px;
+                            color: #555;
+                        }}
+                        .email-content p {{
+                            margin: 0 0 20px;
+                        }}
+                        .email-content h1 {{
+                            font-size: 22px;
+                            margin-bottom: 10px;
+                            color: #007BFF;
+                        }}
+                        .email-content a.button {{
+                            display: inline-block;
+                            padding: 12px 25px;
+                            font-size: 16px;
+                            background-color: #28a745;
+                            color: white;
+                            border-radius: 5px;
+                            text-decoration: none;
+                            margin-top: 20px;
+                        }}
+                        .email-footer {{
+                            text-align: center;
+                            padding: 20px;
+                            background-color: #f8f9fa;
+                            border-top: 1px solid #dddddd;
+                            font-size: 14px;
+                            color: #777777;
+                        }}
+                        .email-footer p {{
+                            margin: 0;
+                        }}
+                        .email-container .logo {{
+                            width: 120px;
+                            margin: 0 auto;
+                        }}
+                    </style>
+                </head>
+                <body>
+                    <div class="email-container">
+                        <!-- Email Header -->
+                        <div class="email-header">
+                            <h1>TrackIt: Account Status</h1>
+                        </div>
+                        
+                        <div class="email-content">
+                            <h1>Hello {user.firstname},</h1>
+                            <p>Thank you for signing up for TrackIt! We're excited to have you on board.</p>
+                            <p>Your account is currently <strong>{user.status}</strong>. We will notify you as soon as it is verified.</p>
+                            <p>In the meantime, if you have any questions, don't hesitate to reach out to our support team.</p>
+                        </div>
+
+                        <!-- Email Footer -->
+                        <div class="email-footer">
+                            <p>Regards,<br><strong>TrackIt Team</strong></p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+                """
+
+                # Plain text fallback
+                plain_message = strip_tags(html_message)
+
+                # Create and send the email
+                email = EmailMultiAlternatives(
+                    subject=subject,
+                    body=plain_message,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    to=[user_email]
+                )
+                email.attach_alternative(html_message, "text/html")
+                email.send(fail_silently=False)
+
+                return redirect('user_login')
+            except IntegrityError:
+                form.add_error('email', "A user with this email already exists.")
+    else:
+        form = UserSignupForm()
+
+    return render(request, "user-signup.html", {'form': form})
+
+# -------------- 2FA -------------------
+@csrf_exempt
+def toggle_two_factor(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        two_factor_enabled = data.get('two_factor_enabled', False)
+
+        # Get the logged-in user
+        user_id = request.session.get('user_id')
+        if not user_id:
+            return JsonResponse({'status': 'error', 'message': 'User not logged in'}, status=403)
+
+        try:
+            user = User.objects.get(user_id=user_id)
+            user.two_factor_enabled = two_factor_enabled
+
+            # Clear the 2FA code if 2FA is turned off
+            if not two_factor_enabled:
+                user.two_factor_code = None
+
+            user.save()
+            return JsonResponse({'status': 'success'})
+        except User.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'User not found'}, status=404)
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
+
+#3start
+FAILED_LOGIN_THRESHOLD = 3
+TEMP_BAN_TIME = 30  
+
+def user_login(request):
+    if request.method == 'POST':
+        # 1. Check if we are in the 2FA verification step
+        if 'two_factor_code' in request.POST:
+            # Handle 2FA code verification
+            return handle_two_factor_verification(request)
+
+        # 2. Otherwise, handle initial login attempt
+        user_id = request.POST.get('user_id')
+        password = request.POST.get('password')
+        remember_me = request.POST.get('remember_me', False)
+
+        # Remember Me logic: Save credentials in session
+        if remember_me:
+            request.session['remember_me'] = True
+            request.session['remembered_user_id'] = user_id
+            request.session['remembered_password'] = password
+        else:
+            # Clear remembered credentials if "Remember Me" is not checked
+            request.session.pop('remember_me', None)
+            request.session.pop('remembered_user_id', None)
+            request.session.pop('remembered_password', None)
+        
+        if remember_me:
+            request.session['remember_me'] = True
+        else:
+            request.session.pop('remember_me', None)
+
+        # Ensure both user_id and password are provided
+        if not user_id or not password:
+            messages.error(request, "Please enter both User ID and Password.")
+            return redirect('user_login')
+
+        # Retrieve or initialize login attempts data from session
+        login_attempts = request.session.get('login_attempts', {})
+        user_attempts = login_attempts.get(user_id, {'count': 0, 'banned_until': None})
+
+        # Convert `banned_until` from string to `datetime` if it exists
+        if user_attempts['banned_until']:
+            user_attempts['banned_until'] = datetime.fromisoformat(user_attempts['banned_until'])
+
+        # Check if the user is temporarily banned
+        if user_attempts['banned_until'] and now() < user_attempts['banned_until']:
+            ban_time_left = (user_attempts['banned_until'] - now()).seconds
+            return render(request, 'user-login.html', {
+                'ban_time_left': ban_time_left,
+                'remembered_user_id': user_id,
+                'remembered_password': password,
+                'remember_me_checked': remember_me
+            })
+
+        # Authenticate the user
         try:
             user = User.objects.get(user_id=user_id, password=password)
         except User.DoesNotExist:
-            messages.error(request, "Invalid credentials.")
-            return redirect('user_login')
+            # Increment failed login attempts
+            user_attempts['count'] += 1
+            if user_attempts['count'] >= FAILED_LOGIN_THRESHOLD:
+                # Temporarily ban the user
+                ban_until = now() + timedelta(seconds=TEMP_BAN_TIME)
+                user_attempts['banned_until'] = ban_until.isoformat()  # Serialize datetime
+                login_attempts[user_id] = user_attempts
+                request.session['login_attempts'] = login_attempts  # Save to session
+                return render(request, 'user-login.html', {
+                    'ban_time_left': TEMP_BAN_TIME,
+                    'remembered_user_id': user_id,
+                    'remembered_password': password,
+                    'remember_me_checked': remember_me
+                })
+            else:
+                remaining_attempts = FAILED_LOGIN_THRESHOLD - user_attempts['count']
+                messages.error(request, f"Invalid credentials. You have {remaining_attempts} attempt(s) left.")
+                login_attempts[user_id] = user_attempts
+                request.session['login_attempts'] = login_attempts  # Save to session
+                return redirect('user_login')
 
+        # Reset login attempts after successful login
+        if user_id in login_attempts:
+            del login_attempts[user_id]
+            request.session['login_attempts'] = login_attempts
+
+        # Check if the user's status prevents them from logging in and specify the error message
+        if user.status == 'for verification':
+            messages.error(request, "Your account is still under verification. Please wait for approval.")
+            return redirect('user_login')
+        elif user.status == 'inactive':
+            messages.error(request, "Your account is inactive. Please contact support for assistance.")
+            return redirect('user_login')
+        elif user.status == 'rejected':
+            messages.error(request, "Your account has been rejected. You cannot log in at this time.")
+            return redirect('user_login')
+        elif user.status == 'archived':
+            messages.error(request, "Your account is archived. Please contact the administrator for more information.")
+            return redirect('user_login')
+        
+        # Check if 2FA is enabled
+        if user.two_factor_enabled:
+            # Generate a 6-digit 2FA code, save it, and send it by email
+            two_factor_code = f"{random.randint(100000, 999999)}"
+            user.two_factor_code = two_factor_code
+            user.save()
+
+            send_mail(
+                'Your 2FA Code',
+                f'Your Two-Factor Authentication code is: {two_factor_code}',
+                'no-reply@example.com',
+                [user.email]
+            )
+
+            # Temporarily store the user ID in session for 2FA verification
+            request.session['temp_user_id'] = user.user_id
+            # Render the page for the 2FA code entry
+            # return render(request, 'user-login.html', {'two_factor_step': True})
+            return render(request, 'user-login.html', {'two_factor_step': True, 'request': request})    
+        
+        # Handle "Remember Me" functionality
+        if remember_me:
+            request.session.set_expiry(timedelta(days=30)) 
+        else:
+            request.session.set_expiry(0) 
+
+        # If 2FA is not enabled, proceed with login
         user.last_login = timezone.now()
         user.save()
-        request.session['user_id'] = user.user_id
+        set_user_session(request, user)
+        return redirect_user_dashboard(user.role)
 
-        if user.role == 'ADO':
-            role='Admin Officer'
-        elif user.role == 'SRO':
-            role = 'Sub-receiving Officer'
-        elif user.role == 'ACT':
-            role = 'Action Officer'
-        elif user.role == 'Director':
-            role = 'Director'
-        elif user.role == 'System Admin':
-            role = 'System Administrator'
+    # Pre-fill form if "Remember Me" was previously checked
+    remembered_user_id = request.session.get('remembered_user_id', '')
+    remembered_password = request.session.get('remembered_password', '')
+    remember_me_checked = request.session.get('remember_me', False)
 
-        if user.middlename:
-            middlename = user.middlename.title()
-        else:
-            middlename = ''
+    return render(request, 'user-login.html', {
+        'ban_time_left': 0,
+        'remembered_user_id': remembered_user_id,
+        'remembered_password': remembered_password,
+        'remember_me_checked': remember_me_checked,
+    })
 
-        user_profile = {
-            'user_id': user.user_id,
-            'role': role,
-            'office': user.office_id_id,
-            'firstname': user.firstname.title(),
-            'middlename': middlename,
-            'lastname': user.lastname.title(),
-            'email': user.email,
-            'contact_no': user.contact_no,
-            'profile_picture': user.profile_picture.name
-        }
-        
-        request.session['user_profile'] = user_profile
+def handle_two_factor_verification(request):
+    """Separate function to handle the 2FA code verification step."""
+    temp_user_id = request.session.get('temp_user_id')
+    two_factor_code = request.POST.get('two_factor_code')
 
-        # Redirect based on user role
-        if user.role == 'ADO':
-            return redirect(f"{reverse('admin_officer_dashboard')}?status=active")
-        elif user.role == 'SRO':
-            return redirect(f"{reverse('sro_dashboard')}?status=active")
-        elif user.role == 'ACT':
-            return redirect(f"{reverse('action_officer_dashboard')}?status=active")
-        elif user.role == 'Director':
-            return redirect(f"{reverse('director_dashboard')}?status=active")
-        elif user.role == 'System Admin':
-            return redirect(f"{reverse('system_admin_dashboard')}?status=active")
-        else:
-            messages.error(request, "Invalid role. Please contact the administrator.")
-            return redirect('user_login')
+    # Retrieve the user using temp_user_id and verify the 2FA code
+    try:
+        user = User.objects.get(user_id=temp_user_id, two_factor_code=two_factor_code)
+    except User.DoesNotExist:
+        messages.error(request, "Invalid 2FA code.")
+        return render(request, 'user-login.html', {'two_factor_step': True})
 
-    return render(request, "user-login.html")
+    # Clear the 2FA code after successful verification
+    user.two_factor_code = None
+    user.last_login = timezone.now()
+    user.save()
+    set_user_session(request, user)
+
+    # Redirect to the appropriate dashboard
+    return redirect_user_dashboard(user.role)
+
+def set_user_session(request, user):
+    # Helper to set session and user profile
+    role_map = {
+        'ADO': 'Admin Officer',
+        'SRO': 'Sub-receiving Officer',
+        'ACT': 'Action Officer',
+        'Director': 'Director',
+        'System Admin': 'System Administrator'
+    }
+    role = role_map.get(user.role, 'Unknown')
+    middlename = user.middlename.title() if user.middlename else ''
+
+    user_profile = {
+        'user_id': user.user_id,
+        'role': role,
+        'firstname': user.firstname.title(),
+        'middlename': middlename,
+        'lastname': user.lastname.title(),
+        'email': user.email,
+        'contact_no': user.contact_no,
+        'profile_picture': user.profile_picture.name,
+        'two_factor_enabled': user.two_factor_enabled
+    }
+
+    request.session['user_profile'] = user_profile
+    request.session['user_id'] = user.user_id
+
+def redirect_user_dashboard(role):
+    # Redirects user based on role
+    dashboard_map = {
+        'ADO': 'admin_officer_dashboard',
+        'SRO': 'sro_dashboard',
+        'ACT': 'action_officer_dashboard',
+        'Director': 'director_dashboard',
+        'System Admin': 'system_admin_dashboard'
+    }
+    return redirect(f"{reverse(dashboard_map.get(role))}?status=active")
 
 # USER LOGOUT
 def user_logout(request):
@@ -992,6 +1287,11 @@ def sro_records(request, panel, scanned_document_no):
     if filter_documents:
         del request.session['filter_documents']
 
+    selected_documents = request.session.get('selected_documents')
+
+    if selected_documents:
+        del request.session['selected_documents']
+
     if int(scanned_document_no) < 0:
         return render(request, 'sro/sro-records.html', {'panel': panel, 'user_profile': user_profile})
     
@@ -1039,6 +1339,11 @@ def action_officer_records(request, scanned_document_no):
         return redirect(user_login)
 
     user_profile = request.session.get('user_profile', None)
+
+    selected_documents = request.session.get('selected_documents')
+
+    if selected_documents:
+        del request.session['selected_documents']
 
     filter_documents = request.session.get('filter_documents')
     if filter_documents:
@@ -2133,8 +2438,242 @@ def load_document_types(request):
     else:
         return JsonResponse({'error': 'Invalid category'}, status=400)
 
+def mask_password(password):
+    if len(password) <= 2:
+        return '*' * len(password)  # Fully mask short passwords
+    return password[0] + '*' * (len(password) - 2) + password[-1]
+
 #USER UPDATE STATUS AND EMAILING FUNCTION
 def update_user_status(request, user_id, action, office, user_type):
+
+    loggedin_user_id = request.session.get('user_id')
+    if not loggedin_user_id:
+        return redirect('user_login')
+    
+    user = User.objects.get(pk=user_id)
+    login_url = request.build_absolute_uri(reverse("user_login"))
+    
+    # Perform action and define subject & message
+    if action == 'verify':
+        activity = 'User Verified'
+        user.status = 'active'
+        subject = 'TrackIt: Your Account Has Been Verified'
+
+        masked_password = mask_password(user.password)
+
+        # HTML message for account verification
+        html_message = f"""
+        <html>
+        <head>{common_style}</head>
+        <body>
+            <div class="email-container">
+                <div class="email-header">
+                    <h1>TrackIt: Account Verified</h1>
+                </div>
+                <div class="email-content">
+                    <p>Hello {user.firstname},</p>
+                    <p>Your account has been verified and is now active.</p>
+                    <p><strong>User ID:</strong> {user.user_id}</p>
+                    <p><strong>Password:</strong> {masked_password}</p>
+                    <p>Please keep this information secure.</p>
+                    <p>
+                        <a href="{login_url}" class="button">Go to TrackIt</a>
+                    </p>
+                </div>
+                <div class="email-footer">
+                    <p>Regards,<br>TrackIt Team</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+
+        plain_message = strip_tags(html_message)
+
+    elif action == 'reject':
+        activity = 'User Rejected'
+        user.status = 'rejected'
+        subject = 'TrackIt: Your Account Has Been Rejected'
+        html_message = f"""
+        <html>
+        <head>{common_style}</head>
+        <body>
+            <div class="email-container">
+                <div class="email-header">
+                    <h1>TrackIt: Account Rejected</h1>
+                </div>
+                <div class="email-content">
+                    <p>Hello {user.firstname},</p>
+                    <p>Unfortunately, your account has been rejected. Please contact support for more information.</p>
+                </div>
+                <div class="email-footer">
+                    <p>Regards,<br>TrackIt Team</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        plain_message = strip_tags(html_message)
+
+    elif action == 'deactivate':
+        activity = 'User Deactivated'
+        user.status = 'inactive'
+        subject = 'TrackIt: Your Account Has Been Deactivated'
+        html_message = f"""
+        <html>
+        <head>
+            <style>
+                body {{
+                    font-family: 'Arial', sans-serif;
+                    background-color: #f4f4f4;
+                    margin: 0;
+                    padding: 0;
+                    line-height: 1.6;
+                    color: #333;
+                }}
+                .email-container {{
+                    background-color: #ffffff;
+                    padding: 30px;
+                    border-radius: 10px;
+                    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+                    max-width: 600px;
+                    margin: 50px auto;
+                    overflow: hidden;
+                }}
+                .email-header {{
+                    background-color: #7F7F7F; 
+                    padding: 20px;
+                    text-align: center;
+                    color: #fff;
+                    font-size: 24px;
+                    font-weight: bold;
+                    border-radius: 10px 10px 0 0;
+                }}
+                .email-content {{
+                    padding: 30px;
+                    font-size: 16px;
+                    color: #555;
+                }}
+                .email-content p {{
+                    margin: 0 0 20px;
+                }}
+                .email-content h1 {{
+                    font-size: 22px;
+                    margin-bottom: 10px;
+                    color: #007BFF;
+                }}
+                .email-footer {{
+                    text-align: center;
+                    padding: 20px;
+                    background-color: #f8f9fa;
+                    border-top: 1px solid #dddddd;
+                    font-size: 14px;
+                    color: #777777;
+                }}
+                .email-footer p {{
+                    margin: 0;
+                }}
+            </style>
+        </head>
+        <body>
+            <div class="email-container">
+                <div class="email-header">
+                    <h1>TrackIt: Account Deactivated</h1>
+                </div>
+                <div class="email-content">
+                    <p>Hello {user.firstname},</p>
+                    <p>Your account has been deactivated. Please contact support if you wish to reactivate it.</p>
+                    <p>If you have any questions, feel free to reach out.</p>
+                </div>
+                <div class="email-footer">
+                    <p>Regards,<br>TrackIt Team</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        plain_message = strip_tags(html_message)
+
+    elif action == 'archive':
+        activity = 'User Archived'
+        user.status = 'archived'
+        subject = 'TrackIt: Your Account Has Been Archived'
+        html_message = f"""
+        <html>
+        <head>{common_style}</head>
+        <body>
+            <div class="email-container">
+                <div class="email-header">
+                    <h1>TrackIt: Account Archived</h1>
+                </div>
+                <div class="email-content">
+                    <p>Your account has been archived and you will not be able to log in anymore.</p>
+                </div>
+                <div class="email-footer">
+                    <p>Regards,<br>TrackIt Team</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        plain_message = strip_tags(html_message)
+
+    elif action == 'reactivate':
+        activity = 'User Reactivated'
+        user.status = 'active'
+        subject = 'TrackIt: Your Account Has Been Reactivated'
+        html_message = f"""
+        <html>
+        <head>{common_style}</head>
+        <body>
+            <div class="email-container">
+                <div class="email-header">
+                    <h1>TrackIt: Account Reactivated</h1>
+                </div>
+                <div class="email-content">
+                    <p>Your account has been reactivated and is now active.</p>
+                    <p>
+                        <a href="{login_url}" class="button">Go to TrackIt</a>
+                    </p>
+                </div>
+                <div class="email-footer">
+                    <p>Regards,<br>TrackIt Team</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        plain_message = strip_tags(html_message)
+
+    else:
+        return HttpResponse("Invalid action", status=400)
+
+    user.save()
+
+    UserManagementLogs.objects.create(
+        time_stamp = timezone.now(),
+        employee=user,
+        activity=activity,
+        user=loggedin_user_id
+    )
+
+    # Send the email using EmailMultiAlternatives
+    email = EmailMultiAlternatives(
+        subject=subject,
+        body=plain_message,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=[user.email]
+    )
+    email.attach_alternative(html_message, "text/html")
+    email.send(fail_silently=False)
+
+    role = loggedin_user_id.split('-')[0]
+    # Redirect based on the form source
+    if role == 'DIR':
+        return redirect('director_user_management', office=office)
+    else:
+        print('system admin')
+        return redirect('system_admin_user_management', office=office)
 
     loggedin_user_id = request.session.get('user_id')
     if not loggedin_user_id:
@@ -2867,9 +3406,11 @@ def document_update_status(request, action, document_no):
                 # If it's the last route
                 print("Last route reached")
                 status = 'For Archiving'
+                act_receiver = 'ADO-1001'
         else:
             print("1 route only")
             status = 'For Archiving'
+            act_receiver = 'ADO-1001'
 
         days_deadline = document.document_type.priority_level.deadline
         document.ongoing_deadline = date.today() + timedelta(days=days_deadline)
@@ -3423,12 +3964,17 @@ def sro_update_records_display(request, panel):
     sort_by = request.GET.get('sort_by')
     order = request.GET.get('order', 'asc')
 
+    selected_documents = request.session.get('selected_documents', [])
+    selection = False
+
     if panel == 'For-ACT-Forwarding':
         documents = Document.objects.filter(status='For SRO Receiving', next_route=office).order_by('-recent_update')
         status = 'For ACT Forwarding'
+        selection = True
     elif panel == 'For-Resolving':
         documents = Document.objects.filter(status='For Resolving', next_route=office).order_by('-recent_update')
         status = 'For Resolving'
+        selection = True
     elif panel == 'For-ACT-Receiving':
         documents = Document.objects.filter(status='For ACT Receiving', next_route=office).order_by('-recent_update')
         status = 'For ACT Receiving'
@@ -3455,13 +4001,15 @@ def sro_update_records_display(request, panel):
         documents = sort_documents_sro(documents, sort_by, order, status, office)
 
     context = {
+        'selected_documents': selected_documents,
+        'selection': selection,
         'documents': documents,
         'search_query': search_query,
         'user': 'SRO',
         'today': date.today()
     }
 
-    html = render_to_string('partials/display-records.html', context)
+    html = render_to_string('partials/display-records-with-mult-update.html', context)
     return JsonResponse({'html': html})
 
 def action_officer_update_records_display(request):
@@ -3474,6 +4022,8 @@ def action_officer_update_records_display(request):
     search_query = request.GET.get('search', '').strip()
     sort_by = request.GET.get('sort_by')
     order = request.GET.get('order', 'asc')
+
+    selected_documents = request.session.get('selected_documents', [])
 
     documents = Document.objects.filter(status='For ACT Receiving', act_receiver=user_id).order_by('-recent_update')
 
@@ -3496,13 +4046,15 @@ def action_officer_update_records_display(request):
         documents = sort_documents_act(documents, sort_by, order, user_id)
 
     context = {
+        'selection': True,
+        'selected_documents': selected_documents,
         'documents': documents,
         'search_query': search_query,
         'user': 'ACT',
         'today': date.today()
     }
 
-    html = render_to_string('partials/display-records.html', context)
+    html = render_to_string('partials/display-records-with-mult-update.html', context)
     return JsonResponse({'html': html})
 
 def update_reports_display(request, report_type):
@@ -4276,6 +4828,28 @@ def multiple_update_reject_remarks(request, remarks_no):
 
     return JsonResponse(data)
 
+"""def unprioritized_multiple_update_remarks(request, remarks_no):
+
+    if request.method == 'POST':
+
+        activity_logs_no = request.POST.getlist('activityLogsNo')
+        activity_logs_no = ast.literal_eval(activity_logs_no[0])
+
+        documents_no = request.POST.get('checkedValues')
+        documents_no = json.loads(documents_no)
+        documents_no = list(map(int, documents_no))
+
+        remarks = request.POST.get('remarks')
+        file_attachment = request.FILES.get('attachment')
+
+
+
+    data = {
+        'success': 'success'
+    }
+
+    return JsonResponse(data)"""
+
 def change_priority_level(request, document_no, activity_log_no):
 
     if request.method == 'POST':
@@ -4579,6 +5153,63 @@ def edit_profile(request):
         request.session['user_profile'] = user_profile
 
     return JsonResponse({'status': 'success'})
+
+def change_password(request):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('user_login')  # Redirect if not logged in
+    
+    # Get the user from the database using the user_id from the session
+    user = get_object_or_404(User, user_id=user_id)
+    
+    if request.method == 'POST':
+        form = ChangePasswordForm(user, request.POST)
+        
+        if form.is_valid():
+            # Update user's password directly, as per your request
+            new_password = form.cleaned_data['new_password']
+            user.password = new_password  # Direct assignment of the new password
+            user.save()
+
+            # Update session data (if needed)
+            request.session['user_profile'] = {
+                'user_id': user.user_id,
+                'role': user.role,
+                'firstname': user.firstname.title(),
+                'middlename': user.middlename.title() if user.middlename else "",
+                'lastname': user.lastname.title(),
+                'email': user.email,
+                'contact_no': user.contact_no,
+                'profile_picture': user.profile_picture.name
+            }
+
+            return JsonResponse({
+                'status': 'success',
+                'icon': 'success',
+                'title': 'Password Changed',
+                'message': 'Your password has been updated successfully!',
+                'background_color': '#d4edda'
+            })
+
+        # Return form errors as JSON if the form is invalid
+        errors = form.errors.as_json()
+        return JsonResponse({
+            'status': 'error',
+            'icon': 'error',
+            'title': 'Password Change Failed',
+            'message': 'There were some issues with your submission. Please double check your input.',
+            'background_color': '#f8d7da',
+            'errors': errors
+        })
+
+    # Invalid request type
+    return JsonResponse({
+        'status': 'invalid_request',
+        'icon': 'info',
+        'title': 'Invalid Request',
+        'message': 'Only POST requests are allowed for this operation.',
+        'background_color': '#fff3cd'
+    }, status=400)
 
 
 # ------------------ ANNOUNCEMENTS -----------------------

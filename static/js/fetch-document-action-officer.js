@@ -24,25 +24,24 @@ function fetchDocuments() {
             let noOfRecords = document.getElementById('docuLength').value;
             document.getElementById('recordCount').textContent = noOfRecords;
             bindViewButtons();
-            bindRouteButtons();
-            bindArchiveButtons();
+            bindEndorseButtons();
     });
 }
 
-function bindRouteButtons() {
+function bindEndorseButtons() {
     
     const table = document.querySelector('#recordsTable');
-    const routeButtons = document.querySelectorAll('.route-btn');
-    const routeModal = new bootstrap.Modal(document.getElementById('routeDocumentModal'),{
+    const endorseButtons = document.querySelectorAll('.endorse-btn');
+    const endorseModal = new bootstrap.Modal(document.getElementById('endorseDocumentModal'),{
         backdrop: 'static',
         keyboard: false
     });
-    const routeMultipleDocumentsModal = new bootstrap.Modal(document.getElementById('routeMultipleDocumentsModal'),{
+    const endorseMultipleDocumentsModal = new bootstrap.Modal(document.getElementById('endorseMultipleDocumentsModal'),{
         backdrop: 'static',
         keyboard: false
     });
     
-    routeButtons.forEach(button => {
+    endorseButtons.forEach(button => {
 
         button.addEventListener('click', function () {
 
@@ -66,16 +65,16 @@ function bindRouteButtons() {
             if (checkedValues.length > 1) {
 
                 document.getElementById('selectedDocsCount').innerHTML = checkedValues.length;
-                routeMultipleDocumentsModal.show();
+                endorseMultipleDocumentsModal.show();
 
                 let remarksNo;
                 let activityLogsNo = [];
 
-                document.getElementById('confirmMultipleDocsRoute').addEventListener('click', function() {
+                document.getElementById('confirmMultipleDocsEndorse').addEventListener('click', function() {
                     
                     checkedValues.forEach((element, index) => {
                         
-                        fetch(`/document-update-status/route/${element}`)
+                        fetch(`/document-update-status/endorse/${element}`)
                             .then(response => response.json())
                             .then(data => {
                                 if(index == 0) {
@@ -86,7 +85,7 @@ function bindRouteButtons() {
                             .catch(error => console.error('Error', error));
                     });
 
-                    routeMultipleDocumentsModal.hide();
+                    endorseMultipleDocumentsModal.hide();
 
                 });
                 
@@ -118,11 +117,11 @@ function bindRouteButtons() {
                 
             } else {
                 
-                routeModal.show();
+                endorseModal.show();
                 
-                document.getElementById('confirmRoute').addEventListener('click', function() {
+                document.getElementById('confirmEndorse').addEventListener('click', function() {
 
-                    fetch(`/document-update-status/route/${checkedValues[0]}/`)
+                    fetch(`/document-update-status/endorse/${checkedValues[0]}/`)
                         .then(response => response.json())
                         .then(data => {
                             document.getElementById('saveRemarks').setAttribute('data-remarks-no', data.remarks_no);
@@ -141,119 +140,18 @@ function bindRouteButtons() {
     });
 
     
-    document.getElementById('cancelRouteBtn').addEventListener('click', function() {
-        routeModal.hide();
+    document.getElementById('cancelEndorseBtn').addEventListener('click', function() {
+        endorseModal.hide();
         resetSelection(table);
     });
     
-    document.getElementById('cancelRouteMultipleDocsBtn').addEventListener('click', function() {
-        routeMultipleDocumentsModal.hide();
+    document.getElementById('cancelEndorseMultipleDocsBtn').addEventListener('click', function() {
+        endorseMultipleDocumentsModal.hide();
         resetSelection(table);
     });
 
-    document.getElementById('confirmRoute').addEventListener('click', function () {
-        routeModal.hide();
-    });
-    
-}
-
-function bindArchiveButtons() {
-    
-    const table = document.querySelector('#recordsTable');
-    const archiveButtons = document.querySelectorAll('.archive-btn');
-    const archiveModal = new bootstrap.Modal(document.getElementById('archiveDocumentModal'),{
-        backdrop: 'static',
-        keyboard: false
-    });
-    const archiveMultipleDocumentsModal = new bootstrap.Modal(document.getElementById('archiveMultipleDocumentsModal'),{
-        backdrop: 'static',
-        keyboard: false
-    });
-    
-    archiveButtons.forEach(button => {
-
-        button.addEventListener('click', function () {
-
-            const documentNo = this.getAttribute('data-document-no');
-
-            const checkbox = document.querySelector(`input[type="checkbox"][value="${documentNo}"]`);
-
-            if (checkbox && checkbox.checked) {
-                console.log("this option is checked");
-            } else {
-                checkbox.checked = true; 
-                const event = new Event('change', { bubbles: true, cancelable: true });
-                checkbox.dispatchEvent(event);
-            }
-
-            const checkboxes = table.querySelectorAll('input[type="checkbox"]');
-            const checkedValues = Array.from(checkboxes)
-                .filter(checkbox => checkbox.checked)
-                .map(checkbox => checkbox.value);
-        
-            if (checkedValues.length > 1) {
-
-                console.log("checked vaues: " + checkedValues.length);
-
-                document.getElementById('selectedDocsCountArchive').innerHTML = checkedValues.length;
-                archiveMultipleDocumentsModal.show();
-
-                let remarksNo;
-                let activityLogsNo = [];
-
-                document.getElementById('confirmMultipleDocsArchive').addEventListener('click', function() {
-                    
-                    checkedValues.forEach((element, index) => {
-                        
-                        fetch(`/document-update-status/archive/${element}`)
-                            .then(response => response.json())
-                            .then(data => {
-                                if(index == 0) {
-                                    remarksNo = data.remarks_no;
-                                }
-                                activityLogsNo.push(data.activity_log_no);
-                            })
-                            .catch(error => console.error('Error', error));
-                    });
-
-                    archiveMultipleDocumentsModal.hide();
-
-                });
-                
-            } else {
-                
-                archiveModal.show();
-                
-                document.getElementById('confirmArchive').addEventListener('click', function() {
-
-                    fetch(`/document-update-status/archive/${checkedValues[0]}/`)
-                        .then(response => response.json())
-                        .then(data => {
-                            console.log("successfully archived");
-                        })
-                        .catch(error => console.error('Error', error));
-
-                });
-                
-            }
-            
-        });
-
-    });
-
-    
-    document.getElementById('cancelArchiveBtn').addEventListener('click', function() {
-        archiveModal.hide();
-        resetSelection(table);
-    });
-    
-    document.getElementById('cancelArchiveMultipleDocsBtn').addEventListener('click', function() {
-        archiveMultipleDocumentsModal.hide();
-        resetSelection(table);
-    });
-
-    document.getElementById('confirmArchive').addEventListener('click', function () {
-        archiveModal.hide();
+    document.getElementById('confirmEndorse').addEventListener('click', function () {
+        endorseModal.hide();
     });
     
 }
@@ -267,8 +165,7 @@ function resetSelection(table) {
     
 
     const selectAllBtn = document.getElementById('selectAllBtn');
-    selectAllBtn.innerHTML = "<i class='bx bxs-checkbox-checked fs-4' style='color:#2e72ea' ></i>";
-    //selectAllBtn.innerHTML = 'Select All';
+    selectAllBtn.innerHTML = 'Select All';
 
     documents_no = [0,0]
 

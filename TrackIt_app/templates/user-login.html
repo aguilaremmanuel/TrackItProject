@@ -50,6 +50,7 @@
 								{% endif %}
                             {% endfor %}
                     {% endif %}
+					
 
                     <!-- Add form method and action -->
 					<form method="POST" action="{% url 'user_login' %}">
@@ -58,22 +59,30 @@
 						<div class="row mb-3">
 							<div>
 								<label for="employeeID" class="form-label">User ID</label>
-								<input type="text" name="user_id" class="form-control" placeholder="Enter User ID" required>
+								<input type="text" name="user_id" class="form-control" id="user_id" 
+									placeholder="Enter User ID" 
+									value="{{ remembered_user_id|default_if_none:'' }}"  
+									{% if ban_time_left > 0 %}disabled{% endif %} required>	
 							</div>
-						</div>
+						</div>	
 
 						<div class="row mb-3">
 							<div> 
 								<label for="password" class="form-label">Password</label>
-								<input type="password" name="password" class="form-control" id="password" placeholder="Enter Password" required>
-								<i class="fa-regular fa-eye toggle-pass" id="togglePassword"></i>
+								<!--<input type="password" name="password" class="form-control" id="password" placeholder="Enter Password" required>-->
+								<input type="password" name="password" class="form-control" id="password" 
+									placeholder="Enter Password" 
+									value="{{ remembered_password|default_if_none:'' }}" 
+									{% if ban_time_left > 0 %}disabled{% endif %} required>
+									<i class="fa-regular fa-eye toggle-pass" id="togglePassword"></i>
 							</div>
 						</div>
 
 						<div class="row mb-3">
 							<div class="col">
 								<div class="form-check py-0 mb-0">
-									<input type="checkbox" id="rememberMe" class="form-check-input">
+									<input type="checkbox" id="rememberMe" name="remember_me" class="form-check-input"
+										{% if remember_me_checked %}checked{% endif %}>
 									<label for="rememberMe" class="fw-semibold">Remember me</label>
 								</div>
 							</div>
@@ -82,7 +91,10 @@
 							</div>
 						</div>
 
-						<button type="submit" class="btn btn-primary w-100">Login</button>
+						<button type="submit" class="btn btn-primary w-100" id="loginButton" 
+							{% if ban_time_left > 0 %}disabled{% endif %}>
+							Login
+						</button>
 
 						<div class="mt-5 mb-4 text-center">
 							<p>Don't have an account? <a href="{% url 'user_signup' %}">Sign Up</a></p>
@@ -93,7 +105,113 @@
 			</div>
 		</div>
 	</section>
+
+	{% if two_factor_step %}
+	<div class="modal" tabindex="-1" id="twoFactorModal" style="display:block;">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Two-Factor Authentication</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="closeModal()"></button>
+				</div>
+				<div class="modal-body">
+					<p>Please enter the 6-digit code sent to your email.</p>
+					<form method="POST" action="{% url 'user_login' %}">
+						{% csrf_token %}
+						<input type="text" name="two_factor_code" class="form-control mb-3" placeholder="Enter 6-digit code" required>
+						<button type="submit" class="btn btn-primary">Verify Code</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	{% endif %}
+
+	<!--123-->
+	<div class="modal fade" id="banModal" tabindex="-1" aria-labelledby="banModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header bg-danger text-white justify-content-center">
+					<h5 class="modal-title text-white" id="banModalLabel">Temporary Ban</h5>
+				</div>
+				<div class="modal-body text-center">
+					<p class="lead mb-4">You have been temporarily banned for multiple failed login attempts.</p>
+					<p class="fs-5">Please try again in <span id="banCountdown" class="fw-bold text-danger">0</span> seconds.</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		function closeModal() {
+			document.getElementById('twoFactorModal').style.display = 'none';
+		}
+	</script>
 	<script src="{% static 'js/toggle-pass.js' %}"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+	<!--123-->
+	<script>
+		let banTime = {{ ban_time_left|default:"0" }}; // Seconds left in ban
+		const countdown = document.getElementById('banCountdown');
+		const userIdField = document.getElementById('user_id');
+		const passwordField = document.getElementById('password');
+		const loginButton = document.getElementById('loginButton');
+	
+		if (banTime > 0) {
+			const modalElement = document.getElementById('banModal');
+			const modal = new bootstrap.Modal(modalElement, {
+				backdrop: 'static', // Prevent closing by clicking outside
+				keyboard: false     // Prevent closing via Esc key
+			});
+			modal.show();
+			countdown.textContent = banTime;
+	
+			const interval = setInterval(() => {
+				banTime--;
+				countdown.textContent = banTime;
+	
+				if (banTime <= 0) {
+					clearInterval(interval);
+					modal.hide();
+					userIdField.removeAttribute('disabled');
+					passwordField.removeAttribute('disabled');
+					loginButton.removeAttribute('disabled');
+				}
+			}, 1000);
+		}
+
+		// User ID input restrictions
+		userIdField.addEventListener('input', function (event) {
+			// Convert all input to uppercase
+			this.value = this.value.toUpperCase();
+			// Trim spaces from start and end
+			this.value = this.value.replace(/^\s+|\s+$/g, '');
+			// Replace multiple spaces in the middle with a single space
+			this.value = this.value.replace(/\s{2,}/g, ' ');
+			// Enforce max length
+			if (this.value.length > 10) {
+				this.value = this.value.substring(0, 10);
+			}
+		});
+
+		userIdField.addEventListener('keypress', function (event) {
+			const char = String.fromCharCode(event.which);
+			const currentValue = this.value;
+
+			// Allow input only if it's not a space at the beginning
+			if (char === ' ' && currentValue.trim().length === 0) {
+				event.preventDefault();
+			}
+			// Prevent typing when max length is reached
+			if (currentValue.length >= 10) {
+				event.preventDefault();
+			}
+		});
+	</script>
+
+	
 </body>
 </html>
+
+

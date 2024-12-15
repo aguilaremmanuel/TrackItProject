@@ -145,9 +145,12 @@
                     </ul>
         
                     <div class="table-tab-wrapper table-responsive d-flex mt-2">
-                        <table class="table mb-1 with-action">
+                        <table id="recordsTable" class="table mb-1 with-action">
                             <thead>
                                 <tr>
+                                    {% if panel == 'For-ACT-Forwarding' or panel == 'For-Resolving' %}
+                                    <th><a id="selectAllBtn" href="#"><i class='bx bxs-checkbox-checked fs-4' style='color:#2e72ea' ></i></a></th>
+                                    {% endif %}
                                     <th>Tracking Number</th>
                                     <th>
                                         Status 
@@ -255,6 +258,24 @@
         </div>
     </div>
 
+    <!-- Forward Multiple Documents Modal -->
+    <div class="modal fade" id="forwardMultipleDocumentsModal">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0">
+                    <h5 class="modal-title" id="forwardMultipleDocumentsModalLabel"><span id="selectedDocsCount">0</span> Documents Are Selected</h5>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to forward all selected documents? Once forwarded, they will be sent to the assigned recipient for further processing.</p>
+                </div>
+                <div class="modal-footer p-3 pt-0 border-top-0">
+                    <button type="button" id="cancelForwardMultipleDocsBtn" class="m-0 my-2 btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="m-0 my-2 btn btn-success" data-user="SRO" id="confirmMultipleDocsForward">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Resolve Document Modal -->
     <div class="modal fade" id="resolveDocumentModal" tabindex="-1" aria-labelledby="resolveDocumentModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -269,6 +290,24 @@
                     <button type="button" id="cancelResolveBtn" class="m-0 my-2 btn btn-light" data-bs-dismiss="modal">Cancel</button>
                     <button type="button" class="m-0 my-2 btn btn-success" data-user="SRO" id="confirmResolve">Confirm</button>
                 </div>  
+            </div>
+        </div>
+    </div>
+
+    <!-- Resolve Multiple Documents Modal -->
+    <div class="modal fade" id="resolveMultipleDocumentsModal">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0">
+                    <h5 class="modal-title" id="resolveMultipleDocumentsModalLabel"><span id="selectedDocsCountResolve">0</span> Documents Are Selected</h5>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to resorve all selected documents? Once resolved, they will be endorsed for archiving or final processing.</p>
+                </div>
+                <div class="modal-footer p-3 pt-0 border-top-0">
+                    <button type="button" id="cancelResolveMultipleDocsBtn" class="m-0 my-2 btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="m-0 my-2 btn btn-success" data-user="SRO" id="confirmMultipleDocsResolve">Confirm</button>
+                </div>
             </div>
         </div>
     </div>
@@ -338,6 +377,37 @@
                 </div>
                 <div class="modal-footer p-3 pt-0 border-top-0">
                     <button type="button" class="m-0 mt-1 mb-2 btn btn-primary w-100" id="saveRemarks">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Remarks and Attachment Modal for Multiple Update -->
+    <div class="modal fade" id="addRemarksAttachmentModalForMultipleUpdate" tabindex="-1" aria-labelledby="addRemarksAttachmentModalForMultipleUpdateLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0">
+                    <h5 class="modal-title" id="addRemarksAttachmentModalForMultipleUpdateLabel">Add Remarks & Attachment</h5>
+                    <button type="button" id="addRemarksMultipleUpdateCloseBtn" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="actionMessageMultiple" class="mb-3"></p>
+                    <form method="post" action="" id="remarksFormForMultipleUpdate" enctype="multipart/form-data">
+                        {% csrf_token %}
+    
+                        <div class="form-group mb-3">
+                            <label for="remarksTextarea" class="form-label">Remarks</label>
+                            <textarea class="form-control" name="remarks" id="remarksMultiple" rows="3" placeholder="Add any additional remarks here..."></textarea>
+                        </div>
+
+                        <div id="option1Multiple">
+                            <input class="form-control form-file" type="file" id="attachmentFileMultiple" accept=".pdf" name="attachment">
+                        </div>
+        
+                    </form>
+                </div>
+                <div class="modal-footer p-3 pt-0 border-top-0">
+                    <button type="button" class="m-0 mt-1 mb-2 btn btn-primary w-100" id="saveRemarksMultiple">Save Changes</button>
                 </div>
             </div>
         </div>
@@ -530,6 +600,20 @@
                         trackDocumentModal.show();
                     });
 
+                    document.getElementById('confirmForward').addEventListener('click', function() {
+                        const documentNo = "{{scanned_document_no}}";
+                        fetch(`/document-update-status/forward/${documentNo}/`)
+                            .then(response => response.json())
+                            .then(data => {
+                                document.getElementById('saveRemarks').setAttribute('data-remarks-no', data.remarks_no);
+                                document.getElementById('saveRemarks').setAttribute('data-document-no', documentNo);
+                                document.getElementById('saveRemarks').removeAttribute('data-activity-log-no');
+                                console.log(data.activity_log_no);
+                                document.getElementById('saveRemarks').setAttribute('data-activity-log-no', data.activity_log_no);
+                            })
+                            .catch(error => console.error('Error', error));
+                    });
+
                     document.getElementById('addRemarksAttachmentModal').addEventListener('hide.bs.modal', function () {
                         refreshURL();
                     });
@@ -579,6 +663,20 @@
 
                     document.getElementById('cancelResolveBtn').addEventListener('click', function() {
                         trackDocumentModal.show();
+                    });
+
+                    document.getElementById('confirmResolve').addEventListener('click', function() {
+                        const documentNo = "{{scanned_document_no}}";
+                        fetch(`/document-update-status/resolve/${documentNo}/`)
+                            .then(response => response.json())
+                            .then(data => {
+                                document.getElementById('saveRemarks').setAttribute('data-remarks-no', data.remarks_no);
+                                document.getElementById('saveRemarks').setAttribute('data-document-no', documentNo);
+                                document.getElementById('saveRemarks').removeAttribute('data-activity-log-no');
+                                console.log(data.activity_log_no);
+                                document.getElementById('saveRemarks').setAttribute('data-activity-log-no', data.activity_log_no);
+                            })
+                            .catch(error => console.error('Error', error));
                     });
 
                     document.getElementById('addRemarksAttachmentModal').addEventListener('hide.bs.modal', function () {
@@ -678,13 +776,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'js/toggle-sidebar.js' %}"></script>
     <script src="{% static 'js/clear-search.js' %}"></script> 
-    <script src="{% static 'js/fetch-document.js' %}"></script>
+    <script src="{% static 'js/fetch-document-sro.js' %}"></script>
     <script src="{% static 'js/qr-code.js' %}"></script>
-    <script src="{% static 'js/update-document-status.js' %}"></script>
     <script src="{% static 'js/add-remarks.js' %}"></script>
     <script src="{% static 'js/generate-document-report.js' %}"></script>
     <script src="{% static 'js/filter-dropdown.js' %}"></script>
     <script src="{% static 'js/filter-records.js' %}"></script>
+    <script src="{% static 'js/select-document.js' %}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Initialize all modals
@@ -699,6 +797,10 @@
                 keyboard: false
             });
             const remarksModal = new bootstrap.Modal(document.getElementById('addRemarksAttachmentModal'),{
+                backdrop: 'static',
+                keyboard: false
+            });
+            const remarksModalForMultipleUpdate = new bootstrap.Modal(document.getElementById('addRemarksAttachmentModalForMultipleUpdate'),{
                 backdrop: 'static',
                 keyboard: false
             });
@@ -730,6 +832,20 @@
                 resolveModal.hide();
                 actionMessage.textContent = "The document has been successfully resolved. Add any additional remarks and upload necessary attachment related to this action below, or leave as blank if not applicable.";
                 remarksModal.show();
+            });
+
+            document.getElementById('confirmMultipleDocsForward').addEventListener('click', function () {
+                actionMessageMultiple.textContent = "The documents have been forwarded. Add any additional remarks and upload necessary attachment related to this action below, or leave as blank if not applicable.";
+                remarksModalForMultipleUpdate.show();
+            });
+
+            document.getElementById('confirmMultipleDocsResolve').addEventListener('click', function () {
+                actionMessageMultiple.textContent = "The documents have been resolved. Add any additional remarks and upload necessary attachment related to this action below, or leave as blank if not applicable.";
+                remarksModalForMultipleUpdate.show();
+            });
+
+            document.getElementById('saveRemarksMultiple').addEventListener('click', function () {
+                remarksModalForMultipleUpdate.hide();
             });
     
             // Handle radio button changes to show/hide attachment options

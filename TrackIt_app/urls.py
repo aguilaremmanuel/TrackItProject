@@ -9,6 +9,8 @@ urlpatterns = [
     path('', views.user_login, name='user_login'),
     path('login/', views.user_login, name='user_login'),
     path('logout/', views.user_logout, name='user_logout'),
+    path('toggle-two-factor/', views.toggle_two_factor, name='toggle_two_factor'),  
+    path('change_password/', views.change_password, name='change_password'),
     path('signup/',views.user_signup, name='user_signup'),
 
     #path('admin-login/',views.system_admin_login, name='system_admin_login'),
@@ -143,6 +145,7 @@ urlpatterns = [
 
     path('multiple-update-remarks/<int:remarks_no>/', views.multiple_update_remarks, name='multiple_update_remarks'),
     path('multiple-update-reject-remarks/<int:remarks_no>/', views.multiple_update_reject_remarks, name='multiple_update_reject_remarks'),
+    #path('unprioritized-multiple-update-remarks/<int:remarks_no>/', views.unprioritized_multiple_update_remarks, name='unprioritized_multiple_update_remarks'),
 
     path('change-priority-level-multiple-documents/', views.change_priority_level_multiple_documents, name='change_priority_level_multiple_documents'),
 

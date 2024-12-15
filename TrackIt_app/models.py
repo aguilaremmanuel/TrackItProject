@@ -27,6 +27,9 @@ class User(models.Model):
     receive_recent = models.BooleanField(default=False)
     max_load_per_day = models.IntegerField(default=5)
     profile_picture = models.ImageField(upload_to='profile_pics/', null=True)
+    # New fields for 2FA
+    two_factor_enabled = models.BooleanField(default=False)
+    two_factor_code = models.CharField(max_length=6, null=True, blank=True)
     class Meta:
         db_table = 'tbl_user'
 

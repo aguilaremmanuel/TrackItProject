@@ -17,6 +17,56 @@
     <title>New Record</title>
 
     <style>
+        .progress-circle {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .progress-circle .inner-content {
+            position: absolute;
+            width: 110px;
+            height: 110px;
+            background: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+         /* Styling for displayMessage alert box */ 
+        .alert-box {
+            position: fixed;
+            top: 5%; /* Adjusted position towards the top */
+            left: 50%;
+            transform: translateX(-50%); /* Center horizontally */
+            max-width: 300px;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            color: #333;
+            font-size: 14px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 9999; /* Ensures it's above the modal */
+        }
+
+        .alert-icon {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        .alert-content p {
+            margin: 0;
+        }
+    </style>
+
+    <style>
         /* Optional styling */
         .input-container {
             display: none; /* Hidden by default */
@@ -33,8 +83,7 @@
             <header class="header">
                 <button class="toggle-sidebar" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
                 <div class="header-right">
-                    <!-- NOTIFICATIONS UI -->
-                    {% include "partials/display-notifications.html" %}
+                    <button class="toggle-notification" id="notification" title="Notifications"><i class="fa-solid fa-bell"></i></button>
                     <!---->
                     <div class="dropdown">
                         <button class="profile m-0" type="button" id="profileDropdown" data-bs-toggle="dropdown">
@@ -356,8 +405,201 @@
             </div>
         </div>
     </div>
-        
-    
+
+
+    <!-- Settings Modal -->
+    <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0">
+                    <h5 class="modal-title" id="settingsModalLabel">Account Settings</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body mt-1 pt-2">
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Account Password</label>
+                        <p class="mb-2">If you wish to change your password, please click the button below.</p>
+                        <button type="button" class="btn btn-secondary w-100" data-bs-toggle="modal" data-bs-target="#changePasswordModal" style="font-size: 14px;" >Set New Password</button>
+                    </div>
+
+                    <div class="mb-2">
+                        <label for="receiveEmails" class="form-label">Receive Emails</label>
+                        <div class="row">
+                            <div class="col">
+                                <p class="mb-2">Choose whether to receive updates and notifications via email.</p>
+                            </div>
+                            <div class="col-auto">
+                                <div class="form-check form-switch mt-2">
+                                    <input class="form-check-input" type="checkbox" id="receiveEmails" role="switch" style="transform: scale(1.25);">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Past 2FA
+                    <div class="mb-1">
+                        <label for="twoFactorAuth" class="form-label">Two-Factor Authentication</label>
+                        <div class="row">
+                            <div class="col">
+                                <p class="mb-2">Choose whether to enable two-factor authentication for added security.</p>
+                            </div>
+                            <div class="col-auto">
+                                <div class="form-check form-switch mt-2">
+                                    <input class="form-check-input" type="checkbox" id="twoFactorAuth" role="switch" style="transform: scale(1.25);">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    -->
+
+                    <div class="mb-1">
+                        <label for="twoFactorAuth" class="form-label">Two-Factor Authentication</label>
+                        <div class="row">
+                            <div class="col">
+                                <p class="mb-2">Choose whether to enable two-factor authentication for added security.</p>
+                            </div>
+                            <div class="col-auto">
+                                <div class="form-check form-switch mt-2">
+                                    <input class="form-check-input" type="checkbox" id="twoFactorAuth" role="switch" style="transform: scale(1.25);"
+                                        {% if request.session.user_profile.two_factor_enabled %}checked{% endif %}>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0">
+                    <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-3">Your password must contain at least 8 characters with a special character and an uppercase letter.</p>
+                    <form id="changePasswordForm" method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="currentPassword" class="form-label">Current Password</label>
+                            <input type="password" name="current_password" class="form-control" id="currentPassword" required>
+                            <i class="fa-regular fa-eye toggle-pass" onclick="togglePasswordVisibility('currentPassword')" id="toggleCurrentPassword"></i>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newPassword" class="form-label">New Password</label>
+                            <input type="password" name="new_password" class="form-control" id="newPassword" required>
+                            <i class="fa-regular fa-eye toggle-pass" onclick="togglePasswordVisibility('newPassword')" id="toggleNewPassword"></i>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmNewPassword" class="form-label">Confirm New Password</label>
+                            <input type="password" name="confirm_new_password" class="form-control" id="confirmNewPassword" required>
+                            <i class="fa-regular fa-eye toggle-pass" onclick="togglePasswordVisibility('confirmNewPassword')" id="toggleConfirmNewPassword"></i>
+                        </div>
+                        <button type="submit" class="w-100 mt-1 mb-2 btn btn-primary">Create New Password</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2FA Present JS-->
+    <script>
+        document.getElementById('twoFactorAuth').addEventListener('change', function() {
+            const isEnabled = this.checked;
+            fetch("{% url 'toggle_two_factor' %}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ two_factor_enabled: isEnabled })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status !== 'success') {
+                    alert('Failed to update 2FA setting.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+
+    <!-- JS for Change Password -->
+    <script>
+        document.getElementById('changePasswordForm').onsubmit = async function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+
+            try {
+                const response = await fetch("{% url 'change_password' %}", {
+                    method: "POST",
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                    },
+                    body: formData,
+                });
+
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    displayMessage(result.icon, result.title, result.message, result.background_color);
+                    setTimeout(() => location.reload(), 3000);  // Delay reload for visual effect
+                } else if (result.status === 'error') {
+                    displayMessage(result.icon, result.title, result.message, result.background_color);
+                } else {
+                    displayMessage('info', 'Invalid Request', 'Only POST requests are allowed.', '#fff3cd');
+                }
+            } catch (error) {
+                console.error("Error during form submission", error);
+                displayMessage('error', 'Submission Failed', 'An unexpected error occurred. Please try again.', '#f8d7da');
+            }
+        };
+
+        function displayMessage(icon, title, message, bgColor) {
+            const messageContainer = document.createElement('div');
+            messageContainer.className = 'alert-box';
+            messageContainer.style.backgroundColor = bgColor;
+            messageContainer.innerHTML = `
+                <div class="alert-icon">${getIconHTML(icon)}</div>
+                <div class="alert-content">
+                    <strong>${title}</strong>
+                    <p>${message}</p>
+                </div>
+            `;
+            document.body.appendChild(messageContainer);
+
+            setTimeout(() => messageContainer.remove(), 4000);
+        }
+
+        function getIconHTML(iconType) {
+            const icons = {
+                'success': '✔️',
+                'error': '❌',
+                'info': 'ℹ️',
+            };
+            return icons[iconType] || 'ℹ️';
+        }
+
+        // Toggle Password Visibility
+        function togglePasswordVisibility(inputId) {
+            const passwordInput = document.getElementById(inputId);
+            const eyeIcon = document.querySelector(`#toggle${inputId.charAt(0).toUpperCase() + inputId.slice(1)}`);
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        }
+    </script>
     {% if document %}
         <script>
             document.addEventListener('DOMContentLoaded', function () {
@@ -428,6 +670,45 @@
                 inputContainer.style.display = 'none';
             }
         }
+    </script>
+
+    <script>
+        document.getElementById("TrackingNumber").addEventListener("keypress", function(event) {
+            // Allow only numbers, letters, and dash, prevent spaces
+            const char = String.fromCharCode(event.which);
+
+            // If the character is a space, prevent it
+            if (char === " ") {
+                event.preventDefault();
+            }
+        });
+    </script>
+
+    <script>
+        // Function to convert input to uppercase and trim spaces
+        function formatInput(input) {
+            // Convert text to uppercase
+            input.value = input.value.toUpperCase();
+
+            // Trim spaces from the start, middle, and end
+            input.value = input.value.replace(/\s+/g, ' ').trim();
+        }
+
+        // Optional: You can also limit input to allow only valid characters (if needed)
+        document.getElementById("TrackingNumber").addEventListener("keypress", function(event) {
+            const char = String.fromCharCode(event.which);
+            
+            if (!/^[a-zA-Z0-9\s-]*$/.test(char)) {
+                event.preventDefault();
+            }
+        });
+    </script>
+
+    <script>
+        document.getElementById("SenderName").addEventListener("input", function () {
+            // Allow only letters (uppercase and lowercase) and spaces
+            this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
+        });
     </script>
 </body>
 </html>
