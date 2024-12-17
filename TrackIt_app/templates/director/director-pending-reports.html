@@ -69,7 +69,7 @@
             <main class="main-content">
                 <div class="title-container d-flex justify-content-between align-items-center">
                     <h3 class="fw-semibold m-0">Generate Pending Reports</h3>
-                    <button type="button" class="btn btn-primary m-0 shadow-sm" style="font-size: 14px; max-height: 37.85; padding: 7.63px 11.2px;" data-bs-toggle="modal" data-bs-target="#">
+                    <button id="downloadReportBtn" class="btn btn-primary m-0 shadow-sm" style="font-size: 14px; max-height: 37.85; padding: 7.63px 11.2px;">
                         <i class="fa-solid fa-file" style="font-size: 16px !important;"></i>&nbsp; Download Report
                     </button>
                 </div>
@@ -84,10 +84,12 @@
                                             <i class="bx bx-chevron-down nav-drop-icon fs-5"></i>
                                         </button>
                                     </p>
-                                    <div id="collapseAdmin" class="accordion-collapse collapse" aria-labelledby="headingAdmin" data-bs-parent="#officesAccordion">
+                                    <div id="collapseAdmin" class="accordion-collapse collapse {%if target_user_office == 'ADM'%}show{%endif%}" aria-labelledby="headingAdmin" data-bs-parent="#officesAccordion">
                                         <div class="p-0 accordion-body bg-white">
                                             <ul class="list-unstyled mb-0">
-                                                <li><a href="#">(148639-ADM) - Ranirez, Lucas</a></li>
+                                                {% if admin_officer %}
+                                                    <li><a class="{%if admin_officer.user_id == target_user_id%}active{%endif%}" href="/director-pending-reports/{{admin_officer.user_id}}">({{admin_officer.employee_id}}) - {{admin_officer.lastname}}, {{admin_officer.firstname}}</a></li>
+                                                {% endif %}
                                             </ul>
                                         </div>
                                     </div>
@@ -100,13 +102,12 @@
                                             <i class="bx bx-chevron-down nav-drop-icon fs-5"></i>
                                         </button>
                                     </p>
-                                    <div id="collapseAccounting" class="accordion-collapse collapse" aria-labelledby="headingAccounting" data-bs-parent="#officesAccordion">
+                                    <div id="collapseAccounting" class="accordion-collapse collapse {%if target_user_office == 'ACC'%}show{%endif%}" aria-labelledby="headingAccounting" data-bs-parent="#officesAccordion">
                                         <div class="p-0 accordion-body bg-white">
                                             <ul class="list-unstyled mb-0">
-                                                <li><a href="#">(175024-ACC) - Domingo, Sheena</a></li>
-                                                <li><a href="#">(194782-ACC) - Bernardo, Daniel</a></li>
-                                                <li><a href="#">(167254-ACC) - Castillo, Leah</a></li>
-                                                <li><a href="#">(132895-ACC) - Cruz, Nathan</a></li>
+                                                {% for officer in accounting_officers %}
+                                                    <li><a class="{%if officer.user_id == target_user_id%}active{%endif%}" href="/director-pending-reports/{{officer.user_id}}"><span>({{officer.employee_id}})</span> - {{officer.lastname}}, {{officer.firstname}}</a></li>
+                                                {% endfor %}
                                             </ul>
                                         </div>
                                     </div>
@@ -119,13 +120,12 @@
                                             <i class="bx bx-chevron-down nav-drop-icon fs-5"></i>
                                         </button>
                                     </p>
-                                    <div id="collapseBudgeting" class="accordion-collapse collapse" aria-labelledby="headingBudgeting" data-bs-parent="#officesAccordion">
+                                    <div id="collapseBudgeting" class="accordion-collapse collapse {%if target_user_office == 'BMD'%}show{%endif%}" aria-labelledby="headingBudgeting" data-bs-parent="#officesAccordion">
                                         <div class="p-0 accordion-body bg-white">
                                             <ul class="list-unstyled mb-0">
-                                                <li><a href="#">(163408-BMD) - Villanueva, Dylan</a></li>
-                                                <li><a href="#">(187634-BMD) - Castro, Samantha</a></li>
-                                                <li><a href="#">(158392-BMD) - Soriano, Lara</a></li>
-                                                <li><a href="#">(120473-BMD) - Mactan, Joshua</a></li>
+                                                {% for officer in budgeting_officers %}
+                                                    <li><a class="{%if officer.user_id == target_user_id%}active{%endif%}" href="/director-pending-reports/{{officer.user_id}}">({{officer.employee_id}}) - {{officer.lastname}}, {{officer.firstname}}</a></li>
+                                                {% endfor %}
                                             </ul>
                                         </div>
                                     </div>
@@ -138,13 +138,12 @@
                                             <i class="bx bx-chevron-down nav-drop-icon fs-5"></i>
                                         </button>
                                     </p>
-                                    <div id="collapseCashier" class="accordion-collapse collapse" aria-labelledby="headingCashier" data-bs-parent="#officesAccordion">
+                                    <div id="collapseCashier" class="accordion-collapse collapse {%if target_user_office == 'CSR'%}show{%endif%}" aria-labelledby="headingCashier" data-bs-parent="#officesAccordion">
                                         <div class="p-0 accordion-body bg-white">
                                             <ul class="list-unstyled mb-0">
-                                                <li><a href="#">(174950-CSR) - Lim, Rafael</a></li>
-                                                <li><a href="#">(145678-CSR) - Suarez, Catherine</a></li>
-                                                <li><a href="#">(196425-CSR) - Moreno, Louie</a></li>
-                                                <li><a href="#">(124893-CSR) - Anor, Angela</a></li>
+                                                {% for officer in cashier_officers %}
+                                                    <li><a class="{%if officer.user_id == target_user_id%}active{%endif%}" href="/director-pending-reports/{{officer.user_id}}">({{officer.employee_id}}) - {{officer.lastname}}, {{officer.firstname}}</a></li>
+                                                {% endfor %}
                                             </ul>
                                         </div>
                                     </div>
@@ -157,13 +156,12 @@
                                             <i class="bx bx-chevron-down nav-drop-icon fs-5"></i>
                                         </button>
                                     </p>
-                                    <div id="collapsePayroll" class="accordion-collapse collapse" aria-labelledby="headingPayroll" data-bs-parent="#officesAccordion">
+                                    <div id="collapsePayroll" class="accordion-collapse collapse {%if target_user_office == 'PRL'%}show{%endif%}" aria-labelledby="headingPayroll" data-bs-parent="#officesAccordion">
                                         <div class="p-0 accordion-body bg-white">
                                             <ul class="list-unstyled mb-0">
-                                                <li><a href="#">(139657-PRL) - Sebastian, Michelle</a></li>
-                                                <li><a href="#">(176843-PRL) - Rodriguez, Darwin</a></li>
-                                                <li><a href="#">(152376-PRL) - Sulit, Lemuel</a></li>
-                                                <li><a href="#">(180295-PRL) - Soliman, Cherry</a></li>
+                                                {% for officer in payroll_officers %}
+                                                    <li><a class="{%if officer.user_id == target_user_id%}active{%endif%}" href="/director-pending-reports/{{officer.user_id}}">({{officer.employee_id}}) - {{officer.lastname}}, {{officer.firstname}}</a></li>
+                                                {% endfor %}
                                             </ul>
                                         </div>
                                     </div>
@@ -200,11 +198,27 @@
                                     </thead>
                 
                                     <tbody id="docTableBody">
+                                        {% for document in pending_documents %}
+                                            <tr>
+                                                <td>{{document.tracking_no}}</td>
+                                                <td>{{document.status}}</td>
+                                                <td>{{document.subject}}</td>
+                                                <td>{{document.document_type.category}}</td>
+                                                <td>{{document.ongoing_deadline}}</td>
+                                                {% if document.document_type.priority_level.priority_level == 'normal' %}
+                                                    <td><span class="badge badge-green rounded-pill fw-semibold">NORMAL</span></td>
+                                                {% elif document.document_type.priority_level.priority_level == 'urgent' %}
+                                                    <td><span class="badge badge-yellow rounded-pill fw-semibold">URGENT</span></td>
+                                                {% elif document.document_type.priority_level.priority_level == 'very urgent' %}
+                                                    <td><span class="badge badge-red rounded-pill fw-semibold">VERY URGENT</span></td>   
+                                                {% endif %}
+                                            </tr>
+                                        {% endfor %}
                                     </tbody>
                                 </table>
                             </div>
                             <p class="d-block text-start my-0 p-2 fw-semibold" id="record-count" style="color: #000000; opacity: 0.6;">
-                                Showing total of <span id="recordCount"></span> record(s)
+                                Showing total of <span id="recordCount">{{pending_documents|length}}</span> record(s)
                             </p>
                         </div>
                     </div>
@@ -296,6 +310,26 @@
         </div>
     </div>
 
+    <!-- No Record Found -->
+    <div class="modal fade" id="noRecordFoundModal" tabindex="-1" aria-labelledby="noRecordFoundModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0">
+                    <h5 class="modal-title" id="noRecordFoundModalLabel">
+                        <i class="fa-solid fa-triangle-exclamation" style="color: #EA2E2E;"></i> &nbsp;No Record Found
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body pb-2">
+                    <p>The report cannot be generated; No records were found.</p>
+                </div>
+                <div class="modal-footer p-3 pt-0 border-top-0">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Edit Profile Modal -->
     <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -347,25 +381,31 @@
     </div>
     
     <script src="{% static 'js/toggle-sidebar.js' %}"></script>
-    <script src="{% static 'js/tabs-nav.js' %}"></script>  
-    <script src="{% static 'js/clear-search.js' %}"></script>
-    <script src="{% static 'js/generate-report.js' %}"></script>  
-    <script src="{% static 'js/fetch-reports.js' %}"></script> 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'js/profile.js' %}"></script>
     {% include "assets/profile-reset-inputs.html" %}
-    
-    <!-- <script>
-        document.querySelectorAll('.preview').forEach(button => {
-            button.addEventListener('click', function() {
-                // Replace with actual logic of the generated PDF
-                const generatedPdfUrl = '/path/to/generated-report.pdf';  
+    <script>
+        const noEmployeeSelectedModal = new bootstrap.Modal(document.getElementById('noEmployeeSelectedModal'));
+        const noRecordFoundModal = new bootstrap.Modal(document.getElementById('noRecordFoundModal'));
+
+        document.getElementById('downloadReportBtn').addEventListener('click', function() {
+
+            const employee_id = "{{target_user_id}}";
+
+            if(employee_id == 'default') {
+                noEmployeeSelectedModal.show();
+            } else {
                 
-                const pdfFrame = document.getElementById('reportPdfFrame');
-                pdfFrame.src = generatedPdfUrl;
-            });
+                const recordsLength = "{{pending_documents|length}}";
+
+                if(recordsLength < 1) {
+                    noRecordFoundModal.show();
+                }else{
+                    window.open(`/generate-pending-report/${employee_id}/`, '_blank');
+                }
+            }
         });
-    </script> -->
+    </script>
     
 <body>
 </html>

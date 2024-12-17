@@ -8,18 +8,18 @@
     <link rel="icon" href="/static/images/logo-icon.png" type="image/png">
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
     <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
-    <link rel="stylesheet" href="{% static 'css/table-content.css' %}">
+	<link rel="stylesheet" href="{% static 'css/table-content.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="{% static 'fontawesomefree/css/all.min.css' %}" rel="stylesheet" type="text/css">
+	<link href="{% static 'fontawesomefree/css/all.min.css' %}" rel="stylesheet" type="text/css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <title>Generate Reports</title>
+    <title>Endorsed Records</title>
 </head>
 
 <body>
     <div class="container">
-        {% include "assets/sro-sidebar.html" %}
+        {% include "assets/act-sidebar.html" %}
 
         <div class="right-section">
             <header class="header">
@@ -39,6 +39,7 @@
                                 <span class="profile-name">{{ user_profile.firstname }} {{user_profile.lastname}}</span>
                                 <span class="profile-role">{{ user_profile.role }}</span>
                             </div>
+                            <button class="d-none user-id" data-user-id="{{user_profile.user_id}}"></button> 
                         </button>
                         <ul class="drop-profile dropdown-menu" aria-labelledby="profileDropdown">
                             <li>
@@ -64,134 +65,149 @@
                     <!---->
                 </div>
             </header>
-
+            
             <main class="main-content">
                 <div class="title-container d-flex justify-content-between align-items-center">
-                    <h3 class="fw-semibold m-0">Generate Pending Reports</h3>
-                    <button id="downloadReportBtn" class="btn btn-primary m-0 shadow-sm" style="font-size: 14px; max-height: 37.85; padding: 7.63px 11.2px;" data-bs-toggle="modal" data-bs-target="#">
-                        <i class="fa-solid fa-file" style="font-size: 16px !important;"></i>&nbsp; Download Report
-                    </button>
+                    <h3 class="fw-semibold m-0">Endorsed Records</h3>
+                    <div class="d-flex justify-content-between align-items-center" style="gap: 12px;">
+                        <div class="search-container">
+                            <input type="text" id="searchInput" data-url="{% url 'update_unacted_records_display' %}" class="form-search form-control shadow-sm" placeholder="Search a document">
+                            <i class="fa-solid fa-search search-icon"></i>  
+                            <i class="fa-solid fa-xmark clear-icon" style="display: none;"></i>
+                        </div>
+                    </div>
                 </div>
-                <div class="row my-3">
-                    <div class="col-lg-3 col-md-5 pe-2">
-                        <div class="bg-white rounded shadow-sm">
-                            <div class="accordion" id="officesAccordion">
-                                <div class="accordion-item bg-white">
-                                    <p class="accordion-header" id="headingBudgeting">
-                                        <button class="accordion-button collapsed bg-white custom-drop" type="button" data-bs-toggle="collapse" data-bs-target="#collapseBudgeting" aria-expanded="false" aria-controls="collapseBudgeting">
-                                            Select Action Officer
-                                            <i class="bx bx-chevron-down nav-drop-icon fs-5"></i>
-                                        </button>
-                                    </p>
-                                    <div id="collapseBudgeting" class="accordion-collapse collapse {%if target_user_id != 'default'%}show{%endif%}" aria-labelledby="headingBudgeting" data-bs-parent="#officesAccordion">
-                                        <div class="p-0 accordion-body bg-white">
-                                            <ul class="list-unstyled mb-0">
-                                                {% for officer in action_officers %}
-                                                    <li><a class="{%if officer.user_id == target_user_id%}active{%endif%}" href="/sro-pending-reports/{{officer.user_id}}">({{officer.employee_id}}) - {{officer.lastname}}, {{officer.firstname}}</a></li>
-                                                {% endfor %}
-                                            </ul>
+
+                <div class="my-3 px-3 py-2 bg-white rounded shadow-sm">
+                    <div class="table-responsive table-wrapper d-flex">
+                        <table class="table mb-1 with-action">
+                            <thead>
+                                <tr>
+                                    <th>Tracking Number</th>
+                                    <th>Sender</th>
+                                    <th>Particulars</th>
+                                    <th>Type <i class='bx bxs-sort-alt'></i></th>
+                                    <th>Priority <i class='bx bxs-sort-alt'></i></th>
+                                    <th>Date & Time</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="docTableBody">
+                                {% for document in endorsed_documents %}
+                                <tr>
+                                    <td>{{document.document_id.tracking_no}}</td>
+                                    <td>{{document.document_id.sender_name}}</td>
+                                    <td>{{document.document_id.subject}}</td>
+                                    <td>{{document.document_id.document_type.category}}</td>
+                                    {% if document.document_id.document_type.priority_level.priority_level == "normal" %}
+                                        <td><span class="badge badge-green rounded-pill fw-semibold">NORMAL</span></td>
+                                    {% elif document.document_id.document_type.priority_level.priority_level == "urgent" %}
+                                        <td><span class="badge badge-yellow rounded-pill fw-semibold">URGENT</span></td>
+                                    {% elif document.document_id.document_type.priority_level.priority_level == "very urgent" %}
+                                        <td><span class="badge badge-red rounded-pill fw-semibold">VERY URGENT</span></td>   
+                                    {% endif %}
+                                    <td>{{document.time_stamp}}</td>
+                                    <td>
+                                        <div class="table-action" id="tableAction">
+                                            <button class="btn btn-sm btn-blue viewDocumentBtn" data-document-no="{{ document.document_id.document_no }}" 
+                                                data-bs-toggle="modal" data-bs-target="#viewDocumentModal"
+                                                data-bs-toggle="tooltip" title="View Document Details">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </button>
                                         </div>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>           
                     </div>
 
-                    <div class="col-lg-9 col-md-7 pe-2">
-                        <div class="px-3 py-2 bg-white rounded shadow-sm">
-                            <div class="table-wrapper table-responsive d-flex">
-                                <table class="table mb-1">
-                                    <thead>
-                                        <tr>
-                                            <th>Tracking Number</th>
-                                            <th>
-                                                Status
-                                                <a href="?status=active&sort_by=status&order=asc"><i class='bx bxs-sort-alt'></i></a>
-                                            </th>
-                                            <th>Particulars</th>
-                                            <th>
-                                                Type 
-                                                <a href="?status=active&sort_by=document_type&order=asc"><i class='bx bxs-sort-alt'></i></a>
-                                            </th>
-                                            <th>
-                                                Due In
-                                                <a href="?status=active&sort_by=deadline&order=asc"><i class='bx bxs-sort-alt'></i></a>
-                                            </th>
-                                            <th>
-                                                Priority
-                                                <a href="?status=active&sort_by=priority_level&order=asc"><i class='bx bxs-sort-alt'></i></a>
-                                            </th>
-                                        </tr>
-                                    </thead>
-                
-                                    <tbody id="docTableBody">
-                                        {% for document in pending_documents %}
-                                            <tr>
-                                                <td>{{document.tracking_no}}</td>
-                                                <td>{{document.status}}</td>
-                                                <td>{{document.subject}}</td>
-                                                <td>{{document.document_type.category}}</td>
-                                                <td>{{document.ongoing_deadline}}</td>
-                                                {% if document.document_type.priority_level.priority_level == 'normal' %}
-                                                    <td><span class="badge badge-green rounded-pill fw-semibold">NORMAL</span></td>
-                                                {% elif document.document_type.priority_level.priority_level == 'urgent' %}
-                                                    <td><span class="badge badge-yellow rounded-pill fw-semibold">URGENT</span></td>
-                                                {% elif document.document_type.priority_level.priority_level == 'very urgent' %}
-                                                    <td><span class="badge badge-red rounded-pill fw-semibold">VERY URGENT</span></td>   
-                                                {% endif %}
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                            <p class="d-block text-start my-0 p-2 fw-semibold" id="record-count" style="color: #000000; opacity: 0.6;">
-                                Showing total of <span id="recordCount">{{pending_documents|length}}</span> record(s)
-                            </p>
-                        </div>
-                    </div>
+                    <p class="d-block text-start my-0 p-2 fw-semibold" id="record-count" style="color: #000000; opacity: 0.6;">
+                        Showing total of <span id="recordCount">{{endorsed_documents|length}}</span> endorsed record(s)
+                    </p>
                 </div>
             </main>
-            
         </div>
     </div>
 
-    <!-- No Employee Selected Modal -->
-    <div class="modal fade" id="noEmployeeSelectedModal" tabindex="-1" aria-labelledby="noEmployeeSelectedModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+    <!-- View Document Modal -->
+    <div class="modal fade" id="viewDocumentModal" tabindex="-1" aria-labelledby="viewDocumentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
                 <div class="modal-header pb-0 border-bottom-0">
-                    <h5 class="modal-title" id="noEmployeeSelectedModalLabel">
-                        <i class="fa-solid fa-triangle-exclamation" style="color: #EA2E2E;"></i> &nbsp;No Employee Selected
+                    <h5 class="modal-title" id="viewDocumentModalLabel">
+                        <i class="fa-solid fa-circle-info" style="color: #2E72EA;"></i>&nbsp; Document Details
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body pb-2">
-                    <p>Please select an employee from the list to generate and download their pending records.</p>
+
+                <div class="modal-body">
+
+                    <div id="loadingSpinner" class="text-center my-5" style="display: none;">
+                        <div class="spinner-border" role="status" style="width: 3rem; height: 3rem;">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-wrap" id="documentDetailsContent" style="display: none;">
+                        <p class="me-4 mb-2"><strong>Tracking Number:</strong> <span id="documentTrackingNumber"></span></p>
+                        <p class="me-4 mb-2"><strong>Sender:</strong> <span id="documentSender"></span></p>
+                        <p class="me-4 mb-2"><strong>Type:</strong> <span id="documentType"></span></p>
+                        <p id="documentRoutesTxt" class="me-4 mb-2 d-none"><strong>Routes:</strong> <span id="documentRoutes"></span></p>
+                        <p class="me-4 mb-2"><strong>Priority:</strong> <span id="documentPriority"></span></p>
+                        <p class="me-4 mb-2"><strong>Subject/Particulars:</strong> <span id="documentSubject"></span></p>
+                        
+                        <div class="w-100 mb-2">
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#generateQRCode" id="documentTitleLink" style="font-size: 15px !important;">Document QR Code</a>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive tracker-wrapper d-flex" id="activitiesContent" style="display: none;">
+                        <table class="table mb-1">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>User ID</th>
+                                    <th>Name</th>
+                                    <th>Office</th>
+                                    <th>Role/Position</th>
+                                    <th>Remarks</th>
+                                    <th>Attachment</th>
+                                    <th class="text-start">Activity</th>
+                                </tr>
+                            </thead>
+                            
+                            <tbody id="activitiesTableBody">
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <div class="modal-footer p-3 pt-0 border-top-0">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- No Record Found -->
-    <div class="modal fade" id="noRecordFoundModal" tabindex="-1" aria-labelledby="noRecordFoundModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+    <!-- Document QR Code Modal -->
+    <div class="modal fade" id="generateQRCode" tabindex="-1" aria-labelledby="generateQRCodeLabel" aria-hidden="true">
+        <div class="modal-dialog" style="max-width: 400px;">
             <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
-                <div class="modal-header pb-0 border-bottom-0">
-                    <h5 class="modal-title" id="noRecordFoundModalLabel">
-                        <i class="fa-solid fa-triangle-exclamation" style="color: #EA2E2E;"></i> &nbsp;No Record Found
-                    </h5>
+                <div class="modal-header pb-0 border-bottom-0 d-flex justify-content-between align-items-center">
+                    <button type="button" class="btn-close" style="visibility: hidden;"></button>
+                    <h5 class="modal-title" id="confirmRecordCreationLabel">Document QR Code</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body pb-2">
-                    <p>The report cannot be generated; No records were found.</p>
+                <div class="modal-body text-center">
+                    <p class="mb-2">Scan the code to quickly access the document details or perform a specified action.</p>
+                    <p class="fw-bold my-0" id="routesInitials"></p>
+                    <p class="fw-bold my-0" id="routesTitles" style="display: none;"></p>
+                    <img id='qrCodeImage' src="" alt="Generating QR Code..." style="height: 218px; width: auto;">
+                    <p class="fw-bold my-0" id="qrModalTrackingNo"></p>
                 </div>
-                <div class="modal-footer p-3 pt-0 border-top-0">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                </div>
+                <div class="modal-footer p-3 pt-0 border-top-0 d-flex flex-column align-items-center">
+                    <button type="button" class="m-0 mb-1 btn btn-primary w-100" id="printQR">Print QR Code</button>
+                    <button type="button" class="m-0 mb-2 btn btn-secondary w-100" id="saveQR">Save a Copy</button>
+                </div>                
             </div>
         </div>
     </div>
@@ -307,33 +323,41 @@
             </div>
         </div>
     </div>
-    
-    <script src="{% static 'js/toggle-sidebar.js' %}"></script>
+        
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/toggle-sidebar.js' %}"></script>
+    <script src="{% static 'js/clear-search.js' %}"></script>
+    <script src="{% static 'js/qr-code.js' %}"></script>
     <script src="{% static 'js/profile.js' %}"></script>
+    <script src="{% static 'js/sro-act-view-document-details.js' %}"></script>
     {% include "assets/profile-reset-inputs.html" %}
     <script>
-        const noEmployeeSelectedModal = new bootstrap.Modal(document.getElementById('noEmployeeSelectedModal'));
-        const noRecordFoundModal = new bootstrap.Modal(document.getElementById('noRecordFoundModal'));
-
-        document.getElementById('downloadReportBtn').addEventListener('click', function() {
-
-            const employee_id = "{{target_user_id}}";
-
-            if(employee_id == 'default') {
-                noEmployeeSelectedModal.show();
-            } else {
-                
-                const recordsLength = "{{pending_documents|length}}";
-
-                if(recordsLength < 1) {
-                    noRecordFoundModal.show();
-                }else{
-                    window.open(`/generate-pending-report/${employee_id}/`, '_blank');
-                }
-            }
+        document.addEventListener('DOMContentLoaded', function () {
+            const documentModal = new bootstrap.Modal(document.getElementById('viewDocumentModal'));
+            const qrCodeModal = new bootstrap.Modal(document.getElementById('generateQRCode'));
+        
+            // Show QR Code Modal and hide Document Details Modal
+            document.getElementById('documentTitleLink').addEventListener('click', function (e) {
+                e.preventDefault();
+                documentModal.hide();
+                qrCodeModal.show();
+            });
+        
+            // When QR Code Modal is closed, show Document Details Modal again
+            document.getElementById('generateQRCode').addEventListener('hide.bs.modal', function () {
+                documentModal.show();
+            });
         });
     </script>
-    
-<body>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const archiveModal = new bootstrap.Modal(document.getElementById('archiveDocumentModal'));
+
+            // Handle Confirm Archive Action
+            document.getElementById('confirmArchive').addEventListener('click', function () {
+                archiveModal.hide();
+            });
+        });
+    </script>
+</body>
 </html>

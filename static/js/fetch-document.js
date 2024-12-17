@@ -30,11 +30,10 @@ function bindViewButtons() {
         button.addEventListener('click', function () {
             const documentNo = this.getAttribute('data-document-no');
 
-             // Show spinner and hide content before fetching data
              document.getElementById('loadingSpinner').style.display = 'block';
              document.getElementById('documentDetailsContent').style.display = 'none';
              document.getElementById('activitiesContent').style.display = 'none';
-             document.getElementById('activitiesTableBody').innerHTML = ''; // Clear previous entries
+             document.getElementById('activitiesTableBody').innerHTML = ''; 
 
             // Fetch document details via AJAX
             fetch(`/fetch-document-details/${documentNo}/`)

@@ -492,36 +492,49 @@
 
             }
 
-            function updateMyPerformanceChart() {
+            function updateMyPerformanceChartData(data) {
 
                 if (performanceChart) {
                     performanceChart.destroy();
                 }
+
+                var ctx1 = document.getElementById('unactedDocumentsChart').getContext('2d');
+                performanceChart = new Chart(ctx1, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Resolved', 'Pending', 'Delayed', 'Unacted'],
+                        datasets: [{
+                            label: 'Document',
+                            data: [data.resolved_count, data.pending_count, data.delayed_count, data.unacted_count], // Replace with actual data
+                            backgroundColor: ['#4DA8DA', '#4169E1',  '#003366', '#008080']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'bottom'
+                            },
+                            title: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+
+            }
+
+            function updateMyPerformanceChart() {
 
                 const timeSpan = inputGroupSelect.value;
 
                 fetch(`/admin-officer-performance/${timeSpan}/`)
                     .then(response => response.json())
                     .then(data => {
-
-                        var ctx1 = document.getElementById('unactedDocumentsChart').getContext('2d');
-                        performanceChart = new Chart(ctx1, {
-                            type: 'pie',
-                            data: {
-                                labels: ['Resolved', 'Pending', 'Delayed', 'Unacted'],
-                                datasets: [{
-                                    label: 'Document',
-                                    data: [data.resolved_count, data.pending_count, data.delayed_count, data.unacted_count], // Replace with actual data
-                                    backgroundColor: ['#4DA8DA', '#4169E1',  '#003366', '#008080']
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                animation: false,
-                            }
-                        });
-
+                        updateMyPerformanceChartData(data);
                     })
                     .catch(error => console.error('Error:', error));
 
@@ -583,13 +596,14 @@
                         }
 
                         const ctx2 = document.getElementById('archivedChart').getContext('2d');
+                        console.log(data.values);
                         archivedChart = new Chart(ctx2, {
                             type: 'line',
                             data: {
                                 labels: data.labels,
                                 datasets: [{
                                     label: 'Archived Documents',
-                                    data: [300, 350, 340, 380, 320, 360, 480], // Sample data
+                                    data: data.values,
                                     borderColor: '#007bff', // Line color
                                     backgroundColor: 'rgba(0, 123, 255, 0.1)', // Line fill color
                                     pointBackgroundColor: '#004da0', // Points color

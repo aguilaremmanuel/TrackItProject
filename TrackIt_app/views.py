@@ -25,6 +25,9 @@ from itertools import chain
 from django.db.models import F
 from django.db.models import Value
 from dateutil.relativedelta import relativedelta
+from django.db.models import Case, When, Value, IntegerField
+from django.utils.timezone import make_aware
+
 
 #---------------
 from django.core.mail import EmailMultiAlternatives
@@ -804,6 +807,34 @@ def admin_officer_new_record(request):
         'user_profile': user_profile,
     })
 
+COUNTER_FILE = os.path.join(os.path.dirname(__file__), 'counter.txt')
+
+# Function to read the last tracking number from the file
+def get_last_tracking_number():
+    if os.path.exists(COUNTER_FILE):
+        with open(COUNTER_FILE, 'r') as file:
+            return file.read().strip()
+    return None
+
+# Function to generate a new tracking number
+def generate_tracking_number():
+    current_year = str(timezone.now().year)[-2:]  # Get last two digits of the year
+    last_number = 0
+    last_tracking_number = get_last_tracking_number()
+
+    if last_tracking_number and last_tracking_number.startswith(f"FO-{current_year}-"):
+        last_number = int(last_tracking_number.split('-')[-1])
+
+    new_tracking_number = f"FO-{current_year}-{last_number + 1:04d}"
+    return new_tracking_number
+
+
+# API endpoint to handle tracking number generation
+def generate_tracking_number_api(request):
+    if 'uncommitted_tracking_no' not in request.session:
+        request.session['uncommitted_tracking_no'] = generate_tracking_number()
+    return JsonResponse({"tracking_no": request.session['uncommitted_tracking_no']})
+
 def add_record(request):
 
     user_id = request.session.get('user_id')
@@ -821,6 +852,23 @@ def add_record(request):
         subject = request.POST.get('subject')
         remarks = request.POST.get('remarks')
         file_attachment = request.FILES.get('attachment')
+
+         # Validation: Reject manually entered "FO" Tracking Numbers
+        if tracking_no.startswith("FO") and 'uncommitted_tracking_no' not in request.session:
+            messages.error(
+                request,
+                "Invalid Tracking Number. If the document has no Tracking Number, you can generate one by clicking the TN Generator."
+            )
+            return render(request, 'your_template.html', {"error": "Invalid Tracking Number."})
+
+        # Simulate saving the document
+        print(f"Saving document: TN={tracking_no}, Sender={sender_name}, Remarks={remarks}")
+
+       # Save only auto-generated Tracking Numbers to counter.txt
+        if 'uncommitted_tracking_no' in request.session and tracking_no == request.session['uncommitted_tracking_no']:
+            with open(COUNTER_FILE, 'w') as file:
+                file.write(tracking_no)
+            del request.session['uncommitted_tracking_no']  # Remove uncommitted TN
 
         try:
             document = Document.objects.get(tracking_no=tracking_no)
@@ -1106,7 +1154,6 @@ def admin_officer_needs_action(request, panel, scanned_document_no):
         del request.session['filter_documents']
 
     selected_documents = request.session.get('selected_documents')
-
     if selected_documents:
         del request.session['selected_documents']
     
@@ -1625,11 +1672,64 @@ def admin_officer_resolved_records(request):
     
     user_profile = request.session.get('user_profile', None)
 
+    selected_documents = request.session.get('selected_documents')
+    if selected_documents:
+        del request.session['selected_documents']
+
     context = {
         'user_profile': user_profile
     }
 
     return render(request, 'admin_officer/admin-officer-resolved-records.html', context)
+
+def sro_resolved_records(request):
+
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('user_login')
+
+    role = user_id.split('-')[0]
+    if role != 'SRO':
+        return redirect(user_login)
+    
+    user_profile = request.session.get('user_profile', None)
+
+    resolved_documents = ActivityLogs.objects.filter(
+        activity = 'Document Resolved',
+        user_id_id = user_id
+    ).order_by('-time_stamp')
+
+    context = {
+        'resolved_documents': resolved_documents,
+        'user_profile': user_profile
+    }
+
+    return render(request, 'sro/sro-resolved-records.html', context)
+
+def action_officer_endorsed_records(request):
+
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('user_login')
+
+    role = user_id.split('-')[0]
+    if role != 'ACT':
+        return redirect(user_login)
+    
+    user_profile = request.session.get('user_profile', None)
+
+    endorsed_documents = ActivityLogs.objects.filter(
+        activity = 'Document Endorsed by Action Officer',
+        user_id_id = user_id
+    ).order_by('-time_stamp')
+
+    context = {
+        'endorsed_documents': endorsed_documents,
+        'user_profile': user_profile
+    }
+
+    return render(request, 'action_officer/action-officer-endorsed-records.html', context)
+
 
 # ---------------- ARCHIVE -------------------
 
@@ -1844,46 +1944,151 @@ def system_admin_pending_reports(request):
 
     return render(request, 'system_admin/system-admin-pending-reports.html', context)
 
+
 # DIRECTOR PENDING REPORTS
-def director_pending_reports(request):
+def director_pending_reports(request, target_user_id):
 
     user_id = request.session.get('user_id')
     if not user_id:
         return redirect('user_login')
     
     user_profile = request.session.get('user_profile', None)
-    
+
+    admin_officer = User.objects.filter(role='ADO').first()
+
+    users = User.objects.filter(role__in=['SRO', 'ACT'], status='active').annotate(
+        role_priority=Case(
+            When(role='SRO', then=Value(1)),
+            When(role='ACT', then=Value(2)),
+        )
+    )
+
+    accounting_officers = users.filter(office_id_id='ACC', role__in=['SRO', 'ACT']).order_by('role_priority', 'lastname')
+    budgeting_officers = users.filter(office_id_id='BMD', role__in=['SRO', 'ACT']).order_by('role_priority', 'lastname')
+    cashier_officers = users.filter(office_id_id='CSR', role__in=['SRO', 'ACT']).order_by('role_priority', 'lastname')
+    payroll_officers = users.filter(office_id_id='PRL', role__in=['SRO', 'ACT']).order_by('role_priority', 'lastname')
+
+    try:
+
+        target_user = User.objects.get(user_id=target_user_id)
+
+        if target_user.role == 'ADO':
+            pending_documents = Document.objects.filter(status='For Routing').order_by('-recent_update')
+        elif target_user.role == 'SRO':
+            pending_documents = Document.objects.filter(
+                status__in=['For SRO Receiving', 'For Resolving'], 
+                next_route=target_user.office_id_id
+            ).order_by('-recent_update')
+        elif target_user.role == 'ACT':
+            pending_documents = Document.objects.filter(
+                status='For ACT Receiving',
+                act_receiver=target_user_id
+            ).order_by('-recent_update')
+
+        target_user_office = target_user.office_id_id
+
+    except User.DoesNotExist:
+        
+        target_user_office = 'no-office'
+        pending_documents = []
+
     context = {
+        'target_user_id': target_user_id,
+        'target_user_office': target_user_office,
+        'admin_officer': admin_officer,
+        'accounting_officers': accounting_officers,
+        'budgeting_officers': budgeting_officers,
+        'cashier_officers': cashier_officers,
+        'payroll_officers': payroll_officers,
         'user_profile': user_profile,
+        'pending_documents': pending_documents
     }
 
     return render(request, 'director/director-pending-reports.html', context)
 
 # ADMIN OFFICER PENDING REPORTS
-def admin_officer_pending_reports(request):
+def admin_officer_pending_reports(request, target_user_id):
 
     user_id = request.session.get('user_id')
     if not user_id:
         return redirect('user_login')
     
     user_profile = request.session.get('user_profile', None)
+
+    users = User.objects.filter(role__in=['SRO', 'ACT'], status='active').annotate(
+        role_priority=Case(
+            When(role='SRO', then=Value(1)),
+            When(role='ACT', then=Value(2)),
+        )
+    )
+
+    accounting_officers = users.filter(office_id_id='ACC', role__in=['SRO', 'ACT']).order_by('role_priority', 'lastname')
+    budgeting_officers = users.filter(office_id_id='BMD', role__in=['SRO', 'ACT']).order_by('role_priority', 'lastname')
+    cashier_officers = users.filter(office_id_id='CSR', role__in=['SRO', 'ACT']).order_by('role_priority', 'lastname')
+    payroll_officers = users.filter(office_id_id='PRL', role__in=['SRO', 'ACT']).order_by('role_priority', 'lastname')
+
+    try:
+
+        target_user = User.objects.get(user_id=target_user_id)
+
+        if target_user.role == 'ADO':
+            pending_documents = Document.objects.filter(status='For Routing').order_by('-recent_update')
+        elif target_user.role == 'SRO':
+            pending_documents = Document.objects.filter(
+                status__in=['For SRO Receiving', 'For Resolving'],
+                next_route=target_user.office_id_id
+            ).order_by('-recent_update')
+        elif target_user.role == 'ACT':
+            pending_documents = Document.objects.filter(
+                status='For ACT Receiving',
+                act_receiver=target_user_id
+            ).order_by('-recent_update')
+
+        target_user_office = target_user.office_id_id
+
+    except User.DoesNotExist:
+        
+        target_user_office = 'no-office'
+        pending_documents = []
     
     context = {
+        'target_user_id': target_user_id,
+        'target_user_office': target_user_office,
+        'accounting_officers': accounting_officers,
+        'budgeting_officers': budgeting_officers,
+        'cashier_officers': cashier_officers,
+        'payroll_officers': payroll_officers,
         'user_profile': user_profile,
+        'pending_documents': pending_documents
     }
 
     return render(request, 'admin_officer/admin-officer-pending-reports.html', context)
 
 # SUB-RECEIVING OFFICER PENDING REPORTS
-def sro_pending_reports(request):
+def sro_pending_reports(request, target_user_id):
 
     user_id = request.session.get('user_id')
     if not user_id:
         return redirect('user_login')
     
     user_profile = request.session.get('user_profile', None)
+
+    sro_officer = User.objects.get(user_id=user_id)
+    
+    action_officers = User.objects.filter(role='ACT', status='active', office_id_id=sro_officer.office_id_id)
+
+    try:
+
+        pending_documents = Document.objects.filter(status='For ACT Receiving', act_receiver=target_user_id)
+
+    except User.DoesNotExist:
+        
+        pending_documents = []
     
     context = {
+        'pending_documents': pending_documents,
+        'target_user_id': target_user_id,
+        'action_officers': action_officers,
         'user_profile': user_profile,
     }
 
@@ -2830,8 +3035,7 @@ def document_update_status(request, action, document_no):
                 else:
                     officer.receive_recent = False
                     officer.save()
-
-        #if meron, then siya magrereceive
+                    
         else:
             initial_officer.receive_recent = True
             initial_officer.save()
@@ -3104,7 +3308,8 @@ def get_document_details(document):
             'remarks': remarks,
             'file_attachment': file_attachment,
             'activity': activity.activity,
-            'receiver_name': receiver_name
+            'receiver_name': receiver_name,
+            'user_id': activity.user_id_id
         }
         log_entries.append(log)
 
@@ -3120,6 +3325,7 @@ def fetch_document_details(request, document_no):
     data = get_document_details(document)
 
     return JsonResponse(data)
+
 
 # ---------- PARTIALS --------------
 
@@ -4062,6 +4268,64 @@ def download_performance_report(request, report_no):
 
     return response
 
+def generate_pending_report(request, target_user_id):
+
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect(user_login)
+
+    user_profile = request.session.get('user_profile', None)
+    user_name = user_profile.get('firstname') + ' ' + user_profile.get('lastname')
+
+    role = user_id.split('-')[0]
+
+    if role == 'SYS':
+        role = 'System Admin'
+    elif role == 'DIR':
+        role = 'Director'
+    elif role == 'ADO':
+        role = 'Admin Officer'
+    elif role == 'SRO':
+        role = 'Sub-Receiving Officer'
+    else:
+        role = 'Action Officer'
+
+    reporter = user_name + ", " + role
+
+    target_user = User.objects.get(user_id=target_user_id)
+
+    if target_user.role == 'ADO':
+        pending_documents = Document.objects.filter(status='For Routing').order_by('-recent_update')
+    elif target_user.role == 'SRO':
+        pending_documents = Document.objects.filter(
+            status='For SRO Receiving', 
+            next_route=target_user.office_id_id
+        ).order_by('-recent_update')
+    elif target_user.role == 'ACT':
+        pending_documents = Document.objects.filter(
+            status='For ACT Receiving',
+            act_receiver=target_user_id
+        ).order_by('-recent_update')
+
+    context = {
+        'target_user': target_user,
+        'now': now(),
+        'pending_documents': pending_documents,
+        'reporter': reporter
+    }
+
+    html_string = render_to_string('partials/pending-documents-report.html', context)
+
+    pdf_file = BytesIO()
+    pisa_status = pisa.CreatePDF(html_string, dest=pdf_file)
+
+    if pisa_status.err:
+        return HttpResponse('We had some errors <pre>' + html_string + '</pre>')
+    pdf_file.seek(0)
+    response = HttpResponse(pdf_file.getvalue(), content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename="Pending-Document-Report.pdf"'
+
+    return response
 
 # ------------------ REMARKS -----------------------
 import difflib
@@ -4298,28 +4562,6 @@ def multiple_update_reject_remarks(request, remarks_no):
     }
 
     return JsonResponse(data)
-
-"""def unprioritized_multiple_update_remarks(request, remarks_no):
-
-    if request.method == 'POST':
-
-        activity_logs_no = request.POST.getlist('activityLogsNo')
-        activity_logs_no = ast.literal_eval(activity_logs_no[0])
-
-        documents_no = request.POST.get('checkedValues')
-        documents_no = json.loads(documents_no)
-        documents_no = list(map(int, documents_no))
-
-        remarks = request.POST.get('remarks')
-        file_attachment = request.FILES.get('attachment')
-
-
-
-    data = {
-        'success': 'success'
-    }
-
-    return JsonResponse(data)"""
 
 def change_priority_level(request, document_no, activity_log_no):
 
@@ -4956,12 +5198,22 @@ def generate_document_status_report(request, time_span, document_status):
             recent_update__lt=end_date,
         )
 
-        for_dir_approval = documents.filter(status='For DIR Approval')
-        for_routing = documents.filter(status='For Routing')
-        for_sro_receiving = documents.filter(status='For SRO Receiving')
-        for_act_receiving = documents.filter(status='For ACT Receiving')
-        for_resolving = documents.filter(status='For Resolving')
-        for_archiving = documents.filter(status='For Archiving')
+        documents = documents.annotate(
+            priority_order=Case(
+                When(document_type__priority_level__priority_level="very urgent", then=1),
+                When(document_type__priority_level__priority_level="urgent", then=2),
+                When(document_type__priority_level__priority_level="normal", then=3),
+                default=4,
+                output_field=IntegerField(),
+            )
+        )
+        
+        for_dir_approval = documents.filter(status='For DIR Approval').order_by('priority_order')
+        for_routing = documents.filter(status='For Routing').order_by('priority_order')
+        for_sro_receiving = documents.filter(status='For SRO Receiving').order_by('priority_order')
+        for_act_receiving = documents.filter(status='For ACT Receiving').order_by('priority_order')
+        for_resolving = documents.filter(status='For Resolving').order_by('priority_order')
+        for_archiving = documents.filter(status='For Archiving').order_by('priority_order')
 
         context = {
             'document_status': document_status,
@@ -4981,10 +5233,18 @@ def generate_document_status_report(request, time_span, document_status):
     else:
 
         documents = Document.objects.filter(
-            status = document_status,
+            status=document_status,
             recent_update__gte=start_date, 
             recent_update__lt=end_date,
-        )
+        ).annotate(
+            priority_order=Case(
+                When(document_type__priority_level__priority_level="very urgent", then=1),
+                When(document_type__priority_level__priority_level="urgent", then=2),
+                When(document_type__priority_level__priority_level="normal", then=3),
+                default=4,
+                output_field=IntegerField(),
+            )
+        ).order_by('priority_order')
 
         context = {
             'document_status': document_status,
@@ -4996,7 +5256,6 @@ def generate_document_status_report(request, time_span, document_status):
 
         html_string = render_to_string('partials/document-status-report.html', context)
         
-
     pdf_file = BytesIO()
     pisa_status = pisa.CreatePDF(html_string, dest=pdf_file)
 
@@ -5077,22 +5336,29 @@ def admin_officer_archived(request, time_span):
     # today: Today, Yesterday, 2 Days Before, 3 Days Before 4 Days Before, 5 Days Before, 6 Days Before
     # month: current month...... last 7th month
     # year: current year...... last 7th year
-    today = datetime.today()
+    today = timezone.now().date()
 
     if time_span == 'today':
+
         labels = ['6 Days Before', '5 Days Before', '4 Days Before', '3 Days Before', '2 Days Before', 'Yesterday', 'Today']
         values = []
 
         for i in range(6, -1, -1):
+
             target_date = today - timedelta(days=i)
+            
+            target_date_start = make_aware(datetime.combine(target_date, datetime.min.time()))
+            target_date_end = make_aware(datetime.combine(target_date, datetime.max.time()))
 
             count = Document.objects.filter(
                 status='Archived',
-                recent_update__date=target_date  # Compare the date part of recent_update
+                recent_update__range=(target_date_start, target_date_end)
             ).count()
+
             values.append(count)
         
     elif time_span == 'month':
+
         labels = []
         values = []
 
@@ -5100,11 +5366,16 @@ def admin_officer_archived(request, time_span):
             month_offset = today - relativedelta(months=i)
             month_name = month_offset.strftime('%B')
             labels.append(month_name)
+
+            start_of_month = month_offset.replace(day=1)
+            end_of_month = (start_of_month + relativedelta(months=1)) - timedelta(days=1)
+
+            start_of_month = timezone.make_aware(datetime.combine(start_of_month, datetime.min.time()))
+            end_of_month = timezone.make_aware(datetime.combine(end_of_month, datetime.max.time()))
             
             count = Document.objects.filter(
                 status='Archived',
-                recent_update__year=month_offset.year,
-                recent_update__month=month_offset.month
+                recent_update__range=(start_of_month, end_of_month)
             ).count()
             
             values.append(count)
@@ -5116,9 +5387,25 @@ def admin_officer_archived(request, time_span):
         current_year = today.year
         labels = []
         values = []
+
         for i in range(7):
-            labels.append(current_year - i)
+            year = current_year - i
+            labels.append(year)
+
+            start_of_year = make_aware(datetime(year, 1, 1, 0, 0, 0))  # January 1st
+            end_of_year = make_aware(datetime(year, 12, 31, 23, 59, 59))  # December 31st
+
+            count = Document.objects.filter(
+                status='Archived',
+                recent_update__range=(start_of_year, end_of_year)
+            ).count()
+
+            values.append(count)
+
         labels.reverse()
+        values.reverse()
+
+    print(values)
 
     data = {
         'labels': labels,
@@ -5296,6 +5583,40 @@ def action_officer_total_records(request, time_span, target_prio_level):
         'completed_count': completed_count,
         'unacted_count': unacted_count,
         'for_receive_count': for_receive_count
+    }
+
+    return JsonResponse(data)
+
+def action_officer_performance(request, time_span):
+
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('user_login')
+
+    start_date, end_date = get_time_span(time_span)
+
+    endorsed_count = ActivityLogs.objects.filter(
+        activity='Document Endorsed by Action Officer',
+        user_id_id=user_id,
+        time_stamp__gte=start_date, 
+        time_stamp__lt=end_date,
+    ).count()
+
+    pending_count = Document.objects.filter(
+        status='For ACT Receiving',
+        act_receiver=user_id,
+        recent_update__gte=start_date, 
+        recent_update__lt=end_date,
+    ).count()
+
+    unacted_count = UnactedLogs.objects.filter(
+            time_stamp__gte=start_date, 
+            time_stamp__lt=end_date,
+            user_id_id=user_id
+    ).count()
+    
+    data = {
+        'values': [endorsed_count, pending_count, unacted_count]
     }
 
     return JsonResponse(data)

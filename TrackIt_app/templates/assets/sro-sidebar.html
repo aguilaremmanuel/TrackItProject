@@ -20,7 +20,8 @@
                 <li class="mb-2">
                     <button class="nav-link w-100 d-flex justify-content-between align-items-center collapsed
                         {% if request.resolver_match.url_name == 'sro_records' %}active{% endif %} 
-                        {% if request.resolver_match.url_name == 'sro_unacted_records' %}active{% endif %}"
+                        {% if request.resolver_match.url_name == 'sro_unacted_records' %}active{% endif %}
+                        {% if request.resolver_match.url_name == 'sro_resolved_records' %}active{% endif %}"
                         data-bs-toggle="collapse" data-bs-target="#records-collapse" aria-expanded="true">
                         <div class="d-flex align-items-center">
                             <i class='bx bx-folder-open nav-icon'></i>
@@ -31,13 +32,21 @@
 
                     <div id="records-collapse" data-bs-parent="#sidebarAccordion" class="collapse
                         {% if request.resolver_match.url_name == 'sro_records' %}show{% endif %} 
-                        {% if request.resolver_match.url_name == 'sro_unacted_records' %}show{% endif %}">
+                        {% if request.resolver_match.url_name == 'sro_unacted_records' %}show{% endif %}
+                        {% if request.resolver_match.url_name == 'sro_resolved_records' %}show{% endif %}">
                         <ul class="list-unstyled">
                             <li class="mt-2">
                                 <a href="{% url 'sro_records' 'All-Documents' '-1' %}?status=active" id="records"
                                    class="nav-submenu {% if request.resolver_match.url_name == 'sro_records' %}active{% endif %}" >
                                     <i class='bx bx-calendar-exclamation nav-icon'></i>
                                     <span class="nav-name">Pending Records</span>
+                                </a>
+                            </li>
+                            <li class="mt-2">
+                                <a href="{% url 'sro_resolved_records'%}?status=active" id="resolved-docs"
+                                   class="nav-submenu {% if request.resolver_match.url_name == 'sro_resolved_records' %}active{% endif %}">
+                                    <i class='bx bx-calendar-check nav-icon'></i>   
+                                    <span class="nav-name">Resolved Records</span>
                                 </a>
                             </li>
                             <li class="mt-2">
@@ -52,7 +61,7 @@
                 </li>
 
                 <li class="mb-2">
-                    <a href="{% url 'sro_pending_reports' %}?status=active" id="pendingReports"
+                    <a href="{% url 'sro_pending_reports' 'default' %}?status=active" id="pendingReports"
                        class="nav-link {% if request.resolver_match.url_name == 'sro_pending_reports' %}active{% endif %}"> 
                         <i class='bx bx-chart nav-icon'></i>
                         <span class="nav-name">Pending Reports</span>

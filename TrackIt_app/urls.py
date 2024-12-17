@@ -47,7 +47,7 @@ urlpatterns = [
     path('director-announcements/',views.director_announcements, name='director_announcements'),
     path('director-archive/', views.director_archive, name='director_archive'),
     path('director-performance-reports/<str:report_type>/',views.director_performance_reports, name='director_performance_reports'),
-    path('director-pending-reports/',views.director_pending_reports, name='director_pending_reports'),
+    path('director-pending-reports/<str:target_user_id>/',views.director_pending_reports, name='director_pending_reports'),
 
 
     path('admin-officer-dashboard/',views.admin_officer_dashboard, name='admin_officer_dashboard'),
@@ -68,19 +68,20 @@ urlpatterns = [
     path('admin-officer-resolved-records/',views.admin_officer_resolved_records, name='admin_officer_resolved_records'),
     path('admin-officer-archive/',views.admin_officer_archive, name='admin_officer_archive'),
     path('admin-officer-activity-logs/<str:activity_type>/',views.admin_officer_activity_logs, name='admin_officer_activity_logs'),
-    path('admin-officer-pending-reports/',views.admin_officer_pending_reports, name='admin_officer_pending_reports'),
+    path('admin-officer-pending-reports/<str:target_user_id>/',views.admin_officer_pending_reports, name='admin_officer_pending_reports'),
 
     path('sro-dashboard/',views.sro_dashboard, name='sro_dashboard'),
     path('sro-records/<str:panel>/<str:scanned_document_no>/',views.sro_records, name='sro_records'),
     path('sro-update-records-display/<str:panel>/', views.sro_update_records_display, name='sro_update_records_display'),
     path('sro-unacted-records/',views.sro_unacted_records, name='sro_unacted_records'),
     path('sro-activity-logs/<str:activity_type>/',views.sro_activity_logs, name='sro_activity_logs'),
-    path('sro-pending-reports/',views.sro_pending_reports, name='sro_pending_reports'),
-
+    path('sro-resolved-records/', views.sro_resolved_records, name='sro_resolved_records'),
+    path('sro-pending-reports/<str:target_user_id>/',views.sro_pending_reports, name='sro_pending_reports'),
     
     path('action-officer-dashboard/',views.action_officer_dashboard, name='action_officer_dashboard'),
     path('action-officer-records/<str:scanned_document_no>/',views.action_officer_records, name='action_officer_records'),
     path('action-officer-update-records-display', views.action_officer_update_records_display, name='action_officer_update_records_display'),
+    path('action-officer-endorsed-records/', views.action_officer_endorsed_records, name='action_officer_endorsed_records'),
     path('action-officer-unacted-records/',views.action_officer_unacted_records, name='action_officer_unacted_records'),
     path('action-officer-activity-logs/<str:activity_type>/',views.action_officer_activity_logs, name='action_officer_activity_logs'),
 
@@ -127,6 +128,7 @@ urlpatterns = [
     path('sro-performance/<str:time_span>/<str:target_performance>/', views.sro_performance, name='sro_performance'),
     path('sro-employee-performance/<str:time_span>/<str:target_employee_performance>/', views.sro_employee_performance, name='sro_employee_performance'),
     path('action-officer-total-records/<str:time_span>/<str:target_prio_level>/', views.action_officer_total_records, name='action_officer_total_records'),
+    path('action-officer-performance/<str:time_span>/', views.action_officer_performance, name='action_officer_performance'),
 
     path('fetch-new-notifications/', views.fetch_new_notifications, name='fetch_new_notifications'),
     path('fetch-earlier-notifications/', views.fetch_earlier_notifications, name='fetch_earlier_notifications'),
@@ -150,5 +152,9 @@ urlpatterns = [
     # FILTERING URLS
     path('filter-records/', views.filter_records, name='filter_records'),
     path('remove-filter/', views.remove_filter, name='remove_filter'),
+
+    path('generate-pending-report/<str:target_user_id>/', views.generate_pending_report, name='generate_pending_report'),
+
+    path('generate-tracking-number/', views.generate_tracking_number_api, name='generate_tracking_number'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

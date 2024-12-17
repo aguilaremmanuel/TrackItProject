@@ -24,25 +24,24 @@ function fetchDocuments() {
             let noOfRecords = document.getElementById('docuLength').value;
             document.getElementById('recordCount').textContent = noOfRecords;
             bindViewButtons();
-            bindForwardButtons();
-            bindResolveButtons();
+            bindArchiveButtons();
     });
 }
 
-function bindForwardButtons() {
+function bindArchiveButtons() {
     
     const table = document.querySelector('#recordsTable');
-    const forwardButtons = document.querySelectorAll('.forward-btn');
-    const forwardModal = new bootstrap.Modal(document.getElementById('forwardDocumentModal'),{
+    const archiveButtons = document.querySelectorAll('.archive-btn');
+    const archiveModal = new bootstrap.Modal(document.getElementById('archiveDocumentModal'),{
         backdrop: 'static',
         keyboard: false
     });
-    const forwardMultipleDocumentsModal = new bootstrap.Modal(document.getElementById('forwardMultipleDocumentsModal'),{
+    const archiveMultipleDocumentsModal = new bootstrap.Modal(document.getElementById('archiveMultipleDocumentsModal'),{
         backdrop: 'static',
         keyboard: false
     });
     
-    forwardButtons.forEach(button => {
+    archiveButtons.forEach(button => {
 
         button.addEventListener('click', function () {
 
@@ -65,156 +64,19 @@ function bindForwardButtons() {
         
             if (checkedValues.length > 1) {
 
-                document.getElementById('selectedDocsCount').innerHTML = checkedValues.length;
-                forwardMultipleDocumentsModal.show();
+                console.log("checked vaues: " + checkedValues.length);
+
+                document.getElementById('selectedDocsCountArchive').innerHTML = checkedValues.length;
+                archiveMultipleDocumentsModal.show();
 
                 let remarksNo;
                 let activityLogsNo = [];
 
-                document.getElementById('confirmMultipleDocsForward').addEventListener('click', async function () {
-                    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-                    
-                    try {
-                        for (let index = 0; index < checkedValues.length; index++) {
-                            const element = checkedValues[index];
-                            
-                            await fetch(`/document-update-status/forward/${element}`)
-                                .then(response => response.json())
-                                .then(data => {
-                                    if (index === 0) {
-                                        remarksNo = data.remarks_no;
-                                    }
-                                    activityLogsNo.push(data.activity_log_no);
-                                })
-                                .catch(error => {
-                                    console.error(`Error updating document ${element}:`, error);
-                                });
-                
-                            await delay(1000);
-                        }
-                        
-                        forwardMultipleDocumentsModal.hide(); 
-                        console.log('All documents processed with delay.');
-                    } catch (error) {
-                        console.error('Error processing documents:', error);
-                    }
-                });
-                
-                
-                const saveRemarksBtn =  document.getElementById('saveRemarksMultiple');
-                saveRemarksBtn.addEventListener('click', function (e) {
-
-                    e.preventDefault();
-
-                    const form = document.getElementById('remarksFormForMultipleUpdate');
-                    const formData = new FormData(form);
-
-                    formData.append('activityLogsNo', JSON.stringify(activityLogsNo)); 
-                    formData.append('checkedValues', JSON.stringify(checkedValues));
-
-                    fetch(`/multiple-update-reject-remarks/${remarksNo}/`, {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'X-CSRFToken': getCSRFToken(),
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log("SUCCESS");
-                    })
-                    .catch(error => console.error('Error', error));
-                
-                });
-                
-            } else {
-                
-                forwardModal.show();
-                
-                document.getElementById('confirmForward').addEventListener('click', function() {
-
-                    fetch(`/document-update-status/forward/${checkedValues[0]}/`)
-                        .then(response => response.json())
-                        .then(data => {
-                            document.getElementById('saveRemarks').setAttribute('data-remarks-no', data.remarks_no);
-                            document.getElementById('saveRemarks').setAttribute('data-document-no', documentNo);
-                            document.getElementById('saveRemarks').removeAttribute('data-activity-log-no');
-                            document.getElementById('saveRemarks').setAttribute('data-activity-log-no', data.activity_log_no);
-                        })
-                        .catch(error => console.error('Error', error));
-
-                });
-                
-            }
-            
-        });
-
-    });
-
-    
-    document.getElementById('cancelForwardBtn').addEventListener('click', function() {
-        forwardModal.hide();
-        resetSelection(table);
-    });
-    
-    document.getElementById('cancelForwardMultipleDocsBtn').addEventListener('click', function() {
-        forwardMultipleDocumentsModal.hide();
-        resetSelection(table);
-    });
-
-    document.getElementById('confirmForward').addEventListener('click', function () {
-        forwardModal.hide();
-    });
-    
-}
-
-function bindResolveButtons() {
-    
-    const table = document.querySelector('#recordsTable');
-    const resolveButtons = document.querySelectorAll('.resolve-btn');
-    const resolveModal = new bootstrap.Modal(document.getElementById('resolveDocumentModal'),{
-        backdrop: 'static',
-        keyboard: false
-    });
-    const resolveMultipleDocumentsModal = new bootstrap.Modal(document.getElementById('resolveMultipleDocumentsModal'),{
-        backdrop: 'static',
-        keyboard: false
-    });
-    
-    resolveButtons.forEach(button => {
-
-        button.addEventListener('click', function () {
-
-            const documentNo = this.getAttribute('data-document-no');
-
-            const checkbox = document.querySelector(`input[type="checkbox"][value="${documentNo}"]`);
-
-            if (checkbox && checkbox.checked) {
-                console.log("this option is checked");
-            } else {
-                checkbox.checked = true; 
-                const event = new Event('change', { bubbles: true, cancelable: true });
-                checkbox.dispatchEvent(event);
-            }
-            
-            const checkboxes = table.querySelectorAll('input[type="checkbox"]');
-            const checkedValues = Array.from(checkboxes)
-                .filter(checkbox => checkbox.checked)
-                .map(checkbox => checkbox.value);
-            
-            if (checkedValues.length > 1) {
-            
-                document.getElementById('selectedDocsCountResolve').innerHTML = checkedValues.length;
-                resolveMultipleDocumentsModal.show();
-            
-                let remarksNo;
-                let activityLogsNo = [];
-
-                document.getElementById('confirmMultipleDocsResolve').addEventListener('click', function() {
+                document.getElementById('confirmMultipleDocsArchive').addEventListener('click', function() {
                     
                     checkedValues.forEach((element, index) => {
                         
-                        fetch(`/document-update-status/resolve/${element}`)
+                        fetch(`/document-update-status/archive/${element}`)
                             .then(response => response.json())
                             .then(data => {
                                 if(index == 0) {
@@ -225,49 +87,20 @@ function bindResolveButtons() {
                             .catch(error => console.error('Error', error));
                     });
 
-                    resolveMultipleDocumentsModal.hide();
+                    archiveMultipleDocumentsModal.hide();
 
-                });
-                
-                const saveRemarksBtn =  document.getElementById('saveRemarksMultiple');
-                saveRemarksBtn.addEventListener('click', function (e) {
-
-                    e.preventDefault();
-
-                    const form = document.getElementById('remarksFormForMultipleUpdate');
-                    const formData = new FormData(form);
-
-                    formData.append('activityLogsNo', JSON.stringify(activityLogsNo)); 
-                    formData.append('checkedValues', JSON.stringify(checkedValues));
-
-                    fetch(`/multiple-update-reject-remarks/${remarksNo}/`, {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'X-CSRFToken': getCSRFToken(),
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log("SUCCESS");
-                    })
-                    .catch(error => console.error('Error', error));
-                
                 });
                 
             } else {
                 
-                resolveModal.show();
+                archiveModal.show();
                 
-                document.getElementById('confirmResolve').addEventListener('click', function() {
+                document.getElementById('confirmArchive').addEventListener('click', function() {
 
-                    fetch(`/document-update-status/resolve/${checkedValues[0]}/`)
+                    fetch(`/document-update-status/archive/${checkedValues[0]}/`)
                         .then(response => response.json())
                         .then(data => {
-                            document.getElementById('saveRemarks').setAttribute('data-remarks-no', data.remarks_no);
-                            document.getElementById('saveRemarks').setAttribute('data-document-no', documentNo);
-                            document.getElementById('saveRemarks').removeAttribute('data-activity-log-no');
-                            document.getElementById('saveRemarks').setAttribute('data-activity-log-no', data.activity_log_no);
+                            console.log("successfully archived");
                         })
                         .catch(error => console.error('Error', error));
 
@@ -279,18 +112,19 @@ function bindResolveButtons() {
 
     });
 
-    document.getElementById('cancelResolveBtn').addEventListener('click', function() {
-        resolveModal.hide();
+    
+    document.getElementById('cancelArchiveBtn').addEventListener('click', function() {
+        archiveModal.hide();
         resetSelection(table);
     });
     
-    document.getElementById('cancelResolveMultipleDocsBtn').addEventListener('click', function() {
-        resolveMultipleDocumentsModal.hide();
+    document.getElementById('cancelArchiveMultipleDocsBtn').addEventListener('click', function() {
+        archiveMultipleDocumentsModal.hide();
         resetSelection(table);
     });
 
-    document.getElementById('confirmResolve').addEventListener('click', function () {
-        resolveModal.hide();
+    document.getElementById('confirmArchive').addEventListener('click', function () {
+        archiveModal.hide();
     });
     
 }

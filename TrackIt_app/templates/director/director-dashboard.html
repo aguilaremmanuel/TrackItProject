@@ -185,41 +185,36 @@
                             <table class="table table-sm my-1" style="table-layout: fixed; width: 100%;">
                                 <thead>
                                   <tr>
-                                    <th scope="col" style="width: 30%;">Tracking Number</th>
-                                    <th>
-                                        Priority 
-                                        <a href="?status=active&sort_by=priority_level&order=asc"><i class='bx bxs-sort-alt'></i></a>
-                                    </th>
-                                    <th scope="col" style="width: 35%;">Action</th>
+                                    <th width="35%">Tracking Number</th>
+                                    <th width="20%">Type</th>
+                                    <th width="25%">Priority</th>
+                                    <th width="20%">Action</th>
                                   </tr>
                                 </thead>
+                                <tbody>
+                                    {% for record in records %}
+                                        <tr>
+                                            <td>{{record.tracking_no}}</td>
+                                            <td>{{record.document_type.category}}</td>
+                                            {% if record.document_type.priority_level.priority_level == 'very urgent' %}
+                                                <td><span class="badge badge-red rounded-pill fw-semibold">VERY URGENT</span></td>
+                                            {% elif record.document_type.priority_level.priority_level == 'urgent' %}
+                                                <td><span class="badge badge-yellow rounded-pill fw-semibold">URGENT</span></td>
+                                            {% elif record.document_type.priority_level.priority_level == 'normal' %}
+                                                <td><span class="badge badge-green rounded-pill fw-semibold">NORMAL</span></td>
+                                            {% endif %}
+                                            <td>                    
+                                                <a class="btn btn-sm btn-blue"
+                                                    data-bs-toggle="tooltip" 
+                                                    title="View Document Details"
+                                                    href="{% url 'director_needs_action' record.document_no %}">
+                                                    <i class="fa-solid fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
                             </table>
-                            <div style="max-height: 302px; overflow-y: auto;">
-                                <table class="table table-sm table-hover" style="table-layout: fixed; width: 100%;">
-                                    <tbody>
-                                        {% for record in records %}
-                                            <tr>
-                                                <td style="width: 30%;">{{record.tracking_no}}</th>
-                                                {% if record.document_type.priority_level.priority_level == 'very urgent' %}
-                                                    <td><span class="badge badge-red rounded-pill fw-semibold">VERY URGENT</span></td>
-                                                {% elif record.document_type.priority_level.priority_level == 'urgent' %}
-                                                    <td><span class="badge badge-yellow rounded-pill fw-semibold">URGENT</span></td>
-                                                {% elif record.document_type.priority_level.priority_level == 'normal' %}
-                                                    <td><span class="badge badge-green rounded-pill fw-semibold">NORMAL</span></td>
-                                                {% endif %}
-                                                 
-                                                <td style="width: 35%;">                    
-                                                    <button type="button" class="btn btn-sm btn-blue viewDocumentBtn" data-document-no="{{ document.document_no }}" 
-                                                        data-bs-toggle="modal" data-bs-target="#viewDocumentModal"
-                                                        data-bs-toggle="tooltip" title="View Document Details">
-                                                        <i class="fa-solid fa-eye"></i>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
                         </div>
                     </div>
     
@@ -256,6 +251,7 @@
                             <div class="canvas-container d-flex align-items-center">
                                 <canvas id="docStatusChart"></canvas>
                             </div>
+
                         </div>
                           
                         <!-- 2nd Column | Announcements -->
@@ -628,7 +624,7 @@
                                 position: 'bottom'
                             },
                             title: {
-                                display: false // Set to false to remove the chart title
+                                display: false
                             }
                         }
                     }
@@ -826,8 +822,6 @@
                     .catch(error => console.error('Error:', error));
             }
 
-
-            
             const selectedFiltersDiv = document.getElementById('selectedFilters');
             const radioButtons = document.querySelectorAll('.form-check-input');
 

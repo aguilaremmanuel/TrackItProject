@@ -31,13 +31,21 @@
 
                     <div id="records-collapse" data-bs-parent="#sidebarAccordion" class="collapse
                         {% if request.resolver_match.url_name == 'action_officer_records' %}show{% endif %} 
-                        {% if request.resolver_match.url_name == 'action_officer_unacted_records' %}show{% endif %}">
+                        {% if request.resolver_match.url_name == 'action_officer_unacted_records' %}show{% endif %}
+                        {% if request.resolver_match.url_name == 'action_officer_endorsed_records' %}show{% endif %}">
                         <ul class="list-unstyled">
                             <li class="mt-2">
                                 <a href="{% url 'action_officer_records' '-1' %}?status=active" id="records"
                                    class="nav-submenu {% if request.resolver_match.url_name == 'action_officer_records' %}active{% endif %}">
                                     <i class='bx bx-calendar-exclamation nav-icon'></i>
                                     <span class="nav-name">Pending Records</span>
+                                </a>
+                            </li>
+                            <li class="mt-2">
+                                <a href="{% url 'action_officer_endorsed_records'%}?status=active" id="endorsed-records"
+                                   class="nav-submenu {% if request.resolver_match.url_name == 'action_officer_endorsed_records' %}active{% endif %}">
+                                    <i class='bx bx-calendar-exclamation nav-icon'></i>
+                                    <span class="nav-name">Endorsed Records</span>
                                 </a>
                             </li>
                             <li class="mt-2">

@@ -572,11 +572,33 @@
 
             }
 
-            function handleTargetPerformanceChange() {
+            function updatePerformanceChart(data) {
 
                 if (performanceChart) {
                     performanceChart.destroy();
                 }
+
+                var ctx1 = document.getElementById('performanceChart').getContext('2d');
+                performanceChart = new Chart(ctx1, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Resolved', 'Pending', 'Delayed', 'Unacted'],
+                        datasets: [{
+                            label: 'Document',
+                            data: [data.resolved_count, data.pending_count, data.delayed_count, data.unacted_count], // Replace with actual data
+                            backgroundColor: ['#4DA8DA', '#4169E1',  '#003366', '#008080']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: false,
+                    }
+                });
+
+            }
+            
+            function handleTargetPerformanceChange() {
 
                 const timeSpan = inputGroupSelect.value;
                 const targetPerformanceValue = targetPerformance.value;
@@ -584,25 +606,7 @@
                 fetch(`/sro-performance/${timeSpan}/${targetPerformanceValue}`)
                     .then(response => response.json())
                     .then(data => {
-
-                        var ctx1 = document.getElementById('performanceChart').getContext('2d');
-                        performanceChart = new Chart(ctx1, {
-                            type: 'pie',
-                            data: {
-                                labels: ['Resolved', 'Pending', 'Delayed', 'Unacted'],
-                                datasets: [{
-                                    label: 'Document',
-                                    data: [data.resolved_count, data.pending_count, data.delayed_count, data.unacted_count], // Replace with actual data
-                                    backgroundColor: ['#4DA8DA', '#4169E1',  '#003366', '#008080']
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                animation: false,
-                            }
-                        });
-
+                        updatePerformanceChart(data);
                     })
                     .catch(error => console.error('Error:', error));
             }

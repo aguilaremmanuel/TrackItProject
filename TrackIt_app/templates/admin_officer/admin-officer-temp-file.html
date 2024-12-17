@@ -539,10 +539,10 @@
     </div>
 
     <!-- 2FA Present JS-->
-    <!-- <script>
+    <script>
         document.getElementById('twoFactorAuth').addEventListener('change', function() {
             const isEnabled = this.checked;
-            fetch("{#% url 'toggle_two_factor' %}", {
+            fetch("{% url 'toggle_two_factor' %}", {
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': '{{ csrf_token }}',
@@ -558,16 +558,16 @@
             })
             .catch(error => console.error('Error:', error));
         });
-    </script> -->
+    </script>
 
     <!-- JS for Change Password -->
-    <!-- <script>
+    <script>
         document.getElementById('changePasswordForm').onsubmit = async function(event) {
             event.preventDefault();
             const formData = new FormData(this);
 
             try {
-                const response = await fetch("{#% url 'change_password' %}", {
+                const response = await fetch("{% url 'change_password' %}", {
                     method: "POST",
                     headers: {
                         'X-CSRFToken': '{{ csrf_token }}',
@@ -631,8 +631,7 @@
                 eyeIcon.classList.add('fa-eye');
             }
         }
-    </script> -->
-    
+    </script>
     {% if document %}
         <script>
             document.addEventListener('DOMContentLoaded', function () {
@@ -640,10 +639,6 @@
                 const trackingInput = document.getElementById('TrackingNumber');
                 trackingInput.value = '{{document.tracking_no}}';
                 trackingInput.readOnly = true;
-
-                const generatedTN = document.getElementById('generatedTN');
-                generatedTN.disabled = true;
-
                 
                 document.getElementById('SenderName').value = '{{document.sender_name}}';
                 

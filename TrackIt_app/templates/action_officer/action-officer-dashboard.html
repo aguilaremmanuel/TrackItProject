@@ -498,11 +498,13 @@
 
             const inputGroupSelect = document.getElementById('inputGroupSelect');
             const targetPrioLevel = document.getElementById('targetPrioLevelSelect');
+            let performanceChart;
 
             function handleSelectChange() {
 
                 const timeSpan = inputGroupSelect.value;
                 handleDocumentPriorityLevelChange();
+                handleMyPerformance();
             }
 
             function handleDocumentPriorityLevelChange() {
@@ -549,11 +551,58 @@
 
             }
 
+            function updatePerformanceChart(data) {
+
+                if (performanceChart) {
+                    performanceChart.destroy();
+                }
+
+                var ctx1 = document.getElementById('unactedDocumentsChart').getContext('2d');
+                performanceChart = new Chart(ctx1, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Endorsed', 'Pending', 'Unacted'],
+                        datasets: [{
+                            label: 'Document',
+                            data: data.values, 
+                            backgroundColor: ['#4DA8DA', '#4169E1', '#008080']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'bottom'
+                            },
+                            title: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+
+
+            }
+            
+            function handleMyPerformance() {
+
+                const timeSpan = inputGroupSelect.value;
+
+                fetch(`/action-officer-performance/${timeSpan}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        updatePerformanceChart(data);
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+            
             inputGroupSelect.addEventListener('change', handleSelectChange);
             targetPrioLevel.addEventListener('change', handleDocumentPriorityLevelChange);
             handleSelectChange();
             setInterval(handleSelectChange, 3000);
-
 
         });
     </script>
@@ -616,22 +665,7 @@
 
     <!-- [ANALYTICS] Pie Chart JavaScript -->
     <script>
-        var ctx1 = document.getElementById('unactedDocumentsChart').getContext('2d');
-        var chart = new Chart(ctx1, {
-            type: 'pie',
-            data: {
-                labels: ['Resolved', 'Pending', 'Unacted'],
-                datasets: [{
-                    label: 'Document',
-                    data: [10, 6, 2], // Replace with actual data
-                    backgroundColor: ['#4DA8DA', '#4169E1', '#008080']
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-            }
-        });
+        
     </script>
 </body>
 </html>

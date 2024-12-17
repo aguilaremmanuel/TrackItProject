@@ -87,7 +87,7 @@
                 </li>
 
                 <li class="mb-2">
-                    <a href="{% url 'admin_officer_pending_reports' %}?status=active" id="pendingReports"
+                    <a href="{% url 'admin_officer_pending_reports' 'default' %}?status=active" id="pendingReports"
                        class="nav-link {% if request.resolver_match.url_name == 'admin_officer_pending_reports' %}active{% endif %}"> 
                         <i class='bx bx-chart nav-icon'></i>
                         <span class="nav-name">Pending Reports</span>
