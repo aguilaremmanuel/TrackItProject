@@ -145,25 +145,77 @@
             });
         });
     </script>
+
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+			// Select all fields with the 'letter-only' class
+			const letterOnlyFields = document.querySelectorAll('.letter-only');  
+
+			// Loop through each field and apply the input restriction
+			letterOnlyFields.forEach(function(field) {
+				field.addEventListener("input", function(event) {
+					// Replace any non-letter or non-space character with an empty string
+					const regex = /[^a-zA-Z\s]/g;  // This regex allows only letters and spaces
+					event.target.value = event.target.value.replace(regex, '');  // Apply the change
+				});
+			});
+		});
+	</script>
+
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+			// Select all fields with the 'numbers-only' class
+			const numberOnlyFields = document.querySelectorAll('.numbers-only');  
+
+			// Loop through each field and apply the input restriction
+			numberOnlyFields.forEach(function(field) {
+				field.addEventListener("input", function(event) {
+					// Replace any non-digit character with an empty string
+					const regex = /[^0-9]/g;  // This regex allows only digits
+					event.target.value = event.target.value.replace(regex, '');  // Apply the change
+				});
+			});
+		});
+	</script>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			const selectOffice = document.getElementById('selectOffice');
+			const selectRole = document.getElementById('selectRole');
+
+			// Hide and disable the first option of the selectOffice dropdown
+			if (selectOffice && selectOffice.options[0]) {
+				selectOffice.options[0].style.display = 'none';  // Hide the option
+				selectOffice.options[0].disabled = true;         // Disable the option
+			}
+
+			// Hide and disable the first option of the selectRole dropdown
+			if (selectRole && selectRole.options[0]) {
+				selectRole.options[0].style.display = 'none';  // Hide the option
+				selectRole.options[0].disabled = true;         // Disable the option
+			}
+		});
+	</script>
+	
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			const employeeIdInput = document.getElementById("employeeID");
+
+			// Restrict spaces in the input
+			employeeIdInput.addEventListener("keypress", function(event) {
+				const char = String.fromCharCode(event.which);
+				if (char === " ") {
+					event.preventDefault(); // Prevent spaces from being entered
+				}
+			});
+
+			// Trim spaces on blur (start, middle, and end)
+			employeeIdInput.addEventListener("blur", function() {
+				this.value = this.value.replace(/\s+/g, ''); // Remove all spaces
+			});
+		});
+	</script>
+
+
 </body>
-
-<script>
-	document.addEventListener('DOMContentLoaded', function () {
-		const selectOffice = document.getElementById('selectOffice');
-		const selectRole = document.getElementById('selectRole');
-
-		// Hide and disable the first option of the selectOffice dropdown
-		if (selectOffice && selectOffice.options[0]) {
-			selectOffice.options[0].style.display = 'none';  // Hide the option
-			selectOffice.options[0].disabled = true;         // Disable the option
-		}
-
-		// Hide and disable the first option of the selectRole dropdown
-		if (selectRole && selectRole.options[0]) {
-			selectRole.options[0].style.display = 'none';  // Hide the option
-			selectRole.options[0].disabled = true;         // Disable the option
-		}
-	});
-</script>
-
 </html>

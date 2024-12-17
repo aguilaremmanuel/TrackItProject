@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 import re
 from django.contrib.auth.hashers import make_password
+from django.core.validators import MaxLengthValidator, RegexValidator
 
 def is_valid_password(password):
     # Check if password has at least 8 characters
@@ -20,6 +21,23 @@ def is_valid_password(password):
 
     return True
 
+# Validator to ensure only letters (letters and spaces only)
+letter_only_validator = RegexValidator(
+    regex=r'^[a-zA-Z ]+$',
+    message='This field can only contain letters and spaces.'
+)
+
+# Validator to ensure only numbers (no letters, no special characters)
+number_only_validator = RegexValidator(
+    regex=r'^\d+$',  # Only digits allowed
+    message='This field can only contain numbers.'
+)
+
+employee_id_validator = RegexValidator(
+    regex=r'^\d{6}-[A-Za-z]{3}$',  # 6 digits, followed by a hyphen and 3 letters (e.g., 123456-ADM)
+    message='Employee ID must be in the format 123456-ADM.'
+)
+
 class UserSignupForm(forms.ModelForm):
     OFFICE_CHOICES = [
         ('', 'Select Office'),
@@ -33,7 +51,7 @@ class UserSignupForm(forms.ModelForm):
         choices=OFFICE_CHOICES,
         widget=forms.Select(attrs={
             'class': 'form-select',
-            'id': 'selectOffice',
+            'id': 'selectOffice'
         })
     )
 
@@ -53,16 +71,68 @@ class UserSignupForm(forms.ModelForm):
 
     confirm_password = forms.CharField(
         widget=forms.PasswordInput(attrs={
-            'class': 'form-control', 
+            'class': 'form-control',
             'id': 'password2',
-            'placeholder': 'Confirm Password',
+            'placeholder': 'Confirm Password'
         })
     )
-   
+
+    # Apply the validator and max length to firstname, middlename, and lastname fields
+    firstname = forms.CharField(
+        max_length=45,
+        validators=[letter_only_validator],
+        widget=forms.TextInput(attrs={
+            'class': 'form-control letter-only',  # Add the letter-only class here
+            'placeholder': 'e.g. Juan',
+            'title': 'Only letters and spaces are allowed.'
+        })
+    )
+
+    middlename = forms.CharField(
+        max_length=45,
+        required=False,
+        validators=[letter_only_validator],
+        widget=forms.TextInput(attrs={
+            'class': 'form-control letter-only',  # Add the letter-only class here
+            'placeholder': 'e.g. Santos',
+            'title': 'Only letters and spaces are allowed.'
+        })
+    )
+
+    lastname = forms.CharField(
+        max_length=45,
+        validators=[letter_only_validator],
+        widget=forms.TextInput(attrs={
+            'class': 'form-control letter-only',  # Add the letter-only class here
+            'placeholder': 'e.g. Dela Cruz',
+            'title': 'Only letters and spaces are allowed.'
+        })
+    )
+
+    contact_no = forms.CharField(
+        max_length=11,
+        validators=[number_only_validator],  # Use the number-only validator
+        widget=forms.TextInput(attrs={
+            'class': 'form-control numbers-only',  # Add 'numbers-only' class here
+            'placeholder': 'e.g. 09123456789',
+            'title': 'Only numbers are allowed.'
+        })
+    )
+
+    employee_id = forms.CharField(
+        max_length=10, 
+        validators=[employee_id_validator],  
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'id': 'employeeID', 
+            'placeholder': 'e.g. 123456-ADM',
+            'title': '6 digits followed by a hyphen and 3 uppercase letters.'
+        })
+    )
+
     class Meta:
         model = User
-        fields = ['firstname','middlename','lastname','employee_id' ,'email', 'contact_no','role','password', 'registered_date']
-
+        fields = ['firstname', 'middlename', 'lastname', 'employee_id', 'email', 'contact_no', 'role', 'password', 'registered_date']
         widgets = {
             'firstname': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -86,7 +156,6 @@ class UserSignupForm(forms.ModelForm):
             }),
             'contact_no': forms.TextInput(attrs={
                 'class': 'form-control',
-                #'pattern': '09[0-9]{2} [0-9]{3} [0-9]{4}',
                 'placeholder': 'e.g. 09123456789'
             }),
             'password': forms.PasswordInput(attrs={
@@ -96,51 +165,51 @@ class UserSignupForm(forms.ModelForm):
             }),
         }
 
-    # Make the middlename field optional
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['middlename'].required = False
-    
     def clean(self):
-
         cleaned_data = super().clean()
 
-        # CONFIRM PASSWORD VALIDATION        
+        # Confirm password validation
         password = cleaned_data.get("password")
         confirm_password = cleaned_data.get("confirm_password")
 
         if password and confirm_password and password != confirm_password:
             self.add_error('confirm_password', "Passwords do not match.")
 
-        # EMAIL VALIDATION 
-        email = self.cleaned_data.get('email')
+        # Ensure 'Select Office' or 'Select Role' are not submitted
+        if cleaned_data.get('office_id') == '':
+            self.add_error('office_id', "Please select a valid office.")
+        if cleaned_data.get('role') == '':
+            self.add_error('role', "Please select a valid role.")
 
+        # Email validation
+        email = cleaned_data.get('email')
         try:
             validate_email(email)
         except ValidationError:
-            pass
-        
-        # PASSWORD VALIDATION 
+            self.add_error('email', "Enter a valid email address.")
+
+        # Password validation
         if password and not is_valid_password(password):
-            self.add_error('password', "Password must be at least 8 characters with a special character and an uppercase letter.")
-        
+            self.add_error('password', "Password must be at least 8 characters long, contain an uppercase letter, and a special character.")
+
         return cleaned_data
-    
-    
+
     def save(self, commit=True):
-        user = super(UserSignupForm, self).save(commit=False)
+        user = super().save(commit=False)
+        #user.password = make_password(self.cleaned_data['password'])  # Hash the password
 
-        # Hash the password using Django's make_password function
-        # user.password = make_password(self.cleaned_data['password'])
-
+        # Assign office instance
         office_id = self.cleaned_data['office_id']
-        office_instance = Office.objects.get(office_id=office_id)
-        user.office_id = office_instance
-
+        try:
+            office_instance = Office.objects.get(office_id=office_id)
+            user.office_id = office_instance
+        except Office.DoesNotExist:
+            raise ValidationError("Selected office does not exist.")
 
         if commit:
             user.save()
         return user
+
 
 class SystemAdminLoginForm(forms.Form):
     user_id = forms.CharField(

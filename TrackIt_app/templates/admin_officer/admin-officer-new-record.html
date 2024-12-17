@@ -67,6 +67,56 @@
     </style>
 
     <style>
+        .progress-circle {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .progress-circle .inner-content {
+            position: absolute;
+            width: 110px;
+            height: 110px;
+            background: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+         /* Styling for displayMessage alert box */ 
+        .alert-box {
+            position: fixed;
+            top: 5%; /* Adjusted position towards the top */
+            left: 50%;
+            transform: translateX(-50%); /* Center horizontally */
+            max-width: 300px;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            color: #333;
+            font-size: 14px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 9999; /* Ensures it's above the modal */
+        }
+
+        .alert-icon {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        .alert-content p {
+            margin: 0;
+        }
+    </style>
+
+    <style>
         /* Optional styling */
         .input-container {
             display: none; /* Hidden by default */
@@ -787,5 +837,44 @@
         
     </script>
 
+
+    <script>
+        document.getElementById("TrackingNumber").addEventListener("keypress", function(event) {
+            // Allow only numbers, letters, and dash, prevent spaces
+            const char = String.fromCharCode(event.which);
+
+            // If the character is a space, prevent it
+            if (char === " ") {
+                event.preventDefault();
+            }
+        });
+    </script>
+
+    <script>
+        // Function to convert input to uppercase and trim spaces
+        function formatInput(input) {
+            // Convert text to uppercase
+            input.value = input.value.toUpperCase();
+
+            // Trim spaces from the start, middle, and end
+            input.value = input.value.replace(/\s+/g, ' ').trim();
+        }
+
+        // Optional: You can also limit input to allow only valid characters (if needed)
+        document.getElementById("TrackingNumber").addEventListener("keypress", function(event) {
+            const char = String.fromCharCode(event.which);
+            
+            if (!/^[a-zA-Z0-9\s-]*$/.test(char)) {
+                event.preventDefault();
+            }
+        });
+    </script>
+
+    <script>
+        document.getElementById("SenderName").addEventListener("input", function () {
+            // Allow only letters (uppercase and lowercase) and spaces
+            this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
+        });
+    </script>
 </body>
 </html>

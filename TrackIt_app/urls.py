@@ -9,6 +9,8 @@ urlpatterns = [
     path('', views.user_login, name='user_login'),
     path('login/', views.user_login, name='user_login'),
     path('logout/', views.user_logout, name='user_logout'),
+    path('toggle-two-factor/', views.toggle_two_factor, name='toggle_two_factor'),  
+    path('change_password/', views.change_password, name='change_password'),
     path('signup/',views.user_signup, name='user_signup'),
 
     #path('admin-login/',views.system_admin_login, name='system_admin_login'),
