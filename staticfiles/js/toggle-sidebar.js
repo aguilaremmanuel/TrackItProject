@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const navLogo = document.querySelector('.nav-logo');
     const mainContent = document.querySelector('.main-content');
     const header = document.querySelector('.header');
+    const navDropIcons = document.querySelectorAll('.nav-drop-icon');
+    const submenus = document.querySelectorAll('[data-bs-toggle="collapse"]');
 
     // Function to adjust header padding based on scroll
     function adjustHeaderPadding() {
@@ -18,33 +20,62 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Sidebar toggle logic
-    toggleButton.addEventListener('click', () => {
-        if (sidebar.classList.contains('collapsed')) {
-            // Expand the sidebar and remove collapsed class
-            container.style.setProperty('--sidebar-width', '225px');
-            sidebar.classList.remove('collapsed');
-
-            // Remove collapsed class from nav-logo and each nav-link
-            navLogo.classList.remove('collapsed');
+    // Function to expand the sidebar
+    function expandSidebar() {
+        if (sidebar.classList.contains('toggled')) {
+            container.style.setProperty('--sidebar-width', '232px');
+            sidebar.classList.remove('toggled');
+            navLogo.classList.remove('toggled');
             navLinks.forEach(link => {
-                link.classList.remove('collapsed');
-                // Remove tooltip on expand
+                link.classList.remove('toggled');
                 link.removeAttribute('title');
             });
-        } else {
-            // Collapse the sidebar and add collapsed class
-            container.style.setProperty('--sidebar-width', '66px');
-            sidebar.classList.add('collapsed');
-
-            // Add collapsed class to nav-logo and each nav-link
-            navLogo.classList.add('collapsed');
-            navLinks.forEach(link => {
-                link.classList.add('collapsed');
-                // Set the title for the tooltip
-                link.setAttribute('title', link.querySelector('.nav-name').textContent);
+            navDropIcons.forEach(icon => {
+                icon.classList.remove('toggled');
             });
         }
+    }
+
+    // Function to collapse the sidebar
+    function collapseSidebar() {
+        container.style.setProperty('--sidebar-width', '66px');
+        sidebar.classList.add('toggled');
+        navLogo.classList.add('toggled');
+        navLinks.forEach(link => {
+            link.classList.add('toggled');
+            link.setAttribute('title', link.querySelector('.nav-name')?.textContent);
+        });
+        navDropIcons.forEach(icon => {
+            icon.classList.add('toggled');
+        });
+
+        // Close all submenus
+        submenus.forEach(submenu => {
+            const target = document.querySelector(submenu.getAttribute('data-bs-target'));
+            if (target && target.classList.contains('show')) {
+                submenu.setAttribute('aria-expanded', 'false');
+                target.classList.remove('show');
+            }
+        });
+    }
+
+    // Sidebar toggle logic
+    toggleButton.addEventListener('click', () => {
+        if (sidebar.classList.contains('toggled')) {
+            expandSidebar();
+        } else {
+            collapseSidebar();
+        }
+    });
+
+    // Expand sidebar when clicking on a nav-link with a submenu
+    navLinks.forEach(link => {
+        link.addEventListener('click', (event) => {
+            // Check if the clicked nav-link has a submenu
+            if (link.getAttribute('data-bs-toggle') === 'collapse') {
+                expandSidebar();
+            }
+        });
     });
 
     // Adjust header padding on page load

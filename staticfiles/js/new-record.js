@@ -100,6 +100,12 @@ document.addEventListener("DOMContentLoaded", function() {
                 generateQRCodeModal.show();
                 form.reset();
             }
+
+            const trackingInput = document.getElementById('TrackingNumber');
+            trackingInput.readOnly = false;
+
+            const generatedTN = document.getElementById('generatedTN');
+            generatedTN.disabled = false;
         })
         .catch(error => {
             console.error('Error:', error);

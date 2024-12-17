@@ -1,3 +1,7 @@
+function getCSRFToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]').value;
+}
+
 function fetchDocuments() {
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -20,7 +24,167 @@ function fetchDocuments() {
             let noOfRecords = document.getElementById('docuLength').value;
             document.getElementById('recordCount').textContent = noOfRecords;
             bindViewButtons();
+            bindEndorseButtons();
     });
+}
+
+function bindEndorseButtons() {
+    
+    const table = document.querySelector('#recordsTable');
+    const endorseButtons = document.querySelectorAll('.endorse-btn');
+    const endorseModal = new bootstrap.Modal(document.getElementById('endorseDocumentModal'),{
+        backdrop: 'static',
+        keyboard: false
+    });
+    const endorseMultipleDocumentsModal = new bootstrap.Modal(document.getElementById('endorseMultipleDocumentsModal'),{
+        backdrop: 'static',
+        keyboard: false
+    });
+    
+    endorseButtons.forEach(button => {
+
+        button.addEventListener('click', function () {
+
+            const documentNo = this.getAttribute('data-document-no');
+
+            const checkbox = document.querySelector(`input[type="checkbox"][value="${documentNo}"]`);
+
+            if (checkbox && checkbox.checked) {
+                console.log("this option is checked");
+            } else {
+                checkbox.checked = true; 
+                const event = new Event('change', { bubbles: true, cancelable: true });
+                checkbox.dispatchEvent(event);
+            }
+
+            const checkboxes = table.querySelectorAll('input[type="checkbox"]');
+            const checkedValues = Array.from(checkboxes)
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => checkbox.value);
+        
+            if (checkedValues.length > 1) {
+
+                document.getElementById('selectedDocsCount').innerHTML = checkedValues.length;
+                endorseMultipleDocumentsModal.show();
+
+                let remarksNo;
+                let activityLogsNo = [];
+
+                document.getElementById('confirmMultipleDocsEndorse').addEventListener('click', function() {
+                    
+                    checkedValues.forEach((element, index) => {
+                        
+                        fetch(`/document-update-status/endorse/${element}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                if(index == 0) {
+                                    remarksNo = data.remarks_no;
+                                }
+                                activityLogsNo.push(data.activity_log_no);
+                            })
+                            .catch(error => console.error('Error', error));
+                    });
+
+                    endorseMultipleDocumentsModal.hide();
+
+                });
+                
+                const saveRemarksBtn =  document.getElementById('saveRemarksMultiple');
+                saveRemarksBtn.addEventListener('click', function (e) {
+
+                    e.preventDefault();
+
+                    const form = document.getElementById('remarksFormForMultipleUpdate');
+                    const formData = new FormData(form);
+
+                    formData.append('activityLogsNo', JSON.stringify(activityLogsNo)); 
+                    formData.append('checkedValues', JSON.stringify(checkedValues));
+
+                    fetch(`/multiple-update-reject-remarks/${remarksNo}/`, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRFToken': getCSRFToken(),
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log("SUCCESS");
+                    })
+                    .catch(error => console.error('Error', error));
+                
+                });
+                
+            } else {
+                
+                endorseModal.show();
+                
+                document.getElementById('confirmEndorse').addEventListener('click', function() {
+
+                    fetch(`/document-update-status/endorse/${checkedValues[0]}/`)
+                        .then(response => response.json())
+                        .then(data => {
+                            document.getElementById('saveRemarks').setAttribute('data-remarks-no', data.remarks_no);
+                            document.getElementById('saveRemarks').setAttribute('data-document-no', documentNo);
+                            document.getElementById('saveRemarks').removeAttribute('data-activity-log-no');
+                            document.getElementById('saveRemarks').setAttribute('data-activity-log-no', data.activity_log_no);
+                        })
+                        .catch(error => console.error('Error', error));
+
+                });
+                
+            }
+            
+        });
+
+    });
+
+    
+    document.getElementById('cancelEndorseBtn').addEventListener('click', function() {
+        endorseModal.hide();
+        resetSelection(table);
+    });
+    
+    document.getElementById('cancelEndorseMultipleDocsBtn').addEventListener('click', function() {
+        endorseMultipleDocumentsModal.hide();
+        resetSelection(table);
+    });
+
+    document.getElementById('confirmEndorse').addEventListener('click', function () {
+        endorseModal.hide();
+    });
+    
+}
+
+function resetSelection(table) {
+
+    const checkboxes = table.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    
+
+    const selectAllBtn = document.getElementById('selectAllBtn');
+    selectAllBtn.innerHTML = "<i class='bx bxs-checkbox-checked fs-4' style='color:#2e72ea' ></i>";
+    //selectAllBtn.innerHTML = 'Select All';
+
+    documents_no = [0,0]
+
+    fetch(`/select-all-documents/deselect-all/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken() 
+        },
+        body: JSON.stringify({ documents_no }) 
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Success");
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
 }
 
 function bindViewButtons() {
@@ -30,10 +194,11 @@ function bindViewButtons() {
         button.addEventListener('click', function () {
             const documentNo = this.getAttribute('data-document-no');
 
+             // Show spinner and hide content before fetching data
              document.getElementById('loadingSpinner').style.display = 'block';
              document.getElementById('documentDetailsContent').style.display = 'none';
              document.getElementById('activitiesContent').style.display = 'none';
-             document.getElementById('activitiesTableBody').innerHTML = ''; 
+             document.getElementById('activitiesTableBody').innerHTML = ''; // Clear previous entries
 
             // Fetch document details via AJAX
             fetch(`/fetch-document-details/${documentNo}/`)
@@ -47,6 +212,7 @@ function bindViewButtons() {
                     document.getElementById('documentType').textContent = data.document_type.charAt(0).toUpperCase() + data.document_type.slice(1)
                     document.getElementById('documentPriority').textContent = data.priority;
                     document.getElementById('documentSubject').textContent = data.subject;
+                    
 
                     if (data.routes_txt) {
                         document.getElementById('documentRoutesTxt').classList.remove('d-none');
@@ -89,7 +255,7 @@ function bindViewButtons() {
                     });
 
                     document.getElementById('documentTitleLink').setAttribute('data-document-no', documentNo);
-                    
+
                     // Hide spinner and show content once data is loaded
                     document.getElementById('loadingSpinner').style.display = 'none';
                     document.getElementById('documentDetailsContent').style.display = 'flex';
@@ -153,6 +319,7 @@ function bindViewAttachmentButton() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    
     fetchDocuments();
     scanningQRCode();
     setInterval(fetchDocuments, 3000);
