@@ -72,6 +72,9 @@ function bindForwardButtons() {
                 let activityLogsNo = [];
 
                 document.getElementById('confirmMultipleDocsForward').addEventListener('click', async function () {
+                    
+                    forwardMultipleDocumentsModal.hide();
+
                     const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
                     
                     try {
@@ -93,7 +96,6 @@ function bindForwardButtons() {
                             await delay(1000);
                         }
                         
-                        forwardMultipleDocumentsModal.hide(); 
                         console.log('All documents processed with delay.');
                     } catch (error) {
                         console.error('Error processing documents:', error);

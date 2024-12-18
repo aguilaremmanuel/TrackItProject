@@ -25,7 +25,7 @@ class Command(BaseCommand):
             ongoing_deadline = document.ongoing_deadline
             # get the owner of the document
             if document.status == 'For DIR Approval':
-                user = User.objects.get(role='Director')
+                user = User.objects.get(role='Director', user_id='DIR-1001')
                 if not user:
                     print('No user found')
                     return

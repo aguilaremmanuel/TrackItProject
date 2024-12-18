@@ -8,6 +8,7 @@
     <link rel="icon" href="/static/images/logo-icon.png" type="image/png">
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
 	<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/table-content.css' %}">
     <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -49,9 +50,8 @@
             <header class="header">
                 <button class="toggle-sidebar" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
                 <div class="header-right">
-                    <!-- NOTIFICATIONS UI -->
-                    {% include "partials/display-notifications.html" %}
-                    <!---->
+                    <button class="toggle-notification" id="notification" title="Notifications"><i class="fa-solid fa-bell"></i></button>
+                 
                     <div class="dropdown">
                         <button class="profile m-0" type="button" id="profileDropdown" data-bs-toggle="dropdown">
                             <div class="profile-pic">
@@ -104,22 +104,20 @@
                     <div class="col-12">
                         <div class="rounded-2 p-3 mt-3" style="background-color: #007bff; color:white; height: auto;">
                             <div class="row p-2">
-                                <!-- Filtering Section -->
-                                <div class="col-6 d-flex align-items-center">
-                                    <p class="fs-3 p-0 m-0 fw-bold d-flex align-items-center">
-                                        <i class='bx bxs-wink-smile'></i>&nbsp;Welcome, {{ user_profile.firstname }}!
-                                    </p>
+                                <div class="col-9 d-flex align-items-center">
+                                    <p class="fs-3 p-0 m-0 fw-bolder d-flex align-items-center"><i class='bx bxs-wink-smile'></i>&nbsp;Welcome, System Admin!</p>
+                                    <!-- <p class="fs-6 p-0 m-0 fw-bold">Office - ACO</p> -->
                                 </div>
-                                <div class="col-6">
+                                <div class="col-3">
                                     <div class="row d-flex align-items-center">
-                                        <div class="col-9 text-end p-0 m-0 pe-3">
+                                        <div class="col-6 text-end p-0 m-0">
                                             <p class="p-0 m-0">See latest updates &nbsp;</p>
                                         </div>
-                                        <div class="col-3 p-0 pe-3">
+                                        <div class="col-6 p-0">
                                             <select class="form-select fw-bold" id="inputGroupSelect" style="font-size: 14px !important; background-color: #007bff; color: white; border-color: white;">
-                                                <option value="today" {% if filter_option == 'today' %}selected{% endif %}>Today</option>
-                                                <option value="1" {% if filter_option == '1' %}selected{% endif %}>This Month</option>
-                                                <option value="2" {% if filter_option == '2' %}selected{% endif %}>This Year</option>
+                                                <option value="today" selected>Today</option>
+                                                <option value="month">This Month</option>
+                                                <option value="year">This Year</option>
                                             </select>
                                         </div>
                                     </div>
@@ -133,26 +131,50 @@
                 <div class="row py-2">
                     <!-- 1st Column | Total Records -->
                     <div class="col-6">
-                        <!-- Total Records -->
-                        <div class="container d-block rounded-2 p-3 my-3" style="background-color: white; height: 363px;">
+                        <div class="container d-block rounded-2 p-3 my-3" style="background-color: white; height: auto;">
                             <div class="row">
-                                <div class="col-7 d-flex align-items-center">
-                                    <h3>
-                                        <span class="fw-bolder my-3 px-2 rounded-2" style="background-color: #007bff; color:white;">{{ total_records }}</span>&nbsp;Total Records
-                                    </h3>
-                                </div>
+                                <h3><span id="overallTotalRecords" class="fw-bolder my-3 px-2 rounded-2" style="background-color: #007bff; color:white;">0</span>&nbsp;Total Records</h3>                   
+                              </div>
+                          
+                              <div class="chart-container my-2">
+                                <!-- Bar 1 -->
+                                <div class="bar">
+                                    <div id="directorTotalRecords" class="percent-label">0</div>
+                                    <div class="bar-shape"></div>
+                                    <div class="office-label">DIR</div>
+                                  </div>
+                                  <!-- Bar 2 -->
+                                  <div class="bar">
+                                    <div id="admTotalRecords" class="percent-label">0</div>
+                                    <div class="bar-shape"></div>
+                                    <div class="office-label">ADM</div>
+                                  </div>
+                                  <!-- Bar 3 -->
+                                  <div class="bar">
+                                    <div id="csrTotalRecords" class="percent-label">0</div>
+                                    <div class="bar-shape"></div>
+                                    <div class="office-label">CSR</div>
+                                  </div>
+                                  <!-- Bar 4 -->
+                                  <div class="bar">
+                                    <div id="bdmTotalRecords" class="percent-label">0</div>
+                                    <div class="bar-shape"></div>
+                                    <div class="office-label">BDM</div>
+                                  </div>
+                                  <!-- Bar 5 -->
+                                  <div class="bar">
+                                    <div id="accTotalRecords" class="percent-label">0</div>
+                                    <div class="bar-shape"></div>
+                                    <div class="office-label">ACC</div>
+                                  </div>
+                                  <!-- Bar 6 -->
+                                  <div class="bar">
+                                    <div id="prlTotalRecords" class="percent-label">0</div>
+                                    <div class="bar-shape"></div>
+                                    <div class="office-label">PRL</div>
+                                  </div>
                             </div>
-                            <div class="chart-container my-2" style="display: flex; justify-content: space-around;">
-                                {% for dept in department_counts %}
-                                <div class="bar {% if dept.sender_department == highlighted_department %}selected{% endif %}"
-                                     style="width: {{ bar_width }}%;">
-                                    <div class="percent-label">{{ dept.count }}</div>
-                                    <div class="bar-shape" style="height: {{ dept.scaled_height }}px; min-height: 50px;"></div>
-                                    <div class="office-label" style="font-size: {{ font_size }}px;">{{ dept.sender_department }}</div>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        </div>    
+                        </div>
 
                         <div class="rounded-2 p-3 my-3" style="background-color: white; height:auto;">
                             <div class="row">
@@ -192,63 +214,56 @@
                                 </h4>
                             </div>
                             <div class="row my-2 d-flex align-items-center justify-content-center">
-                                <!-- Pending Count -->
                                 <div class="col-4 d-flex align-items-center justify-content-center">
-                                    <div class="progress-circle" 
-                                        style="background: {% if pending_user_count > 0 %} conic-gradient(#3589ff 0% {{ pending_percentage }}%, #e9ecef {{ pending_percentage }}% 100%) {% else %} #e9ecef {% endif %};">
+                                    <div id="pending-progress-circle" class="progress-circle">
                                         <div class="inner-content text-center">
-                                            <div class="percentage">{{ pending_user_count|default:"0" }}</div>
+                                            <div id="pending-count" class="percentage">0</div>
                                             <div class="label">Pending</div>
                                         </div>
                                     </div>
                                 </div>
-
-                                <!-- Active Count -->
+                            
                                 <div class="col-4 d-flex align-items-center justify-content-center">
-                                    <div class="progress-circle" 
-                                        style="background: {% if active_user_count > 0 %} conic-gradient(#3589ff 0% {{ active_percentage }}%, #e9ecef {{ active_percentage }}% 100%) {% else %} #e9ecef {% endif %};">
+                                    <div id="active-progress-circle" class="progress-circle">
                                         <div class="inner-content text-center">
-                                            <div class="percentage">{{ active_user_count|default:"0" }}</div>
+                                            <div id="active-count" class="percentage">0</div>
                                             <div class="label">Active</div>
                                         </div>
                                     </div>
                                 </div>
-
-                                <!-- Inactive Count -->
+                            
                                 <div class="col-4 d-flex align-items-center justify-content-center">
-                                    <div class="progress-circle" 
-                                        style="background: {% if inactive_user_count > 0 %} conic-gradient(#3589ff 0% {{ inactive_percentage }}%, #e9ecef {{ inactive_percentage }}% 100%) {% else %} #e9ecef {% endif %};">
+                                    <div id="inactive-progress-circle" class="progress-circle">
                                         <div class="inner-content text-center">
-                                            <div class="percentage">{{ inactive_user_count|default:"0" }}</div>
+                                            <div id="inactive-count" class="percentage">0</div>
                                             <div class="label">Inactive</div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>                               
-                        </div>   
+                            </div>
+                        </div>       
 
                         <div class="row px-3 my-3 d-flex justify-content-center">
                             <div class="col-4 ps-0 mt-0 rounded-2">
-                                <div class="clickable-box rounded-2 p-3" onclick="window.location.href='{% url 'system_admin_user_management' 'all-office' %}?status=active'">
+                                <a class="clickable-box rounded-2 p-3" href="{% url 'system_admin_user_management' 'all-office' %}?status=active">
                                     <h5 class="text-center mb-0"><i class='bx bxs-user-detail'></i>&nbsp;User<br>Management</h5>
-                                </div>
+                                </a>
                             </div>
 
                             <div class="col-4 mt-0 rounded-2">
-                                <div class="clickable-box rounded-2 p-3" onclick="window.location.href='{% url 'system_admin_doc_management' %}?status=active'">
+                                <a class="clickable-box rounded-2 p-3" href="{% url 'system_admin_doc_management' %}?status=active">
                                     <h5 class="text-center mb-0"><i class='bx bxs-file'></i>&nbsp;Document<br>Management</h5>
-                                </div>                                                            
+                                </a>                                                            
                             </div>
 
                             <div class="col-4 pe-0 mt-0 rounded-2">
-                                <div class="clickable-box rounded-2 p-3" onclick="window.location.href='{% url 'system_admin_announcements' %}?status=active'">
+                                <a class="clickable-box rounded-2 p-3" href="{% url 'system_admin_announcements' %}?status=active">
                                     <h5 class="text-center mb-0"><i class='bx bxs-megaphone'></i>&nbsp;Post<br>Announcements</h5>
-                                </div>
+                                </a>
                             </div>
                         </div>
                         
-                        <!-- Document Status Chart -->
-                        <div class="container d-block rounded-2 p-3 mb-3" style="background-color: white; height: 425px;">
+                        <div class="container d-block rounded-2 p-3 mb-3" style="background-color: white; height: 373px;">
                             <div class="row pb-2">
                                 <h4 class="mb-0 fw-bold d-flex align-items-center">
                                     <i class='bx bx-stats' style="color: #007bff;"></i>&nbsp;Document Status
@@ -257,7 +272,7 @@
                             <div class="d-flex align-items-center justify-content-center" style="height: 100%;">
                                 <canvas class="px-4 pb-5" id="multiAreaChart" style="width: 100%; height: 100%; max-width: 100%; max-height: 100%;"></canvas>
                             </div>
-                        </div>                         
+                        </div>                        
                     </div>
                 </div>
 
@@ -384,9 +399,57 @@
 
                 <div class="modal-body mt-1 pt-2">
                     <div class="mb-3">
-                        <label for="accountPassword" class="form-label">Account Password</label>
+                        <label for="password" class="form-label">Account Password</label>
                         <p class="mb-2">If you wish to change your password, please click the button below.</p>
-                        <button type="button" class="btn btn-secondary w-100" id="accountPassword" data-bs-toggle="modal" data-bs-target="#changePasswordModal" style="font-size: 14px;" >Set New Password</button>
+                        <button type="button" class="btn btn-secondary w-100" data-bs-toggle="modal" data-bs-target="#changePasswordModal" style="font-size: 14px;" >Set New Password</button>
+                    </div>
+
+                    <div class="mb-2">
+                        <label for="receiveEmails" class="form-label">Receive Emails</label>
+                        <div class="row">
+                            <div class="col">
+                                <p class="mb-2">Choose whether to receive updates and notifications via email.</p>
+                            </div>
+                            <div class="col-auto">
+                                <div class="form-check form-switch mt-2">
+                                    <input class="form-check-input" type="checkbox" id="receiveEmails" role="switch" style="transform: scale(1.25);">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-1">
+                        <label for="twoFactorAuth" class="form-label">Two-Factor Authentication</label>
+                        <div class="row">
+                            <div class="col">
+                                <p class="mb-2">Choose whether to enable two-factor authentication for added security.</p>
+                            </div>
+                            <div class="col-auto">
+                                <div class="form-check form-switch mt-2">
+                                    <input class="form-check-input" type="checkbox" id="twoFactorAuth" role="switch" style="transform: scale(1.25);">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 px-3 py-2 bg-white shadow">
+                <div class="modal-header pb-0 border-bottom-0">
+                    <h5 class="modal-title" id="settingsModalLabel">Account Settings</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body mt-1 pt-2">
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Account Password</label>
+                        <p class="mb-2">If you wish to change your password, please click the button below.</p>
+                        <button type="button" class="btn btn-secondary w-100" data-bs-toggle="modal" data-bs-target="#changePasswordModal" style="font-size: 14px;" >Set New Password</button>
                     </div>
 
                     <div class="mb-2">
@@ -434,17 +497,17 @@
 
                     <form>
                         <div class="mb-3">
-                            <label for="password" class="form-label">Current Password</label>
+                            <label for="currentPassword" class="form-label">Current Password</label>
                             <input type="password" name="current_password" class="form-control" id="password" placeholder="Enter Current Password" required>
                             <i class="fa-regular fa-eye toggle-pass" id="togglePassword"></i>
                         </div>
                         <div class="mb-3">
-                            <label for="password2" class="form-label">New Password</label>
+                            <label for="newPassword" class="form-label">New Password</label>
                             <input type="password" name="new_password" class="form-control" id="password2" placeholder="Enter New Password" required>
                             <i class="fa-regular fa-eye toggle-pass" id="togglePassword2"></i>
                         </div>
                         <div class="mb-3">
-                            <label for="password3" class="form-label">Confirm New Password</label>
+                            <label for="confirmNewPassword" class="form-label">Confirm New Password</label>
                             <input type="password" name="confirm_new_password" class="form-control" id="password3" placeholder="Confirm New Password" required>
                             <i class="fa-regular fa-eye toggle-pass" id="togglePassword3"></i>
                         </div>
@@ -460,6 +523,111 @@
     <script src="{% static 'js/toggle-sidebar.js' %}"></script>
     <script src="{% static 'js/profile.js' %}"></script>
     {% include "assets/profile-reset-inputs.html" %}
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function () { 
+
+            const inputGroupSelect = document.getElementById('inputGroupSelect');
+
+            function handleSelectChange() {
+
+                const timeSpan = inputGroupSelect.value;
+
+                fetch(`/director-total-records/${timeSpan}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        
+                        document.getElementById('overallTotalRecords').textContent = data.overall_total_records;
+                        document.getElementById('directorTotalRecords').textContent = data.director_total_records;
+                        document.getElementById('admTotalRecords').textContent = data.adm_total_records;
+                        document.getElementById('csrTotalRecords').textContent = data.csr_total_records;
+                        document.getElementById('bdmTotalRecords').textContent = data.bdm_total_records;
+                        document.getElementById('accTotalRecords').textContent = data.acc_total_records;
+                        document.getElementById('prlTotalRecords').textContent = data.prl_total_records;
+
+                        const records = {
+                            directorTotalRecords: data.director_total_records,
+                            admTotalRecords: data.adm_total_records,
+                            csrTotalRecords: data.csr_total_records,
+                            bdmTotalRecords: data.bdm_total_records,
+                            accTotalRecords: data.acc_total_records,
+                            prlTotalRecords: data.prl_total_records
+                        };
+
+                        const maxRecord = Math.max(...Object.values(records));
+                        const maxRecordId = Object.keys(records).find(key => records[key] === maxRecord);
+
+                        // Scale factor for height; adjust 200px as needed for max height
+                        const maxHeight = 200;
+                        const scale = maxRecord > 0 ? maxHeight / maxRecord : 0;
+
+                        document.querySelectorAll('.bar').forEach(bar => bar.classList.remove('selected'));
+                        Object.keys(records).forEach(recordId => {
+                            const barShape = document.querySelector(`#${recordId}`).parentNode.querySelector('.bar-shape');
+                            const height = records[recordId] * scale;
+                            barShape.style.height = height > 0 ? `${height}px` : '0px'; // Set height to 0 if count is zero
+                        });
+
+                        if (maxRecord > 0) {
+                            document.getElementById(maxRecordId).parentNode.classList.add('selected');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+
+                updateUserApplicationChart();
+
+            }
+
+            function updateUserApplicationChart() {
+
+                fetch('/system-admin-user-application-analytics/')
+                    .then(response => response.json())
+                    .then(data => {
+
+                        const pendingCount = data.pending_count;
+                        const activeCount = data.active_count;
+                        const inactiveCount = data.inactive_count;
+
+                        // Calculate total for percentage
+                        const total = pendingCount + activeCount + inactiveCount;
+
+                        // Calculate percentages for design only
+                        const pendingPercentage = ((pendingCount / total) * 100).toFixed(0);
+                        const activePercentage = ((activeCount / total) * 100).toFixed(0);
+                        const inactivePercentage = ((inactiveCount / total) * 100).toFixed(0);
+
+                        // Update Pending Circle
+                        const pendingCircle = document.getElementById('pending-progress-circle');
+                        const pendingText = document.getElementById('pending-count');
+                        pendingCircle.style.background = `conic-gradient(#3589ff 0% ${pendingPercentage}%, #e9ecef ${pendingPercentage}% 100%)`;
+                        pendingText.textContent = pendingCount; // Display actual count
+
+                        // Update Active Circle
+                        const activeCircle = document.getElementById('active-progress-circle');
+                        const activeText = document.getElementById('active-count');
+                        activeCircle.style.background = `conic-gradient(#3589ff 0% ${activePercentage}%, #e9ecef ${activePercentage}% 100%)`;
+                        activeText.textContent = activeCount; // Display actual count
+
+                        // Update Inactive Circle
+                        const inactiveCircle = document.getElementById('inactive-progress-circle');
+                        const inactiveText = document.getElementById('inactive-count');
+                        inactiveCircle.style.background = `conic-gradient(#3589ff 0% ${inactivePercentage}%, #e9ecef ${inactivePercentage}% 100%)`;
+                        inactiveText.textContent = inactiveCount; // Display actual count
+                        
+
+                    })
+                    .catch(error => console.error('Error:', error));
+
+            }
+
+            inputGroupSelect.addEventListener('change', handleSelectChange);
+            handleSelectChange();
+            setInterval(handleSelectChange, 3000);
+
+        });
+
+    </script>
+
     <script>
         function updateTime() {
             const now = new Date();
@@ -481,56 +649,50 @@
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <!-- Line Graph Script -->
+
+    <!-- [ANALYTICS] Line Graph for Document Status -->
     <script>
         const ctx = document.getElementById('multiAreaChart').getContext('2d');
-        const chartData = {{ chart_data|safe }};
-        
         const multiAreaChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: chartData.labels,
+                labels: ['Last 3 Months', 'Last 2 Months', 'Last Month', 'Current Month'], // Time periods
                 datasets: [
-                    {
+                {
                         label: 'Resolved',
-                        data: chartData.resolved_data,
-                        borderColor: '#4DA8DA',
-                        backgroundColor: 'rgba(77, 168, 218, 0.2)',
-                        pointBackgroundColor: '#4DA8DA',
-                        pointRadius: 4,
+                        data: [25, 10, 15, 50], // resolved document tot/unacted+delayed tot
+                        borderColor: '#4DA8DA', // Line color
+                        backgroundColor: 'rgba(77, 168, 218, 0.2)', // Fill color
                         tension: 0.4,
-                        fill: true
+                        fill: true,
+                        pointRadius: 0
                     },
                     {
                         label: 'Pending',
-                        data: chartData.pending_data,
+                        data: [3, 15, 8, 25], 
                         borderColor: '#4169E1',
                         backgroundColor: 'rgba(65, 105, 225, 0.2)',
-                        pointBackgroundColor: '#4169E1',
-                        pointRadius: 4,
                         tension: 0.4,
-                        fill: true
+                        fill: true,
+                        pointRadius: 0
                     },
                     {
                         label: 'Delayed',
-                        data: chartData.delayed_data,
+                        data: [5, 20, 9, 26], 
                         borderColor: '#003366',
                         backgroundColor: 'rgba(0, 51, 102, 0.2)',
-                        pointBackgroundColor: '#003366',
-                        pointRadius: 4,
                         tension: 0.4,
-                        fill: true
+                        fill: true,
+                        pointRadius: 0
                     },
                     {
                         label: 'Unacted',
-                        data: chartData.unacted_data,
+                        data: [1, 2, 4, 10], 
                         borderColor: '#008080',
                         backgroundColor: 'rgba(0, 128, 128, 0.2)',
-                        pointBackgroundColor: '#008080',
-                        pointRadius: 4,
                         tension: 0.4,
-                        fill: true
+                        fill: true,
+                        pointRadius: 0
                     }
                 ]
             },
@@ -542,13 +704,13 @@
                 },
                 plugins: {
                     legend: {
-                        display: true,
+                        display: true, // Show the legend
                         position: 'bottom'
                     }
                 }
             }
         });
-    </script> 
+    </script>
 
     <!-- [ANALYTICS] Pie Chart JavaScript -->
     <script>
@@ -567,14 +729,6 @@
                 responsive: true,
                 maintainAspectRatio: false,
             }
-        });
-    </script>
-
-    <!-- JS for Filtering -->
-    <script>
-        document.getElementById('inputGroupSelect').addEventListener('change', function() {
-            const selectedFilter = this.value;
-            window.location.href = `?filter=${selectedFilter}`;
         });
     </script>
 </body>
