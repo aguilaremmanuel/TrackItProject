@@ -24,11 +24,18 @@
                         <span class="nav-name">New Record</span>
                     </a>
                 </li>
+                
+                <li class="mb-2">
+                    <a href="{% url 'admin_officer_needs_action' 'all-documents' '-1' %}?status=active" id="needs-action"
+                       class="nav-link mb-2 {% if request.resolver_match.url_name == 'admin_officer_needs_action' %}active{% endif %}"> 
+                        <i class='bx bx-calendar-exclamation nav-icon'></i>
+                        <span class="nav-name">Needs Action</span>
+                    </a>
+                </li>
 
                 <li class="mb-2">
                     <button class="nav-link w-100 d-flex justify-content-between align-items-center collapsed
                         {% if request.resolver_match.url_name == 'admin_officer_all_records' %}active{% endif %} 
-                        {% if request.resolver_match.url_name == 'admin_officer_needs_action' %}active{% endif %} 
                         {% if request.resolver_match.url_name == 'admin_officer_unacted_records' %}active{% endif %}
                         {% if request.resolver_match.url_name == 'admin_officer_resolved_records' %}active{% endif %}
                         {% if request.resolver_match.url_name == 'admin_officer_archive' %}active{% endif %}"
@@ -42,7 +49,6 @@
 
                     <div id="records-collapse" data-bs-parent="#sidebarAccordion" class="collapse
                         {% if request.resolver_match.url_name == 'admin_officer_all_records' %}show{% endif %} 
-                        {% if request.resolver_match.url_name == 'admin_officer_needs_action' %}show{% endif %} 
                         {% if request.resolver_match.url_name == 'admin_officer_unacted_records' %}show{% endif %}
                         {% if request.resolver_match.url_name == 'admin_officer_resolved_records' %}show{% endif %} 
                         {% if request.resolver_match.url_name == 'admin_officer_archive' %}show{% endif %}">
@@ -52,13 +58,6 @@
                                    class="nav-submenu {% if request.resolver_match.url_name == 'admin_officer_all_records' %}active{% endif %}">
                                     <i class='bx bx-calendar-alt nav-icon'></i>
                                     <span class="nav-name">All Records</span>
-                                </a>
-                            </li>
-                            <li class="mt-2">
-                                <a href="{% url 'admin_officer_needs_action' 'all-documents' '-1' %}?status=active" id="needs-action"
-                                   class="nav-submenu {% if request.resolver_match.url_name == 'admin_officer_needs_action' %}active{% endif %}" >
-                                    <i class='bx bx-calendar-exclamation nav-icon'></i>
-                                    <span class="nav-name">Needs Action</span>
                                 </a>
                             </li>
                             <li class="mt-2">

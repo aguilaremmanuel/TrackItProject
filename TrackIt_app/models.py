@@ -158,7 +158,7 @@ class Announcement(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     offices = models.CharField(max_length=255, null=True)
     all_offices = models.BooleanField(default=False)
-    end_date = models.DateField(null=True, blank=True) #
+    end_date = models.DateField(null=True, blank=True) 
     created_by = models.CharField(max_length=50)
 
     class Meta:

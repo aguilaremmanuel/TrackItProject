@@ -1488,7 +1488,7 @@ def sys_dir_activity_logs(request, activity_type):
         today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
         yesterday_start = today_start - timedelta(days=1)
         week_start = today_start - timedelta(days=7)
-        fifteen_days_start = today_start - timedelta(days=15)
+        fifteen_days_start = today_start - timedelta(days=1000)
 
         document_logs = ActivityLogs.objects.filter(user_id_id=user_id)
         user_management_logs = UserManagementLogs.objects.filter(user=user_id)
@@ -4656,7 +4656,6 @@ def download_performance_report(request, report_no):
     pdf_file = BytesIO()
     pisa_status = pisa.CreatePDF(html_string, dest=pdf_file)
 
-    # If there was an error
     if pisa_status.err:
         return HttpResponse('We had some errors <pre>' + html_string + '</pre>')
     pdf_file.seek(0)

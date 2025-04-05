@@ -13,11 +13,11 @@
             </td>
             <td>{% if document.status == 'Rejected' %} <span style="color:rgb(211, 8, 8)">{{document.status}}</span>{% else %}{{ document.status }}{% endif %}</td>
             <td>
-                {% if search_query %}
-                    {{ document.highlighted_sender_name|safe }}
-                {% else %}
-                    {{ document.sender_name }}
-                {% endif %}
+                    {% if search_query %}
+                        {{ document.highlighted_sender_name|safe }}
+                    {% else %}
+                        {{ document.sender_name }}
+                    {% endif %}
             </td>
             <td>
                 {% if search_query %}

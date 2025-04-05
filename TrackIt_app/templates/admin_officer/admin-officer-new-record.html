@@ -687,7 +687,6 @@
     {% if document %}
         <script>
             document.addEventListener('DOMContentLoaded', function () {
-
                 const trackingInput = document.getElementById('TrackingNumber');
                 trackingInput.value = '{{document.tracking_no}}';
                 trackingInput.readOnly = true;

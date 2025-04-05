@@ -15,12 +15,12 @@ function fetchDocuments() {
     fetch(fetchUrl)
         .then(response => response.json())
         .then(data => {
-            
             document.getElementById('docTableBody').innerHTML = data.html;
             let noOfRecords = document.getElementById('docuLength').value;
             document.getElementById('recordCount').textContent = noOfRecords;
             bindViewButtons();
     });
+    
 }
 
 function bindViewButtons() {
